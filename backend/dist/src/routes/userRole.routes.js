@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const userRole_controller_1 = require("../controllers/userRole.controller");
+const router = (0, express_1.Router)();
+router.post("/", userRole_controller_1.assignRole);
+router.get("/", userRole_controller_1.getUserRoles);
+router.get("/:id", userRole_controller_1.getUserRoleById);
+router.delete("/:id", userRole_controller_1.deleteUserRole);
+exports.default = router;

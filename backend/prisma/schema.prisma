@@ -1,0 +1,219 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Department {
+  id             BigInt     @id @default(autoincrement())
+  departmentCode String     @unique @db.VarChar(20)
+  departmentName String     @unique @db.VarChar(100)
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  employees      Employee[]
+
+  @@map("departments")
+}
+
+model Employee {
+  id               BigInt           @id @default(autoincrement())
+  employeeCode     String           @unique @db.VarChar(20)
+  firstName        String           @db.VarChar(100)
+  lastName         String           @db.VarChar(100)
+  officialEmail    String           @unique @db.VarChar(255)
+  phoneNumber      String?          @db.VarChar(20)
+  designation      String           @db.VarChar(100)
+  departmentId     BigInt
+  managerId        BigInt?
+  joiningDate      DateTime
+  profileImage     String?          @db.VarChar(500)
+  employmentStatus EmploymentStatus @default(ACTIVE)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  department       Department       @relation(fields: [departmentId], references: [id])
+  manager          Employee?        @relation("ManagerEmployees", fields: [managerId], references: [id])
+  subordinates     Employee[]       @relation("ManagerEmployees")
+  userAccount      UserAccount?
+  rolesAssigned    UserRole[]       @relation("AssignedByEmployee")
+  assignedRoles    UserRole[]
+
+  @@index([departmentId])
+  @@index([managerId])
+  @@map("employees")
+}
+
+model UserAccount {
+  id                  BigInt    @id @default(autoincrement())
+  employeeId          BigInt    @unique
+  username            String    @unique @db.VarChar(100)
+  passwordHash        String    @db.VarChar(255)
+  lastLogin           DateTime?
+  failedLoginAttempts Int       @default(0)
+  accountLocked       Boolean   @default(false)
+  passwordChangedAt   DateTime?
+  isActive            Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  employee            Employee  @relation(fields: [employeeId], references: [id])
+
+  @@map("user_accounts")
+}
+
+model Role {
+  id              BigInt           @id @default(autoincrement())
+  roleName        String           @unique @db.VarChar(100)
+  roleCode        String           @unique @db.VarChar(20)
+  description     String?          @db.VarChar(255)
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id              BigInt           @id @default(autoincrement())
+  permissionName  String           @db.VarChar(100)
+  permissionCode  String           @unique @db.VarChar(100)
+  moduleName      String           @db.VarChar(100)
+  description     String?          @db.VarChar(255)
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions RolePermission[]
+
+  @@index([moduleName])
+  @@map("permissions")
+}
+
+model UserRole {
+  id                 BigInt    @id @default(autoincrement())
+  employeeId         BigInt
+  roleId             BigInt
+  assignedBy         BigInt?
+  assignedAt         DateTime  @default(now())
+  expiresAt          DateTime?
+  isActive           Boolean   @default(true)
+  assignedByEmployee Employee? @relation("AssignedByEmployee", fields: [assignedBy], references: [id])
+  employee           Employee  @relation(fields: [employeeId], references: [id])
+  role               Role      @relation(fields: [roleId], references: [id])
+
+  @@unique([employeeId, roleId])
+  @@index([employeeId])
+  @@index([roleId])
+  @@index([assignedBy], map: "user_roles_assignedBy_fkey")
+  @@map("user_roles")
+}
+
+model RolePermission {
+  id           BigInt     @id @default(autoincrement())
+  roleId       BigInt
+  permissionId BigInt
+  createdAt    DateTime   @default(now())
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model Category {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.VarChar(255)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  courses     Course[]
+
+  @@map("categories")
+}
+
+model Course {
+  id               BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
+  categoryId       BigInt          @db.UnsignedBigInt
+  title            String          @db.VarChar(200)
+  shortDescription String?         @db.VarChar(500)
+  description      String?         @db.Text
+  thumbnail        String?         @db.VarChar(255)
+  duration         Int?
+  level            String?         @db.VarChar(50)
+  language         String?         @db.VarChar(50)
+  isPublished      Boolean         @default(false)
+  isActive         Boolean         @default(true)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  sections         CourseSection[]
+  category         Category        @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId], map: "courses_categoryId_fkey")
+  @@map("courses")
+}
+
+model CourseSection {
+  id           BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  courseId     BigInt            @db.UnsignedBigInt
+  title        String            @db.VarChar(200)
+  description  String?           @db.VarChar(500)
+  sectionOrder Int
+  isPublished  Boolean           @default(false)
+  isActive     Boolean           @default(true)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  contents     LearningContent[]
+
+  @@index([courseId])
+  @@map("course_sections")
+}
+
+model LearningContent {
+  id           BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  sectionId    BigInt        @db.UnsignedBigInt
+  title        String        @db.VarChar(200)
+  contentType  String        @db.VarChar(50)
+  contentUrl   String?       @db.VarChar(500)
+  description  String?       @db.Text
+  duration     Int?
+  contentOrder Int
+  isMandatory  Boolean       @default(false)
+  isPublished  Boolean       @default(false)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  section      CourseSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId])
+  @@map("learning_contents")
+}
+
+model Enrollment {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId      BigInt    
+  courseId    BigInt    @db.UnsignedBigInt
+  enrolledAt  DateTime  @default(now())
+  completedAt DateTime?
+  status      String    @default("IN_PROGRESS") @db.VarChar(30)
+  progress    Decimal   @default(0.00) @db.Decimal(5, 2)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  @@map("enrollments")
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  INACTIVE
+  RESIGNED
+}
