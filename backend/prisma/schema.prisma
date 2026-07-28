@@ -15,6 +15,7 @@ model Department {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   employees      Employee[]
+  courses        Course[]
 
   @@map("departments")
 }
@@ -40,6 +41,7 @@ model Employee {
   userAccount      UserAccount?
   rolesAssigned    UserRole[]       @relation("AssignedByEmployee")
   assignedRoles    UserRole[]
+  createdCourses   Course[]
 
   @@index([departmentId])
   @@index([managerId])
@@ -137,9 +139,17 @@ model Category {
   @@map("categories")
 }
 
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 model Course {
   id               BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
   categoryId       BigInt          @db.UnsignedBigInt
+  departmentId     BigInt?
+  creatorId        BigInt
   title            String          @db.VarChar(200)
   shortDescription String?         @db.VarChar(500)
   description      String?         @db.Text
@@ -147,14 +157,18 @@ model Course {
   duration         Int?
   level            String?         @db.VarChar(50)
   language         String?         @db.VarChar(50)
-  isPublished      Boolean         @default(false)
+  status           CourseStatus    @default(DRAFT)
   isActive         Boolean         @default(true)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   sections         CourseSection[]
   category         Category        @relation(fields: [categoryId], references: [id])
+  department       Department?     @relation(fields: [departmentId], references: [id])
+  creator          Employee        @relation(fields: [creatorId], references: [id])
 
   @@index([categoryId], map: "courses_categoryId_fkey")
+  @@index([departmentId])
+  @@index([creatorId])
   @@map("courses")
 }
 

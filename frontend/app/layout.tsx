@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">
+    <html lang="en" className={`${inter.variable} h-full w-full overflow-x-hidden antialiased`}>
+      <body className="min-h-screen w-full overflow-x-hidden flex flex-col font-sans">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>

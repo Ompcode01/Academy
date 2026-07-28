@@ -13,6 +13,7 @@ import authRoutes from "./routes/auth.routes";
 import healthRoutes from "./routes/health.routes";
 import courseRoutes from "./modules/course/course.routes";
 import categoryRoutes from "./modules/course/category.routes";
+import dashboardRoutes from "./routes/dashboard.routes";
 const app = express();
 
 app.use(cors());
@@ -43,5 +44,6 @@ app.use("/api/prisma-test", prismaTestRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use(errorHandler);
 export default app;

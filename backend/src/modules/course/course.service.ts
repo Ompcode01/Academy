@@ -3,14 +3,71 @@ import courseRepository from "./course.repository";
 interface CourseFilters {
   search?: string;
   categoryId?: number;
-  isPublished?: boolean;
+  status?: string;
+  departmentId?: bigint;
   page?: number;
   limit?: number;
 }
 
+interface UserContext {
+  role: string;
+  employeeId?: bigint;
+  departmentId?: bigint;
+}
+
 class CourseService {
-  async getAllCourses(filters: CourseFilters = {}) {
-    return courseRepository.findAll(filters);
+  async getAllCourses(filters: CourseFilters = {}, userContext?: UserContext) {
+    // Build role-scoped where clause
+    const scopeWhere = this.buildScopeFilter(userContext);
+    return courseRepository.findAll(filters, scopeWhere);
+  }
+
+  /**
+   * Build Prisma where-clause additions based on the user's role:
+   * - SUPER_ADMIN: all courses (no extra filter)
+   * - ADMIN: courses in their department
+   * - TEACHER: courses they created OR in their department
+   * - LEARNER: only PUBLISHED courses in their department or globally published (no department)
+   * - GUEST: only PUBLISHED courses
+   */
+  private buildScopeFilter(userContext?: UserContext): any {
+    if (!userContext) return {};
+
+    const { role, employeeId, departmentId } = userContext;
+
+    switch (role) {
+      case "SUPER_ADMIN":
+        return {}; // No restrictions
+
+      case "ADMIN":
+        return departmentId ? { departmentId } : {};
+
+      case "TEACHER":
+        if (employeeId && departmentId) {
+          return {
+            OR: [
+              { creatorId: employeeId },
+              { departmentId },
+            ],
+          };
+        }
+        return employeeId ? { creatorId: employeeId } : {};
+
+      case "LEARNER":
+        return {
+          status: "PUBLISHED",
+          OR: [
+            { departmentId: departmentId || null },
+            { departmentId: null }, // Globally published courses
+          ],
+        };
+
+      case "GUEST":
+        return { status: "PUBLISHED" };
+
+      default:
+        return { status: "PUBLISHED" };
+    }
   }
 
   async getCourseById(id: bigint) {
@@ -23,6 +80,8 @@ class CourseService {
 
   async createCourse(data: {
     categoryId: bigint;
+    creatorId: bigint;
+    departmentId?: bigint | null;
     title: string;
     shortDescription?: string;
     description?: string;
@@ -30,7 +89,7 @@ class CourseService {
     duration?: number;
     level?: string;
     language?: string;
-    isPublished?: boolean;
+    status?: string;
   }) {
     return courseRepository.create(data);
   }
@@ -39,6 +98,7 @@ class CourseService {
     id: bigint,
     data: {
       categoryId?: bigint;
+      departmentId?: bigint | null;
       title?: string;
       shortDescription?: string;
       description?: string;
@@ -46,7 +106,7 @@ class CourseService {
       duration?: number;
       level?: string;
       language?: string;
-      isPublished?: boolean;
+      status?: string;
     }
   ) {
     await this.getCourseById(id);

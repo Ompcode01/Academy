@@ -3,14 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/store/auth.store";
+import { ROLES, hasRole } from "@/lib/rbac";
 import {
   LayoutDashboard,
   Building2,
   Users,
   GraduationCap,
-  BookOpen,
-  FolderTree,
-  Route,
   BarChart3,
   RefreshCw,
   Settings,
@@ -23,28 +22,63 @@ interface NavItem {
   href?: string;
   icon: React.ElementType;
   children?: { label: string; href: string }[];
+  allowedRoles: string[];
 }
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Organization", href: "/organization", icon: Building2 },
-  { label: "Users", href: "/users", icon: Users },
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.TEACHER, ROLES.LEARNER, ROLES.GUEST],
+  },
+  {
+    label: "Organization",
+    href: "/organization",
+    icon: Building2,
+    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN],
+  },
+  {
+    label: "Users",
+    href: "/users",
+    icon: Users,
+    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN],
+  },
   {
     label: "Courses",
     icon: GraduationCap,
+    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.TEACHER, ROLES.LEARNER, ROLES.GUEST],
     children: [
       { label: "All Courses", href: "/courses" },
       { label: "Categories", href: "/courses/categories" },
       { label: "Learning Paths", href: "/courses/learning-paths" },
     ],
   },
-  { label: "Reports", href: "/reports", icon: BarChart3 },
-  { label: "Darwinbox Sync", href: "/darwinbox-sync", icon: RefreshCw },
-  { label: "Settings", href: "/settings", icon: Settings },
+  {
+    label: "Reports",
+    href: "/reports",
+    icon: BarChart3,
+    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.TEACHER],
+  },
+  {
+    label: "Darwinbox Sync",
+    href: "/darwinbox-sync",
+    icon: RefreshCw,
+    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN],
+  },
+  {
+    label: "Settings",
+    href: "/settings",
+    icon: Settings,
+    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN],
+  },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const user = useAuthStore((state) => state.user);
+  const userRole = user?.role || ROLES.GUEST;
+  
   const [expandedItems, setExpandedItems] = useState<string[]>(["Courses"]);
 
   const toggleExpand = (label: string) => {
@@ -68,8 +102,13 @@ export default function Sidebar() {
     return isActive(item.href);
   };
 
+  // Filter main nav items based on role
+  const visibleItems = navItems.filter((item) =>
+    hasRole(userRole, ...item.allowedRoles)
+  );
+
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] flex-col bg-sidebar text-sidebar-foreground">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] shrink-0 flex-col bg-sidebar text-sidebar-foreground select-none border-r border-sidebar-border/30">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary">
@@ -87,12 +126,25 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="mt-2 flex-1 space-y-0.5 overflow-y-auto px-3">
-        {navItems.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = item.icon;
           const expanded = expandedItems.includes(item.label);
           const active = isParentActive(item);
 
           if (item.children) {
+            // Scoped child filters:
+            // Guest shouldn't see Categories & Learning Paths
+            // Learner shouldn't see Categories
+            const filteredChildren = item.children.filter((child) => {
+              if (userRole === ROLES.GUEST) {
+                return child.label === "All Courses";
+              }
+              if (userRole === ROLES.LEARNER) {
+                return child.label === "All Courses" || child.label === "Learning Paths";
+              }
+              return true;
+            });
+
             return (
               <div key={item.label}>
                 <button
@@ -113,7 +165,7 @@ export default function Sidebar() {
                 </button>
                 {expanded && (
                   <div className="ml-4 mt-1 space-y-0.5 border-l border-sidebar-border pl-4">
-                    {item.children.map((child) => {
+                    {filteredChildren.map((child) => {
                       const childActive =
                         child.href === "/courses"
                           ? pathname === "/courses" ||

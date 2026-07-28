@@ -4,6 +4,8 @@ import api from "./auth.service";
 export interface Course {
   id: number;
   categoryId: number;
+  departmentId?: number | null;
+  creatorId: number;
   title: string;
   shortDescription?: string;
   description?: string;
@@ -11,12 +13,25 @@ export interface Course {
   duration?: number;
   level?: string;
   language?: string;
-  isPublished: boolean;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
   category?: Category;
+  department?: Department;
+  creator?: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    employeeCode: string;
+  };
   sections?: CourseSection[];
+}
+
+export interface Department {
+  id: number;
+  departmentCode: string;
+  departmentName: string;
 }
 
 export interface Category {
@@ -49,10 +64,11 @@ export interface LearningContent {
   isPublished: boolean;
 }
 
-export interface CourseFilters {
+export interface CourseFiltersProps {
   search?: string;
   categoryId?: number;
-  isPublished?: boolean;
+  departmentId?: number;
+  status?: string;
   page?: number;
   limit?: number;
 }
@@ -66,13 +82,15 @@ export interface PaginatedResponse<T> {
 }
 
 // Course API
-export const getCourses = async (filters: CourseFilters = {}) => {
+export const getCourses = async (filters: CourseFiltersProps = {}) => {
   const params = new URLSearchParams();
   if (filters.search) params.append("search", filters.search);
   if (filters.categoryId)
     params.append("categoryId", String(filters.categoryId));
-  if (filters.isPublished !== undefined)
-    params.append("isPublished", String(filters.isPublished));
+  if (filters.departmentId)
+    params.append("departmentId", String(filters.departmentId));
+  if (filters.status)
+    params.append("status", filters.status);
   if (filters.page) params.append("page", String(filters.page));
   if (filters.limit) params.append("limit", String(filters.limit));
 

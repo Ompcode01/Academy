@@ -6,6 +6,8 @@ export interface JwtPayload {
   userId: string;
   employeeId: string;
   username: string;
+  role: string;
+  departmentId: string;
 }
 
 export const generateToken = (

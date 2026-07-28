@@ -2,7 +2,8 @@ import prisma from "../../config/prisma";
 
 interface CourseFilters {
   categoryId?: number;
-  isPublished?: boolean;
+  status?: string;
+  departmentId?: bigint;
   search?: string;
   page?: number;
   limit?: number;
@@ -10,6 +11,8 @@ interface CourseFilters {
 
 interface CreateCourseData {
   categoryId: bigint;
+  creatorId: bigint;
+  departmentId?: bigint | null;
   title: string;
   shortDescription?: string;
   description?: string;
@@ -17,7 +20,7 @@ interface CreateCourseData {
   duration?: number;
   level?: string;
   language?: string;
-  isPublished?: boolean;
+  status?: string;
 }
 
 interface UpdateCourseData extends Partial<CreateCourseData> {}
@@ -43,23 +46,31 @@ interface CreateContentData {
 }
 
 class CourseRepository {
-  async findAll(filters: CourseFilters = {}) {
-    const { search, categoryId, isPublished, page = 1, limit = 10 } = filters;
+  async findAll(filters: CourseFilters = {}, scopeWhere: any = {}) {
+    const { search, categoryId, status, departmentId, page = 1, limit = 10 } = filters;
     const skip = (page - 1) * limit;
 
-    const where: any = { isActive: true };
+    const where: any = { isActive: true, ...scopeWhere };
 
     if (search) {
-      where.OR = [
-        { title: { contains: search } },
-        { shortDescription: { contains: search } },
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: [
+            { title: { contains: search } },
+            { shortDescription: { contains: search } },
+          ],
+        },
       ];
     }
     if (categoryId) {
       where.categoryId = BigInt(categoryId);
     }
-    if (isPublished !== undefined) {
-      where.isPublished = isPublished;
+    if (status) {
+      where.status = status;
+    }
+    if (departmentId) {
+      where.departmentId = departmentId;
     }
 
     const [courses, total] = await Promise.all([
@@ -67,6 +78,15 @@ class CourseRepository {
         where,
         include: {
           category: true,
+          department: true,
+          creator: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              employeeCode: true,
+            },
+          },
           sections: {
             where: { isActive: true },
             orderBy: { sectionOrder: "asc" },
@@ -93,6 +113,15 @@ class CourseRepository {
       where: { id, isActive: true },
       include: {
         category: true,
+        department: true,
+        creator: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            employeeCode: true,
+          },
+        },
         sections: {
           where: { isActive: true },
           orderBy: { sectionOrder: "asc" },
@@ -111,6 +140,8 @@ class CourseRepository {
     return prisma.course.create({
       data: {
         categoryId: data.categoryId,
+        creatorId: data.creatorId,
+        departmentId: data.departmentId ?? null,
         title: data.title,
         shortDescription: data.shortDescription,
         description: data.description,
@@ -118,9 +149,20 @@ class CourseRepository {
         duration: data.duration,
         level: data.level,
         language: data.language,
-        isPublished: data.isPublished ?? false,
+        status: (data.status as any) ?? "DRAFT",
       },
-      include: { category: true },
+      include: {
+        category: true,
+        department: true,
+        creator: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            employeeCode: true,
+          },
+        },
+      },
     });
   }
 
@@ -128,7 +170,18 @@ class CourseRepository {
     return prisma.course.update({
       where: { id },
       data,
-      include: { category: true },
+      include: {
+        category: true,
+        department: true,
+        creator: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            employeeCode: true,
+          },
+        },
+      },
     });
   }
 

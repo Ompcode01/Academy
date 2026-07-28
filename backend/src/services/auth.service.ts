@@ -16,7 +16,11 @@ export const login = async (
       username: data.username,
     },
     include: {
-      employee: true,
+      employee: {
+        include: {
+          department: true,
+        },
+      },
     },
   });
 
@@ -57,10 +61,14 @@ export const login = async (
     },
   });
 
+  const primaryRole = roles[0]?.role?.roleCode || "LEARNER";
+
   const token = generateToken({
     userId: account.id.toString(),
     employeeId: account.employeeId.toString(),
     username: account.username,
+    role: primaryRole,
+    departmentId: account.employee.departmentId.toString(),
   });
 
   return {

@@ -1,9 +1,12 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface User {
   id: number;
   username: string;
   role: string;
+  employeeId: number;
+  departmentId: number;
 }
 
 interface AuthState {
@@ -15,22 +18,29 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token: null,
-  user: null,
-  isAuthenticated: false,
-
-  login: (token, user) =>
-    set({
-      token,
-      user,
-      isAuthenticated: true,
-    }),
-
-  logout: () =>
-    set({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
       token: null,
       user: null,
       isAuthenticated: false,
+
+      login: (token, user) =>
+        set({
+          token,
+          user,
+          isAuthenticated: true,
+        }),
+
+      logout: () =>
+        set({
+          token: null,
+          user: null,
+          isAuthenticated: false,
+        }),
     }),
-}));
+    {
+      name: "lms-auth-storage",
+    }
+  )
+);

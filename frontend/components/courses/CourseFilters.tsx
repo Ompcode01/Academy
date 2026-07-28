@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
+import { getCategories, type Category } from "@/services/api/course.service";
+import { getDepartments, type Department } from "@/services/api/org.service";
 import {
   Select,
   SelectContent,
@@ -23,6 +26,30 @@ export default function CourseFilters({
   onDepartmentChange,
   onStatusChange,
 }: CourseFiltersProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+
+  useEffect(() => {
+    async function loadFilterOptions() {
+      try {
+        const [catRes, deptRes] = await Promise.all([
+          getCategories(),
+          getDepartments(),
+        ]);
+        if (catRes?.success) {
+          setCategories(catRes.data);
+        }
+        if (deptRes) {
+          // org service department endpoint returns list directly
+          setDepartments(deptRes.data || deptRes);
+        }
+      } catch (err) {
+        console.error("Failed to load filter dynamic options:", err);
+      }
+    }
+    loadFilterOptions();
+  }, []);
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Search */}
@@ -30,56 +57,59 @@ export default function CourseFilters({
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
-          placeholder="Search by course name or code..."
+          placeholder="Search by course name or description..."
           onChange={(e) => onSearch?.(e.target.value)}
           className="h-9 w-[260px] rounded-lg border border-border bg-card pl-9 pr-4 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
         />
       </div>
 
       {/* Category Filter */}
-      <Select onValueChange={onCategoryChange} defaultValue="all">
-        <SelectTrigger className="h-9 w-[140px] bg-card text-sm">
+      <Select onValueChange={(val) => onCategoryChange?.(val === "all" ? null : val)} defaultValue="all">
+        <SelectTrigger className="h-9 w-[150px] bg-card text-sm">
           <span className="mr-1 text-muted-foreground">Category</span>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="technical">Technical</SelectItem>
-          <SelectItem value="management">Management</SelectItem>
-          <SelectItem value="soft-skills">Soft Skills</SelectItem>
-          <SelectItem value="hr">HR</SelectItem>
+          <SelectItem value="all">All Categories</SelectItem>
+          {categories.map((cat) => (
+            <SelectItem key={cat.id} value={String(cat.id)}>
+              {cat.name}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
       {/* Department Filter */}
-      <Select onValueChange={onDepartmentChange} defaultValue="all">
-        <SelectTrigger className="h-9 w-[150px] bg-card text-sm">
+      <Select onValueChange={(val) => onDepartmentChange?.(val === "all" ? null : val)} defaultValue="all">
+        <SelectTrigger className="h-9 w-[160px] bg-card text-sm">
           <span className="mr-1 text-muted-foreground">Department</span>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="dpu">DPU</SelectItem>
-          <SelectItem value="management">Management</SelectItem>
-          <SelectItem value="hr">HR</SelectItem>
+          <SelectItem value="all">All Departments</SelectItem>
+          {departments.map((dept) => (
+            <SelectItem key={dept.id} value={String(dept.id)}>
+              {dept.departmentCode}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
       {/* Status Filter */}
-      <Select onValueChange={onStatusChange} defaultValue="all">
+      <Select onValueChange={(val) => onStatusChange?.(val === "all" ? null : val)} defaultValue="all">
         <SelectTrigger className="h-9 w-[130px] bg-card text-sm">
           <span className="mr-1 text-muted-foreground">Status</span>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="published">Published</SelectItem>
-          <SelectItem value="draft">Draft</SelectItem>
-          <SelectItem value="archived">Archived</SelectItem>
+          <SelectItem value="all">All Statuses</SelectItem>
+          <SelectItem value="PUBLISHED">Published</SelectItem>
+          <SelectItem value="DRAFT">Draft</SelectItem>
+          <SelectItem value="ARCHIVED">Archived</SelectItem>
         </SelectContent>
       </Select>
 
-      {/* Filters Button */}
+      {/* Reset button indicator */}
       <Button variant="outline" size="sm" className="h-9 gap-2">
         <SlidersHorizontal className="h-4 w-4" />
         Filters

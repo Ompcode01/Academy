@@ -39,6 +39,8 @@ export default function LoginForm() {
         id: Number(employee.id),
         username: `${employee.firstName} ${employee.lastName}`,
         role: primaryRole,
+        employeeId: Number(employee.id),
+        departmentId: Number(employee.departmentId),
       };
 
       loginStore(token, user);

@@ -1,100 +1,150 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CourseFilters from "@/components/courses/CourseFilters";
-import CourseTable, { type CourseItem } from "@/components/courses/CourseTable";
-import Link from "next/link";
-
-const mockCourses: CourseItem[] = [
-  {
-    id: 1,
-    title: "Java Fundamentals",
-    code: "DPU-JAVA-001",
-    category: "Technical",
-    categoryType: "technical",
-    department: "DPU",
-    instructor: "Priyanka Sharma",
-    instructorInitials: "PS",
-    learners: 125,
-    status: "Published",
-  },
-  {
-    id: 2,
-    title: "Leadership Essentials",
-    code: "MGMT-LEAD-002",
-    category: "Management",
-    categoryType: "management",
-    department: "Management",
-    instructor: "Rahul Varma",
-    instructorInitials: "RV",
-    learners: 78,
-    status: "Published",
-  },
-  {
-    id: 3,
-    title: "Effective Communication",
-    code: "MGMT-COMM-003",
-    category: "Soft Skills",
-    categoryType: "soft-skills",
-    department: "Management",
-    instructor: "Anita Patil",
-    instructorInitials: "AP",
-    learners: 93,
-    status: "Draft",
-  },
-  {
-    id: 4,
-    title: "Data Structures in Java",
-    code: "DPU-JAVA-004",
-    category: "Technical",
-    categoryType: "technical",
-    department: "DPU",
-    instructor: "John D'Souza",
-    instructorInitials: "JD",
-    learners: 64,
-    status: "Draft",
-  },
-  {
-    id: 5,
-    title: "HR Compliance Basics",
-    code: "HR-COMP-005",
-    category: "HR",
-    categoryType: "hr",
-    department: "HR",
-    instructor: "Neha Kulkarni",
-    instructorInitials: "NK",
-    learners: 40,
-    status: "Archived",
-  },
-];
+import CourseTable from "@/components/courses/CourseTable";
+import CreateCourseModal from "@/components/courses/CreateCourseModal";
+import RoleGate from "@/components/auth/RoleGate";
+import { getCourses, type Course, deleteCourse } from "@/services/api/course.service";
 
 export default function CoursesPage() {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [totalCourses, setTotalCourses] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Filter States
+  const [search, setSearch] = useState<string>("");
+  const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
+  const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
+  const [status, setStatus] = useState<string | undefined>(undefined);
+
+  const pageSize = 5;
+
+  const fetchCoursesList = async () => {
+    try {
+      setLoading(true);
+      const res = await getCourses({
+        search,
+        categoryId,
+        departmentId,
+        status,
+        page: currentPage,
+        limit: pageSize,
+      });
+
+      if (res?.success) {
+        setCourses(res.data.courses || []);
+        setTotalCourses(res.data.total || 0);
+      }
+    } catch (err) {
+      console.error("Failed to load courses:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoursesList();
+  }, [currentPage, search, categoryId, departmentId, status]);
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (value: string | null) => {
+    setCategoryId(value ? Number(value) : undefined);
+    setCurrentPage(1);
+  };
+
+  const handleDepartmentChange = (value: string | null) => {
+    setDepartmentId(value ? Number(value) : undefined);
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (value: string | null) => {
+    setStatus(value || undefined);
+    setCurrentPage(1);
+  };
+
+  const handleEdit = (id: number) => {
+    alert(`Editing course ${id}. For curriculum section updates, visit the Create Course Wizard.`);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (confirm("Are you sure you want to delete this course from the directory?")) {
+      try {
+        const res = await deleteCourse(id);
+        if (res?.success) {
+          fetchCoursesList();
+        } else {
+          alert(res?.message || "Failed to delete course");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Failed to delete course due to role authorization restrictions.");
+      }
+    }
+  };
+
   return (
-    <div className="p-6">
+    <div className="p-6 space-y-6 max-w-[100vw] overflow-x-hidden">
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">All Courses</h1>
+          <h1 className="text-2xl font-bold text-foreground">Academy Curriculum Catalog</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage and organize all courses in the academy.
+            Manage, classify, and organize all learning courses in the academy database.
           </p>
         </div>
-        <Link href="/courses/create">
-          <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+        <RoleGate allowed={["TEACHER", "ADMIN", "SUPER_ADMIN"]}>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 self-start sm:self-center"
+          >
             <Plus className="h-4 w-4" />
             Create Course
           </Button>
-        </Link>
+        </RoleGate>
       </div>
 
       {/* Filters */}
-      <div className="mb-5">
-        <CourseFilters />
+      <div className="bg-card p-4 rounded-xl border border-border">
+        <CourseFilters
+          onSearch={handleSearch}
+          onCategoryChange={handleCategoryChange}
+          onDepartmentChange={handleDepartmentChange}
+          onStatusChange={handleStatusChange}
+        />
       </div>
 
       {/* Table */}
-      <CourseTable courses={mockCourses} />
+      {loading ? (
+        <div className="flex items-center justify-center py-12 border border-border rounded-xl bg-card">
+          <p className="text-sm text-muted-foreground">Fetching dynamically scoped courses...</p>
+        </div>
+      ) : (
+        <CourseTable
+          courses={courses}
+          currentPage={currentPage}
+          totalCourses={totalCourses}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
+
+      {/* Quick Creation Form Modal */}
+      <CreateCourseModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onSuccess={fetchCoursesList}
+      />
     </div>
   );
 }
