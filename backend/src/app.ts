@@ -12,6 +12,7 @@ import userRoleRoutes from "./routes/userRole.routes";
 import authRoutes from "./routes/auth.routes";
 import healthRoutes from "./routes/health.routes";
 import courseRoutes from "./modules/course/course.routes";
+import categoryRoutes from "./modules/course/category.routes";
 const app = express();
 
 app.use(cors());
@@ -40,6 +41,7 @@ app.use("/api/user-roles", userRoleRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/prisma-test", prismaTestRoutes);
 app.use("/api/health", healthRoutes);
-app.use(errorHandler);
 app.use("/api/courses", courseRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use(errorHandler);
 export default app;
