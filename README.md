@@ -22,12 +22,27 @@ Before starting, ensure you have the following installed on your machine:
 
 The application uses MySQL as its database. A `docker-compose.yml` file is provided in the project root to spin up a MySQL container.
 
+For detailed information about database tables, columns, relations, seeding configuration, and management operations, please refer to the [Database Documentation](file:///c:/Users/ompra/Desktop/academy_lms/DATABASE.md).
+
+### Starting the Database Server
 1. Open your terminal at the root of the project (`academy_lms/`).
 2. Run the following command to start the MySQL database container in the background:
    ```bash
    docker compose up -d
    ```
    *Note: This starts MySQL on port `3307` to avoid port conflicts with any local MySQL running on the default `3306` port.*
+
+### Checking Server Status
+Verify that the database container is active:
+```bash
+docker ps -f name=academy_lms_mysql
+```
+
+### Stopping the Database Server
+To stop the database container and free up resources:
+```bash
+docker compose down
+```
 
 ---
 
