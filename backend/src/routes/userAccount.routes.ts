@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { authenticate } from "../middleware/auth.middleware";
+import { authorizeRoles } from "../middleware/role.middleware";
 
 import {
 
@@ -11,12 +13,32 @@ deleteUserAccount
 
 const router = Router();
 
-router.post("/", createUserAccount);
+router.post(
+  "/",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN"),
+  createUserAccount
+);
 
-router.get("/", getUserAccounts);
+router.get(
+  "/",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN"),
+  getUserAccounts
+);
 
-router.get("/:id", getUserAccountById);
+router.get(
+  "/:id",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN"),
+  getUserAccountById
+);
 
-router.delete("/:id", deleteUserAccount);
+router.delete(
+  "/:id",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN"),
+  deleteUserAccount
+);
 
-export default router;
+export default router;

@@ -1,20 +1,56 @@
 import { Request, Response } from "express";
 import * as userRoleService from "../services/userRole.service";
 import { serialize } from "../utils/serializer";
+import prisma from "../config/prisma";
+import { AuthRequest } from "../middleware/auth.middleware";
 
 export const assignRole = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ): Promise<void> => {
 
   try {
 
+    const callerRole = req.user?.role;
+    const targetRoleId = BigInt(req.body.roleId);
+
+    // Look up the target role to check its roleCode
+    const targetRole = await prisma.role.findUnique({
+      where: { id: targetRoleId },
+    });
+
+    if (!targetRole) {
+      res.status(404).json({
+        success: false,
+        message: "Target role not found",
+      });
+      return;
+    }
+
+    // Admins cannot assign SUPER_ADMIN role
+    if (callerRole !== "SUPER_ADMIN" && targetRole.roleCode === "SUPER_ADMIN") {
+      res.status(403).json({
+        success: false,
+        message: "Only Super Admins can assign the Super Admin role",
+      });
+      return;
+    }
+
+    // Admins cannot assign ADMIN role either — only Super Admin can
+    if (callerRole !== "SUPER_ADMIN" && targetRole.roleCode === "ADMIN") {
+      res.status(403).json({
+        success: false,
+        message: "Only Super Admins can assign the Admin role",
+      });
+      return;
+    }
+
     const userRole =
       await userRoleService.assignRole({
 
         employeeId: BigInt(req.body.employeeId),
-        roleId: BigInt(req.body.roleId),
-        assignedBy: BigInt(req.body.assignedBy),
+        roleId: targetRoleId,
+        assignedBy: BigInt(req.user.employeeId),
 
       });
 

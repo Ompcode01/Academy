@@ -20,12 +20,33 @@ router.post(
   ),
   createEmployee
 );
-router.get("/", getEmployees);
 
-router.get("/:id", getEmployeeById);
+router.get(
+  "/",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN", "ADMIN"),
+  getEmployees
+);
 
-router.put("/:id", updateEmployee);
+router.get(
+  "/:id",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN", "ADMIN"),
+  getEmployeeById
+);
 
-router.delete("/:id", deleteEmployee);
+router.put(
+  "/:id",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN", "ADMIN"),
+  updateEmployee
+);
 
-export default router;
+router.delete(
+  "/:id",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN", "ADMIN"),
+  deleteEmployee
+);
+
+export default router;

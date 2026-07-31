@@ -30,6 +30,10 @@ export const getEmployees = async () => {
     include: {
       department: true,
       manager: true,
+      assignedRoles: {
+        where: { isActive: true },
+        include: { role: true },
+      },
     },
     orderBy: {
       id: "asc",
@@ -43,6 +47,10 @@ export const getEmployeeById = async (id: bigint) => {
     include: {
       department: true,
       manager: true,
+      assignedRoles: {
+        where: { isActive: true },
+        include: { role: true },
+      },
     },
   });
 };

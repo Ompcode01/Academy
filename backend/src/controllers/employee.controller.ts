@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import * as employeeService from "../services/employee.service";
+import { AuthRequest } from "../middleware/auth.middleware";
+import prisma from "../config/prisma";
 
 const serialize = (obj: any) =>
   JSON.parse(
@@ -104,13 +106,32 @@ export const updateEmployee = async (
 };
 
 export const deleteEmployee = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
-    await employeeService.deleteEmployee(
-      BigInt(String(req.params.id))
-    );
+    const callerRole = req.user?.role;
+    const targetId = BigInt(String(req.params.id));
+
+    // Check if the target employee holds an ADMIN or SUPER_ADMIN role
+    const targetRoles = await prisma.userRole.findMany({
+      where: { employeeId: targetId, isActive: true },
+      include: { role: true },
+    });
+
+    const targetRoleCodes = targetRoles.map((r) => r.role.roleCode);
+    const targetIsAdmin = targetRoleCodes.includes("ADMIN") || targetRoleCodes.includes("SUPER_ADMIN");
+
+    // Only SUPER_ADMIN can delete admin-level employees
+    if (targetIsAdmin && callerRole !== "SUPER_ADMIN") {
+      res.status(403).json({
+        success: false,
+        message: "Only Super Admins can delete admin-level employees",
+      });
+      return;
+    }
+
+    await employeeService.deleteEmployee(targetId);
 
     res.json({
       success: true,
@@ -122,4 +143,4 @@ export const deleteEmployee = async (
       message: "Something went wrong",
     });
   }
-};
+};

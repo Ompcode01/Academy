@@ -4,6 +4,7 @@ import { authorizeRoles } from "../../middleware/role.middleware";
 import prisma from "../../config/prisma";
 import asyncHandler from "../../utils/asyncHandler";
 import { successResponse } from "../../utils/response";
+import { serializeBigInt } from "../../utils/prismaSerializer";
 
 const router = Router();
 
@@ -16,7 +17,7 @@ router.get(
       where: { isActive: true },
       orderBy: { name: "asc" },
     });
-    return successResponse(res, categories, "Categories fetched successfully");
+    return successResponse(res, serializeBigInt(categories), "Categories fetched successfully");
   })
 );
 
@@ -32,7 +33,7 @@ router.post(
     });
     return successResponse(
       res,
-      category,
+      serializeBigInt(category),
       "Category created successfully",
       201
     );

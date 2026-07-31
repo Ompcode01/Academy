@@ -3,6 +3,7 @@ import { AuthRequest } from "../middleware/auth.middleware";
 import asyncHandler from "../utils/asyncHandler";
 import { successResponse } from "../utils/response";
 import * as dashboardService from "../services/dashboard.service";
+import { serializeBigInt } from "../utils/prismaSerializer";
 
 export const getStats = asyncHandler(async (req: AuthRequest, res: Response) => {
   const userContext = {
@@ -12,5 +13,5 @@ export const getStats = asyncHandler(async (req: AuthRequest, res: Response) => 
   };
 
   const stats = await dashboardService.getDashboardStats(userContext);
-  return successResponse(res, stats, "Dashboard stats fetched successfully");
+  return successResponse(res, serializeBigInt(stats), "Dashboard stats fetched successfully");
 });

@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { authenticate } from "../middleware/auth.middleware";
+import { authorizeRoles } from "../middleware/role.middleware";
 
 import {
 
@@ -11,12 +13,32 @@ deleteUserRole
 
 const router = Router();
 
-router.post("/", assignRole);
+router.post(
+  "/",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN", "ADMIN"),
+  assignRole
+);
 
-router.get("/", getUserRoles);
+router.get(
+  "/",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN", "ADMIN"),
+  getUserRoles
+);
 
-router.get("/:id", getUserRoleById);
+router.get(
+  "/:id",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN", "ADMIN"),
+  getUserRoleById
+);
 
-router.delete("/:id", deleteUserRole);
+router.delete(
+  "/:id",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN"),
+  deleteUserRole
+);
 
-export default router;
+export default router;

@@ -3,6 +3,7 @@ import { AuthRequest } from "../../middleware/auth.middleware";
 import asyncHandler from "../../utils/asyncHandler";
 import { successResponse, errorResponse } from "../../utils/response";
 import courseService from "./course.service";
+import { serializeBigInt } from "../../utils/prismaSerializer";
 
 // GET /api/courses
 export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -24,7 +25,7 @@ export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) =
   };
 
   const result = await courseService.getAllCourses(filters, userContext);
-  return successResponse(res, result, "Courses fetched successfully");
+  return successResponse(res, serializeBigInt(result), "Courses fetched successfully");
 });
 
 // GET /api/courses/:id
@@ -32,7 +33,7 @@ export const getCourseById = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const id = BigInt(req.params.id);
     const course = await courseService.getCourseById(id);
-    return successResponse(res, course, "Course fetched successfully");
+    return successResponse(res, serializeBigInt(course), "Course fetched successfully");
   }
 );
 
@@ -57,7 +58,7 @@ export const createCourse = asyncHandler(
     };
 
     const course = await courseService.createCourse(data);
-    return successResponse(res, course, "Course created successfully", 201);
+    return successResponse(res, serializeBigInt(course), "Course created successfully", 201);
   }
 );
 
@@ -69,7 +70,7 @@ export const updateCourse = asyncHandler(
     if (data.categoryId) data.categoryId = BigInt(data.categoryId);
     if (data.departmentId) data.departmentId = BigInt(data.departmentId);
     const course = await courseService.updateCourse(id, data);
-    return successResponse(res, course, "Course updated successfully");
+    return successResponse(res, serializeBigInt(course), "Course updated successfully");
   }
 );
 
@@ -90,7 +91,7 @@ export const createSection = asyncHandler(
       ...req.body,
       courseId,
     });
-    return successResponse(res, section, "Section created successfully", 201);
+    return successResponse(res, serializeBigInt(section), "Section created successfully", 201);
   }
 );
 
@@ -99,7 +100,7 @@ export const updateSection = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const sectionId = BigInt(req.params.sectionId);
     const section = await courseService.updateSection(sectionId, req.body);
-    return successResponse(res, section, "Section updated successfully");
+    return successResponse(res, serializeBigInt(section), "Section updated successfully");
   }
 );
 
@@ -120,6 +121,6 @@ export const createContent = asyncHandler(
       ...req.body,
       sectionId,
     });
-    return successResponse(res, content, "Content created successfully", 201);
+    return successResponse(res, serializeBigInt(content), "Content created successfully", 201);
   }
 );
