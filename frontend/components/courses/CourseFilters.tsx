@@ -26,8 +26,17 @@ export default function CourseFilters({
   onDepartmentChange,
   onStatusChange,
 }: CourseFiltersProps) {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [categories, setCategories] = useState<Category[]>([
+    { id: 1, name: "Technical", isActive: true },
+    { id: 2, name: "Management", isActive: true },
+    { id: 3, name: "Soft Skills", isActive: true },
+    { id: 4, name: "HR", isActive: true },
+  ]);
+  const [departments, setDepartments] = useState<Department[]>([
+    { id: 1, departmentCode: "ENG", departmentName: "Engineering", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 2, departmentCode: "HR", departmentName: "Human Resources", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 3, departmentCode: "MGT", departmentName: "Management", isActive: true, createdAt: "", updatedAt: "" },
+  ]);
 
   useEffect(() => {
     async function loadFilterOptions() {
@@ -36,12 +45,14 @@ export default function CourseFilters({
           getCategories(),
           getDepartments(),
         ]);
-        if (catRes?.success) {
+        if (catRes?.success && Array.isArray(catRes.data) && catRes.data.length > 0) {
           setCategories(catRes.data);
         }
         if (deptRes) {
-          // org service department endpoint returns list directly
-          setDepartments(deptRes.data || deptRes);
+          const depts = deptRes.data || deptRes;
+          if (Array.isArray(depts) && depts.length > 0) {
+            setDepartments(depts);
+          }
         }
       } catch (err) {
         console.error("Failed to load filter dynamic options:", err);

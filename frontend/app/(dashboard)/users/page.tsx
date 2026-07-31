@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getEmployees, Employee } from "@/services/api/org.service";
+import { getEmployees, getRoles, assignRole, removeUserRole, deleteEmployee, Employee, Role } from "@/services/api/org.service";
 import {
   Table,
   TableBody,
@@ -13,26 +13,54 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal, RefreshCw, Mail, Phone, Calendar } from "lucide-react";
+import { SlidersHorizontal, RefreshCw, Mail, Calendar, ShieldCheck, Shield, Trash2, UserCog, AlertTriangle } from "lucide-react";
+import RoleGate from "@/components/auth/RoleGate";
+import { useAuthStore } from "@/store/auth.store";
+import { ROLES } from "@/lib/rbac";
+
+const ROLE_COLORS: Record<string, string> = {
+  SUPER_ADMIN: "bg-red-100 text-red-700 border-red-200",
+  ADMIN: "bg-purple-100 text-purple-700 border-purple-200",
+  TEACHER: "bg-blue-100 text-blue-700 border-blue-200",
+  LEARNER: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  GUEST: "bg-slate-100 text-slate-500 border-slate-200",
+};
+
+const ROLE_LABELS: Record<string, string> = {
+  SUPER_ADMIN: "Super Admin",
+  ADMIN: "Admin",
+  TEACHER: "Teacher",
+  LEARNER: "Learner",
+  GUEST: "Guest",
+};
 
 export default function UsersPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
+  const [roleFilter, setRoleFilter] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [changingRole, setChangingRole] = useState<number | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
-  const fetchEmployees = async () => {
+  const currentUser = useAuthStore((state) => state.user);
+  const isSuperAdmin = currentUser?.role === ROLES.SUPER_ADMIN;
+
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await getEmployees();
-      setEmployees(res?.data || []);
+      const [empRes, roleRes] = await Promise.all([getEmployees(), getRoles()]);
+      setEmployees(empRes?.data || []);
+      setRoles(roleRes?.data || []);
     } catch (err) {
-      console.error("Failed to load employees:", err);
+      console.error("Failed to load data:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchEmployees();
+    fetchData();
   }, []);
 
   const getStatusColor = (status: string) => {
@@ -48,132 +76,352 @@ export default function UsersPage() {
     }
   };
 
+  const getPrimaryRole = (emp: Employee): string => {
+    if (!emp.assignedRoles || emp.assignedRoles.length === 0) return "LEARNER";
+    return emp.assignedRoles[0].role.roleCode;
+  };
+
+  const handleRoleChange = async (employeeId: number, newRoleId: number) => {
+    try {
+      // Find and remove existing role assignment
+      const emp = employees.find((e) => e.id === employeeId);
+      if (emp?.assignedRoles && emp.assignedRoles.length > 0) {
+        await removeUserRole(emp.assignedRoles[0].id);
+      }
+      // Assign new role
+      await assignRole({ employeeId, roleId: newRoleId });
+      setChangingRole(null);
+      await fetchData();
+    } catch (err: any) {
+      console.error("Failed to change role:", err);
+      alert(err?.response?.data?.message || "Failed to change role. You may not have permission.");
+      setChangingRole(null);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteEmployee(id);
+      setConfirmDelete(null);
+      await fetchData();
+    } catch (err: any) {
+      console.error("Failed to delete employee:", err);
+      alert(err?.response?.data?.message || "Failed to delete employee. You may not have permission.");
+      setConfirmDelete(null);
+    }
+  };
+
+  // Filter employees
+  const filteredEmployees = employees.filter((emp) => {
+    const matchesRole = !roleFilter || getPrimaryRole(emp) === roleFilter;
+    const query = searchQuery.toLowerCase();
+    const matchesSearch =
+      !query ||
+      emp.firstName.toLowerCase().includes(query) ||
+      emp.lastName.toLowerCase().includes(query) ||
+      emp.employeeCode.toLowerCase().includes(query) ||
+      emp.officialEmail.toLowerCase().includes(query);
+    return matchesRole && matchesSearch;
+  });
+
+  // Which roles can the current user assign?
+  const assignableRoles = roles.filter((r) => {
+    if (isSuperAdmin) return true; // Super Admin can assign any role
+    // Admin can only assign TEACHER, LEARNER, GUEST
+    return ["TEACHER", "LEARNER", "GUEST"].includes(r.roleCode);
+  });
+
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Users &amp; Employees
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Manage all learners, instructors, and employee directory.
+    <RoleGate
+      allowed={["SUPER_ADMIN", "ADMIN"]}
+      fallback={
+        <div className="flex flex-col items-center justify-center h-[60vh] gap-4 text-center">
+          <div className="rounded-full bg-red-100 p-4">
+            <ShieldCheck className="h-8 w-8 text-red-500" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground">Access Restricted</h2>
+          <p className="text-sm text-muted-foreground max-w-md">
+            You don't have permission to view this page. User management is available to Admins and Super Admins only.
           </p>
         </div>
-      </div>
-
-      {/* Main filters/actions */}
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search users by name, code or email..."
-            className="h-9 w-80 rounded-lg border border-border bg-card pl-3 pr-4 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-          />
+      }
+    >
+      <div className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Users &amp; Employees
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Manage all learners, instructors, and employee directory.
+              {!isSuperAdmin && (
+                <span className="ml-2 text-amber-600 font-medium">
+                  (Admin view — limited actions)
+                </span>
+              )}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="gap-1.5 px-3 py-1.5 bg-primary/5 text-primary border-primary/20">
+              {isSuperAdmin ? <ShieldCheck className="h-3.5 w-3.5" /> : <Shield className="h-3.5 w-3.5" />}
+              {isSuperAdmin ? "Super Admin" : "Admin"} Access
+            </Badge>
+          </div>
         </div>
-        <Button variant="outline" size="sm" className="h-9 gap-2">
-          <SlidersHorizontal className="h-4 w-4" />
-          Filters
-        </Button>
-        <Button variant="ghost" size="icon-xs" onClick={fetchEmployees} className="h-9 w-9">
-          <RefreshCw className="h-4 w-4" />
-        </Button>
-      </div>
 
-      {/* Table listing */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-border bg-muted/40 hover:bg-muted/40">
-              <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground pl-5">
-                Employee Code
-              </TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Employee Info
-              </TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Designation
-              </TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Department
-              </TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Joining Date
-              </TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Status
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center text-sm text-muted-foreground">
-                  Loading employees...
-                </TableCell>
+        {/* Role Filter Chips */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-1">Filter by role:</span>
+          <button
+            onClick={() => setRoleFilter(null)}
+            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+              !roleFilter
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-card text-muted-foreground border-border hover:border-primary/40"
+            }`}
+          >
+            All ({employees.length})
+          </button>
+          {["SUPER_ADMIN", "ADMIN", "TEACHER", "LEARNER", "GUEST"].map((rc) => {
+            const count = employees.filter((e) => getPrimaryRole(e) === rc).length;
+            if (count === 0) return null;
+            return (
+              <button
+                key={rc}
+                onClick={() => setRoleFilter(roleFilter === rc ? null : rc)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                  roleFilter === rc
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : `${ROLE_COLORS[rc]} hover:opacity-80`
+                }`}
+              >
+                {ROLE_LABELS[rc]} ({count})
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Search and actions */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search users by name, code or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-9 w-80 rounded-lg border border-border bg-card pl-3 pr-4 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            />
+          </div>
+          <Button variant="outline" size="sm" className="h-9 gap-2">
+            <SlidersHorizontal className="h-4 w-4" />
+            Filters
+          </Button>
+          <Button variant="ghost" size="icon-xs" onClick={fetchData} className="h-9 w-9">
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          <div className="ml-auto text-xs text-muted-foreground">
+            Showing {filteredEmployees.length} of {employees.length} users
+          </div>
+        </div>
+
+        {/* Table listing */}
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border bg-muted/40 hover:bg-muted/40">
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground pl-5">
+                  Employee Code
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Employee Info
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Designation
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Department
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Role
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Joining Date
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Status
+                </TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right pr-5">
+                  Actions
+                </TableHead>
               </TableRow>
-            ) : employees.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center text-sm text-muted-foreground">
-                  No employees found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              employees.map((emp) => {
-                const initials = `${emp.firstName[0] || ""}${emp.lastName[0] || ""}`.toUpperCase();
-                return (
-                  <TableRow key={emp.id} className="border-border transition-colors hover:bg-muted/20">
-                    <TableCell className="pl-5 text-sm font-mono font-semibold text-primary">
-                      {emp.employeeCode}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9">
-                          <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
-                            {initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {emp.firstName} {emp.lastName}
-                          </p>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                            <Mail className="h-3 w-3" />
-                            {emp.officialEmail}
-                          </p>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-32 text-center text-sm text-muted-foreground">
+                    Loading employees...
+                  </TableCell>
+                </TableRow>
+              ) : filteredEmployees.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-32 text-center text-sm text-muted-foreground">
+                    No employees found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredEmployees.map((emp) => {
+                  const initials = `${emp.firstName[0] || ""}${emp.lastName[0] || ""}`.toUpperCase();
+                  const primaryRole = getPrimaryRole(emp);
+                  const isRoleChanging = changingRole === emp.id;
+                  const isDeleting = confirmDelete === emp.id;
+
+                  // Can the current user change this employee's role?
+                  const canChangeRole =
+                    isSuperAdmin || // Super Admin can change any role
+                    (!["SUPER_ADMIN", "ADMIN"].includes(primaryRole)); // Admin can only change non-admin roles
+
+                  const canDelete =
+                    isSuperAdmin || // Super Admin can delete anyone
+                    (!["SUPER_ADMIN", "ADMIN"].includes(primaryRole)); // Admin cannot delete admin-level
+
+                  return (
+                    <TableRow key={emp.id} className="border-border transition-colors hover:bg-muted/20">
+                      <TableCell className="pl-5 text-sm font-mono font-semibold text-primary">
+                        {emp.employeeCode}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9">
+                            <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
+                              {initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {emp.firstName} {emp.lastName}
+                            </p>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                              <Mail className="h-3 w-3" />
+                              {emp.officialEmail}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm font-medium">
-                      {emp.designation}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {emp.department ? (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-150">
-                          {emp.department.departmentName}
+                      </TableCell>
+                      <TableCell className="text-sm font-medium">
+                        {emp.designation}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {emp.department ? (
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-150">
+                            {emp.department.departmentName}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {isRoleChanging ? (
+                          <select
+                            autoFocus
+                            className="h-8 rounded border border-primary/40 bg-card px-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            defaultValue=""
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                handleRoleChange(emp.id, Number(e.target.value));
+                              }
+                            }}
+                            onBlur={() => setChangingRole(null)}
+                          >
+                            <option value="" disabled>Select role...</option>
+                            {assignableRoles.map((r) => (
+                              <option key={r.id} value={r.id} disabled={r.roleCode === primaryRole}>
+                                {ROLE_LABELS[r.roleCode] || r.roleName}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Badge
+                            variant="outline"
+                            className={`text-xs font-semibold ${ROLE_COLORS[primaryRole] || ROLE_COLORS.GUEST}`}
+                          >
+                            {primaryRole === "SUPER_ADMIN" && <ShieldCheck className="h-3 w-3 mr-1" />}
+                            {primaryRole === "ADMIN" && <Shield className="h-3 w-3 mr-1" />}
+                            {ROLE_LABELS[primaryRole] || primaryRole}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {new Date(emp.joiningDate).toLocaleDateString()}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={`text-xs font-semibold ${getStatusColor(emp.employmentStatus)}`}>
+                          {emp.employmentStatus}
                         </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5" />
-                        {new Date(emp.joiningDate).toLocaleDateString()}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={`text-xs font-semibold ${getStatusColor(emp.employmentStatus)}`}>
-                        {emp.employmentStatus}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
+                      </TableCell>
+                      <TableCell className="text-right pr-5">
+                        <div className="flex items-center justify-end gap-1">
+                          {canChangeRole && (
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              className="h-7 w-7 text-muted-foreground hover:text-primary"
+                              title="Change Role"
+                              onClick={() => setChangingRole(emp.id)}
+                            >
+                              <UserCog className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                          {canDelete && (
+                            <>
+                              {isDeleting ? (
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    className="h-7 text-xs px-2"
+                                    onClick={() => handleDelete(emp.id)}
+                                  >
+                                    Confirm
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 text-xs px-2"
+                                    onClick={() => setConfirmDelete(null)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              ) : (
+                                <Button
+                                  variant="ghost"
+                                  size="icon-xs"
+                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                  title="Delete User"
+                                  onClick={() => setConfirmDelete(emp.id)}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                            </>
+                          )}
+                          {!canChangeRole && !canDelete && (
+                            <span className="text-[10px] text-muted-foreground italic">Protected</span>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
+    </RoleGate>
   );
 }

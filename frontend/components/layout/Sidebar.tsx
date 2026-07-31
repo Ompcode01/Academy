@@ -1,212 +1,272 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
-import { ROLES, hasRole } from "@/lib/rbac";
-import {
-  LayoutDashboard,
-  Building2,
-  Users,
-  GraduationCap,
-  BarChart3,
-  RefreshCw,
-  Settings,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+import { getCourses, type Course } from "@/services/api/course.service";
+import { X, ChevronDown, ChevronRight, BookOpen, User, GraduationCap, Home, FileText, Award, Eye, EyeOff } from "lucide-react";
+import { useEventsStore } from "@/store/events.store";
 
-interface NavItem {
-  label: string;
-  href?: string;
-  icon: React.ElementType;
-  children?: { label: string; href: string }[];
-  allowedRoles: string[];
+const fullNameMap: Record<string, string> = {
+  omprakash: "Omprakash Pandey",
+  priyanka: "Priyanka Davhare",
+  rahul: "Rahul Sharma",
+  sneha: "Sneha Patil",
+};
+
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const navItems: NavItem[] = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.TEACHER, ROLES.LEARNER, ROLES.GUEST],
-  },
-  {
-    label: "Organization",
-    href: "/organization",
-    icon: Building2,
-    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN],
-  },
-  {
-    label: "Users",
-    href: "/users",
-    icon: Users,
-    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN],
-  },
-  {
-    label: "Courses",
-    icon: GraduationCap,
-    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.TEACHER, ROLES.LEARNER, ROLES.GUEST],
-    children: [
-      { label: "All Courses", href: "/courses" },
-      { label: "Categories", href: "/courses/categories" },
-      { label: "Learning Paths", href: "/courses/learning-paths" },
-    ],
-  },
-  {
-    label: "Reports",
-    href: "/reports",
-    icon: BarChart3,
-    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.TEACHER],
-  },
-  {
-    label: "Darwinbox Sync",
-    href: "/darwinbox-sync",
-    icon: RefreshCw,
-    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN],
-  },
-  {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings,
-    allowedRoles: [ROLES.SUPER_ADMIN, ROLES.ADMIN],
-  },
-];
-
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const user = useAuthStore((state) => state.user);
-  const userRole = user?.role || ROLES.GUEST;
+  const { user } = useAuthStore();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const { hiddenTypes, toggleTypeVisibility } = useEventsStore();
   
-  const [expandedItems, setExpandedItems] = useState<string[]>(["Courses"]);
+  // Collapsible state for Tree items
+  const [navigationExpanded, setNavigationExpanded] = useState(true);
+  const [sitePagesExpanded, setSitePagesExpanded] = useState(false);
+  const [myCoursesExpanded, setMyCoursesExpanded] = useState(true);
 
-  const toggleExpand = (label: string) => {
-    setExpandedItems((prev) =>
-      prev.includes(label)
-        ? prev.filter((item) => item !== label)
-        : [...prev, label]
-    );
-  };
+  const username = user?.username || "Guest";
+  const fullName = fullNameMap[username.toLowerCase()] || username;
 
-  const isActive = (href?: string) => {
-    if (!href) return false;
-    if (href === "/dashboard") return pathname === "/dashboard";
-    return pathname.startsWith(href);
-  };
+  // Mock courses to enrich the list as shown in the mockup
+  const mockCourses = [
+    { id: 991, title: "CHAMP - JULY 2026" },
+    { id: 992, title: "Prompt Engineering for Dev" },
+  ];
 
-  const isParentActive = (item: NavItem) => {
-    if (item.children) {
-      return item.children.some((child) => pathname.startsWith(child.href));
+  useEffect(() => {
+    async function loadCourses() {
+      try {
+        const res = await getCourses({ limit: 100 });
+        if (res?.success) {
+          setCourses(res.data.courses || []);
+        }
+      } catch (err) {
+        console.error("Failed to load courses for sidebar:", err);
+      }
     }
-    return isActive(item.href);
-  };
+    if (isOpen) {
+      loadCourses();
+    }
+  }, [isOpen]);
 
-  // Filter main nav items based on role
-  const visibleItems = navItems.filter((item) =>
-    hasRole(userRole, ...item.allowedRoles)
+  // Combine dynamic courses and mock courses, ensuring no duplicate titles
+  const allCourses = [...courses.map(c => ({ id: Number(c.id), title: c.title })), ...mockCourses];
+  const uniqueCourses = allCourses.filter(
+    (course, index, self) => self.findIndex(c => c.title === course.title) === index
   );
 
+  if (!isOpen) return null;
+
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] shrink-0 flex-col bg-sidebar text-sidebar-foreground select-none border-r border-sidebar-border/30">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary">
-          <GraduationCap className="h-5 w-5 text-white" />
+    <aside className="w-80 shrink-0 border-l border-[#E0E6ED] bg-[#F4F7F9] text-[#212529] select-none flex flex-col h-full overflow-y-auto relative animate-in slide-in-from-right duration-200">
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 rounded-md p-1.5 text-[#6C757D] hover:bg-slate-200 hover:text-[#212529] transition-all cursor-pointer"
+        title="Close sidebar"
+      >
+        <X className="h-4 w-4" />
+      </button>
+
+      <div className="p-5 space-y-6">
+        {/* Section: Events Key (Only on /events page) */}
+        {pathname === "/events" && (
+          <>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C757D]">
+                <span>≡</span>
+                <span>Events key</span>
+              </div>
+              <div className="space-y-1.5 pl-1">
+                {[
+                  { type: "site", label: "site events", colorClass: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+                  { type: "category", label: "category events", colorClass: "bg-purple-500/10 text-purple-600 border-purple-500/20" },
+                  { type: "course", label: "course events", colorClass: "bg-pink-500/10 text-pink-600 border-pink-500/20" },
+                  { type: "group", label: "group events", colorClass: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+                  { type: "user", label: "user events", colorClass: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
+                  { type: "other", label: "other events", colorClass: "bg-slate-500/10 text-slate-600 border-slate-500/20" },
+                ].map((item) => {
+                  const isHidden = hiddenTypes.has(item.type);
+                  return (
+                    <button
+                      key={item.type}
+                      onClick={() => toggleTypeVisibility(item.type)}
+                      className={`flex w-full items-center gap-2.5 rounded px-2 py-1 text-xs font-semibold hover:bg-slate-200/80 transition-all text-left cursor-pointer ${
+                        isHidden ? "opacity-50 line-through" : ""
+                      }`}
+                    >
+                      <span className={`rounded-sm p-1 border ${item.colorClass} shrink-0`}>
+                        {isHidden ? (
+                          <EyeOff className="h-3 w-3" />
+                        ) : (
+                          <Eye className="h-3 w-3" />
+                        )}
+                      </span>
+                      <span>{isHidden ? `Show ${item.label}` : `Hide ${item.label}`}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <hr className="border-[#E0E6ED]" />
+          </>
+        )}
+
+        {/* Section 1: Skill Cloud */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C757D]">
+            <span>≡</span>
+            <span>Skill Cloud</span>
+          </div>
+          <ul className="pl-4 text-xs font-medium text-[#212529]">
+            <li className="list-disc hover:text-[#C82333] transition-colors cursor-pointer">
+              Skill Cloud Dashboard
+            </li>
+          </ul>
         </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-bold leading-tight tracking-wide text-white">
-            HARBINGER
-          </span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-sidebar-foreground/60">
-            Academy LMS
-          </span>
-        </div>
-      </div>
 
-      {/* Navigation */}
-      <nav className="mt-2 flex-1 space-y-0.5 overflow-y-auto px-3">
-        {visibleItems.map((item) => {
-          const Icon = item.icon;
-          const expanded = expandedItems.includes(item.label);
-          const active = isParentActive(item);
+        <hr className="border-[#E0E6ED]" />
 
-          if (item.children) {
-            // Scoped child filters:
-            // Guest shouldn't see Categories & Learning Paths
-            // Learner shouldn't see Categories
-            const filteredChildren = item.children.filter((child) => {
-              if (userRole === ROLES.GUEST) {
-                return child.label === "All Courses";
-              }
-              if (userRole === ROLES.LEARNER) {
-                return child.label === "All Courses" || child.label === "Learning Paths";
-              }
-              return true;
-            });
+        {/* Section 2: Navigation */}
+        <div className="space-y-2">
+          <button
+            onClick={() => setNavigationExpanded(!navigationExpanded)}
+            className="flex w-full items-center justify-between text-xs font-bold uppercase tracking-wider text-[#6C757D] hover:text-[#212529] transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <span>≡</span>
+              <span>Navigation</span>
+            </div>
+            {navigationExpanded ? (
+              <ChevronDown className="h-3 w-3" />
+            ) : (
+              <ChevronRight className="h-3.5 w-3.5" />
+            )}
+          </button>
 
-            return (
-              <div key={item.label}>
+          {navigationExpanded && (
+            <div className="pl-2 space-y-1.5 text-xs font-medium">
+              {/* Dashboard Link */}
+              <Link
+                href="/dashboard"
+                className={`flex items-center gap-2 rounded px-2 py-1 transition-all ${
+                  pathname === "/dashboard"
+                    ? "bg-[#C82333]/10 font-bold text-[#C82333]"
+                    : "text-[#212529] hover:bg-slate-200"
+                }`}
+              >
+                <Home className="h-3.5 w-3.5" />
+                <span>Dashboard</span>
+              </Link>
+
+              {/* Site Home Link */}
+              <Link
+                href="#"
+                className="flex items-center gap-2 rounded px-2 py-1 text-[#212529] hover:bg-slate-200 transition-all"
+              >
+                <Home className="h-3.5 w-3.5" />
+                <span>Site home</span>
+              </Link>
+
+              {/* Site Pages (Collapsible) */}
+              <div>
                 <button
-                  onClick={() => toggleExpand(item.label)}
-                  className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150 ${
-                    active
-                      ? "bg-sidebar-primary text-white"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  }`}
+                  onClick={() => setSitePagesExpanded(!sitePagesExpanded)}
+                  className="flex w-full items-center gap-2 rounded px-2 py-1 text-[#212529] hover:bg-slate-200 text-left transition-all"
                 >
-                  <Icon className="h-[18px] w-[18px] shrink-0" />
-                  <span className="flex-1 text-left">{item.label}</span>
-                  {expanded ? (
-                    <ChevronDown className="h-4 w-4 opacity-60" />
+                  {sitePagesExpanded ? (
+                    <ChevronDown className="h-3 w-3 shrink-0" />
                   ) : (
-                    <ChevronRight className="h-4 w-4 opacity-60" />
+                    <ChevronRight className="h-3 w-3 shrink-0" />
                   )}
+                  <FileText className="h-3.5 w-3.5 shrink-0" />
+                  <span>Site pages</span>
                 </button>
-                {expanded && (
-                  <div className="ml-4 mt-1 space-y-0.5 border-l border-sidebar-border pl-4">
-                    {filteredChildren.map((child) => {
-                      const childActive =
-                        child.href === "/courses"
-                          ? pathname === "/courses" ||
-                            pathname.startsWith("/courses/create")
-                          : pathname.startsWith(child.href);
+                {sitePagesExpanded && (
+                  <div className="ml-5 mt-1 border-l border-slate-300 pl-3 space-y-1 text-[11px] text-[#6C757D]">
+                    <div className="hover:text-[#C82333] cursor-pointer py-0.5">LMS Guidelines</div>
+                    <div className="hover:text-[#C82333] cursor-pointer py-0.5">Help Resources</div>
+                  </div>
+                )}
+              </div>
+
+              {/* My Courses (Collapsible / Active) */}
+              <div>
+                <button
+                  onClick={() => setMyCoursesExpanded(!myCoursesExpanded)}
+                  className="flex w-full items-center gap-2 rounded px-2 py-1 text-[#212529] hover:bg-slate-200 text-left transition-all"
+                >
+                  {myCoursesExpanded ? (
+                    <ChevronDown className="h-3 w-3 shrink-0" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3 shrink-0" />
+                  )}
+                  <BookOpen className="h-3.5 w-3.5 shrink-0" />
+                  <span>My courses</span>
+                </button>
+                {myCoursesExpanded && (
+                  <div className="ml-5 mt-1 border-l border-slate-300 pl-3 space-y-1 text-[11px] text-[#6C757D] max-h-60 overflow-y-auto">
+                    {uniqueCourses.map((c) => {
+                      const courseActive = pathname.includes(`/courses/${c.id}`);
                       return (
                         <Link
-                          key={child.href}
-                          href={child.href}
-                          className={`block rounded-md px-3 py-2 text-[13px] transition-all duration-150 ${
-                            childActive
-                              ? "bg-sidebar-primary/20 font-medium text-sidebar-primary"
-                              : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                          key={c.id}
+                          href={`/courses`}
+                          className={`block py-1 hover:text-[#C82333] truncate ${
+                            courseActive ? "font-bold text-[#C82333]" : ""
                           }`}
+                          title={c.title}
                         >
-                          {child.label}
+                          {`> ${c.title}`}
                         </Link>
                       );
                     })}
                   </div>
                 )}
               </div>
-            );
-          }
+            </div>
+          )}
+        </div>
 
-          return (
-            <Link
-              key={item.label}
-              href={item.href!}
-              className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150 ${
-                active
-                  ? "bg-sidebar-primary text-white"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              }`}
-            >
-              <Icon className="h-[18px] w-[18px] shrink-0" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+        <hr className="border-[#E0E6ED]" />
+
+        {/* Section 3: Latest Badges */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C757D]">
+            <Award className="h-3.5 w-3.5 text-[#C82333]" />
+            <span>Latest badges</span>
+          </div>
+          <p className="text-xs text-[#6C757D] pl-1 font-medium">
+            You have no badges to display
+          </p>
+        </div>
+
+        <hr className="border-[#E0E6ED]" />
+
+        {/* Section 4: Online Users */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C757D]">
+            <User className="h-3.5 w-3.5 text-[#C82333]" />
+            <span>Online users</span>
+          </div>
+          <div className="pl-1 space-y-1.5">
+            <p className="text-[11px] text-[#6C757D] font-medium">
+              1 online user (last 5 minutes)
+            </p>
+            <div className="flex items-center gap-1.5 text-xs text-[#212529] font-medium">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
+              <span>{fullName}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </aside>
   );
 }

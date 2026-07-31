@@ -43,3 +43,32 @@ export function canManageUsers(role: string | undefined): boolean {
 export function canManageCourses(role: string | undefined): boolean {
   return hasRole(role, ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.TEACHER);
 }
+
+/**
+ * Helper to check reports viewing authorization
+ */
+export function canViewReports(role: string | undefined): boolean {
+  return hasRole(role, ROLES.SUPER_ADMIN, ROLES.ADMIN);
+}
+
+/**
+ * Helper to check platform settings management authorization
+ */
+export function canManageSettings(role: string | undefined): boolean {
+  return hasRole(role, ROLES.SUPER_ADMIN);
+}
+
+/**
+ * Helper to check role assignment authorization
+ */
+export function canAssignRoles(role: string | undefined): boolean {
+  return hasRole(role, ROLES.SUPER_ADMIN, ROLES.ADMIN);
+}
+
+/**
+ * Helper to check if user is Super Admin
+ */
+export function isSuperAdmin(role: string | undefined): boolean {
+  return hasRole(role, ROLES.SUPER_ADMIN);
+}
+

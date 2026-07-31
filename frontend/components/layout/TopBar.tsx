@@ -1,15 +1,23 @@
 "use client";
 
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
-import { Search, Bell, LogOut } from "lucide-react";
+import { Search, LogOut, ChevronDown, User, Settings } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
+const fullNameMap: Record<string, string> = {
+  omprakash: "Omprakash Pandey",
+  priyanka: "Priyanka Davhare",
+  rahul: "Rahul Sharma",
+  sneha: "Sneha Patil",
+};
 
 export default function TopBar() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -25,63 +33,97 @@ export default function TopBar() {
     return name.slice(0, 2).toUpperCase();
   };
 
-  const username = user?.username || "Guest User";
-  const initials = getInitials(username);
-  const userRole = user?.role || "GUEST";
-
-  const roleColors: Record<string, string> = {
-    SUPER_ADMIN: "bg-red-500/10 text-red-600 border-red-500/20",
-    ADMIN: "bg-purple-500/10 text-purple-600 border-purple-500/20",
-    TEACHER: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-    LEARNER: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-    GUEST: "bg-slate-500/10 text-slate-600 border-slate-500/20",
-  };
+  const username = user?.username || "Guest";
+  const fullName = fullNameMap[username.toLowerCase()] || username;
+  const initials = getInitials(fullName);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-card px-6 shrink-0">
-      {/* Search */}
-      <div className="relative w-80">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="Search courses..."
-          className="h-9 w-full rounded-lg border border-border bg-muted/40 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-        />
+    <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between bg-[#0B132B] px-6 text-white shrink-0 select-none">
+      {/* Left Logo and Tagline */}
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          {/* Custom Wavy/Red Crest Logo */}
+          <svg
+            className="h-6 w-6 text-[#C82333]"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+          </svg>
+          <span className="text-base font-bold tracking-wide">
+            Harbinger Group
+          </span>
+        </div>
+        <div className="hidden sm:block h-4 w-px bg-white/20" />
+        <span className="hidden sm:inline text-xs font-medium text-slate-300">
+          Elevate... Go Beyond
+        </span>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-4">
-        <button className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-          <Bell className="h-[18px] w-[18px]" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
-        </button>
-        <div className="h-6 w-px bg-border" />
-        <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <div className="hidden md:block">
-            <p className="text-sm font-medium leading-none">{username}</p>
-            <div className="mt-1 flex items-center gap-1">
-              <Badge variant="outline" className={`text-[10px] px-1 py-0 font-medium capitalize border ${roleColors[userRole] || roleColors.GUEST}`}>
-                {userRole.toLowerCase().replace("_", " ")}
-              </Badge>
-            </div>
-          </div>
-        </div>
+      {/* Right Brand, Search, and Profile */}
+      <div className="flex items-center gap-6">
+        {/* CapDev Brand */}
+        <span className="text-sm font-semibold tracking-wide text-white">
+          CapDev
+        </span>
 
-        <div className="h-6 w-px bg-border" />
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={handleLogout}
-          className="text-muted-foreground hover:text-destructive transition-colors"
-          title="Logout"
-        >
-          <LogOut className="h-4 w-4" />
-        </Button>
+        {/* Search Toggle Icon */}
+        <button className="text-slate-300 hover:text-white transition-colors cursor-pointer">
+          <Search className="h-4 w-4" />
+        </button>
+
+        {/* User Account Controls */}
+        <div className="relative">
+          <div
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity py-1"
+          >
+            <Avatar className="h-7 w-7 border border-white/20">
+              <AvatarFallback className="bg-[#C82333] text-xs font-semibold text-white">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <span className="hidden md:block text-xs font-medium tracking-wide">
+              {fullName}
+            </span>
+            <ChevronDown className="h-3 w-3 text-slate-300" />
+          </div>
+
+          {dropdownOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setDropdownOpen(false)}
+              />
+              <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none z-50 text-[#212529]">
+                <div className="px-4 py-2 border-b border-slate-100">
+                  <p className="text-xs text-[#6C757D]">Logged in as</p>
+                  <p className="text-xs font-bold truncate">{fullName}</p>
+                  <p className="text-[10px] text-slate-400 capitalize mt-0.5">
+                    {user?.role?.toLowerCase().replace("_", " ")}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    router.push("/settings");
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-xs hover:bg-[#F4F7F9] transition-colors"
+                >
+                  <Settings className="h-3.5 w-3.5 text-[#6C757D]" />
+                  <span>Account Settings</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-xs text-[#C82333] hover:bg-[#F4F7F9] transition-colors"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span>Sign out</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

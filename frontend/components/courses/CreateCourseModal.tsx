@@ -59,8 +59,17 @@ export default function CreateCourseModal({
   const user = useAuthStore((state) => state.user);
   const userRole = user?.role || ROLES.GUEST;
   
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [categories, setCategories] = useState<Category[]>([
+    { id: 1, name: "Technical", isActive: true },
+    { id: 2, name: "Management", isActive: true },
+    { id: 3, name: "Soft Skills", isActive: true },
+    { id: 4, name: "HR", isActive: true },
+  ]);
+  const [departments, setDepartments] = useState<Department[]>([
+    { id: 1, departmentCode: "ENG", departmentName: "Engineering", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 2, departmentCode: "HR", departmentName: "Human Resources", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 3, departmentCode: "MGT", departmentName: "Management", isActive: true, createdAt: "", updatedAt: "" },
+  ]);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -95,8 +104,15 @@ export default function CreateCourseModal({
             getCategories(),
             getDepartments(),
           ]);
-          if (catRes?.success) setCategories(catRes.data);
-          if (deptRes) setDepartments(deptRes.data || deptRes);
+          if (catRes?.success && Array.isArray(catRes.data) && catRes.data.length > 0) {
+            setCategories(catRes.data);
+          }
+          if (deptRes) {
+            const depts = deptRes.data || deptRes;
+            if (Array.isArray(depts) && depts.length > 0) {
+              setDepartments(depts);
+            }
+          }
         } catch (err) {
           console.error("Failed to load options for creation form:", err);
         }

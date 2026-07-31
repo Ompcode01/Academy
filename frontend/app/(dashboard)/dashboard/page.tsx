@@ -1,472 +1,404 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth.store";
+import { getCourses, type Course } from "@/services/api/course.service";
 import { getDashboardStats, type DashboardStats } from "@/services/api/dashboard.service";
-import { ROLES, hasRole } from "@/lib/rbac";
-import {
-  Users,
-  GraduationCap,
-  Building2,
-  Trophy,
-  ArrowRight,
-  BookOpen,
-  PlusCircle,
-  HelpCircle,
-  FileSpreadsheet,
-  Clock,
-  Sparkles,
-  Search,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ROLES } from "@/lib/rbac";
+import { Calendar as CalendarIcon, List, Plus, BookOpen, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+
+const fullNameMap: Record<string, string> = {
+  omprakash: "Omprakash Pandey",
+  priyanka: "Priyanka Davhare",
+  rahul: "Rahul Sharma",
+  sneha: "Sneha Patil",
+};
+
+interface CalendarEvent {
+  id: number;
+  title: string;
+  date: string; // YYYY-MM-DD
+}
 
 export default function Dashboard() {
-  const user = useAuthStore((state) => state.user);
-  const userRole = user?.role || ROLES.GUEST;
-  
+  const { user } = useAuthStore();
+  const [courses, setCourses] = useState<Course[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Calendar States
+  const [events, setEvents] = useState<CalendarEvent[]>([
+    { id: 1, title: "Java OOP Quiz", date: "2026-07-08" },
+    { id: 2, title: "Agile Standup", date: "2026-07-15" },
+    { id: 3, title: "Design Thinking Review", date: "2026-07-22" },
+  ]);
+  const [selectedCourse, setSelectedCourse] = useState("all");
+  const [showAddEventModal, setShowAddEventModal] = useState(false);
+  const [newEventTitle, setNewEventTitle] = useState("");
+  const [newEventDate, setNewEventDate] = useState("2026-07-15");
+
+  const username = user?.username || "Guest";
+  const fullName = fullNameMap[username.toLowerCase()] || username;
+  const userRole = user?.role || ROLES.GUEST;
+
   useEffect(() => {
-    async function fetchStats() {
+    async function loadData() {
       try {
         setLoading(true);
-        const res = await getDashboardStats();
-        if (res?.success) {
-          setStats(res.data);
+        // Load courses
+        const courseRes = await getCourses({ limit: 10 });
+        if (courseRes?.success) {
+          setCourses(courseRes.data.courses || []);
+        }
+
+        // Load stats
+        const statsRes = await getDashboardStats();
+        if (statsRes?.success) {
+          setStats(statsRes.data);
         }
       } catch (err) {
-        console.error("Failed to fetch dashboard stats:", err);
+        console.error("Failed to load dashboard data:", err);
       } finally {
         setLoading(false);
       }
     }
-    fetchStats();
-  }, [userRole]);
+    loadData();
+  }, []);
 
-  // Welcome banner greeting text
-  const greeting = user?.username ? `Welcome back, ${user.username}!` : "Welcome to Harbinger Academy!";
+  const handleAddEvent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEventTitle.trim()) return;
+    const event: CalendarEvent = {
+      id: Date.now(),
+      title: newEventTitle,
+      date: newEventDate,
+    };
+    setEvents([...events, event]);
+    setNewEventTitle("");
+    setShowAddEventModal(false);
+  };
 
-  // 1. SUPER_ADMIN & ADMIN VIEW
-  const renderAdminDashboard = () => {
-    const cardData = [
-      {
-        title: "Total Learners",
-        value: stats?.employeesCount ?? 0,
-        icon: Users,
-        description: "Active employee directory",
-        color: "text-blue-500 bg-blue-500/10 border-blue-500/20",
-      },
-      {
-        title: "Total Courses",
-        value: stats?.coursesCount ?? 0,
-        icon: GraduationCap,
-        description: `${stats?.publishedCoursesCount || 0} published, ${stats?.draftCoursesCount || 0} drafts`,
-        color: "text-purple-500 bg-purple-500/10 border-purple-500/20",
-      },
-      {
-        title: "Active Departments",
-        value: stats?.departmentsCount ?? 0,
-        icon: Building2,
-        description: "Departments in sync",
-        color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
-      },
-      {
-        title: "Completion Rate",
-        value: `${stats?.completionRate ?? 0}%`,
-        icon: Trophy,
-        description: `${stats?.completedEnrollments || 0} completed learnings`,
-        color: "text-amber-500 bg-amber-500/10 border-amber-500/20",
-      },
+  // Program Gradient Grids helper
+  const getGradient = (index: number) => {
+    const gradients = [
+      "from-blue-500 via-cyan-400 to-blue-600",
+      "from-purple-500 via-violet-400 to-indigo-600",
+      "from-amber-400 via-orange-350 to-amber-600",
+      "from-teal-400 via-emerald-400 to-teal-600",
+      "from-pink-400 via-rose-400 to-red-500",
+      "from-slate-400 via-gray-400 to-slate-600",
+      "from-sky-400 via-blue-400 to-sky-600",
+      "from-emerald-400 via-green-400 to-emerald-600",
     ];
-
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {cardData.map((card, idx) => {
-            const Icon = card.icon;
-            return (
-              <Card key={idx} className="border border-border bg-card">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {card.title}
-                  </CardTitle>
-                  <div className={`rounded-lg p-1.5 border ${card.color}`}>
-                    <Icon className="h-4 w-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{card.value}</div>
-                  <p className="mt-1 text-xs text-muted-foreground">{card.description}</p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2 border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">System Audit & Activities</CardTitle>
-              <CardDescription>Recent actions recorded across the LMS</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[
-                {
-                  user: "Omprakash Pandey",
-                  action: "completed the course",
-                  target: "Java Fundamentals",
-                  time: "10 mins ago",
-                  icon: Trophy,
-                  iconColor: "text-amber-500 bg-amber-500/10 border-amber-500/20",
-                },
-                {
-                  user: "Sneha Patil",
-                  action: "published a new course",
-                  target: "HR Compliance Basics",
-                  time: "2 hours ago",
-                  icon: GraduationCap,
-                  iconColor: "text-purple-500 bg-purple-500/10 border-purple-500/20",
-                },
-                {
-                  user: "Rahul Sharma",
-                  action: "enrolled in",
-                  target: "Data Structures in Java",
-                  time: "4 hours ago",
-                  icon: Users,
-                  iconColor: "text-blue-500 bg-blue-500/10 border-blue-500/20",
-                },
-              ].map((act, idx) => {
-                const ActIcon = act.icon;
-                return (
-                  <div key={idx} className="flex items-start gap-4 rounded-xl border border-border/40 bg-muted/10 p-3">
-                    <div className={`rounded-lg p-2 border ${act.iconColor}`}>
-                      <ActIcon className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 space-y-0.5">
-                      <p className="text-xs text-muted-foreground">{act.time}</p>
-                      <p className="text-sm font-medium text-foreground">
-                        {act.user} <span className="font-normal text-muted-foreground">{act.action}</span> {act.target}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {[
-                { label: "Create a new Course", href: "/courses" },
-                { label: "View Learners Table", href: "/users" },
-                { label: "Manage Departments", href: "/organization" },
-                ...(userRole === ROLES.SUPER_ADMIN ? [{ label: "Configure Darwinbox Sync", href: "/darwinbox-sync" }] : []),
-              ].map((link, idx) => (
-                <Link
-                  key={idx}
-                  href={link.href}
-                  className="flex items-center justify-between rounded-lg border border-border p-3 text-sm font-medium text-foreground hover:bg-muted/40 hover:text-primary transition-all group"
-                >
-                  <span>{link.label}</span>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 group-hover:text-primary transition-all" />
-                </Link>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
+    return gradients[index % gradients.length];
   };
 
-  // 2. TEACHER VIEW
-  const renderTeacherDashboard = () => {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Card className="border border-border bg-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Assigned/Created Courses
-              </CardTitle>
-              <div className="rounded-lg p-1.5 border text-blue-500 bg-blue-500/10 border-blue-500/20">
-                <GraduationCap className="h-4 w-4" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.coursesCount ?? 0}</div>
-              <p className="mt-1 text-xs text-muted-foreground">Courses in your scope/department</p>
-            </CardContent>
-          </Card>
+  // Mock list for recently accessed programs
+  const recentlyAccessedPrograms = [
+    { id: 101, title: "CHAMP - JULY 2026", category: "Corporate Integration" },
+    { id: 102, title: "Prompt Engineering for Dev", category: "Technical" },
+  ];
 
-          <Card className="border border-border bg-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Active Learners
-              </CardTitle>
-              <div className="rounded-lg p-1.5 border text-purple-500 bg-purple-500/10 border-purple-500/20">
-                <Users className="h-4 w-4" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.activeEnrollments ?? 0}</div>
-              <p className="mt-1 text-xs text-muted-foreground">Active enrollments in your scope</p>
-            </CardContent>
-          </Card>
+  // Recently added programs (merging dynamic db courses + static mock courses)
+  const baseRecentlyAdded = [
+    { id: 201, title: "Workato Customer Onboarding ...", category: "Integration" },
+    { id: 203, title: "CHAMP - JULY 2026", category: "Corporate Integration" },
+  ];
 
-          <Card className="border border-border bg-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Class Completion Rate
-              </CardTitle>
-              <div className="rounded-lg p-1.5 border text-emerald-500 bg-emerald-500/10 border-emerald-500/20">
-                <Trophy className="h-4 w-4" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.completionRate ?? 0}%</div>
-              <p className="mt-1 text-xs text-muted-foreground">Completed assessments rate</p>
-            </CardContent>
-          </Card>
-        </div>
+  // Map database courses to match program structure
+  const dbProgramCourses = courses.map((c, i) => ({
+    id: Number(c.id),
+    title: c.title,
+    category: c.category?.name || "LMS Course",
+  }));
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2 border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Teacher Quick Launch</CardTitle>
-              <CardDescription>Actions for curating and reviewing curriculum</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Link href="/courses">
-                <Button className="w-full justify-start gap-2 h-12" variant="outline">
-                  <PlusCircle className="h-5 w-5 text-primary" />
-                  <div className="text-left">
-                    <div className="text-sm font-semibold">Create / Manage Courses</div>
-                    <div className="text-xs text-muted-foreground">Add lessons and details</div>
-                  </div>
-                </Button>
-              </Link>
-              <Link href="/courses/categories">
-                <Button className="w-full justify-start gap-2 h-12" variant="outline">
-                  <FileSpreadsheet className="h-5 w-5 text-primary" />
-                  <div className="text-left">
-                    <div className="text-sm font-semibold">Manage Categories</div>
-                    <div className="text-xs text-muted-foreground">Classify curriculum areas</div>
-                  </div>
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+  // Combine dynamic and mock courses for Recently Added
+  const combinedRecentlyAdded = [...dbProgramCourses, ...baseRecentlyAdded].filter(
+    (item, index, self) => self.findIndex(t => t.title === item.title) === index
+  );
 
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Curriculum Resources</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="rounded-lg border border-border p-3 text-xs bg-muted/20">
-                <h4 className="font-semibold text-foreground mb-1">Teacher Guide</h4>
-                <p className="text-muted-foreground">Review internal pedagogy rules and course classification guidelines.</p>
-              </div>
-              <div className="rounded-lg border border-border p-3 text-xs bg-muted/20">
-                <h4 className="font-semibold text-foreground mb-1">Standard Scoring System</h4>
-                <p className="text-muted-foreground">Ensure passing criteria is set to at least 60% on MCQ quizzes.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  };
+  // Combine dynamic courses and mock courses, ensuring no duplicate titles
+  const allCoursesList = [
+    ...courses.map((c) => ({ id: Number(c.id), title: c.title })),
+    ...recentlyAccessedPrograms,
+  ];
+  const uniqueCourses = allCoursesList.filter(
+    (course, index, self) => self.findIndex((c) => c.title === course.title) === index
+  );
 
-  // 3. LEARNER VIEW
-  const renderLearnerDashboard = () => {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Card className="border border-border bg-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                My Enrolled Courses
-              </CardTitle>
-              <div className="rounded-lg p-1.5 border text-blue-500 bg-blue-500/10 border-blue-500/20">
-                <BookOpen className="h-4 w-4" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.activeEnrollments ?? 0}</div>
-              <p className="mt-1 text-xs text-muted-foreground">Courses currently active</p>
-            </CardContent>
-          </Card>
+  // Generate July 2026 calendar days
+  // Wednesday is July 1st, 2026.
+  // June 2026 ends on Tuesday 30th.
+  // June inactive days in grid: June 28 (Sun), 29 (Mon), 30 (Tue)
+  // July active days: 1 to 31
+  // August inactive days: Aug 1 (Sat)
+  const calendarCells = [
+    { day: 28, isCurrentMonth: false, dateStr: "2026-06-28" },
+    { day: 29, isCurrentMonth: false, dateStr: "2026-06-29" },
+    { day: 30, isCurrentMonth: false, dateStr: "2026-06-30" },
+    ...Array.from({ length: 31 }, (_, i) => ({
+      day: i + 1,
+      isCurrentMonth: true,
+      dateStr: `2026-07-${String(i + 1).padStart(2, "0")}`,
+    })),
+    { day: 1, isCurrentMonth: false, dateStr: "2026-08-01" },
+  ];
 
-          <Card className="border border-border bg-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Completed Milestones
-              </CardTitle>
-              <div className="rounded-lg p-1.5 border text-purple-500 bg-purple-500/10 border-purple-500/20">
-                <Trophy className="h-4 w-4" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.completedEnrollments ?? 0}</div>
-              <p className="mt-1 text-xs text-muted-foreground">Certificates earned</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Learning progress
-              </CardTitle>
-              <div className="rounded-lg p-1.5 border text-emerald-500 bg-emerald-500/10 border-emerald-500/20">
-                <Clock className="h-4 w-4" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.completionRate ?? 0}%</div>
-              <p className="mt-1 text-xs text-muted-foreground">Average syllabus completion</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2 border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Active Learning Portal</CardTitle>
-              <CardDescription>Ready to continue your training?</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-xl border border-border p-4 bg-muted/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h3 className="text-base font-bold text-foreground">Next Syllabus Course</h3>
-                  <p className="text-sm text-muted-foreground">Check your pending department learning courses.</p>
-                </div>
-                <Link href="/courses">
-                  <Button size="sm" className="gap-2">
-                    Browse Courses <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Support & FAQ</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex items-start gap-2.5 text-xs text-muted-foreground p-1">
-                <HelpCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-foreground">How do I unlock certificates?</p>
-                  <p className="mt-0.5">Complete all lessons in a course and score 60% or higher in the final quiz.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5 text-xs text-muted-foreground p-1">
-                <HelpCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-foreground">Where are my files?</p>
-                  <p className="mt-0.5">Resources tabs within the player sidebar container allow direct downloads.</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  };
-
-  // 4. GUEST VIEW
-  const renderGuestDashboard = () => {
-    return (
-      <div className="space-y-6">
-        <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-accent/10 to-primary/5 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left max-w-xl">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary border border-primary/20">
-              <Sparkles className="h-3 w-3" /> Harbinger Guest Access
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Unlock Your Potential with Harbinger Academy
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              You are logged in as a Guest. View our public curriculum, browse syllabus details, and check training paths. Contact human resources or your team manager to register a full Learner account.
-            </p>
-          </div>
-          <div className="shrink-0 flex gap-3">
-            <Link href="/courses">
-              <Button className="gap-2">
-                Explore Courses <Search className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">Academy Statistics</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl border border-border p-4 bg-muted/10 text-center">
-                <div className="text-3xl font-bold text-primary">{stats?.publishedCoursesCount ?? 4}+</div>
-                <div className="text-xs text-muted-foreground mt-1">Syllabus Courses</div>
-              </div>
-              <div className="rounded-xl border border-border p-4 bg-muted/10 text-center">
-                <div className="text-3xl font-bold text-primary">{stats?.departmentsCount ?? 3}+</div>
-                <div className="text-xs text-muted-foreground mt-1">Core Departments</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold">How to enroll</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-3 leading-relaxed">
-              <p>
-                Authorized accounts are automatically provisioned based on corporate organizational listings synchronized via Darwinbox Sync daily.
-              </p>
-              <p>
-                If you are a new hire, check your joining credentials file, or request help by opening a support ticket in settings.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  };
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="p-6 space-y-6 max-w-[100vw] overflow-x-hidden">
-      {/* Welcome Banner */}
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          {greeting}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {userRole === ROLES.GUEST
-            ? "Browse the public catalog and explore training programs."
-            : "Here is what is happening across the academy today."}
-        </p>
+    <div className="space-y-8 pb-12 select-none px-6 py-6">
+      {/* Role-Specific Metric Header Bar (Subtle integration to keep backend working) */}
+      <div className="bg-white rounded border border-[#E0E6ED] p-4 flex flex-wrap gap-4 items-center justify-between shadow-sm">
+        <div>
+          <h2 className="text-sm font-bold text-[#212529]">
+            {fullName} — Dashboard Overview
+          </h2>
+          <p className="text-[11px] text-[#6C757D]">
+            Scoped Role: <span className="font-semibold text-[#C82333]">{userRole.replace("_", " ")}</span>
+          </p>
+        </div>
+        {stats && (
+          <div className="flex gap-6 text-xs">
+            <div>
+              <span className="text-[#6C757D] block text-[10px] uppercase">Learners</span>
+              <span className="font-bold text-[#212529]">{stats.employeesCount}</span>
+            </div>
+            <div className="w-px h-6 bg-[#E0E6ED]" />
+            <div>
+              <span className="text-[#6C757D] block text-[10px] uppercase">Courses</span>
+              <span className="font-bold text-[#212529]">{stats.coursesCount}</span>
+            </div>
+            <div className="w-px h-6 bg-[#E0E6ED]" />
+            <div>
+              <span className="text-[#6C757D] block text-[10px] uppercase">Avg Progress</span>
+              <span className="font-bold text-[#212529]">{stats.completionRate}%</span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Conditional Dashboards based on User Roles */}
-      {loading ? (
-        <div className="flex items-center justify-center min-h-[300px]">
-          <p className="text-sm text-muted-foreground">Loading dashboard layout...</p>
+      {/* 1. Recently Accessed Programs Section */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 border-b border-[#E0E6ED] pb-1.5">
+          <List className="h-4 w-4 text-[#C82333]" />
+          <h3 className="text-sm font-bold tracking-wide text-[#212529]">
+            Recently accessed Programs
+          </h3>
         </div>
-      ) : (
-        <>
-          {hasRole(userRole, ROLES.SUPER_ADMIN, ROLES.ADMIN) && renderAdminDashboard()}
-          {userRole === ROLES.TEACHER && renderTeacherDashboard()}
-          {userRole === ROLES.LEARNER && renderLearnerDashboard()}
-          {userRole === ROLES.GUEST && renderGuestDashboard()}
-        </>
+        <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin">
+          {recentlyAccessedPrograms.map((prog, idx) => (
+            <div
+              key={prog.id}
+              className="w-48 shrink-0 bg-white rounded border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group"
+            >
+              {/* Geometric gradient thumbnail */}
+              <div className={`h-24 w-full bg-gradient-to-br ${getGradient(idx)} opacity-90 group-hover:opacity-100 transition-opacity flex items-center justify-center`}>
+                <BookOpen className="h-8 w-8 text-white/50" />
+              </div>
+              {/* Program details */}
+              <div className="p-3 flex-1 flex flex-col justify-between min-h-[70px]">
+                <h4 className="text-[11px] font-bold text-[#212529] line-clamp-2 leading-snug">
+                  {prog.title}
+                </h4>
+                <span className="text-[9px] text-[#6C757D] font-medium mt-1">
+                  {prog.category}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 2. Recently Added Programs Section */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 border-b border-[#E0E6ED] pb-1.5">
+          <List className="h-4 w-4 text-[#C82333]" />
+          <h3 className="text-sm font-bold tracking-wide text-[#212529]">
+            Recently Added Programs
+          </h3>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin">
+          {combinedRecentlyAdded.map((prog, idx) => (
+            <div
+              key={prog.id}
+              className="w-48 shrink-0 bg-white rounded border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group"
+            >
+              {/* Geometric gradient thumbnail */}
+              <div className={`h-24 w-full bg-gradient-to-br ${getGradient(idx + 3)} opacity-90 group-hover:opacity-100 transition-opacity flex items-center justify-center`}>
+                <BookOpen className="h-8 w-8 text-white/50" />
+              </div>
+              {/* Program details */}
+              <div className="p-3 flex-1 flex flex-col justify-between min-h-[70px]">
+                <h4 className="text-[11px] font-bold text-[#212529] line-clamp-2 leading-snug">
+                  {prog.title}
+                </h4>
+                <span className="text-[9px] text-[#6C757D] font-medium mt-1">
+                  {prog.category}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 3. Capabilities Developed Section */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 border-b border-[#E0E6ED] pb-1.5">
+          <List className="h-4 w-4 text-[#C82333]" />
+          <h3 className="text-sm font-bold tracking-wide text-[#212529]">
+            Capabilities Developed
+          </h3>
+        </div>
+        <div className="bg-white rounded border border-[#E0E6ED] border-dashed py-8 flex flex-col items-center justify-center text-[#6C757D] shadow-sm">
+          <AlertCircle className="h-6 w-6 text-[#6C757D]/65 mb-1.5" />
+          <span className="text-xs font-semibold">No attended trainings found</span>
+        </div>
+      </div>
+
+      {/* 4. Calendar Section */}
+      <div className="space-y-4">
+        {/* Calendar Header Controls */}
+        <div className="flex items-center justify-between border-b border-[#E0E6ED] pb-2">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4 text-[#C82333]" />
+            <h3 className="text-sm font-bold tracking-wide text-[#212529]">
+              Calendar
+            </h3>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Course Selector Dropdown */}
+            <select
+              value={selectedCourse}
+              onChange={(e) => setSelectedCourse(e.target.value)}
+              className="text-xs border border-[#E0E6ED] rounded bg-white px-2.5 py-1 font-semibold text-[#6C757D] outline-none shadow-sm cursor-pointer"
+            >
+              <option value="all">All courses</option>
+              {uniqueCourses.map(c => (
+                <option key={c.id} value={c.title}>{c.title}</option>
+              ))}
+            </select>
+            {/* New Event Button */}
+            <button
+              onClick={() => setShowAddEventModal(true)}
+              className="flex items-center gap-1 bg-[#C82333] hover:bg-[#C82333]/90 text-white text-[11px] font-bold px-3 py-1 rounded shadow transition-colors cursor-pointer"
+            >
+              <Plus className="h-3 w-3" />
+              <span>New event</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Month Selector Navigation */}
+        <div className="flex items-center justify-between px-2 text-xs font-semibold text-[#6C757D]">
+          <button className="flex items-center gap-1 hover:text-[#C82333] transition-colors cursor-pointer">
+            <ChevronLeft className="h-3 w-3" />
+            <span>June</span>
+          </button>
+          <span className="text-sm font-bold text-[#212529]">July 2026</span>
+          <button className="flex items-center gap-1 hover:text-[#C82333] transition-colors cursor-pointer">
+            <span>August</span>
+            <ChevronRight className="h-3 w-3" />
+          </button>
+        </div>
+
+        {/* Calendar Month Grid */}
+        <div className="bg-white rounded border border-[#E0E6ED] overflow-hidden shadow-sm">
+          {/* Days of Week Row */}
+          <div className="grid grid-cols-7 border-b border-[#E0E6ED] bg-slate-50 text-center">
+            {daysOfWeek.map((day) => (
+              <div key={day} className="py-2 text-[11px] font-bold text-[#6C757D]">
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Monthly Days Grid */}
+          <div className="grid grid-cols-7 grid-rows-5 divide-x divide-y divide-[#E0E6ED]">
+            {calendarCells.map((cell, idx) => {
+              const dayEvents = events.filter((e) => e.date === cell.dateStr);
+              return (
+                <div
+                  key={idx}
+                  className={`min-h-[90px] p-2 flex flex-col justify-between hover:bg-slate-50/50 transition-colors ${
+                    cell.isCurrentMonth ? "bg-white" : "bg-slate-50/30 text-slate-400"
+                  }`}
+                >
+                  <span className="text-xs font-bold">{cell.day}</span>
+                  
+                  {/* Calendar Event Cards */}
+                  <div className="mt-1 space-y-1">
+                    {dayEvents.map((evt) => (
+                      <div
+                        key={evt.id}
+                        className="rounded bg-[#C82333]/10 border-l-2 border-[#C82333] p-1 text-[9px] font-semibold text-[#C82333] truncate"
+                        title={evt.title}
+                      >
+                        {evt.title}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Add Event Modal dialog */}
+      {showAddEventModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 animate-in fade-in duration-200">
+          <div className="bg-white rounded-lg border border-[#E0E6ED] w-96 p-5 shadow-xl space-y-4">
+            <h3 className="text-sm font-bold text-[#212529] border-b border-[#E0E6ED] pb-2">
+              Create New Calendar Event
+            </h3>
+            <form onSubmit={handleAddEvent} className="space-y-3">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Event Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Java Fundamentals Review"
+                  value={newEventTitle}
+                  onChange={(e) => setNewEventTitle(e.target.value)}
+                  className="w-full text-xs border border-[#E0E6ED] rounded p-2 outline-none focus:border-[#C82333] focus:ring-1 focus:ring-[#C82333]/20"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Event Date
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={newEventDate}
+                  onChange={(e) => setNewEventDate(e.target.value)}
+                  className="w-full text-xs border border-[#E0E6ED] rounded p-2 outline-none focus:border-[#C82333] focus:ring-1 focus:ring-[#C82333]/20"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowAddEventModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="bg-[#C82333] hover:bg-[#C82333]/90 text-white"
+                >
+                  Save Event
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

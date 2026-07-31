@@ -9,6 +9,22 @@ export interface Department {
   updatedAt: string;
 }
 
+export interface Role {
+  id: number;
+  roleName: string;
+  roleCode: string;
+  description?: string;
+  isActive: boolean;
+}
+
+export interface UserRole {
+  id: number;
+  employeeId: number;
+  roleId: number;
+  isActive: boolean;
+  role: Role;
+}
+
 export interface Employee {
   id: number;
   employeeCode: string;
@@ -24,6 +40,7 @@ export interface Employee {
   employmentStatus: "ACTIVE" | "INACTIVE" | "RESIGNED";
   department?: Department;
   manager?: Employee;
+  assignedRoles?: UserRole[];
 }
 
 // Department API
@@ -60,3 +77,20 @@ export const deleteEmployee = async (id: number) => {
   const response = await api.delete(`/employees/${id}`);
   return response.data;
 };
+
+// Roles API
+export const getRoles = async () => {
+  const response = await api.get("/roles");
+  return response.data;
+};
+
+export const assignRole = async (data: { employeeId: number; roleId: number }) => {
+  const response = await api.post("/user-roles", data);
+  return response.data;
+};
+
+export const removeUserRole = async (userRoleId: number) => {
+  const response = await api.delete(`/user-roles/${userRoleId}`);
+  return response.data;
+};
+
