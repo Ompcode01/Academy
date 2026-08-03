@@ -39,35 +39,16 @@ const validate = (
 
 
 
-        if(!result.success){
-
-
-            return res
-            .status(400)
-            .json({
-
-                success:false,
-
-                message:"Validation failed",
-
-                errorCode:
-                "VALIDATION_ERROR",
-
-                errors:
-                result.error.errors
-
-            });
-
-
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: "Validation failed",
+            errorCode: "VALIDATION_ERROR",
+            errors: (result as any).error?.errors || (result as any).error,
+          });
         }
 
-
-
-        req.body =
-        result.data.body;
-
-
-
+        req.body = (result.data as any)?.body || req.body;
         next();
 
     };

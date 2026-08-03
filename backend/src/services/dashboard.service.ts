@@ -11,20 +11,47 @@ export const getDashboardStats = async (userContext: UserContext) => {
   const empId = BigInt(employeeId);
   const deptId = BigInt(departmentId);
 
+  const superAdminOrAdminCreator = {
+    creator: {
+      assignedRoles: {
+        some: {
+          role: {
+            roleCode: { in: ["SUPER_ADMIN", "ADMIN"] },
+          },
+          isActive: true,
+        },
+      },
+    },
+  };
+
   // Build course filter based on role
   let courseWhere: any = { isActive: true };
   switch (role) {
     case "SUPER_ADMIN":
       break;
     case "ADMIN":
-      courseWhere.departmentId = deptId;
+      courseWhere.OR = [
+        { departmentId: deptId },
+        { departmentId: null },
+        { creatorId: empId },
+        superAdminOrAdminCreator,
+      ];
       break;
     case "TEACHER":
-      courseWhere.OR = [{ creatorId: empId }, { departmentId: deptId }];
+      courseWhere.OR = [
+        { creatorId: empId },
+        { departmentId: deptId },
+        { departmentId: null },
+        superAdminOrAdminCreator,
+      ];
       break;
     case "LEARNER":
       courseWhere.status = "PUBLISHED";
-      courseWhere.OR = [{ departmentId: deptId }, { departmentId: null }];
+      courseWhere.OR = [
+        { departmentId: deptId },
+        { departmentId: null },
+        superAdminOrAdminCreator,
+      ];
       break;
     case "GUEST":
       courseWhere.status = "PUBLISHED";
@@ -37,22 +64,11 @@ export const getDashboardStats = async (userContext: UserContext) => {
   let enrollmentWhere: any = {};
   if (role === "LEARNER") {
     enrollmentWhere.userId = empId;
-  } else if (role === "TEACHER") {
-    // Teacher sees enrollments in their courses
+  } else if (role === "TEACHER" || role === "ADMIN") {
     enrollmentWhere.courseId = {
       in: (
         await prisma.course.findMany({
-          where: { creatorId: empId, isActive: true },
-          select: { id: true },
-        })
-      ).map((c) => c.id),
-    };
-  } else if (role === "ADMIN") {
-    // Admin sees enrollments in their department courses
-    enrollmentWhere.courseId = {
-      in: (
-        await prisma.course.findMany({
-          where: { departmentId: deptId, isActive: true },
+          where: courseWhere,
           select: { id: true },
         })
       ).map((c) => c.id),

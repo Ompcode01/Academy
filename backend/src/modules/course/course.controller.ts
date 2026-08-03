@@ -31,7 +31,7 @@ export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) =
 // GET /api/courses/:id
 export const getCourseById = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const id = BigInt(req.params.id);
+    const id = BigInt(req.params.id as string);
     const course = await courseService.getCourseById(id);
     return successResponse(res, serializeBigInt(course), "Course fetched successfully");
   }
@@ -41,20 +41,31 @@ export const getCourseById = asyncHandler(
 export const createCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userRole = req.user?.role || "LEARNER";
-    const userEmployeeId = BigInt(req.user?.employeeId);
-    const userDepartmentId = BigInt(req.user?.departmentId);
+    const userEmployeeId = BigInt(req.user?.employeeId as string);
+    const userDepartmentId = req.user?.departmentId ? BigInt(req.user.departmentId as string) : null;
+
+    let departmentId: bigint | null = null;
+    if (userRole === "TEACHER") {
+      departmentId = userDepartmentId;
+    } else {
+      if (
+        req.body.departmentId !== undefined &&
+        req.body.departmentId !== null &&
+        req.body.departmentId !== "global" &&
+        req.body.departmentId !== ""
+      ) {
+        departmentId = BigInt(req.body.departmentId);
+      } else {
+        departmentId = null;
+      }
+    }
 
     // Auto-set creatorId from JWT
     const data = {
       ...req.body,
       categoryId: BigInt(req.body.categoryId),
       creatorId: userEmployeeId,
-      // Teachers always get their own department; Admin/SuperAdmin can specify
-      departmentId: userRole === "TEACHER"
-        ? userDepartmentId
-        : req.body.departmentId
-          ? BigInt(req.body.departmentId)
-          : userDepartmentId,
+      departmentId,
     };
 
     const course = await courseService.createCourse(data);
@@ -65,7 +76,7 @@ export const createCourse = asyncHandler(
 // PUT /api/courses/:id
 export const updateCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const id = BigInt(req.params.id);
+    const id = BigInt(req.params.id as string);
     const data = { ...req.body };
     if (data.categoryId) data.categoryId = BigInt(data.categoryId);
     if (data.departmentId) data.departmentId = BigInt(data.departmentId);
@@ -77,7 +88,7 @@ export const updateCourse = asyncHandler(
 // DELETE /api/courses/:id
 export const deleteCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const id = BigInt(req.params.id);
+    const id = BigInt(req.params.id as string);
     await courseService.deleteCourse(id);
     return successResponse(res, null, "Course deleted successfully");
   }
@@ -86,7 +97,7 @@ export const deleteCourse = asyncHandler(
 // POST /api/courses/:id/sections
 export const createSection = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const courseId = BigInt(req.params.id);
+    const courseId = BigInt(req.params.id as string);
     const section = await courseService.createSection({
       ...req.body,
       courseId,
@@ -98,7 +109,7 @@ export const createSection = asyncHandler(
 // PUT /api/courses/sections/:sectionId
 export const updateSection = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const sectionId = BigInt(req.params.sectionId);
+    const sectionId = BigInt(req.params.sectionId as string);
     const section = await courseService.updateSection(sectionId, req.body);
     return successResponse(res, serializeBigInt(section), "Section updated successfully");
   }
@@ -107,7 +118,7 @@ export const updateSection = asyncHandler(
 // DELETE /api/courses/sections/:sectionId
 export const deleteSection = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const sectionId = BigInt(req.params.sectionId);
+    const sectionId = BigInt(req.params.sectionId as string);
     await courseService.deleteSection(sectionId);
     return successResponse(res, null, "Section deleted successfully");
   }
@@ -116,7 +127,7 @@ export const deleteSection = asyncHandler(
 // POST /api/courses/sections/:sectionId/contents
 export const createContent = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const sectionId = BigInt(req.params.sectionId);
+    const sectionId = BigInt(req.params.sectionId as string);
     const content = await courseService.createContent({
       ...req.body,
       sectionId,

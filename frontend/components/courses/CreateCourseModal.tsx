@@ -86,7 +86,7 @@ export default function CreateCourseModal({
       status: "DRAFT",
       level: "Beginner",
       language: "English",
-      departmentId: user?.departmentId ? String(user.departmentId) : undefined,
+      departmentId: userRole === ROLES.TEACHER && user?.departmentId ? String(user.departmentId) : "global",
     },
   });
 
@@ -96,7 +96,7 @@ export default function CreateCourseModal({
         status: "DRAFT",
         level: "Beginner",
         language: "English",
-        departmentId: user?.departmentId ? String(user.departmentId) : undefined,
+        departmentId: userRole === ROLES.TEACHER && user?.departmentId ? String(user.departmentId) : "global",
       });
 
       // Fetch dynamic options
@@ -222,7 +222,7 @@ export default function CreateCourseModal({
             <Label htmlFor="department">Mmapped Department</Label>
             <Select
               disabled={isTeacher}
-              defaultValue={user?.departmentId ? String(user.departmentId) : undefined}
+              defaultValue={isTeacher && user?.departmentId ? String(user.departmentId) : "global"}
               onValueChange={(val: string | null) => setValue("departmentId", val === "global" || val === null ? undefined : val)}
             >
               <SelectTrigger>

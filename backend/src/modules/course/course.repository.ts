@@ -166,7 +166,7 @@ class CourseRepository {
     });
   }
 
-  async update(id: bigint, data: UpdateCourseData) {
+  async update(id: bigint, data: any) {
     return prisma.course.update({
       where: { id },
       data,

@@ -25,9 +25,9 @@ class CourseService {
   /**
    * Build Prisma where-clause additions based on the user's role:
    * - SUPER_ADMIN: all courses (no extra filter)
-   * - ADMIN: courses in their department
-   * - TEACHER: courses they created OR in their department
-   * - LEARNER: only PUBLISHED courses in their department or globally published (no department)
+   * - ADMIN: courses in their department OR created by SUPER_ADMIN / ADMIN OR global courses OR created by themselves
+   * - TEACHER: courses in their department OR created by SUPER_ADMIN / ADMIN OR global courses OR created by themselves
+   * - LEARNER: PUBLISHED courses in their department OR created by SUPER_ADMIN / ADMIN OR global published courses
    * - GUEST: only PUBLISHED courses
    */
   private buildScopeFilter(userContext?: UserContext): any {
@@ -35,30 +35,50 @@ class CourseService {
 
     const { role, employeeId, departmentId } = userContext;
 
+    const superAdminOrAdminCourseCondition = {
+      creator: {
+        assignedRoles: {
+          some: {
+            role: {
+              roleCode: { in: ["SUPER_ADMIN", "ADMIN"] },
+            },
+            isActive: true,
+          },
+        },
+      },
+    };
+
     switch (role) {
       case "SUPER_ADMIN":
         return {}; // No restrictions
 
       case "ADMIN":
-        return departmentId ? { departmentId } : {};
+        return {
+          OR: [
+            { departmentId: null },
+            ...(departmentId ? [{ departmentId }] : []),
+            ...(employeeId ? [{ creatorId: employeeId }] : []),
+            superAdminOrAdminCourseCondition,
+          ],
+        };
 
       case "TEACHER":
-        if (employeeId && departmentId) {
-          return {
-            OR: [
-              { creatorId: employeeId },
-              { departmentId },
-            ],
-          };
-        }
-        return employeeId ? { creatorId: employeeId } : {};
+        return {
+          OR: [
+            { departmentId: null },
+            ...(departmentId ? [{ departmentId }] : []),
+            ...(employeeId ? [{ creatorId: employeeId }] : []),
+            superAdminOrAdminCourseCondition,
+          ],
+        };
 
       case "LEARNER":
         return {
           status: "PUBLISHED",
           OR: [
-            { departmentId: departmentId || null },
-            { departmentId: null }, // Globally published courses
+            { departmentId: null },
+            ...(departmentId ? [{ departmentId }] : []),
+            superAdminOrAdminCourseCondition,
           ],
         };
 
