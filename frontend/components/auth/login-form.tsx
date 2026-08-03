@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormData } from "@/lib/validations/login.schema";
@@ -14,18 +14,20 @@ import { Lock, User } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const loginStore = useAuthStore((state) => state.login);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = useCallback(async (data: LoginFormData) => {
     try {
       setLoading(true);
       console.log("Submitting login form:", data);
@@ -54,7 +56,23 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [loginStore, router]);
+
+  useEffect(() => {
+    const paramUser = searchParams.get("username");
+    const paramPass = searchParams.get("password");
+
+    if (paramUser) {
+      setValue("username", paramUser);
+    }
+    if (paramPass) {
+      setValue("password", paramPass);
+    }
+
+    if (paramUser && paramPass) {
+      onSubmit({ username: paramUser, password: paramPass });
+    }
+  }, [searchParams, setValue, onSubmit]);
 
   return (
     <div className="space-y-6 w-full max-w-sm bg-slate-900/40 p-8 rounded-xl border border-slate-800 backdrop-blur-sm shadow-xl">

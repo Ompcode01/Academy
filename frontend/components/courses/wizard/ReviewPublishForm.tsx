@@ -1,0 +1,298 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { createCourse, updateCourse } from "@/services/api/course.service";
+import {
+  CheckCircle2,
+  BookOpen,
+  Layers,
+  FileCheck,
+  Award,
+  Users,
+  Eye,
+  Rocket,
+  Globe,
+  Lock,
+} from "lucide-react";
+
+interface ReviewPublishFormProps {
+  courseId?: string | null;
+  wizardData: {
+    basicInfo: {
+      title: string;
+      courseCode: string;
+      departmentId: string;
+      level: string;
+      shortDescription: string;
+      language: string;
+      duration?: number;
+      description: string;
+      categoryId: string;
+    };
+    sections: any[];
+    enrollment: {
+      selfEnrollment: boolean;
+      adminEnrollment: boolean;
+      departmentAccess: string;
+    };
+    certificate: {
+      enableCertificate: boolean;
+      certificateTitle: string;
+      passingThreshold: number;
+    };
+  };
+  onBack?: () => void;
+  onCancel?: () => void;
+}
+
+export default function ReviewPublishForm({
+  courseId,
+  wizardData,
+  onBack,
+  onCancel,
+}: ReviewPublishFormProps) {
+  const router = useRouter();
+  const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">("PUBLISHED");
+  const [loading, setLoading] = useState(false);
+
+  const { basicInfo, sections, enrollment, certificate } = wizardData;
+
+  const totalContentCount = sections.reduce(
+    (acc, s) => acc + (s.contents?.length || 0),
+    0
+  );
+
+  const handlePublish = async () => {
+    try {
+      setLoading(true);
+      const payload = {
+        title: basicInfo.title || "Java Programming",
+        shortDescription: basicInfo.shortDescription || "Core Java fundamentals and secure development practices.",
+        description: basicInfo.description,
+        categoryId: basicInfo.categoryId ? Number(basicInfo.categoryId) : 1,
+        departmentId: basicInfo.departmentId && basicInfo.departmentId !== "global" ? Number(basicInfo.departmentId) : null,
+        thumbnail: (basicInfo as any).thumbnailUrl || (basicInfo as any).thumbnail || undefined,
+        level: basicInfo.level || "Beginner",
+        language: basicInfo.language || "English",
+        duration: basicInfo.duration || 20,
+        status: status,
+      };
+
+      let res;
+      if (courseId) {
+        res = await updateCourse(Number(courseId), payload);
+      } else {
+        res = await createCourse(payload);
+      }
+
+      if (res?.success) {
+        alert(
+          status === "PUBLISHED"
+            ? "🚀 Course successfully PUBLISHED! It is now live for learners on their dashboard."
+            : "💾 Course saved as DRAFT."
+        );
+        router.push("/courses");
+      } else {
+        alert(res?.message || "Failed to save course.");
+      }
+    } catch (err: any) {
+      console.error("Publishing error:", err);
+      alert(err?.response?.data?.message || "An error occurred while saving the course.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <Rocket className="h-6 w-6 text-primary" />
+          Review &amp; Publish Course
+        </h2>
+        <p className="text-xs text-muted-foreground mt-1">
+          Review all course details, curriculum structure, and accessibility rules before publishing.
+        </p>
+      </div>
+
+      {/* Summary Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Card 1: Basic Information */}
+        <div className="p-4 rounded-xl border border-border bg-card space-y-2">
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-primary" /> Basic Information
+            </h3>
+            <Badge variant="outline" className="text-[10px]">
+              {basicInfo.level || "Beginner"}
+            </Badge>
+          </div>
+          <p className="text-sm font-bold text-foreground">{basicInfo.title || "Java Programming"}</p>
+          <p className="text-xs text-muted-foreground line-clamp-2">
+            {basicInfo.shortDescription || "Core Java fundamentals and secure coding."}
+          </p>
+          <div className="pt-2 text-xs text-muted-foreground flex flex-wrap gap-4">
+            <span>Duration: <strong>{basicInfo.duration || 20} Hours</strong></span>
+            <span>Language: <strong>{basicInfo.language || "English"}</strong></span>
+          </div>
+        </div>
+
+        {/* Card 2: Curriculum Structure */}
+        <div className="p-4 rounded-xl border border-border bg-card space-y-2">
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <Layers className="h-4 w-4 text-primary" /> Curriculum Summary
+            </h3>
+            <Badge variant="outline" className="text-[10px]">
+              {sections.length} Sections
+            </Badge>
+          </div>
+          <div className="space-y-1.5 pt-1">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Total Curriculum Sections:</span>
+              <span className="font-bold text-foreground">{sections.length}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Total Lectures &amp; Activities:</span>
+              <span className="font-bold text-foreground">{totalContentCount} Items</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Enrollment Rules */}
+        <div className="p-4 rounded-xl border border-border bg-card space-y-2">
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <Users className="h-4 w-4 text-primary" /> Enrollment Rules
+            </h3>
+          </div>
+          <div className="space-y-1 pt-1 text-xs">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Self-Enrollment: <strong>{enrollment.selfEnrollment ? "Enabled" : "Disabled"}</strong></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Admin Assignment: <strong>{enrollment.adminEnrollment ? "Enabled" : "Disabled"}</strong></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Globe className="h-3.5 w-3.5 text-blue-500" />
+              <span>Department Access: <strong>{enrollment.departmentAccess}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Certificate */}
+        <div className="p-4 rounded-xl border border-border bg-card space-y-2">
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <Award className="h-4 w-4 text-amber-500" /> Completion Certificate
+            </h3>
+          </div>
+          <div className="space-y-1 pt-1 text-xs">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" />
+              <span>Certificate Status: <strong>{certificate.enableCertificate ? "Enabled" : "Disabled"}</strong></span>
+            </div>
+            {certificate.enableCertificate && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">Passing Threshold:</span>
+                <strong className="text-foreground">{certificate.passingThreshold}% Score</strong>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Lifecycle Status Selection */}
+      <div className="p-5 rounded-2xl border border-border bg-card space-y-4">
+        <h3 className="text-sm font-bold text-foreground">
+          Select Course Status &amp; Visibility
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <label
+            onClick={() => setStatus("DRAFT")}
+            className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
+              status === "DRAFT"
+                ? "border-primary bg-primary/5 shadow-sm"
+                : "border-border bg-muted/20 hover:bg-muted/40"
+            }`}
+          >
+            <input
+              type="radio"
+              name="courseStatus"
+              checked={status === "DRAFT"}
+              onChange={() => setStatus("DRAFT")}
+              className="h-4 w-4 mt-1 text-primary focus:ring-primary"
+            />
+            <div>
+              <span className="text-sm font-bold text-foreground flex items-center gap-2">
+                <Lock className="h-4 w-4 text-amber-500" /> Save as Draft
+              </span>
+              <p className="text-xs text-muted-foreground mt-1">
+                Hidden from catalog directory. Admins can edit and publish later.
+              </p>
+            </div>
+          </label>
+
+          <label
+            onClick={() => setStatus("PUBLISHED")}
+            className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
+              status === "PUBLISHED"
+                ? "border-emerald-500 bg-emerald-500/5 shadow-sm"
+                : "border-border bg-muted/20 hover:bg-muted/40"
+            }`}
+          >
+            <input
+              type="radio"
+              name="courseStatus"
+              checked={status === "PUBLISHED"}
+              onChange={() => setStatus("PUBLISHED")}
+              className="h-4 w-4 mt-1 text-emerald-500 focus:ring-emerald-500"
+            />
+            <div>
+              <span className="text-sm font-bold text-foreground flex items-center gap-2">
+                <Globe className="h-4 w-4 text-emerald-500" /> Publish Course (Live)
+              </span>
+              <p className="text-xs text-muted-foreground mt-1">
+                Immediately live &amp; visible to learners on their dashboard and catalog.
+              </p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      {/* Stepper Footer */}
+      <div className="flex items-center justify-between border-t border-border pt-5">
+        <Button variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <div className="flex items-center gap-3">
+          <Button variant="secondary" onClick={onBack}>
+            &larr; Back
+          </Button>
+          <Button
+            onClick={handlePublish}
+            disabled={loading}
+            className={`gap-2 font-bold text-white ${
+              status === "PUBLISHED"
+                ? "bg-emerald-600 hover:bg-emerald-700"
+                : "bg-primary hover:bg-primary/90"
+            }`}
+          >
+            <Rocket className="h-4 w-4" />
+            {loading
+              ? "Saving..."
+              : status === "PUBLISHED"
+              ? "Publish & Launch Course"
+              : "Save as Draft"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

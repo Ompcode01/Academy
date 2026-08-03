@@ -58,12 +58,15 @@ export interface LearningContent {
   contentType: string;
   contentUrl?: string;
   description?: string;
+  fileSize?: string;
   duration?: number;
+  metaData?: string;
   contentOrder: number;
   isMandatory: boolean;
   isPublished: boolean;
 }
 
+// Course Filters Props
 export interface CourseFiltersProps {
   search?: string;
   categoryId?: number;
@@ -149,6 +152,19 @@ export const createContent = async (
     `/courses/sections/${sectionId}/contents`,
     data
   );
+  return response.data;
+};
+
+export const updateContent = async (
+  contentId: number,
+  data: Partial<LearningContent>
+) => {
+  const response = await api.put(`/courses/contents/${contentId}`, data);
+  return response.data;
+};
+
+export const deleteContent = async (contentId: number) => {
+  const response = await api.delete(`/courses/contents/${contentId}`);
   return response.data;
 };
 

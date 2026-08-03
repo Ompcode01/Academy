@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import LoginForm from "@/components/auth/login-form";
 import { GraduationCap, ArrowRight, ShieldCheck, Zap, BookOpen } from "lucide-react";
 
@@ -93,7 +94,9 @@ export default function LoginPage() {
         </div>
 
         <div className="w-full max-w-md space-y-6 relative z-10 flex flex-col items-center justify-center">
-          <LoginForm />
+          <Suspense fallback={<div className="text-slate-400 text-sm">Loading login form...</div>}>
+            <LoginForm />
+          </Suspense>
         </div>
       </div>
     </main>

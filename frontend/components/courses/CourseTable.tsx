@@ -160,28 +160,40 @@ export default function CourseTable({
                         {course.status}
                       </Badge>
                     </TableCell>
-                    {isAuthorizedToManage && (
-                      <TableCell>
-                        <div className="flex items-center gap-1">
+                    <TableCell>
+                      <div className="flex items-center gap-1.5">
+                        {isAuthorizedToManage ? (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={() => onEdit?.(Number(course.id))}
+                              className="text-muted-foreground hover:text-primary"
+                              title="Edit Course"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={() => onDelete?.(Number(course.id))}
+                              className="text-muted-foreground hover:text-destructive"
+                              title="Delete Course"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </>
+                        ) : (
                           <Button
-                            variant="ghost"
-                            size="icon-xs"
-                            onClick={() => onEdit?.(Number(course.id))}
-                            className="text-muted-foreground hover:text-primary"
+                            size="xs"
+                            onClick={() => window.location.href = `/courses/${course.id}/preview`}
+                            className="text-[11px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors"
                           >
-                            <Pencil className="h-3.5 w-3.5" />
+                            View &amp; Enroll &rarr;
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon-xs"
-                            onClick={() => onDelete?.(Number(course.id))}
-                            className="text-muted-foreground hover:text-destructive"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    )}
+                        )}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 );
               })

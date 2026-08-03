@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CourseFilters from "@/components/courses/CourseFilters";
@@ -10,6 +11,7 @@ import RoleGate from "@/components/auth/RoleGate";
 import { getCourses, type Course, deleteCourse } from "@/services/api/course.service";
 
 export default function CoursesPage() {
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [totalCourses, setTotalCourses] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,7 +74,7 @@ export default function CoursesPage() {
   };
 
   const handleEdit = (id: number) => {
-    alert(`Editing course ${id}. For curriculum section updates, visit the Create Course Wizard.`);
+    router.push(`/courses/create?id=${id}`);
   };
 
   const handleDelete = async (id: number) => {
@@ -103,7 +105,7 @@ export default function CoursesPage() {
         </div>
         <RoleGate allowed={["TEACHER", "ADMIN", "SUPER_ADMIN"]}>
           <Button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => router.push("/courses/create")}
             className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 self-start sm:self-center"
           >
             <Plus className="h-4 w-4" />

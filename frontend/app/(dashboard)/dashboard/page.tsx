@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
 import { getCourses, type Course } from "@/services/api/course.service";
 import { getDashboardStats, type DashboardStats } from "@/services/api/dashboard.service";
@@ -22,6 +23,7 @@ interface CalendarEvent {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const [courses, setCourses] = useState<Course[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -155,8 +157,10 @@ export default function Dashboard() {
           <h2 className="text-sm font-bold text-[#212529]">
             {fullName} — Dashboard Overview
           </h2>
-          <p className="text-[11px] text-[#6C757D]">
-            Scoped Role: <span className="font-semibold text-[#C82333]">{userRole.replace("_", " ")}</span>
+          <p className="text-[11px] text-[#6C757D] flex items-center gap-2 mt-0.5">
+            <span>Scoped Role: <strong className="text-[#C82333]">{userRole.replace("_", " ")}</strong></span>
+            <span>•</span>
+            <span>Department: <strong className="text-slate-800">{user?.departmentId ? ({ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)" }[user.departmentId] || `Dept #${user.departmentId}`) : "Global / All Depts"}</strong></span>
           </p>
         </div>
         {stats && (
@@ -191,7 +195,8 @@ export default function Dashboard() {
           {recentlyAccessedPrograms.map((prog, idx) => (
             <div
               key={prog.id}
-              className="w-48 shrink-0 bg-white rounded border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group"
+              onClick={() => router.push(`/courses/${prog.id}/preview`)}
+              className="w-48 shrink-0 bg-white rounded border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group cursor-pointer"
             >
               {/* Geometric gradient thumbnail */}
               <div className={`h-24 w-full bg-gradient-to-br ${getGradient(idx)} opacity-90 group-hover:opacity-100 transition-opacity flex items-center justify-center`}>
@@ -211,36 +216,77 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 2. Recently Added Programs Section */}
+      {/* 2. Recently Added Programs & Department Mapped Courses */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 border-b border-[#E0E6ED] pb-1.5">
-          <List className="h-4 w-4 text-[#C82333]" />
-          <h3 className="text-sm font-bold tracking-wide text-[#212529]">
-            Recently Added Programs
-          </h3>
+        <div className="flex items-center justify-between border-b border-[#E0E6ED] pb-1.5">
+          <div className="flex items-center gap-2">
+            <List className="h-4 w-4 text-[#C82333]" />
+            <h3 className="text-sm font-bold tracking-wide text-[#212529]">
+              {userRole === ROLES.LEARNER ? "My Department Courses" : "Recently Added Programs"}
+            </h3>
+          </div>
+          {user?.departmentId && (
+            <span className="text-[10px] font-bold bg-[#C82333]/10 text-[#C82333] px-2.5 py-0.5 rounded border border-[#C82333]/20">
+              Department: {{ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)" }[user.departmentId] || `Dept #${user.departmentId}`}
+            </span>
+          )}
         </div>
-        <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin">
-          {combinedRecentlyAdded.map((prog, idx) => (
-            <div
-              key={prog.id}
-              className="w-48 shrink-0 bg-white rounded border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group"
-            >
-              {/* Geometric gradient thumbnail */}
-              <div className={`h-24 w-full bg-gradient-to-br ${getGradient(idx + 3)} opacity-90 group-hover:opacity-100 transition-opacity flex items-center justify-center`}>
-                <BookOpen className="h-8 w-8 text-white/50" />
+
+        {courses.length === 0 ? (
+          <div className="bg-white rounded border border-[#E0E6ED] border-dashed py-8 flex flex-col items-center justify-center text-[#6C757D] shadow-sm">
+            <BookOpen className="h-8 w-8 text-[#6C757D]/50 mb-2" />
+            <p className="text-xs font-bold text-[#212529]">No published courses available for your department yet.</p>
+            <p className="text-[11px] text-[#6C757D] mt-0.5">Courses published by Admins for your department will appear here.</p>
+          </div>
+        ) : (
+          <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin">
+            {courses.map((prog, idx) => (
+              <div
+                key={prog.id}
+                onClick={() => router.push(`/courses/${prog.id}/preview`)}
+                className="w-52 shrink-0 bg-white rounded-xl border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group cursor-pointer"
+              >
+                {/* Thumbnail Cover Image */}
+                <div className="h-28 w-full relative bg-slate-100 overflow-hidden">
+                  <img
+                    src={
+                      (prog as any).thumbnail ||
+                      (prog as any).thumbnailUrl ||
+                      {
+                        Technical: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80",
+                        Business: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=600&q=80",
+                        "Soft Skills": "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80",
+                        HR: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80",
+                      }[prog.category?.name || "Technical"] ||
+                      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80"
+                    }
+                    alt={prog.title}
+                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <span className="absolute top-2 right-2 bg-black/70 backdrop-blur-md text-white text-[9px] font-extrabold px-2 py-0.5 rounded shadow">
+                    {prog.level || "Beginner"}
+                  </span>
+                </div>
+
+                {/* Details */}
+                <div className="p-3 flex-1 flex flex-col justify-between min-h-[75px]">
+                  <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug">
+                    {prog.title}
+                  </h4>
+                  <div className="flex items-center justify-between mt-2 text-[10px]">
+                    <span className="text-[#C82333] font-bold">
+                      {prog.category?.name || "Technical"}
+                    </span>
+                    <span className="text-[#6C757D]">
+                      {prog.department?.departmentCode || "Global"}
+                    </span>
+                  </div>
+                </div>
               </div>
-              {/* Program details */}
-              <div className="p-3 flex-1 flex flex-col justify-between min-h-[70px]">
-                <h4 className="text-[11px] font-bold text-[#212529] line-clamp-2 leading-snug">
-                  {prog.title}
-                </h4>
-                <span className="text-[9px] text-[#6C757D] font-medium mt-1">
-                  {prog.category}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 3. Capabilities Developed Section */}

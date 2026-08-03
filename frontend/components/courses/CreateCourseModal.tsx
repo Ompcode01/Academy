@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -59,6 +60,7 @@ export default function CreateCourseModal({
   const user = useAuthStore((state) => state.user);
   const userRole = user?.role || ROLES.GUEST;
   
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([
     { id: 1, name: "Technical", isActive: true },
     { id: 2, name: "Management", isActive: true },
@@ -139,6 +141,12 @@ export default function CreateCourseModal({
       if (res?.success) {
         onSuccess();
         onOpenChange(false);
+        const newId = res.data?.id;
+        if (newId) {
+          router.push(`/courses/create?id=${newId}`);
+        } else {
+          router.push("/courses/create");
+        }
       } else {
         alert(res?.message || "Failed to create course");
       }
