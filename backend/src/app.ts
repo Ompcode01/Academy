@@ -14,6 +14,7 @@ import healthRoutes from "./routes/health.routes";
 import courseRoutes from "./modules/course/course.routes";
 import categoryRoutes from "./modules/course/category.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
+import skillRoutes from "./routes/skill.routes";
 const app = express();
 
 app.use(cors());
@@ -45,5 +46,6 @@ app.use("/api/health", healthRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/skills", skillRoutes);
 app.use(errorHandler);
 export default app;

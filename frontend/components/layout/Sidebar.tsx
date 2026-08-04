@@ -126,8 +126,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <span>Skill Cloud</span>
           </div>
           <ul className="pl-4 text-xs font-medium text-[#212529]">
-            <li className="list-disc hover:text-[#C82333] transition-colors cursor-pointer">
-              Skill Cloud Dashboard
+            <li>
+              <Link
+                href="/skill-cloud"
+                className={`flex items-center gap-1.5 transition-colors ${
+                  pathname.startsWith("/skill-cloud")
+                    ? "font-bold text-[#C82333]"
+                    : "hover:text-[#C82333]"
+                }`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                <span>Skill Cloud Dashboard</span>
+              </Link>
             </li>
           </ul>
         </div>

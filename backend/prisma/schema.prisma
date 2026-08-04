@@ -231,3 +231,89 @@ enum EmploymentStatus {
   INACTIVE
   RESIGNED
 }
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Skill {
+  id          BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String      @unique @db.VarChar(100)
+  category    String      @db.VarChar(100)
+  subCategory String?     @db.VarChar(100)
+  skillType   String      @default("Technical Skill") @db.VarChar(50)
+  description String?     @db.VarChar(500)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userSkills  UserSkill[]
+
+  @@map("skills")
+}
+
+model UserSkill {
+  id               BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  userId           BigInt
+  skillId          BigInt?        @db.UnsignedBigInt
+  skillName        String         @db.VarChar(100)
+  category         String         @db.VarChar(100)
+  subCategory      String?        @db.VarChar(100)
+  skillType        String         @default("Technical Skill") @db.VarChar(50)
+  proficiencyLevel String         @default("Intermediate") @db.VarChar(50)
+  rating           Int            @default(3)
+  yearsOfExp       Decimal?       @db.Decimal(4, 1)
+  description      String?        @db.Text
+  status           ApprovalStatus @default(PENDING)
+  rejectionReason  String?        @db.Text
+  verifiedBy       String?        @db.VarChar(100)
+  verifiedAt       DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  skill            Skill?         @relation(fields: [skillId], references: [id])
+
+  @@index([userId])
+  @@index([skillId])
+  @@index([status])
+  @@map("user_skills")
+}
+
+model UserProject {
+  id               BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  userId           BigInt
+  projectName      String         @db.VarChar(200)
+  projectType      String         @default("Internal") @db.VarChar(100)
+  organization     String?        @db.VarChar(200)
+  startDate        DateTime?
+  endDate          DateTime?
+  isCurrent        Boolean        @default(false)
+  roleName         String?        @db.VarChar(100)
+  responsibilities String?        @db.Text
+  technologies     String?        @db.VarChar(500)
+  status           ApprovalStatus @default(PENDING)
+  rejectionReason  String?        @db.Text
+  verifiedBy       String?        @db.VarChar(100)
+  verifiedAt       DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("user_projects")
+}
+
+model SkillApprovalLog {
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  requestType String   @db.VarChar(50)
+  requestId   BigInt   @db.UnsignedBigInt
+  action      String   @db.VarChar(50)
+  actorId     BigInt?
+  actorName   String?  @db.VarChar(100)
+  comments    String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@index([requestType, requestId])
+  @@map("skill_approval_logs")
+}
+
