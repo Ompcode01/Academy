@@ -211,7 +211,7 @@ export default function SkillCloudPage() {
   }
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="p-6 space-y-6 pb-12">
       {/* Top Header Bar */}
       <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>

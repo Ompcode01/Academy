@@ -76,7 +76,7 @@ export default function CertificatesPage() {
   });
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="p-6 space-y-6 pb-12">
       {/* Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>

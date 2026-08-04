@@ -78,7 +78,7 @@ export default function Dashboard() {
 
 
   return (
-    <div className="space-y-6 select-none">
+    <div className="p-6 space-y-6 select-none">
       {/* Top Banner & Stats Overview */}
       <div className="rounded-xl border border-[#E0E6ED] bg-white p-5 shadow-sm space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
