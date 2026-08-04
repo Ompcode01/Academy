@@ -1,9 +1,12 @@
 import { create } from "zustand";
+import { getEvents, createEvent, updateEvent, deleteEvent } from "@/services/api/event.service";
 
 export interface EventItem {
   id: number;
   title: string;
   date: string; // YYYY-MM-DD
+  time?: string;
+  url?: string;
   type: "site" | "category" | "course" | "group" | "user" | "other";
   description?: string;
   courseName?: string;
@@ -13,63 +16,46 @@ interface EventsState {
   events: EventItem[];
   hiddenTypes: Set<string>;
   courseFilter: string;
-  
+  loading: boolean;
+
+  fetchEvents: () => Promise<void>;
   toggleTypeVisibility: (type: string) => void;
   setCourseFilter: (course: string) => void;
-  addEvent: (event: Omit<EventItem, "id">) => void;
+  addEvent: (event: Omit<EventItem, "id">) => Promise<void>;
+  editEvent: (id: number, event: Partial<Omit<EventItem, "id">>) => Promise<void>;
+  removeEvent: (id: number) => Promise<void>;
 }
 
-const defaultEvents: EventItem[] = [
-  {
-    id: 1,
-    title: "LMS Platform Launch",
-    date: "2026-07-02",
-    type: "site",
-    description: "Global rollout of the new Harbinger Academy Enterprise LMS platform.",
-  },
-  {
-    id: 2,
-    title: "Technical Training Webinar",
-    date: "2026-07-08",
-    type: "category",
-    description: "A specialized presentation on microservices architecture and modern web stacks.",
-  },
-  {
-    id: 3,
-    title: "Java OOP Quiz",
-    date: "2026-07-15",
-    type: "course",
-    courseName: "Java Fundamentals",
-    description: "Assessment covering object-oriented programming concepts in Java.",
-  },
-  {
-    id: 4,
-    title: "Project Alpha Standup",
-    date: "2026-07-20",
-    type: "group",
-    description: "Weekly synchronization meeting for Project Alpha core developers.",
-  },
-  {
-    id: 5,
-    title: "Personal Goal Check-in",
-    date: "2026-07-25",
-    type: "user",
-    description: "1-on-1 performance milestones review session with team manager.",
-  },
-  {
-    id: 6,
-    title: "Platform Scheduled Maintenance",
-    date: "2026-07-30",
-    type: "other",
-    description: "Routine database optimization and cluster updates (downtime: 2:00 AM - 4:00 AM).",
-  },
-];
-
-export const useEventsStore = create<EventsState>((set) => ({
-  events: defaultEvents,
+export const useEventsStore = create<EventsState>((set, get) => ({
+  events: [],
   hiddenTypes: new Set<string>(),
   courseFilter: "all",
-  
+  loading: false,
+
+  fetchEvents: async () => {
+    set({ loading: true });
+    try {
+      const data = await getEvents();
+      if (data && Array.isArray(data)) {
+        const parsedEvents: EventItem[] = data.map((ev) => ({
+          id: ev.id,
+          title: ev.title,
+          date: ev.eventDate ? ev.eventDate.split("T")[0] : new Date().toISOString().split("T")[0],
+          time: ev.eventTime || undefined,
+          url: ev.url || undefined,
+          type: (ev.eventType as any) || "site",
+          description: ev.description || "",
+          courseName: ev.courseId ? `Course #${ev.courseId}` : undefined,
+        }));
+        set({ events: parsedEvents });
+      }
+    } catch (err) {
+      console.error("Failed to fetch events from backend:", err);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   toggleTypeVisibility: (type) =>
     set((state) => {
       const newHidden = new Set(state.hiddenTypes);
@@ -80,11 +66,47 @@ export const useEventsStore = create<EventsState>((set) => ({
       }
       return { hiddenTypes: newHidden };
     }),
-    
+
   setCourseFilter: (course) => set({ courseFilter: course }),
-  
-  addEvent: (event) =>
-    set((state) => ({
-      events: [...state.events, { ...event, id: Date.now() }],
-    })),
+
+  addEvent: async (event) => {
+    try {
+      await createEvent({
+        title: event.title,
+        description: event.description,
+        eventDate: event.date,
+        eventTime: event.time,
+        url: event.url,
+        eventType: event.type || "site",
+      });
+      await get().fetchEvents();
+    } catch (err) {
+      console.error("Failed to add event to database:", err);
+    }
+  },
+
+  editEvent: async (id, event) => {
+    try {
+      await updateEvent(id, {
+        title: event.title,
+        description: event.description,
+        eventDate: event.date,
+        eventTime: event.time,
+        url: event.url,
+        eventType: event.type,
+      });
+      await get().fetchEvents();
+    } catch (err) {
+      console.error("Failed to edit event:", err);
+    }
+  },
+
+  removeEvent: async (id: number) => {
+    try {
+      await deleteEvent(id);
+      await get().fetchEvents();
+    } catch (err) {
+      console.error("Failed to delete event:", err);
+    }
+  },
 }));

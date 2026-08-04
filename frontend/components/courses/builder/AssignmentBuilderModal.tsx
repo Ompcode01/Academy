@@ -170,12 +170,12 @@ export default function AssignmentBuilderModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Max Marks *</Label>
+                  <Label className="text-xs font-semibold">Max Marks</Label>
                   <Input
                     type="number"
-                    value={maxMarks}
-                    onChange={(e) => setMaxMarks(Number(e.target.value))}
-                    required
+                    value={maxMarks || ""}
+                    placeholder="Optional (e.g. 50)"
+                    onChange={(e) => setMaxMarks(e.target.value ? Number(e.target.value) : 0)}
                   />
                 </div>
               </div>
@@ -183,29 +183,28 @@ export default function AssignmentBuilderModal({
               {/* Deadline & Attempts */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Submission Deadline *</Label>
+                  <Label className="text-xs font-semibold">Submission Deadline Date</Label>
                   <Input
                     type="date"
                     value={deadlineDate}
                     onChange={(e) => setDeadlineDate(e.target.value)}
-                    required
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Time *</Label>
+                  <Label className="text-xs font-semibold">Time</Label>
                   <Input
                     type="time"
                     value={deadlineTime}
                     onChange={(e) => setDeadlineTime(e.target.value)}
-                    required
                   />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold">Maximum Attempts</Label>
                   <Input
                     type="number"
-                    value={maxAttempts}
-                    onChange={(e) => setMaxAttempts(Number(e.target.value))}
+                    value={maxAttempts || ""}
+                    placeholder="Optional (e.g. Unlimited)"
+                    onChange={(e) => setMaxAttempts(e.target.value ? Number(e.target.value) : 0)}
                   />
                 </div>
               </div>

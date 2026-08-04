@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { createCourse, updateCourse } from "@/services/api/course.service";
+import { saveCertificateTemplate } from "@/services/api/certificate.service";
 import {
   CheckCircle2,
   BookOpen,
@@ -79,6 +80,8 @@ export default function ReviewPublishForm({
         language: basicInfo.language || "English",
         duration: basicInfo.duration || 20,
         status: status,
+        enrollmentType: (enrollment as any).enrollmentType || "SELF",
+        enrolledUserIds: ((enrollment as any).enrolledUsersList || []).map((u: any) => String(u.userId)),
       };
 
       let res;
@@ -89,9 +92,32 @@ export default function ReviewPublishForm({
       }
 
       if (res?.success) {
+        const targetCourseId = Number(courseId) || Number(res.data?.id);
+        if (targetCourseId && certificate) {
+          try {
+            await saveCertificateTemplate(targetCourseId, {
+              templateName: "Harbinger Classic Gold",
+              headerTitle: certificate.certificateTitle || "CERTIFICATE",
+              headerSubtitle: (certificate as any).headerSubtitle || "OF ACHIEVEMENT",
+              certifyText: (certificate as any).certifyText || "This is to certify that",
+              completionText: (certificate as any).completionText || "has successfully completed and passed the course",
+              signatoryName: (certificate as any).signatoryName || "Richard Wilson",
+              signatoryTitle: (certificate as any).signatoryTitle || "Authorized Director",
+              signatureUrl: (certificate as any).signatureUrl || null,
+              logoUrl: (certificate as any).logoUrl || null,
+              customDate: (certificate as any).customDate || null,
+              primaryColor: (certificate as any).primaryColor || "#d97706",
+              enableCertificate: certificate.enableCertificate,
+              passingThreshold: certificate.passingThreshold || 70,
+            });
+          } catch (certErr) {
+            console.error("Certificate template save warning:", certErr);
+          }
+        }
+
         alert(
           status === "PUBLISHED"
-            ? "🚀 Course successfully PUBLISHED! It is now live for learners on their dashboard."
+            ? "🚀 Course successfully PUBLISHED! It is now live for learners on their dashboard with verifiable certificate configuration."
             : "💾 Course saved as DRAFT."
         );
         router.push("/courses");

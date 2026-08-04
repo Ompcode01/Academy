@@ -119,7 +119,7 @@ export default function AddSkillModal({ isOpen, onClose, onSuccess, initialData 
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-6 py-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {initialData ? (initialData.status === "REJECTED" ? "Edit & Re-submit Skill" : "Edit Skill") : "Add New Skill"}
             </h2>

@@ -119,13 +119,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </>
         )}
 
-        {/* Section 1: Skill Cloud */}
+        {/* Section 1: Skill Cloud & Certificates */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C757D]">
             <span>≡</span>
-            <span>Skill Cloud</span>
+            <span>Skill &amp; Certificates</span>
           </div>
-          <ul className="pl-4 text-xs font-medium text-[#212529]">
+          <ul className="pl-4 text-xs font-medium text-[#212529] space-y-1.5">
             <li>
               <Link
                 href="/skill-cloud"
@@ -137,6 +137,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               >
                 <span className="h-1.5 w-1.5 rounded-full bg-current" />
                 <span>Skill Cloud Dashboard</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/certificates"
+                className={`flex items-center gap-1.5 transition-colors ${
+                  pathname.startsWith("/certificates")
+                    ? "font-bold text-[#C82333]"
+                    : "hover:text-[#C82333]"
+                }`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                <span>Certificate Management</span>
               </Link>
             </li>
           </ul>

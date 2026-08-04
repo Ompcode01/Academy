@@ -154,27 +154,30 @@ export default function QuizBuilderModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Duration (Minutes) *</Label>
+                  <Label className="text-xs font-semibold">Duration (Minutes)</Label>
                   <Input
                     type="number"
-                    value={durationMinutes}
-                    onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                    value={durationMinutes || ""}
+                    placeholder="Optional (e.g. 20)"
+                    onChange={(e) => setDurationMinutes(e.target.value ? Number(e.target.value) : 0)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Passing Percentage (%) *</Label>
+                  <Label className="text-xs font-semibold">Passing Percentage (%)</Label>
                   <Input
                     type="number"
-                    value={passingPercentage}
-                    onChange={(e) => setPassingPercentage(Number(e.target.value))}
+                    value={passingPercentage || ""}
+                    placeholder="Optional (e.g. 70)"
+                    onChange={(e) => setPassingPercentage(e.target.value ? Number(e.target.value) : 0)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Maximum Attempts *</Label>
+                  <Label className="text-xs font-semibold">Maximum Attempts</Label>
                   <Input
                     type="number"
-                    value={maxAttempts}
-                    onChange={(e) => setMaxAttempts(Number(e.target.value))}
+                    value={maxAttempts || ""}
+                    placeholder="Optional (e.g. Unlimited)"
+                    onChange={(e) => setMaxAttempts(e.target.value ? Number(e.target.value) : 0)}
                   />
                 </div>
               </div>

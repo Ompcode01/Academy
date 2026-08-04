@@ -152,6 +152,7 @@ function CreateCourseContent() {
       case 4:
         return (
           <EnrollmentForm
+            courseId={courseId}
             data={wizardState.enrollment}
             onChange={updateEnrollment}
             onNext={handleNext}
@@ -163,6 +164,7 @@ function CreateCourseContent() {
         return (
           <CertificateForm
             data={wizardState.certificate}
+            courseTitle={wizardState.basicInfo.title}
             onChange={updateCertificate}
             onNext={handleNext}
             onBack={handleBack}

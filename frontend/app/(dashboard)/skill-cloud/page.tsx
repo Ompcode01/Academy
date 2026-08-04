@@ -22,6 +22,8 @@ import {
   ChevronRight,
   ShieldCheck,
   UserCheck,
+  ShieldAlert,
+  Trash2,
 } from "lucide-react";
 
 import {
@@ -46,8 +48,10 @@ import { useAuthStore } from "@/store/auth.store";
 export default function SkillCloudPage() {
   const { user } = useAuthStore();
   
-  // Role-based view determination (no manual toggle)
-  const isAdmin = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
+  // 5 Roles Access Enforcement (SUPER_ADMIN, ADMIN, LEARNER allowed; TEACHER, GUEST restricted)
+  const userRole = user?.role || "LEARNER";
+  const isAllowed = userRole === "SUPER_ADMIN" || userRole === "ADMIN" || userRole === "LEARNER";
+  const isAdmin = userRole === "SUPER_ADMIN" || userRole === "ADMIN";
 
   // Active sub-tab inside Learner view
   const [learnerTab, setLearnerTab] = useState<"OVERVIEW" | "MY_SKILLS">("OVERVIEW");
@@ -133,6 +137,21 @@ export default function SkillCloudPage() {
     }
   };
 
+  const handleDeleteAdminRequest = async (reqItem: ApprovalRequestItem) => {
+    if (confirm(`Are you sure you want to permanently delete this ${reqItem.requestKind.toLowerCase()} entry ("${reqItem.title}")?`)) {
+      try {
+        if (reqItem.requestKind === "SKILL") {
+          await deleteUserSkill(reqItem.id);
+        } else {
+          await deleteUserProject(reqItem.id);
+        }
+        loadData();
+      } catch (err) {
+        console.error("Failed to delete request:", err);
+      }
+    }
+  };
+
   // Learner Filtered Skills
   const filteredUserSkills = userSkills.filter((s) => {
     if (skillCategoryFilter !== "ALL") {
@@ -163,6 +182,34 @@ export default function SkillCloudPage() {
   const learnerPendingSkills = userSkills.filter((s) => s.status === "PENDING").length;
   const learnerTotalProjects = userProjects.length;
 
+  // Restrict access for TEACHER, GUEST, or any unauthorized role
+  if (!isAllowed) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center space-y-4">
+        <div className="h-16 w-16 rounded-full bg-rose-100 dark:bg-rose-950/60 flex items-center justify-center text-rose-600 dark:text-rose-400">
+          <ShieldAlert className="h-8 w-8" />
+        </div>
+        <div className="max-w-md space-y-2">
+          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+            Skill Cloud Access Restricted
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            The Skill Cloud platform is strictly reserved for Learners (to manage skills &amp; projects) and Super Admins / Admins (to verify and approve requests).
+          </p>
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+            Your account role <span className="font-bold text-rose-600 uppercase">({userRole})</span> does not have permission to access this portal.
+          </div>
+        </div>
+        <a
+          href="/dashboard"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 transition-all shadow"
+        >
+          Return to Dashboard
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 pb-12">
       {/* Top Header Bar */}
@@ -174,17 +221,12 @@ export default function SkillCloudPage() {
             <span className="text-emerald-600 dark:text-emerald-400">Skill Cloud</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1 flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-emerald-500" />
+            <Layers className="h-6 w-6 text-emerald-500" />
             {isAdmin ? "Skill Approval Portal" : "Skill Cloud Platform"}
           </h1>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-bold text-slate-700 dark:text-slate-300">
-            {isAdmin ? <ShieldCheck className="h-3.5 w-3.5 text-amber-500" /> : <UserCheck className="h-3.5 w-3.5 text-emerald-500" />}
-            {isAdmin ? "Admin View" : "Learner View"}
-          </span>
-
           <button
             onClick={loadData}
             title="Refresh Data"
@@ -415,7 +457,7 @@ export default function SkillCloudPage() {
                     <div className="space-y-4">
                       {userSkills.length === 0 ? (
                         <div className="py-12 text-center text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-6">
-                          <Sparkles className="h-8 w-8 mx-auto text-emerald-500/40 mb-2" />
+                          <Layers className="h-8 w-8 mx-auto text-emerald-500/40 mb-2" />
                           <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Your Skill Matrix is Empty</p>
                           <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
                             Assigned courses are not automatically added as skills. Once you complete a course or master a technology, add it to your skill matrix for Admin approval!
@@ -435,7 +477,7 @@ export default function SkillCloudPage() {
                           >
                             <div className="flex items-start gap-3">
                               <div className="mt-0.5 rounded-lg p-2 bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                                <Sparkles className="h-4 w-4" />
+                                <Layers className="h-4 w-4" />
                               </div>
                               <div>
                                 <div className="flex items-center gap-2">
@@ -1071,9 +1113,16 @@ export default function SkillCloudPage() {
                         {/* Status */}
                         <td className="px-6 py-4">
                           {req.status === "APPROVED" && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                              <CheckCircle2 className="h-3 w-3" /> Approved
-                            </span>
+                            <div className="flex flex-col items-start gap-0.5">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+                                <CheckCircle2 className="h-3 w-3" /> Approved
+                              </span>
+                              {req.verifiedBy && (
+                                <span className="text-[10px] text-slate-500 font-medium truncate max-w-xs">
+                                  Approved by {req.verifiedBy}
+                                </span>
+                              )}
+                            </div>
                           )}
                           {req.status === "PENDING" && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-700 dark:bg-amber-950 dark:text-amber-400">
@@ -1085,6 +1134,11 @@ export default function SkillCloudPage() {
                               <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-400">
                                 <XCircle className="h-3 w-3" /> Rejected
                               </span>
+                              {req.verifiedBy && (
+                                <span className="text-[10px] text-slate-500 font-medium truncate max-w-xs">
+                                  By {req.verifiedBy}
+                                </span>
+                              )}
                               {req.rejectionReason && (
                                 <span className="text-[10px] text-rose-600 dark:text-rose-400 truncate max-w-xs">
                                   {req.rejectionReason}
@@ -1097,34 +1151,46 @@ export default function SkillCloudPage() {
                         {/* Admin Actions */}
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
-                            {/* Approve Button */}
-                            <button
-                              onClick={() => handleQuickApprove(req)}
-                              className="rounded-lg bg-emerald-100 p-1.5 text-emerald-700 hover:bg-emerald-600 hover:text-white dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-600 dark:hover:text-white transition-colors"
-                              title="Approve Request"
-                            >
-                              <Check className="h-4 w-4" />
-                            </button>
+                            {/* Approve & Reject Action Buttons - ONLY enabled for PENDING requests */}
+                            {req.status === "PENDING" && (
+                              <>
+                                <button
+                                  onClick={() => handleQuickApprove(req)}
+                                  className="rounded-lg bg-emerald-100 p-1.5 text-emerald-700 hover:bg-emerald-600 hover:text-white dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-600 dark:hover:text-white transition-colors"
+                                  title="Approve Request"
+                                >
+                                  <Check className="h-4 w-4" />
+                                </button>
 
-                            {/* Reject Button */}
-                            <button
-                              onClick={() => {
-                                setSelectedRequestToReject(req);
-                                setIsRejectModalOpen(true);
-                              }}
-                              className="rounded-lg bg-rose-100 p-1.5 text-rose-700 hover:bg-rose-600 hover:text-white dark:bg-rose-950 dark:text-rose-400 dark:hover:bg-rose-600 dark:hover:text-white transition-colors"
-                              title="Reject with Feedback Comment"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedRequestToReject(req);
+                                    setIsRejectModalOpen(true);
+                                  }}
+                                  className="rounded-lg bg-rose-100 p-1.5 text-rose-700 hover:bg-rose-600 hover:text-white dark:bg-rose-950 dark:text-rose-400 dark:hover:bg-rose-600 dark:hover:text-white transition-colors"
+                                  title="Reject with Feedback Comment"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </>
+                            )}
 
-                            {/* View Details */}
+                            {/* View Details Button */}
                             <button
                               onClick={() => setDetailModalItem(req)}
                               className="rounded-lg bg-slate-100 p-1.5 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors"
                               title="View Details"
                             >
                               <Eye className="h-4 w-4" />
+                            </button>
+
+                            {/* Permanently Delete Button for Admin & Super Admin */}
+                            <button
+                              onClick={() => handleDeleteAdminRequest(req)}
+                              className="rounded-lg bg-rose-100 p-1.5 text-rose-600 hover:bg-rose-600 hover:text-white dark:bg-rose-950/60 dark:text-rose-400 dark:hover:bg-rose-600 dark:hover:text-white transition-colors"
+                              title="Permanently Delete Entry from Database"
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
                         </td>

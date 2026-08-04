@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuthStore } from "@/store/auth.store";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ import {
   Wand2,
   FileText,
   Layers,
+  Lock,
 } from "lucide-react";
 
 export interface BasicInfoData {
@@ -87,7 +89,18 @@ export default function BasicInfoForm({
   onNext,
   onCancel,
 }: BasicInfoFormProps) {
+  const { user } = useAuthStore();
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+
+  const isAdmin = user?.role === "ADMIN" || user?.role === "TEACHER";
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
+
+  useEffect(() => {
+    // If user is Admin/Teacher, fix department to user's assigned department
+    if (isAdmin && user?.departmentId) {
+      onChange({ departmentId: String(user.departmentId) });
+    }
+  }, [isAdmin, user?.departmentId]);
 
   const handleCustomFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -103,19 +116,13 @@ export default function BasicInfoForm({
     onChange({ thumbnailUrl: presetUrl });
   };
 
-  const handleAutoGenerateCode = () => {
-    const randomNum = Math.floor(100 + Math.random() * 900);
-    const prefix = data.title ? data.title.substring(0, 3).toUpperCase() : "CRS";
-    onChange({ courseCode: `${prefix}-${randomNum}` });
-  };
-
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       {/* Step Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-border pb-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-extrabold uppercase tracking-wider mb-1">
-            <Sparkles className="h-3.5 w-3.5" /> Step 1: Course Identity &amp; Metadata
+            Step 1: Course Identity &amp; Metadata
           </div>
           <h2 className="text-xl font-bold text-foreground">Course Overview &amp; Branding</h2>
         </div>
@@ -146,18 +153,11 @@ export default function BasicInfoForm({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-bold text-foreground">
-                  Course Code <span className="text-destructive">*</span>
+                  Course Code
                 </Label>
-                <button
-                  type="button"
-                  onClick={handleAutoGenerateCode}
-                  className="text-[10px] text-primary font-bold hover:underline flex items-center gap-1"
-                >
-                  <Wand2 className="h-3 w-3" /> Auto-Gen
-                </button>
               </div>
               <Input
-                placeholder="e.g. CRS-ARCH-501"
+                placeholder="e.g. CRS-PY-101"
                 value={data.courseCode}
                 onChange={(e) => onChange({ courseCode: e.target.value })}
                 className="h-10 text-xs font-mono uppercase bg-background"
@@ -169,23 +169,36 @@ export default function BasicInfoForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Department */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-foreground">
-                Department <span className="text-destructive">*</span>
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-bold text-foreground">
+                  Department <span className="text-destructive">*</span>
+                </Label>
+                {isAdmin && (
+                  <span className="text-[10px] text-amber-600 font-bold flex items-center gap-1">
+                    <Lock className="h-3 w-3" /> Fixed (Your Dept)
+                  </span>
+                )}
+              </div>
               <Select
-                value={data.departmentId || ""}
+                disabled={isAdmin}
+                value={data.departmentId || (isAdmin && user?.departmentId ? String(user.departmentId) : "")}
                 onValueChange={(val: string | null) => onChange({ departmentId: val || "" })}
               >
                 <SelectTrigger className="h-10 text-xs bg-background w-full">
                   <SelectValue placeholder="Select Department" />
                 </SelectTrigger>
                 <SelectContent>
+                  {isSuperAdmin && <SelectItem value="global">Global (All Departments)</SelectItem>}
                   <SelectItem value="1">Engineering (ENG)</SelectItem>
                   <SelectItem value="2">Human Resources (HR)</SelectItem>
                   <SelectItem value="3">Management (MGT)</SelectItem>
-                  <SelectItem value="global">Global (All Departments)</SelectItem>
                 </SelectContent>
               </Select>
+              {isAdmin && (
+                <p className="text-[10px] text-muted-foreground">
+                  As an Admin, courses created are restricted to your assigned department.
+                </p>
+              )}
             </div>
 
             {/* Category */}

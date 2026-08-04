@@ -14,6 +14,7 @@ export interface Course {
   level?: string;
   language?: string;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  enrollmentType?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -179,5 +180,43 @@ export const createCategory = async (data: {
   description?: string;
 }) => {
   const response = await api.post("/categories", data);
+  return response.data;
+};
+
+// Enrolment APIs
+export const selfEnrollCourse = async (courseId: number) => {
+  const response = await api.post(`/courses/${courseId}/enroll`);
+  return response.data;
+};
+
+export const adminEnrollUser = async (courseId: number, identifier: string) => {
+  const response = await api.post(`/courses/${courseId}/admin-enroll`, { identifier });
+  return response.data;
+};
+
+export const bulkEnrollUsers = async (courseId: number, file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await api.post(`/courses/${courseId}/bulk-enroll`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const verifyUser = async (identifier: string) => {
+  const response = await api.post("/courses/verify-user", { identifier });
+  return response.data;
+};
+
+export const verifyBulkFile = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await api.post("/courses/verify-bulk-file", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
