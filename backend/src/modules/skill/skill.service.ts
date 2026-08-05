@@ -76,8 +76,11 @@ class SkillService {
   }
 
   // Approval Management (Admin)
-  async getApprovalRequests(filters: { status?: ApprovalStatus; search?: string }) {
-    const requests = await skillRepository.getAllSkillRequests(filters);
+  async getApprovalRequests(
+    filters: { status?: ApprovalStatus; search?: string },
+    userContext?: { role?: string; departmentId?: bigint | null }
+  ) {
+    const requests = await skillRepository.getAllSkillRequests(filters, userContext);
     return serializeBigInt(requests);
   }
 
@@ -86,7 +89,8 @@ class SkillService {
     requestKind: "SKILL" | "PROJECT",
     action: "APPROVE" | "REJECT",
     reason: string | null,
-    reviewerName: string
+    reviewerName: string,
+    reviewerContext?: { role?: string; departmentId?: bigint | null }
   ) {
     const status = action === "APPROVE" ? ApprovalStatus.APPROVED : ApprovalStatus.REJECTED;
 
@@ -99,8 +103,16 @@ class SkillService {
         throw new Error("This request has already been finalized and cannot be modified.");
       }
 
+      // Department scoping check for non-SUPER_ADMIN reviewers
+      if (reviewerContext && reviewerContext.role !== "SUPER_ADMIN" && reviewerContext.departmentId) {
+        const submitter = await skillRepository.getEmployeeById(existing.userId);
+        if (submitter && submitter.departmentId !== reviewerContext.departmentId) {
+          throw new Error("Access denied: You can only approve or reject skill requests for your own department.");
+        }
+      }
+
       const updated = await skillRepository.updateSkillApproval(id, status, reason, reviewerName);
-      
+
       // Emit Real-Time System Audit Log
       await auditService.recordAuditLog({
         actorName: reviewerName,
@@ -118,6 +130,15 @@ class SkillService {
       if (existing.status !== ApprovalStatus.PENDING) {
         throw new Error("This request has already been finalized and cannot be modified.");
       }
+
+      // Department scoping check for non-SUPER_ADMIN reviewers
+      if (reviewerContext && reviewerContext.role !== "SUPER_ADMIN" && reviewerContext.departmentId) {
+        const submitter = await skillRepository.getEmployeeById(existing.userId);
+        if (submitter && submitter.departmentId !== reviewerContext.departmentId) {
+          throw new Error("Access denied: You can only approve or reject project requests for your own department.");
+        }
+      }
+
       const updated = await skillRepository.updateProjectApproval(id, status, reason, reviewerName);
 
       // Emit Real-Time System Audit Log

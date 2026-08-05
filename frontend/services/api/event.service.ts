@@ -9,6 +9,7 @@ export interface CalendarEventData {
   url?: string | null;
   eventType?: string;
   courseId?: number | null;
+  departmentId?: number | null;
   creatorName?: string | null;
 }
 
@@ -30,6 +31,7 @@ export async function createEvent(data: {
   url?: string;
   eventType?: string;
   courseId?: number;
+  departmentId?: string | number;
 }) {
   const res = await api.post("/events", data);
   return res.data;

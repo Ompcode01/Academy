@@ -94,13 +94,13 @@ const notificationService = {
     try {
       const submitter = await prisma.employee.findUnique({
         where: { id: skill.userId },
-        select: { firstName: true, lastName: true },
+        select: { firstName: true, lastName: true, departmentId: true },
       });
       const submitterName = submitter
         ? `${submitter.firstName} ${submitter.lastName}`
         : "A user";
 
-      const admins = await this._getAdminEmployeeIds();
+      const admins = await this._getAdminEmployeeIds(submitter?.departmentId);
 
       if (admins.length === 0) return;
 
@@ -158,7 +158,7 @@ const notificationService = {
   },
 
   /**
-   * Notify all ADMIN + SUPER_ADMIN that a project was submitted for review.
+   * Notify all ADMIN (of same department) + SUPER_ADMIN that a project was submitted for review.
    */
   async notifyProjectSubmitted(project: {
     id: bigint;
@@ -168,13 +168,13 @@ const notificationService = {
     try {
       const submitter = await prisma.employee.findUnique({
         where: { id: project.userId },
-        select: { firstName: true, lastName: true },
+        select: { firstName: true, lastName: true, departmentId: true },
       });
       const submitterName = submitter
         ? `${submitter.firstName} ${submitter.lastName}`
         : "A user";
 
-      const admins = await this._getAdminEmployeeIds();
+      const admins = await this._getAdminEmployeeIds(submitter?.departmentId);
 
       if (admins.length === 0) return;
 
@@ -234,9 +234,9 @@ const notificationService = {
   // ─── INTERNAL HELPERS ──────────────────────────────────
 
   /**
-   * Get employee IDs for all ADMIN and SUPER_ADMIN users.
+   * Get employee IDs for all SUPER_ADMIN users AND ADMIN users belonging to departmentId.
    */
-  async _getAdminEmployeeIds(): Promise<bigint[]> {
+  async _getAdminEmployeeIds(departmentId?: bigint | null): Promise<bigint[]> {
     const adminRoles = await prisma.userRole.findMany({
       where: {
         role: {
@@ -244,12 +244,25 @@ const notificationService = {
         },
         isActive: true,
       },
-      select: { employeeId: true },
+      select: {
+        employeeId: true,
+        role: { select: { roleCode: true } },
+        employee: { select: { departmentId: true } },
+      },
     });
 
-    // Deduplicate
-    const uniqueIds = [...new Set(adminRoles.map((r) => r.employeeId))];
-    return uniqueIds;
+    const matchingIds: bigint[] = [];
+    for (const r of adminRoles) {
+      if (r.role.roleCode === "SUPER_ADMIN") {
+        matchingIds.push(r.employeeId);
+      } else if (r.role.roleCode === "ADMIN") {
+        if (!departmentId || r.employee.departmentId === departmentId) {
+          matchingIds.push(r.employeeId);
+        }
+      }
+    }
+
+    return [...new Set(matchingIds)];
   },
 };
 

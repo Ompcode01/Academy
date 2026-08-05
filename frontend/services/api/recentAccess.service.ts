@@ -44,3 +44,16 @@ export function recordRecentCourseAccess(
     console.error("Failed to record recent course access:", err);
   }
 }
+
+export function purgeDeletedRecentCourses(userKey: string = "guest", validCourseIds: number[]): RecentCourseItem[] {
+  if (typeof window === "undefined" || !Array.isArray(validCourseIds)) return [];
+  try {
+    const existing = getRecentlyAccessedCourses(userKey);
+    const valid = existing.filter((c) => validCourseIds.includes(Number(c.id)));
+    localStorage.setItem(`lms_recent_accessed_${userKey}`, JSON.stringify(valid));
+    return valid;
+  } catch (err) {
+    console.error("Failed to purge deleted recent courses:", err);
+    return [];
+  }
+}

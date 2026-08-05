@@ -2,8 +2,29 @@ import prisma from "../../config/prisma";
 import { serialize } from "../../utils/serializer";
 
 export class EventService {
-  async getAllEvents() {
+  async getAllEvents(userContext?: { role?: string; employeeId?: bigint | null; departmentId?: bigint | null }) {
+    let whereClause: any = {};
+
+    if (!userContext || userContext.role !== "SUPER_ADMIN") {
+      const deptId = userContext?.departmentId;
+      const empId = userContext?.employeeId;
+
+      whereClause = {
+        OR: [
+          { departmentId: null },
+          ...(deptId ? [{ departmentId: deptId }] : []),
+          ...(empId ? [{ creatorId: empId }] : []),
+        ],
+      };
+    }
+
     const events = await prisma.event.findMany({
+      where: whereClause,
+      include: {
+        department: {
+          select: { id: true, departmentName: true, departmentCode: true },
+        },
+      },
       orderBy: { eventDate: "asc" },
     });
     return serialize(events);
@@ -17,6 +38,7 @@ export class EventService {
     url?: string;
     eventType?: string;
     courseId?: bigint | null;
+    departmentId?: bigint | null;
     creatorId?: bigint | null;
     creatorName?: string;
   }) {
@@ -29,6 +51,7 @@ export class EventService {
         url: data.url || null,
         eventType: data.eventType || "site",
         courseId: data.courseId || null,
+        departmentId: data.departmentId || null,
         creatorId: data.creatorId || null,
         creatorName: data.creatorName || "System Admin",
       } as any,

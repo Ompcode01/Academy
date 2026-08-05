@@ -20,6 +20,7 @@ import {
   Clock,
   HelpCircle,
   Sparkles,
+  Lock,
 } from "lucide-react";
 import { getCourseById, selfEnrollCourse, type Course } from "@/services/api/course.service";
 import {
@@ -137,21 +138,26 @@ export default function CoursePreviewPage() {
     }
   };
 
+  // Explicit Learning Started State (Timer ticks only when active)
+  const [isLearningActive, setIsLearningActive] = useState(false);
+
   useEffect(() => {
     loadCourseAndProgress();
   }, [courseId]);
 
-  // Live timer for time spent tracking
+  // Live timer for time spent tracking (ticks ONLY when user actively starts learning a section/lesson)
   useEffect(() => {
+    if (!isLearningActive) return;
     const timer = setInterval(() => {
       setTimeSpentSeconds((prev) => prev + 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [isLearningActive]);
 
-  // Sync elapsed time to backend every 30 seconds
+  // Sync elapsed time to backend every 30 seconds when active
   useEffect(() => {
+    if (!isLearningActive) return;
     const syncInterval = setInterval(() => {
       if (courseId && selectedLesson) {
         updateLessonProgress(courseId, selectedLesson.id, completedLessonIds.includes(selectedLesson.id), 30);
@@ -159,7 +165,7 @@ export default function CoursePreviewPage() {
     }, 30000);
 
     return () => clearInterval(syncInterval);
-  }, [courseId, selectedLesson, completedLessonIds]);
+  }, [isLearningActive, courseId, selectedLesson, completedLessonIds]);
 
   const toggleModule = (moduleId: number) => {
     setExpandedModules((prev) =>
@@ -171,6 +177,7 @@ export default function CoursePreviewPage() {
 
   const handleToggleLessonComplete = async (lessonId: number) => {
     if (!courseId) return;
+    setIsLearningActive(true);
     const isCurrentlyCompleted = completedLessonIds.includes(lessonId);
     const newStatus = !isCurrentlyCompleted;
 
@@ -206,6 +213,10 @@ export default function CoursePreviewPage() {
   const selectedLessonId = selectedLesson?.id || 1;
   const isLessonCompleted = completedLessonIds.includes(selectedLessonId);
   const isCourseFullyCompleted = progressPercent >= 100 || Boolean(progressData?.certificate);
+  const isAdminOrSuperAdminOrTeacher = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" || user?.role === "TEACHER";
+
+  const isSelfEnrollmentCourse = !course?.enrollmentType || course?.enrollmentType === "SELF";
+  const requiresSelfEnrollment = isSelfEnrollmentCourse && !progressData?.enrollment;
 
   // Check if learner has an assignment submission
   const latestSubmission = (progressData?.submissions || []).find(
@@ -224,12 +235,14 @@ export default function CoursePreviewPage() {
           Back to Courses Catalog
         </Link>
 
-        {/* Live Course Progress & Time Spent */}
+        {/* Live Course Progress & Time Spent (Time spent visible to Admin/SuperAdmin/Teacher) */}
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-            <Clock className="h-3.5 w-3.5 text-indigo-500" />
-            <span>Time Spent: <strong className="text-foreground">{formatTimeSpent(timeSpentSeconds)}</strong></span>
-          </div>
+          {isAdminOrSuperAdminOrTeacher && (
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg">
+              <Clock className="h-3.5 w-3.5 text-indigo-500" />
+              <span>Admin Tracking — Time Spent: <strong className="text-foreground">{formatTimeSpent(timeSpentSeconds)}</strong></span>
+            </div>
+          )}
 
           <div className="flex items-center gap-3">
             <span className="text-xs font-semibold text-muted-foreground">Progress:</span>
@@ -237,8 +250,8 @@ export default function CoursePreviewPage() {
             <span className="text-xs font-bold text-primary">{progressPercent}%</span>
           </div>
 
-          {/* Self Enrollment Action if not enrolled */}
-          {!progressData?.enrollment && (
+          {/* Self Enrollment Action button ONLY when Option 1 (SELF) is active and user is not enrolled */}
+          {requiresSelfEnrollment && (
             <Button
               size="sm"
               onClick={async () => {
@@ -252,7 +265,7 @@ export default function CoursePreviewPage() {
               }}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow"
             >
-              <CheckCircle2 className="h-4 w-4" /> Enroll Now
+              <Sparkles className="h-4 w-4" /> Enroll Now
             </Button>
           )}
 
@@ -285,7 +298,13 @@ export default function CoursePreviewPage() {
             <Button
               size="xs"
               variant="outline"
-              onClick={() => setIsQuizModalOpen(true)}
+              onClick={() => {
+                if (requiresSelfEnrollment) {
+                  alert("Self-Enrollment Required — Please click 'Enroll Now' to take quizzes.");
+                  return;
+                }
+                setIsQuizModalOpen(true);
+              }}
               className="text-xs gap-1 text-indigo-600 border-indigo-500/30"
             >
               <HelpCircle className="h-3.5 w-3.5" /> Take Quiz
@@ -338,7 +357,12 @@ export default function CoursePreviewPage() {
                               <button
                                 type="button"
                                 onClick={() => {
+                                  if (requiresSelfEnrollment) {
+                                    alert("Self-Enrollment Required — Please click 'Enroll Now' in the header to unlock all course lessons.");
+                                    return;
+                                  }
                                   setSelectedLesson(lesson);
+                                  setIsLearningActive(true);
                                   if (lesson.contentType === "QUIZ") {
                                     setIsQuizModalOpen(true);
                                   } else if (lesson.contentType === "ASSIGNMENT") {
@@ -347,7 +371,9 @@ export default function CoursePreviewPage() {
                                 }}
                                 className="flex items-center gap-2 text-left flex-1 truncate"
                               >
-                                {isDone ? (
+                                {requiresSelfEnrollment ? (
+                                  <Lock className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+                                ) : isDone ? (
                                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                                 ) : lesson.id === selectedLessonId ? (
                                   <Play className="h-3.5 w-3.5 shrink-0 fill-primary text-primary" />
@@ -400,7 +426,10 @@ export default function CoursePreviewPage() {
               {selectedLesson?.contentType === "ASSIGNMENT" && (
                 <Button
                   size="sm"
-                  onClick={() => setIsAssignmentModalOpen(true)}
+                  onClick={() => {
+                    setIsLearningActive(true);
+                    setIsAssignmentModalOpen(true);
+                  }}
                   className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs gap-1.5"
                 >
                   {latestSubmission ? "View Assignment & Grade" : "Submit Assignment"}
@@ -432,39 +461,79 @@ export default function CoursePreviewPage() {
               )}
 
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                <div className="mb-4 flex items-center gap-3 bg-black/50 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10">
-                  <BookOpen className="h-6 w-6 text-primary" />
-                  <div className="text-left">
-                    <p className="text-sm font-bold text-white uppercase tracking-wider">{currentTitle}</p>
-                    <p className="text-xs text-white/70">{selectedLesson?.title || "Interactive Lesson"}</p>
+                {requiresSelfEnrollment ? (
+                  <div className="flex flex-col items-center justify-center p-6 text-center space-y-3 bg-black/80 backdrop-blur-md rounded-2xl border border-white/20 max-w-md shadow-2xl">
+                    <div className="p-3 rounded-full bg-emerald-500/20 text-emerald-400">
+                      <Lock className="h-8 w-8" />
+                    </div>
+                    <h3 className="text-base font-bold text-white">Self-Enrollment Required</h3>
+                    <p className="text-xs text-white/80 leading-relaxed">
+                      Enroll in this course to unlock video lessons, quizzes, assignments, and track your progress.
+                    </p>
+                    <Button
+                      onClick={async () => {
+                        if (!courseId) return;
+                        try {
+                          await selfEnrollCourse(courseId);
+                          await loadCourseAndProgress();
+                        } catch (err) {
+                          console.error("Self enrollment error:", err);
+                        }
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 py-2.5 rounded-full shadow-xl gap-2 mt-1"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      Enroll Now To Start Learning
+                    </Button>
                   </div>
-                </div>
-
-                {selectedLesson?.contentType === "ASSIGNMENT" ? (
-                  <Button
-                    onClick={() => setIsAssignmentModalOpen(true)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-6 py-3 rounded-full shadow-2xl"
-                  >
-                    Open Assignment Submission Workspace →
-                  </Button>
-                ) : selectedLesson?.contentType === "QUIZ" ? (
-                  <Button
-                    onClick={() => setIsQuizModalOpen(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-6 py-3 rounded-full shadow-2xl"
-                  >
-                    Start Interactive Quiz →
-                  </Button>
                 ) : (
-                  <button className="mt-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl transition-all hover:scale-110 cursor-pointer">
-                    <Play className="h-7 w-7 fill-current ml-0.5" />
-                  </button>
+                  <>
+                    <div className="mb-4 flex items-center gap-3 bg-black/50 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10">
+                      <BookOpen className="h-6 w-6 text-primary" />
+                      <div className="text-left">
+                        <p className="text-sm font-bold text-white uppercase tracking-wider">{currentTitle}</p>
+                        <p className="text-xs text-white/70">{selectedLesson?.title || "Interactive Lesson"}</p>
+                      </div>
+                    </div>
+
+                    {selectedLesson?.contentType === "ASSIGNMENT" ? (
+                      <Button
+                        onClick={() => {
+                          setIsLearningActive(true);
+                          setIsAssignmentModalOpen(true);
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-6 py-3 rounded-full shadow-2xl"
+                      >
+                        Open Assignment Submission Workspace →
+                      </Button>
+                    ) : selectedLesson?.contentType === "QUIZ" ? (
+                      <Button
+                        onClick={() => {
+                          setIsLearningActive(true);
+                          setIsQuizModalOpen(true);
+                        }}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-6 py-3 rounded-full shadow-2xl"
+                      >
+                        Start Interactive Quiz →
+                      </Button>
+                    ) : (
+                      <button
+                        onClick={() => setIsLearningActive(true)}
+                        className="mt-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl transition-all hover:scale-110 cursor-pointer"
+                      >
+                        <Play className="h-7 w-7 fill-current ml-0.5" />
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
 
-              <div className="absolute bottom-3 right-3 rounded-md bg-black/70 px-2.5 py-1 text-xs font-mono text-white backdrop-blur-sm flex items-center gap-1">
-                <Clock className="h-3 w-3 text-indigo-400" />
-                <span>Elapsed: {formatTimeSpent(timeSpentSeconds)}</span>
-              </div>
+              {isAdminOrSuperAdminOrTeacher && (
+                <div className="absolute bottom-3 right-3 rounded-md bg-black/70 px-2.5 py-1 text-xs font-mono text-white backdrop-blur-sm flex items-center gap-1">
+                  <Clock className="h-3 w-3 text-indigo-400" />
+                  <span>Elapsed: {formatTimeSpent(timeSpentSeconds)}</span>
+                </div>
+              )}
             </div>
           </div>
 

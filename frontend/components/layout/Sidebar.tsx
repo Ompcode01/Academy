@@ -34,12 +34,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const username = user?.username || "Guest";
   const fullName = fullNameMap[username.toLowerCase()] || username;
 
-  // Mock courses to enrich the list as shown in the mockup
-  const mockCourses = [
-    { id: 991, title: "CHAMP - JULY 2026" },
-    { id: 992, title: "Prompt Engineering for Dev" },
-  ];
-
   useEffect(() => {
     async function loadCourses() {
       try {
@@ -56,11 +50,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     }
   }, [isOpen]);
 
-  // Combine dynamic courses and mock courses, ensuring no duplicate titles
-  const allCourses = [...courses.map(c => ({ id: Number(c.id), title: c.title })), ...mockCourses];
-  const uniqueCourses = allCourses.filter(
-    (course, index, self) => self.findIndex(c => c.title === course.title) === index
-  );
+  const uniqueCourses = courses.map((c) => ({ id: Number(c.id), title: c.title }));
 
   if (!isOpen) return null;
 

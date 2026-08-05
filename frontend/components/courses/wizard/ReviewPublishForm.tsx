@@ -69,6 +69,12 @@ export default function ReviewPublishForm({
   const handlePublish = async () => {
     try {
       setLoading(true);
+      const selectedType = (enrollment as any).enrollmentType || "SELF";
+      const enrolledUserIdsPayload =
+        selectedType === "SELF"
+          ? []
+          : ((enrollment as any).enrolledUsersList || []).map((u: any) => String(u.userId));
+
       const payload = {
         title: basicInfo.title || "Java Programming",
         shortDescription: basicInfo.shortDescription || "Core Java fundamentals and secure development practices.",
@@ -80,9 +86,10 @@ export default function ReviewPublishForm({
         language: basicInfo.language || "English",
         duration: basicInfo.duration || 20,
         status: status,
-        enrollmentType: (enrollment as any).enrollmentType || "SELF",
-        enrolledUserIds: ((enrollment as any).enrolledUsersList || []).map((u: any) => String(u.userId)),
+        enrollmentType: selectedType,
+        enrolledUserIds: enrolledUserIdsPayload,
         teacherIds: (enrollment as any).teacherIds || ["4"],
+        sections: sections || [],
       };
 
       let res;

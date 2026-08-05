@@ -16,6 +16,7 @@ model Department {
   updatedAt      DateTime   @updatedAt
   employees      Employee[]
   courses        Course[]
+  events         Event[]
 
   @@map("departments")
 }
@@ -43,6 +44,7 @@ model Employee {
   assignedRoles    UserRole[]
   createdCourses   Course[]
   assignedCourses  CourseTeacher[]
+  enrollments      Enrollment[]
 
   @@index([departmentId])
   @@index([managerId])
@@ -165,6 +167,7 @@ model Course {
   updatedAt        DateTime        @updatedAt
   sections            CourseSection[]
   teachers            CourseTeacher[]
+  enrollments         Enrollment[]
   certificateTemplate CertificateTemplate?
   category            Category        @relation(fields: [categoryId], references: [id])
   department          Department?     @relation(fields: [departmentId], references: [id])
@@ -240,7 +243,8 @@ model Enrollment {
   progress         Decimal   @default(0.00) @db.Decimal(5, 2)
   timeSpentSeconds Int       @default(0)
   createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  user             Employee  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course           Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
   @@index([userId])
@@ -391,6 +395,7 @@ model Notification {
   @@index([userId])
   @@index([userId, isRead])
   @@map("notifications")
+}
 
 model CertificateTemplate {
   id                BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
@@ -432,21 +437,24 @@ model IssuedCertificate {
 }
 
 model Event {
-  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  title       String   @db.VarChar(200)
-  description String?  @db.Text
-  eventDate   DateTime
-  eventTime   String?  @db.VarChar(20)
-  url         String?  @db.VarChar(500)
-  eventType   String   @default("site") @db.VarChar(50) // site, category, course, group, user, other
-  courseId    BigInt?  @db.UnsignedBigInt
-  creatorId   BigInt?
-  creatorName String?  @db.VarChar(100)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
+  title        String      @db.VarChar(200)
+  description  String?     @db.Text
+  eventDate    DateTime
+  eventTime    String?     @db.VarChar(20)
+  url          String?     @db.VarChar(500)
+  eventType    String      @default("site") @db.VarChar(50) // site, category, course, group, user, other
+  courseId     BigInt?     @db.UnsignedBigInt
+  departmentId BigInt?
+  creatorId    BigInt?
+  creatorName  String?     @db.VarChar(100)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
 
   @@index([eventDate])
   @@index([eventType])
+  @@index([departmentId])
   @@map("events")
 }
 

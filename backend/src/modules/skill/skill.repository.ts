@@ -182,11 +182,24 @@ class SkillRepository {
   }
 
   // Approval Management (Admin View)
-  async getAllSkillRequests(filters: { status?: ApprovalStatus; search?: string }) {
+  async getAllSkillRequests(
+    filters: { status?: ApprovalStatus; search?: string },
+    userContext?: { role?: string; departmentId?: bigint | null }
+  ) {
     const { status, search } = filters;
 
     const skillWhere: any = {};
     const projectWhere: any = {};
+
+    if (userContext && userContext.role !== "SUPER_ADMIN" && userContext.departmentId) {
+      const deptEmployees = await prisma.employee.findMany({
+        where: { departmentId: userContext.departmentId },
+        select: { id: true },
+      });
+      const deptEmployeeIds = deptEmployees.map((e) => e.id);
+      skillWhere.userId = { in: deptEmployeeIds };
+      projectWhere.userId = { in: deptEmployeeIds };
+    }
 
     if (status) {
       skillWhere.status = status;
@@ -194,14 +207,27 @@ class SkillRepository {
     }
 
     if (search) {
-      skillWhere.OR = [
-        { skillName: { contains: search } },
-        { category: { contains: search } },
+      skillWhere.AND = [
+        ...(skillWhere.userId ? [{ userId: skillWhere.userId }] : []),
+        {
+          OR: [
+            { skillName: { contains: search } },
+            { category: { contains: search } },
+          ],
+        },
       ];
-      projectWhere.OR = [
-        { projectName: { contains: search } },
-        { projectType: { contains: search } },
+      delete skillWhere.userId;
+
+      projectWhere.AND = [
+        ...(projectWhere.userId ? [{ userId: projectWhere.userId }] : []),
+        {
+          OR: [
+            { projectName: { contains: search } },
+            { projectType: { contains: search } },
+          ],
+        },
       ];
+      delete projectWhere.userId;
     }
 
     const [skills, projects, employees] = await Promise.all([
@@ -221,6 +247,7 @@ class SkillRepository {
           officialEmail: true,
           designation: true,
           profileImage: true,
+          departmentId: true,
         },
       }),
     ]);
@@ -334,6 +361,13 @@ class SkillRepository {
     });
 
     return updated;
+  }
+
+  async getEmployeeById(id: bigint) {
+    return prisma.employee.findUnique({
+      where: { id },
+      select: { id: true, departmentId: true },
+    });
   }
 
   // Dashboard Overview metrics for a user

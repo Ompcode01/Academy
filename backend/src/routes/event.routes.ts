@@ -5,8 +5,8 @@ import { getEvents, createEvent, updateEvent, deleteEvent } from "../modules/eve
 
 const router = Router();
 
-// Allow reading calendar events for all logged-in and guest users
-router.get("/", getEvents);
+// Allow reading calendar events for all logged-in users with role/department context
+router.get("/", authenticate, getEvents);
 
 // Only SUPER_ADMIN and ADMIN can create, update, or delete events
 router.post("/", authenticate, authorizeRoles("SUPER_ADMIN", "ADMIN"), createEvent);

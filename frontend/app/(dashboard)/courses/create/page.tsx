@@ -48,8 +48,10 @@ function CreateCourseContent() {
     sections: [],
     enrollment: {
       selfEnrollment: true,
-      adminEnrollment: true,
+      adminEnrollment: false,
+      enrollmentType: "SELF",
       departmentAccess: "ALL",
+      enrolledUsersList: [],
     },
     certificate: {
       enableCertificate: true,
@@ -78,10 +80,45 @@ function CreateCourseContent() {
                 categoryId: c.categoryId ? String(c.categoryId) : "1",
               },
               sections: c.sections || [],
+              enrollment: {
+                selfEnrollment: !c.enrollmentType || c.enrollmentType === "SELF",
+                adminEnrollment: c.enrollmentType === "ADMIN" || c.enrollmentType === "BULK",
+                enrollmentType: (c.enrollmentType as any) || "SELF",
+                departmentAccess: "ALL",
+                enrolledUsersList: [],
+              },
             }));
           }
         })
         .catch(console.error);
+    } else {
+      // Clean state for fresh course creation
+      setWizardState({
+        basicInfo: {
+          title: "",
+          courseCode: "",
+          departmentId: "",
+          level: "Beginner",
+          shortDescription: "",
+          language: "English",
+          duration: undefined,
+          description: "",
+          categoryId: "",
+        },
+        sections: [],
+        enrollment: {
+          selfEnrollment: true,
+          adminEnrollment: false,
+          enrollmentType: "SELF",
+          departmentAccess: "ALL",
+          enrolledUsersList: [],
+        },
+        certificate: {
+          enableCertificate: true,
+          certificateTitle: "Certificate of Completion",
+          passingThreshold: 70,
+        },
+      });
     }
   }, [courseId]);
 

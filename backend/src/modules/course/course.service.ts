@@ -52,7 +52,7 @@ class CourseService {
 
     switch (role) {
       case "SUPER_ADMIN":
-        return {}; // No restrictions
+        return {}; // Super Admin sees all courses across all departments
 
       case "ADMIN":
         return {
@@ -60,7 +60,7 @@ class CourseService {
             { departmentId: null },
             ...(departmentId ? [{ departmentId }] : []),
             ...(employeeId ? [{ creatorId: employeeId }] : []),
-            superAdminOrAdminCourseCondition,
+            ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
           ],
         };
 
@@ -71,7 +71,6 @@ class CourseService {
             ...(departmentId ? [{ departmentId }] : []),
             ...(employeeId ? [{ creatorId: employeeId }] : []),
             ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
-            superAdminOrAdminCourseCondition,
           ],
         };
 
@@ -82,7 +81,6 @@ class CourseService {
             { departmentId: null },
             ...(departmentId ? [{ departmentId }] : []),
             ...(employeeId ? [{ enrollments: { some: { userId: employeeId } } }] : []),
-            superAdminOrAdminCourseCondition,
           ],
         };
 
@@ -117,9 +115,14 @@ class CourseService {
     enrollmentType?: string;
     enrolledUserIds?: string[];
     teacherIds?: string[];
+    sections?: any[];
   }) {
-    const { teacherIds, enrolledUserIds, ...createFields } = data;
+    const { teacherIds, enrolledUserIds, sections, ...createFields } = data;
     const course = await courseRepository.create(createFields);
+
+    if (sections && Array.isArray(sections) && sections.length > 0) {
+      await this.saveCourseSectionsAndContents(course.id, sections);
+    }
 
     if (teacherIds && teacherIds.length > 0) {
       await this.assignTeachers(course.id, teacherIds);
@@ -154,6 +157,58 @@ class CourseService {
     return this.getCourseById(course.id);
   }
 
+  async saveCourseSectionsAndContents(courseId: bigint, sections: any[]) {
+    if (!sections || !Array.isArray(sections) || sections.length === 0) return;
+
+    for (let sIdx = 0; sIdx < sections.length; sIdx++) {
+      const secData = sections[sIdx];
+      const sectionTitle = secData.title || `Module ${sIdx + 1}`;
+
+      const section = await prisma.courseSection.create({
+        data: {
+          courseId,
+          title: sectionTitle,
+          description: secData.description || null,
+          sectionOrder: secData.sectionOrder || sIdx + 1,
+          isPublished: true,
+        },
+      });
+
+      if (secData.contents && Array.isArray(secData.contents)) {
+        for (let cIdx = 0; cIdx < secData.contents.length; cIdx++) {
+          const cntData = secData.contents[cIdx];
+          const quizJson =
+            cntData.quizConfigJson || (cntData.questions ? JSON.stringify(cntData.questions) : null);
+          const assignmentJson =
+            cntData.assignmentConfigJson ||
+            (cntData.contentType === "ASSIGNMENT"
+              ? JSON.stringify({
+                  instructions: cntData.description || cntData.instructions || "Complete practical assignment.",
+                  maxScore: cntData.maxScore || 100,
+                  requiresGrading: true,
+                })
+              : null);
+
+          await prisma.learningContent.create({
+            data: {
+              sectionId: section.id,
+              title: cntData.title || `Content ${cIdx + 1}`,
+              contentType: cntData.contentType || "LESSON",
+              contentUrl: cntData.contentUrl || cntData.videoUrl || null,
+              description: cntData.description || null,
+              duration: cntData.duration || 10,
+              contentOrder: cntData.contentOrder || cIdx + 1,
+              isMandatory: true,
+              isPublished: true,
+              quizConfigJson: quizJson,
+              assignmentConfigJson: assignmentJson,
+            },
+          });
+        }
+      }
+    }
+  }
+
   async updateCourse(
     id: bigint,
     data: {
@@ -170,11 +225,21 @@ class CourseService {
       enrollmentType?: string;
       enrolledUserIds?: string[];
       teacherIds?: string[];
+      sections?: any[];
     }
   ) {
     await this.getCourseById(id);
-    const { enrolledUserIds, teacherIds, ...courseData } = data;
+    const { enrolledUserIds, teacherIds, sections, ...courseData } = data;
     const course = await courseRepository.update(id, courseData);
+
+    if (sections && Array.isArray(sections) && sections.length > 0) {
+      // Soft-delete existing sections for clean update
+      await prisma.courseSection.updateMany({
+        where: { courseId: id },
+        data: { isActive: false },
+      });
+      await this.saveCourseSectionsAndContents(id, sections);
+    }
 
     if (teacherIds) {
       await this.assignTeachers(id, teacherIds);

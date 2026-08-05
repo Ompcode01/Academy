@@ -3,22 +3,10 @@ import { serialize } from "../../utils/serializer";
 
 export class ProgressService {
   async getLearnerCourseProgress(userId: bigint, courseId: bigint) {
-    // 1. Get or create enrollment
-    let enrollment = await prisma.enrollment.findUnique({
+    // 1. Get existing enrollment (Do NOT auto-create)
+    const enrollment = await prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
     });
-
-    if (!enrollment) {
-      enrollment = await prisma.enrollment.create({
-        data: {
-          userId,
-          courseId,
-          status: "IN_PROGRESS",
-          progress: 0,
-          timeSpentSeconds: 0,
-        },
-      });
-    }
 
     // 2. Get completed lessons
     const completedLessons = await prisma.userLessonProgress.findMany({
@@ -203,7 +191,7 @@ export class ProgressService {
   // Admin Progress Reports & Analytics
   async getAdminLearnerProgressMatrix() {
     const enrollments = await prisma.enrollment.findMany({
-      orderBy: { updatedAt: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     const userIds = Array.from(new Set(enrollments.map((e) => e.userId)));

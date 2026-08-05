@@ -10,6 +10,7 @@ export interface EventItem {
   type: "site" | "category" | "course" | "group" | "user" | "other";
   description?: string;
   courseName?: string;
+  departmentId?: number | null;
 }
 
 interface EventsState {
@@ -21,7 +22,7 @@ interface EventsState {
   fetchEvents: () => Promise<void>;
   toggleTypeVisibility: (type: string) => void;
   setCourseFilter: (course: string) => void;
-  addEvent: (event: Omit<EventItem, "id">) => Promise<void>;
+  addEvent: (event: Omit<EventItem, "id"> & { departmentId?: string | number | null }) => Promise<void>;
   editEvent: (id: number, event: Partial<Omit<EventItem, "id">>) => Promise<void>;
   removeEvent: (id: number) => Promise<void>;
 }
@@ -46,6 +47,7 @@ export const useEventsStore = create<EventsState>((set, get) => ({
           type: (ev.eventType as any) || "site",
           description: ev.description || "",
           courseName: ev.courseId ? `Course #${ev.courseId}` : undefined,
+          departmentId: ev.departmentId ? Number(ev.departmentId) : null,
         }));
         set({ events: parsedEvents });
       }
@@ -78,6 +80,7 @@ export const useEventsStore = create<EventsState>((set, get) => ({
         eventTime: event.time,
         url: event.url,
         eventType: event.type || "site",
+        departmentId: event.departmentId ? String(event.departmentId) : undefined,
       });
       await get().fetchEvents();
     } catch (err) {

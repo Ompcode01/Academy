@@ -40,6 +40,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
   const [time, setTime] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
+  const [targetDeptId, setTargetDeptId] = useState<string>("all");
   const [submitting, setSubmitting] = useState(false);
 
   // Calendar calculations
@@ -95,6 +96,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
     setTime("");
     setDescription("");
     setUrl("");
+    setTargetDeptId(user?.role === "ADMIN" && user?.departmentId ? String(user.departmentId) : "all");
     setShowModal(true);
   };
 
@@ -107,6 +109,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
     setTime(evt.time || "");
     setDescription(evt.description || "");
     setUrl(evt.url || "");
+    setTargetDeptId(evt.departmentId ? String(evt.departmentId) : "all");
     setShowModal(true);
   };
 
@@ -133,6 +136,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
           description: description || undefined,
           url: url || undefined,
           type: "site",
+          departmentId: targetDeptId !== "all" ? Number(targetDeptId) : undefined,
         });
       }
       setShowModal(false);
@@ -498,6 +502,28 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
                   placeholder="e.g. https://meet.google.com/abc-defg-hij"
                   className="w-full rounded border border-[#E0E6ED] p-2 text-xs font-medium focus:border-[#C82333] outline-none"
                 />
+              </div>
+
+              {/* Department Target Selection */}
+              <div>
+                <label className="text-xs font-bold text-[#212529] block mb-1">
+                  Target Department Scope
+                </label>
+                <select
+                  value={targetDeptId}
+                  onChange={(e) => setTargetDeptId(e.target.value)}
+                  className="w-full rounded border border-[#E0E6ED] p-2 text-xs font-medium focus:border-[#C82333] outline-none bg-white cursor-pointer"
+                >
+                  <option value="all">🌐 All Departments (Global Event)</option>
+                  <option value="1">Engineering (ENG)</option>
+                  <option value="2">Human Resources (HR)</option>
+                  <option value="3">Management (MGT)</option>
+                </select>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {user?.role === "ADMIN"
+                    ? "As Admin, events are restricted to your department or global."
+                    : "Super Admins can target specific departments or publish globally."}
+                </p>
               </div>
 
               {/* Form Buttons */}

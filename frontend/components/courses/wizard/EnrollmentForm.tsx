@@ -12,6 +12,7 @@ import {
   FileSpreadsheet,
   Upload,
   CheckCircle2,
+  AlertCircle,
   AlertTriangle,
   XCircle,
   Download,
@@ -81,6 +82,43 @@ export default function EnrollmentForm({
   const [bulkLoading, setBulkLoading] = useState(false);
   const [bulkResult, setBulkResult] = useState<BulkResult | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
+
+  // Teacher Username Input State
+  const [teacherInput, setTeacherInput] = useState("");
+  const [teacherLoading, setTeacherLoading] = useState(false);
+  const [teacherMessage, setTeacherMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const handleAddTeacher = async () => {
+    if (!teacherInput.trim()) return;
+    setTeacherLoading(true);
+    setTeacherMessage(null);
+
+    try {
+      const res = await verifyUser(teacherInput.trim());
+      if (res?.success && res.data) {
+        const found = res.data;
+        const teacherIdStr = String(found.id);
+        const current = data.teacherIds || ["4"];
+        if (!current.includes(teacherIdStr)) {
+          onChange({ teacherIds: [...current, teacherIdStr] });
+          setTeacherMessage({
+            type: "success",
+            text: `Added Teacher: ${found.name} (${found.employeeCode || found.username})`,
+          });
+          setTeacherInput("");
+        } else {
+          setTeacherMessage({ type: "error", text: `${found.name} is already assigned as a teacher.` });
+        }
+      }
+    } catch (err: any) {
+      setTeacherMessage({
+        type: "error",
+        text: err?.response?.data?.message || `User '${teacherInput}' not found as an active employee/teacher.`,
+      });
+    } finally {
+      setTeacherLoading(false);
+    }
+  };
 
   const setType = (type: "SELF" | "ADMIN" | "BULK") => {
     onChange({
@@ -596,66 +634,133 @@ export default function EnrollmentForm({
         </div>
       )}
 
-      {/* Teacher Assignment Section (Optional) */}
+      {/* Teacher Assignment Section (Dynamic Username Input) */}
       <div className="space-y-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-5">
         <div className="flex items-center justify-between border-b border-indigo-500/20 pb-2">
           <div className="flex items-center gap-2">
             <UserCheck className="h-5 w-5 text-indigo-600" />
             <h3 className="text-sm font-bold text-foreground">
-              Assign Teachers for Review &amp; Assignment Grading (Optional)
+              Assign Teachers for Review &amp; Assignment Grading
             </h3>
           </div>
           <span className="text-[11px] font-bold bg-indigo-500/10 text-indigo-600 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
-            Multiple Selection Supported
+            Dynamic Teacher Assignment
           </span>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Super Admin and Admin can assign one or multiple Teachers to this course. Assigned teachers will receive pending assignment notifications, evaluate student submissions, assign scores &amp; grades, and track enrolled learners.
+          Enter any instructor's username, official email, or employee code to add them as an assigned teacher for this course. Assigned teachers can grade student assignments, review submissions, and manage course progress.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+        {/* Username Search & Add Input Box */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <UserCheck className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Enter teacher username, email, or employee code (e.g. sneha, EMP004, priyanka)..."
+              value={teacherInput}
+              onChange={(e) => setTeacherInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAddTeacher();
+                }
+              }}
+              className="pl-9 h-10 text-xs bg-background"
+            />
+          </div>
+          <Button
+            type="button"
+            onClick={handleAddTeacher}
+            disabled={teacherLoading || !teacherInput.trim()}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs h-10 px-4"
+          >
+            {teacherLoading ? "Verifying..." : "+ Add Teacher"}
+          </Button>
+        </div>
+
+        {teacherMessage && (
+          <div
+            className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${
+              teacherMessage.type === "success"
+                ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
+            }`}
+          >
+            {teacherMessage.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+            {teacherMessage.text}
+          </div>
+        )}
+
+        {/* Assigned Teachers List */}
+        <div className="space-y-2 pt-1">
+          <Label className="text-xs font-bold text-foreground">
+            Assigned Teachers ({(data.teacherIds || ["4"]).length})
+          </Label>
+
+          {(data.teacherIds || ["4"]).length === 0 ? (
+            <p className="text-xs text-muted-foreground italic">No teachers assigned yet. Enter a username above to assign teachers.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {(data.teacherIds || ["4"]).map((idStr) => {
+                const knownTeachers: Record<string, { name: string; code: string }> = {
+                  "4": { name: "Sneha Patil", code: "EMP004" },
+                  "2": { name: "Omprakash Pandey", code: "EMP002" },
+                  "1": { name: "Priyanka Davhare", code: "EMP001" },
+                };
+                const info = knownTeachers[idStr] || { name: `Teacher #${idStr}`, code: `ID:${idStr}` };
+
+                return (
+                  <div
+                    key={idStr}
+                    className="flex items-center gap-2 bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-full text-xs shadow-sm"
+                  >
+                    <span>{info.name} ({info.code})</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = data.teacherIds || ["4"];
+                        onChange({ teacherIds: current.filter((id) => id !== idStr) });
+                      }}
+                      className="h-4 w-4 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-[10px] text-white"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Quick Suggestion Pills */}
+        <div className="pt-2 border-t border-indigo-500/20 flex items-center gap-2">
+          <span className="text-[11px] text-muted-foreground font-semibold">Quick Add Instructors:</span>
           {[
-            { id: "4", name: "Sneha Patil", code: "EMP004", role: "TEACHER", dept: "Engineering" },
-            { id: "2", name: "Omprakash Pandey", code: "EMP002", role: "ADMIN", dept: "Management" },
-            { id: "1", name: "Priyanka Davhare", code: "EMP001", role: "SUPER_ADMIN", dept: "Engineering" },
-          ].map((t) => {
-            const isSelected = (data.teacherIds || ["4"]).includes(t.id);
+            { id: "4", name: "Sneha Patil (EMP004)" },
+            { id: "2", name: "Omprakash Pandey (EMP002)" },
+            { id: "1", name: "Priyanka Davhare (EMP001)" },
+          ].map((item) => {
+            const isAdded = (data.teacherIds || ["4"]).includes(item.id);
             return (
-              <div
-                key={t.id}
+              <button
+                key={item.id}
+                type="button"
                 onClick={() => {
                   const current = data.teacherIds || ["4"];
-                  const next = isSelected
-                    ? current.filter((id) => id !== t.id)
-                    : [...current, t.id];
+                  const next = isAdded
+                    ? current.filter((id) => id !== item.id)
+                    : [...current, item.id];
                   onChange({ teacherIds: next });
                 }}
-                className={`p-3.5 rounded-xl border cursor-pointer flex items-center justify-between transition-all ${
-                  isSelected
-                    ? "bg-indigo-500/10 border-indigo-500 text-indigo-950 shadow-sm"
-                    : "bg-background border-border hover:border-indigo-300"
+                className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all ${
+                  isAdded
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "bg-background text-foreground border-border hover:border-indigo-400"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs ${
-                    isSelected ? "bg-indigo-600 text-white" : "bg-muted text-muted-foreground"
-                  }`}>
-                    {t.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <h5 className="text-xs font-bold text-foreground">{t.name}</h5>
-                    <p className="text-[10px] text-muted-foreground">{t.code} • {t.dept} ({t.role})</p>
-                  </div>
-                </div>
-
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => {}}
-                  className="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
-                />
-              </div>
+                {isAdded ? `✓ ${item.name}` : `+ ${item.name}`}
+              </button>
             );
           })}
         </div>

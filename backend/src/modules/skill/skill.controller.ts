@@ -161,7 +161,14 @@ export const getApprovalRequests = async (req: AuthRequest, res: Response) => {
     const status = req.query.status ? (String(req.query.status) as ApprovalStatus) : undefined;
     const search = req.query.search ? String(req.query.search) : undefined;
 
-    const requests = await skillService.getApprovalRequests({ status, search });
+    const userContext = req.user
+      ? {
+          role: req.user.role,
+          departmentId: req.user.departmentId ? BigInt(req.user.departmentId) : null,
+        }
+      : undefined;
+
+    const requests = await skillService.getApprovalRequests({ status, search }, userContext);
     res.json({ success: true, data: requests });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
@@ -203,12 +210,20 @@ export const handleApprovalAction = async (req: AuthRequest, res: Response) => {
       reviewerName = `${fullName} (${userRole})`;
     }
 
+    const userContext = req.user
+      ? {
+          role: req.user.role,
+          departmentId: req.user.departmentId ? BigInt(req.user.departmentId) : null,
+        }
+      : undefined;
+
     const result = await skillService.handleApprovalAction(
       BigInt(id),
       requestKind,
       action,
       reason || null,
-      reviewerName
+      reviewerName,
+      userContext
     );
 
     res.json({

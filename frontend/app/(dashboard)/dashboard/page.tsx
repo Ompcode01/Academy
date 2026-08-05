@@ -7,6 +7,7 @@ import { getCourses, type Course } from "@/services/api/course.service";
 import { getDashboardStats, type DashboardStats } from "@/services/api/dashboard.service";
 import {
   getRecentlyAccessedCourses,
+  purgeDeletedRecentCourses,
   RecentCourseItem,
 } from "@/services/api/recentAccess.service";
 import { useEventsStore } from "@/store/events.store";
@@ -45,10 +46,17 @@ export default function Dashboard() {
       try {
         setLoading(true);
         // Load courses
-        const courseRes = await getCourses({ limit: 10 });
-        if (courseRes?.success) {
-          setCourses(courseRes.data.courses || []);
+        const courseRes = await getCourses({ limit: 100 });
+        let activeCourses: Course[] = [];
+        if (courseRes?.success && Array.isArray(courseRes.data.courses)) {
+          activeCourses = courseRes.data.courses;
+          setCourses(activeCourses);
         }
+
+        // Purge deleted courses from local recent access storage
+        const activeIds = activeCourses.map((c) => Number(c.id));
+        const cleanRecent = purgeDeletedRecentCourses(username, activeIds);
+        setRecentlyAccessedPrograms(cleanRecent);
 
         // Load stats
         const statsRes = await getDashboardStats();
@@ -65,16 +73,17 @@ export default function Dashboard() {
       }
     }
     loadData();
-  }, [fetchEvents]);
+  }, [fetchEvents, username]);
 
   // Sync user's recently accessed courses from local storage
   useEffect(() => {
-    if (user?.username) {
-      setRecentlyAccessedPrograms(getRecentlyAccessedCourses(user.username));
+    const activeIds = courses.map((c) => Number(c.id));
+    if (activeIds.length > 0) {
+      setRecentlyAccessedPrograms(purgeDeletedRecentCourses(username, activeIds));
     } else {
-      setRecentlyAccessedPrograms(getRecentlyAccessedCourses("guest"));
+      setRecentlyAccessedPrograms(getRecentlyAccessedCourses(username));
     }
-  }, [user]);
+  }, [username, courses]);
 
 
 

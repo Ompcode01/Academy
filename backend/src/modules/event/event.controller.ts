@@ -2,9 +2,17 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import eventService from "./event.service";
 
-export const getEvents = async (req: Request, res: Response) => {
+export const getEvents = async (req: AuthRequest, res: Response) => {
   try {
-    const events = await eventService.getAllEvents();
+    const userContext = req.user
+      ? {
+          role: req.user.role,
+          employeeId: req.user.employeeId ? BigInt(req.user.employeeId) : null,
+          departmentId: req.user.departmentId ? BigInt(req.user.departmentId) : null,
+        }
+      : undefined;
+
+    const events = await eventService.getAllEvents(userContext);
     res.json({ success: true, data: events });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
@@ -13,13 +21,21 @@ export const getEvents = async (req: Request, res: Response) => {
 
 export const createEvent = async (req: AuthRequest, res: Response) => {
   try {
-    const { title, description, eventDate, eventTime, url, eventType, courseId } = req.body;
+    const { title, description, eventDate, eventTime, url, eventType, courseId, departmentId } = req.body;
     if (!title || !eventDate) {
       return res.status(400).json({ success: false, message: "Title and Event Date are required." });
     }
 
     const creatorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
     const creatorId = req.user?.employeeId ? BigInt(req.user.employeeId) : null;
+
+    // Admin inherits their department automatically unless explicit
+    let targetDeptId: bigint | null = null;
+    if (departmentId && departmentId !== "all" && departmentId !== "global") {
+      targetDeptId = BigInt(departmentId);
+    } else if (req.user?.role === "ADMIN" && req.user.departmentId) {
+      targetDeptId = BigInt(req.user.departmentId);
+    }
 
     const event = await eventService.createEvent({
       title,
@@ -29,6 +45,7 @@ export const createEvent = async (req: AuthRequest, res: Response) => {
       url,
       eventType: eventType || "site",
       courseId: courseId ? BigInt(courseId) : null,
+      departmentId: targetDeptId,
       creatorId,
       creatorName,
     });
