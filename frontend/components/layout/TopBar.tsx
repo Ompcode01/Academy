@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
-import { Search, LogOut, ChevronDown, User, Settings } from "lucide-react";
+import { useNotificationStore } from "@/store/notification.store";
+import { Search, Bell, LogOut, ChevronDown, User, Settings } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import NotificationPanel from "@/components/layout/NotificationPanel";
 
 const fullNameMap: Record<string, string> = {
   omprakash: "Omprakash Pandey",
@@ -17,7 +19,16 @@ const fullNameMap: Record<string, string> = {
 export default function TopBar() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const { unreadCount, togglePanel, fetchUnreadCount } = useNotificationStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const bellRef = useRef<HTMLDivElement>(null);
+
+  // Poll unread count every 30 seconds
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [fetchUnreadCount]);
 
   const handleLogout = () => {
     logout();
@@ -71,6 +82,23 @@ export default function TopBar() {
         <button className="text-slate-300 hover:text-white transition-colors cursor-pointer">
           <Search className="h-4 w-4" />
         </button>
+
+        {/* Notification Bell */}
+        <div className="relative" ref={bellRef}>
+          <button
+            onClick={togglePanel}
+            className="relative text-slate-300 hover:text-white transition-colors cursor-pointer"
+            title="Notifications"
+          >
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#C82333] px-1 text-[9px] font-bold text-white leading-none animate-pulse">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+          </button>
+          <NotificationPanel />
+        </div>
 
         {/* User Account Controls */}
         <div className="relative">

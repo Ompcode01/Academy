@@ -51,7 +51,7 @@ export const getUnreadCount = async (req: AuthRequest, res: Response) => {
  */
 export const markAsRead = async (req: AuthRequest, res: Response) => {
   try {
-    const id = BigInt(req.params.id);
+    const id = BigInt(req.params.id as string);
     await notificationService.markAsRead(id);
     res.json({ success: true, message: "Notification marked as read" });
   } catch (error: any) {
@@ -80,7 +80,7 @@ export const markAllAsRead = async (req: AuthRequest, res: Response) => {
  */
 export const deleteNotification = async (req: AuthRequest, res: Response) => {
   try {
-    const id = BigInt(req.params.id);
+    const id = BigInt(req.params.id as string);
     await notificationService.deleteNotification(id);
     res.json({ success: true, message: "Notification deleted" });
   } catch (error: any) {

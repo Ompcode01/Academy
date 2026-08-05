@@ -72,17 +72,21 @@ export const login = async (
   });
 
   // Record Audit Log for successful login
-  const actorName = `${account.employee.firstName} ${account.employee.lastName} (${primaryRole})`;
-  await prisma.auditLog.create({
-    data: {
-      actorName,
-      action: "Login Success",
-      detail: "Successfully authenticated to LMS Portal",
-      type: "login",
-      actorId: account.employeeId,
-      ipAddress: "192.168.1.38",
-    },
-  });
+  try {
+    const actorName = `${account.employee.firstName} ${account.employee.lastName} (${primaryRole})`;
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "Login Success",
+        detail: "Successfully authenticated to LMS Portal",
+        type: "login",
+        actorId: account.employeeId,
+        ipAddress: "192.168.1.38",
+      },
+    });
+  } catch (auditErr) {
+    console.error("Failed to record audit log:", auditErr);
+  }
 
   return {
     token,

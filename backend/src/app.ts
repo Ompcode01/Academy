@@ -18,6 +18,7 @@ import skillRoutes from "./routes/skill.routes";
 import certificateRoutes from "./routes/certificate.routes";
 import eventRoutes from "./routes/event.routes";
 import auditRoutes from "./routes/audit.routes";
+import notificationRoutes from "./routes/notification.routes";
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use("/api/skills", skillRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/admin/audit-logs", auditRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use(errorHandler);
 
