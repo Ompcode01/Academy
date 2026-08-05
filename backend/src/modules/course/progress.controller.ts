@@ -1,0 +1,120 @@
+import { Response } from "express";
+import { AuthRequest } from "../../middleware/auth.middleware";
+import progressService from "./progress.service";
+
+export const getLearnerProgress = async (req: AuthRequest, res: Response) => {
+  try {
+    const courseId = BigInt(String(req.params.id));
+    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+
+    const data = await progressService.getLearnerCourseProgress(userId, courseId);
+    res.json({ success: true, data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateLessonProgress = async (req: AuthRequest, res: Response) => {
+  try {
+    const courseId = BigInt(String(req.params.id));
+    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const { contentId, isCompleted, additionalSeconds } = req.body;
+
+    if (!contentId) {
+      return res.status(400).json({ success: false, message: "contentId is required" });
+    }
+
+    const data = await progressService.updateLessonProgress(
+      userId,
+      courseId,
+      BigInt(contentId),
+      Boolean(isCompleted),
+      Number(additionalSeconds) || 0
+    );
+
+    res.json({ success: true, data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const recordQuizSubmission = async (req: AuthRequest, res: Response) => {
+  try {
+    const courseId = BigInt(String(req.params.id));
+    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const { contentId, score, maxScore, answersJson } = req.body;
+
+    const data = await progressService.recordQuizSubmission(
+      userId,
+      courseId,
+      contentId ? BigInt(contentId) : null,
+      Number(score) || 0,
+      Number(maxScore) || 100,
+      answersJson
+    );
+
+    res.json({ success: true, message: "Quiz submitted successfully", data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getAdminLearnerProgressMatrix = async (req: AuthRequest, res: Response) => {
+  try {
+    const matrix = await progressService.getAdminLearnerProgressMatrix();
+    res.json({ success: true, data: matrix });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const recordAssignmentSubmission = async (req: AuthRequest, res: Response) => {
+  try {
+    const courseId = BigInt(String(req.params.id));
+    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const { contentId, submissionText, fileUrl } = req.body;
+
+    const data = await progressService.recordAssignmentSubmission(
+      userId,
+      courseId,
+      contentId ? BigInt(contentId) : null,
+      submissionText || "",
+      fileUrl || ""
+    );
+
+    res.json({ success: true, message: "Assignment submitted successfully and queued for grading", data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getTeacherSubmissions = async (req: AuthRequest, res: Response) => {
+  try {
+    const teacherId = req.user?.employeeId ? BigInt(req.user.employeeId) : undefined;
+    const data = await progressService.getTeacherSubmissions(teacherId, req.user?.role);
+    res.json({ success: true, data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const gradeAssessmentSubmission = async (req: AuthRequest, res: Response) => {
+  try {
+    const submissionId = BigInt(String(req.params.submissionId));
+    const { grade, score, feedback } = req.body;
+
+    const graderName = req.user ? `${req.user.username} (${req.user.role || 'ADMIN'})` : "Instructor Admin";
+
+    const data = await progressService.gradeAssessmentSubmission(
+      submissionId,
+      grade || "Passed",
+      Number(score) || 0,
+      feedback || "",
+      graderName
+    );
+
+    res.json({ success: true, message: "Assessment graded successfully", data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
