@@ -6,12 +6,16 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CourseFilters from "@/components/courses/CourseFilters";
 import CourseTable from "@/components/courses/CourseTable";
+import CourseCards from "@/components/courses/CourseCards";
 import CreateCourseModal from "@/components/courses/CreateCourseModal";
+import { useAuthStore } from "@/store/auth.store";
+import { ROLES } from "@/lib/rbac";
 import RoleGate from "@/components/auth/RoleGate";
 import { getCourses, type Course, deleteCourse } from "@/services/api/course.service";
 
 export default function CoursesPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [courses, setCourses] = useState<Course[]>([]);
   const [totalCourses, setTotalCourses] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -124,13 +128,23 @@ export default function CoursesPage() {
         />
       </div>
 
-      {/* Table */}
+      {/* Table / Cards */}
       {loading ? (
         <div className="flex items-center justify-center py-12 border border-border rounded-xl bg-card">
           <p className="text-sm text-muted-foreground">Fetching dynamically scoped courses...</p>
         </div>
-      ) : (
+      ) : user?.role === ROLES.SUPER_ADMIN || user?.role === ROLES.ADMIN ? (
         <CourseTable
+          courses={courses}
+          currentPage={currentPage}
+          totalCourses={totalCourses}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <CourseCards
           courses={courses}
           currentPage={currentPage}
           totalCourses={totalCourses}
