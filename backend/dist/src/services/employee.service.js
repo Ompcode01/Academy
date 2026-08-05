@@ -22,6 +22,10 @@ const getEmployees = async () => {
         include: {
             department: true,
             manager: true,
+            assignedRoles: {
+                where: { isActive: true },
+                include: { role: true },
+            },
         },
         orderBy: {
             id: "asc",
@@ -35,6 +39,10 @@ const getEmployeeById = async (id) => {
         include: {
             department: true,
             manager: true,
+            assignedRoles: {
+                where: { isActive: true },
+                include: { role: true },
+            },
         },
     });
 };

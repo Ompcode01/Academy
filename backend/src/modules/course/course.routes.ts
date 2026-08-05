@@ -1,4 +1,5 @@
 import { Router } from "express";
+import multer from "multer";
 import { authenticate } from "../../middleware/auth.middleware";
 import { authorizeRoles } from "../../middleware/role.middleware";
 import {
@@ -11,9 +12,44 @@ import {
   updateSection,
   deleteSection,
   createContent,
+  selfEnrollCourse,
+  adminEnrollUser,
+  bulkEnrollUsers,
+  verifyUser,
+  verifyBulkFile,
 } from "./course.controller";
 
+import {
+  getLearnerProgress,
+  updateLessonProgress,
+  recordQuizSubmission,
+  recordAssignmentSubmission,
+  getAdminLearnerProgressMatrix,
+  getTeacherSubmissions,
+  gradeAssessmentSubmission,
+} from "./progress.controller";
+
+const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
+
+// Pre-enrollment Verification Routes (usable during wizard creation)
+router.post("/verify-user", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), verifyUser);
+router.post("/verify-bulk-file", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), verifyBulkFile);
+
+// Progress & Learner Execution
+router.get("/admin/learner-matrix", authenticate, getAdminLearnerProgressMatrix);
+router.get("/teacher/submissions", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), getTeacherSubmissions);
+router.post("/admin/grade-submission/:submissionId", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), gradeAssessmentSubmission);
+
+router.get("/:id/my-progress", authenticate, getLearnerProgress);
+router.post("/:id/progress", authenticate, updateLessonProgress);
+router.post("/:id/quiz/submit", authenticate, recordQuizSubmission);
+router.post("/:id/assignment/submit", authenticate, recordAssignmentSubmission);
+
+// Enrolment Routes
+router.post("/:id/enroll", authenticate, selfEnrollCourse);
+router.post("/:id/admin-enroll", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), adminEnrollUser);
+router.post("/:id/bulk-enroll", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), bulkEnrollUsers);
 
 // Course CRUD — all routes require authentication
 // GET is accessible to all authenticated users (scoping happens in the service layer)

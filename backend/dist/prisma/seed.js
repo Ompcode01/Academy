@@ -80,6 +80,97 @@ async function main() {
             create: { employeeId: emp.id, roleId: role.id }
         });
     }
+    // Seed categories
+    const categoryData = [
+        { name: "Technical", description: "Technical and engineering courses" },
+        { name: "Management", description: "Leadership and management training" },
+        { name: "Soft Skills", description: "Communication and interpersonal skills" },
+        { name: "HR", description: "Human resources and compliance" },
+    ];
+    const categories = {};
+    for (const cat of categoryData) {
+        categories[cat.name] = await prisma.category.upsert({
+            where: { name: cat.name },
+            update: {},
+            create: cat,
+        });
+    }
+    // Get the teacher and superadmin employees for course creation
+    const teacherEmp = await prisma.employee.findUnique({ where: { employeeCode: "EMP004" } });
+    const superadminEmp = await prisma.employee.findUnique({ where: { employeeCode: "EMP001" } });
+    if (teacherEmp && superadminEmp) {
+        // Seed sample courses
+        const coursesData = [
+            {
+                title: "Java Fundamentals",
+                shortDescription: "Learn the core concepts of Java programming",
+                description: "A comprehensive course covering Java basics, OOP principles, and practical exercises.",
+                categoryId: categories["Technical"].id,
+                departmentId: eng.id,
+                creatorId: teacherEmp.id,
+                level: "Beginner",
+                language: "English",
+                duration: 40,
+                status: client_1.CourseStatus.PUBLISHED,
+            },
+            {
+                title: "Leadership Essentials",
+                shortDescription: "Develop your leadership and team management skills",
+                description: "This course covers essential leadership concepts, team dynamics, and decision-making frameworks.",
+                categoryId: categories["Management"].id,
+                departmentId: mgt.id,
+                creatorId: superadminEmp.id,
+                level: "Intermediate",
+                language: "English",
+                duration: 20,
+                status: client_1.CourseStatus.PUBLISHED,
+            },
+            {
+                title: "Effective Communication",
+                shortDescription: "Master workplace communication skills",
+                description: "Learn verbal and written communication techniques for professional success.",
+                categoryId: categories["Soft Skills"].id,
+                departmentId: null,
+                creatorId: teacherEmp.id,
+                level: "Beginner",
+                language: "English",
+                duration: 15,
+                status: client_1.CourseStatus.DRAFT,
+            },
+            {
+                title: "HR Compliance Basics",
+                shortDescription: "Understand core HR compliance requirements",
+                description: "Covering workplace regulations, employee rights, and compliance best practices.",
+                categoryId: categories["HR"].id,
+                departmentId: hr.id,
+                creatorId: superadminEmp.id,
+                level: "Beginner",
+                language: "English",
+                duration: 10,
+                status: client_1.CourseStatus.PUBLISHED,
+            },
+            {
+                title: "Data Structures in Java",
+                shortDescription: "Deep dive into data structures using Java",
+                description: "Arrays, linked lists, trees, graphs, and algorithmic complexity analysis.",
+                categoryId: categories["Technical"].id,
+                departmentId: eng.id,
+                creatorId: teacherEmp.id,
+                level: "Advanced",
+                language: "English",
+                duration: 60,
+                status: client_1.CourseStatus.DRAFT,
+            },
+        ];
+        for (const courseData of coursesData) {
+            const existing = await prisma.course.findFirst({
+                where: { title: courseData.title },
+            });
+            if (!existing) {
+                await prisma.course.create({ data: courseData });
+            }
+        }
+    }
     console.log("Seed completed.");
 }
 main().finally(() => prisma.$disconnect());

@@ -2,6 +2,15 @@ import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import skillService from "./skill.service";
 import { ApprovalStatus } from "@prisma/client";
+import prisma from "../../config/prisma";
+
+const getAuthUserId = (req: AuthRequest): bigint => {
+  const idVal = req.user?.employeeId || req.user?.userId || req.user?.id;
+  if (!idVal) {
+    throw new Error("Authentication required: invalid or missing user credentials");
+  }
+  return BigInt(idVal);
+};
 
 export const getCatalogSkills = async (req: AuthRequest, res: Response) => {
   try {
@@ -14,7 +23,7 @@ export const getCatalogSkills = async (req: AuthRequest, res: Response) => {
 
 export const getUserSkills = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id ? BigInt(req.user.id) : BigInt(1);
+    const userId = getAuthUserId(req);
     const status = req.query.status ? (String(req.query.status) as ApprovalStatus) : undefined;
     const userSkills = await skillService.getUserSkills(userId, status);
     res.json({ success: true, data: userSkills });
@@ -25,7 +34,7 @@ export const getUserSkills = async (req: AuthRequest, res: Response) => {
 
 export const createUserSkill = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id ? BigInt(req.user.id) : BigInt(1);
+    const userId = getAuthUserId(req);
     const { skillName, category, subCategory, skillType, proficiencyLevel, rating, yearsOfExp, description } = req.body;
 
     if (!skillName || !category) {
@@ -81,7 +90,7 @@ export const deleteUserSkill = async (req: AuthRequest, res: Response) => {
 
 export const getUserProjects = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id ? BigInt(req.user.id) : BigInt(1);
+    const userId = getAuthUserId(req);
     const status = req.query.status ? (String(req.query.status) as ApprovalStatus) : undefined;
     const projects = await skillService.getUserProjects(userId, status);
     res.json({ success: true, data: projects });
@@ -92,7 +101,7 @@ export const getUserProjects = async (req: AuthRequest, res: Response) => {
 
 export const createUserProject = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id ? BigInt(req.user.id) : BigInt(1);
+    const userId = getAuthUserId(req);
     const { projectName, projectType, organization, startDate, endDate, isCurrent, roleName, responsibilities, technologies } = req.body;
 
     if (!projectName) {
@@ -172,7 +181,27 @@ export const handleApprovalAction = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ success: false, message: "A reason or comment is required when rejecting a request" });
     }
 
-    const reviewerName = req.user ? `${req.user.employeeCode || req.user.username || "Admin"}` : "Department Admin";
+    let reviewerName = "Department Admin";
+    if (req.user) {
+      const userRole = req.user.role || "ADMIN";
+      let fullName = req.user.username || "Admin";
+
+      if (req.user.employeeId) {
+        try {
+          const emp = await prisma.employee.findUnique({
+            where: { id: BigInt(req.user.employeeId) },
+            select: { firstName: true, lastName: true },
+          });
+          if (emp) {
+            fullName = `${emp.firstName} ${emp.lastName}`;
+          }
+        } catch (e) {
+          console.error("Error looking up reviewer employee:", e);
+        }
+      }
+
+      reviewerName = `${fullName} (${userRole})`;
+    }
 
     const result = await skillService.handleApprovalAction(
       BigInt(id),
@@ -194,7 +223,7 @@ export const handleApprovalAction = async (req: AuthRequest, res: Response) => {
 
 export const getUserOverviewStats = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id ? BigInt(req.user.id) : BigInt(1);
+    const userId = getAuthUserId(req);
     const stats = await skillService.getUserOverviewStats(userId);
     res.json({ success: true, data: stats });
   } catch (error: any) {

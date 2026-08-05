@@ -21,6 +21,7 @@ interface CreateCourseData {
   level?: string;
   language?: string;
   status?: string;
+  enrollmentType?: string;
 }
 
 interface UpdateCourseData extends Partial<CreateCourseData> {}
@@ -79,6 +80,13 @@ class CourseRepository {
         include: {
           category: true,
           department: true,
+          teachers: {
+            include: {
+              teacher: {
+                select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+              },
+            },
+          },
           creator: {
             select: {
               id: true,
@@ -114,6 +122,13 @@ class CourseRepository {
       include: {
         category: true,
         department: true,
+        teachers: {
+          include: {
+            teacher: {
+              select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+            },
+          },
+        },
         creator: {
           select: {
             id: true,
@@ -150,10 +165,18 @@ class CourseRepository {
         level: data.level,
         language: data.language,
         status: (data.status as any) ?? "DRAFT",
+        enrollmentType: data.enrollmentType ?? "SELF",
       },
       include: {
         category: true,
         department: true,
+        teachers: {
+          include: {
+            teacher: {
+              select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+            },
+          },
+        },
         creator: {
           select: {
             id: true,
@@ -173,6 +196,13 @@ class CourseRepository {
       include: {
         category: true,
         department: true,
+        teachers: {
+          include: {
+            teacher: {
+              select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+            },
+          },
+        },
         creator: {
           select: {
             id: true,
@@ -223,7 +253,7 @@ class CourseRepository {
   }
 
   // Content operations
-  async createContent(data: CreateContentData) {
+  async createContent(data: CreateContentData & { quizConfigJson?: string; assignmentConfigJson?: string }) {
     return prisma.learningContent.create({
       data: {
         sectionId: data.sectionId,
@@ -235,13 +265,15 @@ class CourseRepository {
         contentOrder: data.contentOrder,
         isMandatory: data.isMandatory ?? false,
         isPublished: data.isPublished ?? false,
+        quizConfigJson: data.quizConfigJson || null,
+        assignmentConfigJson: data.assignmentConfigJson || null,
       },
     });
   }
 
   async updateContent(
     contentId: bigint,
-    data: Partial<Omit<CreateContentData, "sectionId">>
+    data: Partial<Omit<CreateContentData, "sectionId">> & { quizConfigJson?: string; assignmentConfigJson?: string }
   ) {
     return prisma.learningContent.update({
       where: { id: contentId },

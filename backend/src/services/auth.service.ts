@@ -71,6 +71,19 @@ export const login = async (
     departmentId: account.employee.departmentId.toString(),
   });
 
+  // Record Audit Log for successful login
+  const actorName = `${account.employee.firstName} ${account.employee.lastName} (${primaryRole})`;
+  await prisma.auditLog.create({
+    data: {
+      actorName,
+      action: "Login Success",
+      detail: "Successfully authenticated to LMS Portal",
+      type: "login",
+      actorId: account.employeeId,
+      ipAddress: "192.168.1.38",
+    },
+  });
+
   return {
     token,
     employee: account.employee,

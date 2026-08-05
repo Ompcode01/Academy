@@ -14,6 +14,7 @@ import { ROLES } from "@/lib/rbac";
 import { List, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EventCalendar from "@/components/events/EventCalendar";
+import AdminSubmissionsReview from "@/components/courses/builder/AdminSubmissionsReview";
 
 const fullNameMap: Record<string, string> = {
   omprakash: "Omprakash Pandey",
@@ -77,6 +78,20 @@ export default function Dashboard() {
 
 
 
+  // Guest Preview Modal State
+  const [showGuestModal, setShowGuestModal] = useState(false);
+
+  // Teacher / Admin Submissions Review Modal State
+  const [showSubmissionsModal, setShowSubmissionsModal] = useState(false);
+
+  const handleCourseClick = (courseId: number) => {
+    if (userRole === ROLES.GUEST) {
+      setShowGuestModal(true);
+    } else {
+      router.push(`/courses/${courseId}/preview`);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6 select-none">
       {/* Top Banner & Stats Overview */}
@@ -87,11 +102,20 @@ export default function Dashboard() {
               {fullName} — Dashboard Overview
             </h1>
             <p className="text-xs text-[#6C757D] font-medium mt-0.5">
-              Scoped Role: <strong className="text-[#C82333]">{userRole}</strong> • Department: <strong className="text-[#212529]">{{ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)" }[user?.departmentId || 1] || `Dept #${user?.departmentId}`}</strong>
+              Scoped Role: <strong className="text-[#C82333]">{userRole}</strong> • Department: <strong className="text-[#212529]">{{ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)", 4: "Sales", 5: "Marketing" }[user?.departmentId || 1] || `Dept #${user?.departmentId}`}</strong>
             </p>
           </div>
 
           <div className="flex items-center gap-3">
+            {(userRole === "TEACHER" || userRole === "ADMIN" || userRole === "SUPER_ADMIN") && (
+              <Button
+                size="sm"
+                onClick={() => setShowSubmissionsModal(true)}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs gap-1.5 shadow"
+              >
+                Grade Assignments &amp; Submissions
+              </Button>
+            )}
             <Button
               size="sm"
               onClick={() => router.push("/courses")}
@@ -159,7 +183,7 @@ export default function Dashboard() {
               return (
                 <div
                   key={prog.id}
-                  onClick={() => router.push(`/courses/${prog.id}/preview`)}
+                  onClick={() => handleCourseClick(Number(prog.id))}
                   className="w-52 shrink-0 bg-white rounded-xl border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group cursor-pointer"
                 >
                   {/* Thumbnail Cover Image */}
@@ -180,7 +204,9 @@ export default function Dashboard() {
                     </h4>
                     <div className="flex items-center justify-between text-[10px] text-[#6C757D] font-semibold">
                       <span>{prog.category || "General"}</span>
-                      <span className="text-[#C82333] font-bold">View Course →</span>
+                      <span className="text-[#C82333] font-bold">
+                        {userRole === ROLES.GUEST ? "Preview Only" : "View Course →"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -201,7 +227,7 @@ export default function Dashboard() {
           </div>
           {user?.departmentId && (
             <span className="text-[10px] font-bold bg-[#C82333]/10 text-[#C82333] px-2.5 py-0.5 rounded border border-[#C82333]/20">
-              Department: {{ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)" }[user.departmentId] || `Dept #${user.departmentId}`}
+              Department: {{ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)", 4: "Sales", 5: "Marketing" }[user.departmentId] || `Dept #${user.departmentId}`}
             </span>
           )}
         </div>
@@ -217,7 +243,7 @@ export default function Dashboard() {
             {courses.map((prog) => (
               <div
                 key={prog.id}
-                onClick={() => router.push(`/courses/${prog.id}/preview`)}
+                onClick={() => handleCourseClick(Number(prog.id))}
                 className="w-52 shrink-0 bg-white rounded-xl border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group cursor-pointer"
               >
                 {/* Thumbnail Cover Image */}
@@ -241,7 +267,9 @@ export default function Dashboard() {
                   </h4>
                   <div className="flex items-center justify-between text-[10px] text-[#6C757D] font-semibold">
                     <span>{prog.category?.name || "General"}</span>
-                    <span className="text-[#C82333] font-bold">View Course →</span>
+                    <span className="text-[#C82333] font-bold">
+                      {userRole === ROLES.GUEST ? "Preview Only" : "View Course →"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -252,6 +280,53 @@ export default function Dashboard() {
 
       {/* 3. DYNAMIC CALENDAR & EVENTS SECTION */}
       <EventCalendar />
+
+      {/* GUEST ACCESS RESTRICTED MODAL */}
+      {showGuestModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl p-6 space-y-4 shadow-2xl border border-gray-100 text-center">
+            <div className="mx-auto h-12 w-12 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold text-xl">
+              🔒
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Guest Preview Mode</h3>
+              <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+                You are currently viewing the LMS in Guest Preview Mode. Guest accounts can browse dashboard layout, view catalog metrics, and explore events preview, but course lesson execution, quizzes, and assignment submissions are restricted.
+              </p>
+            </div>
+            <div className="pt-2 flex flex-col gap-2">
+              <Button
+                onClick={() => {
+                  setShowGuestModal(false);
+                  router.push("/login");
+                }}
+                className="w-full bg-[#C82333] hover:bg-[#C82333]/90 text-white font-bold text-xs"
+              >
+                Sign In to Full Account
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setShowGuestModal(false)}
+                className="w-full text-xs text-gray-500"
+              >
+                Continue Previewing Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TEACHER & ADMIN SUBMISSIONS REVIEW MODAL */}
+      <AdminSubmissionsReview
+        open={showSubmissionsModal}
+        onOpenChange={setShowSubmissionsModal}
+        onGraded={() => {
+          // refresh dashboard stats if needed
+          getDashboardStats().then((res) => {
+            if (res?.success) setStats(res.data);
+          });
+        }}
+      />
     </div>
   );
 }

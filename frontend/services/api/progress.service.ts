@@ -15,6 +15,9 @@ export interface LearnerProgressData {
   submissions: Array<{
     id: number;
     submissionType: string;
+    status?: string;
+    submissionText?: string;
+    fileUrl?: string;
     score: number;
     maxScore: number;
     percentage: number;

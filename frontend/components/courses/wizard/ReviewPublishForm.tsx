@@ -82,6 +82,7 @@ export default function ReviewPublishForm({
         status: status,
         enrollmentType: (enrollment as any).enrollmentType || "SELF",
         enrolledUserIds: ((enrollment as any).enrolledUsersList || []).map((u: any) => String(u.userId)),
+        teacherIds: (enrollment as any).teacherIds || ["4"],
       };
 
       let res;

@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const role_middleware_1 = require("../middleware/role.middleware");
 const role_controller_1 = require("../controllers/role.controller");
 const router = (0, express_1.Router)();
-router.post("/", role_controller_1.createRole);
-router.get("/", role_controller_1.getRoles);
-router.get("/:id", role_controller_1.getRoleById);
-router.put("/:id", role_controller_1.updateRole);
-router.delete("/:id", role_controller_1.deleteRole);
+router.post("/", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN"), role_controller_1.createRole);
+router.get("/", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN", "ADMIN"), role_controller_1.getRoles);
+router.get("/:id", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN", "ADMIN"), role_controller_1.getRoleById);
+router.put("/:id", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN"), role_controller_1.updateRole);
+router.delete("/:id", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN"), role_controller_1.deleteRole);
 exports.default = router;

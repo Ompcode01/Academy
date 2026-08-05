@@ -35,6 +35,7 @@ export interface EnrollmentRuleData {
   enrollmentType?: "SELF" | "ADMIN" | "BULK";
   departmentAccess: string;
   enrolledUsersList?: any[];
+  teacherIds?: string[];
 }
 
 interface EnrollmentFormProps {
@@ -594,6 +595,71 @@ export default function EnrollmentForm({
           )}
         </div>
       )}
+
+      {/* Teacher Assignment Section (Optional) */}
+      <div className="space-y-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-5">
+        <div className="flex items-center justify-between border-b border-indigo-500/20 pb-2">
+          <div className="flex items-center gap-2">
+            <UserCheck className="h-5 w-5 text-indigo-600" />
+            <h3 className="text-sm font-bold text-foreground">
+              Assign Teachers for Review &amp; Assignment Grading (Optional)
+            </h3>
+          </div>
+          <span className="text-[11px] font-bold bg-indigo-500/10 text-indigo-600 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
+            Multiple Selection Supported
+          </span>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Super Admin and Admin can assign one or multiple Teachers to this course. Assigned teachers will receive pending assignment notifications, evaluate student submissions, assign scores &amp; grades, and track enrolled learners.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          {[
+            { id: "4", name: "Sneha Patil", code: "EMP004", role: "TEACHER", dept: "Engineering" },
+            { id: "2", name: "Omprakash Pandey", code: "EMP002", role: "ADMIN", dept: "Management" },
+            { id: "1", name: "Priyanka Davhare", code: "EMP001", role: "SUPER_ADMIN", dept: "Engineering" },
+          ].map((t) => {
+            const isSelected = (data.teacherIds || ["4"]).includes(t.id);
+            return (
+              <div
+                key={t.id}
+                onClick={() => {
+                  const current = data.teacherIds || ["4"];
+                  const next = isSelected
+                    ? current.filter((id) => id !== t.id)
+                    : [...current, t.id];
+                  onChange({ teacherIds: next });
+                }}
+                className={`p-3.5 rounded-xl border cursor-pointer flex items-center justify-between transition-all ${
+                  isSelected
+                    ? "bg-indigo-500/10 border-indigo-500 text-indigo-950 shadow-sm"
+                    : "bg-background border-border hover:border-indigo-300"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                    isSelected ? "bg-indigo-600 text-white" : "bg-muted text-muted-foreground"
+                  }`}>
+                    {t.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-foreground">{t.name}</h5>
+                    <p className="text-[10px] text-muted-foreground">{t.code} • {t.dept} ({t.role})</p>
+                  </div>
+                </div>
+
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => {}}
+                  className="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Target Department Scoping Banner */}
       <div className="space-y-4 rounded-xl border border-border bg-card p-5">

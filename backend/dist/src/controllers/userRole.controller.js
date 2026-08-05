@@ -32,16 +32,68 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserRole = exports.getUserRoleById = exports.getUserRoles = exports.assignRole = void 0;
 const userRoleService = __importStar(require("../services/userRole.service"));
 const serializer_1 = require("../utils/serializer");
+const prisma_1 = __importDefault(require("../config/prisma"));
 const assignRole = async (req, res) => {
     try {
+        const callerRole = req.user?.role;
+        const targetRoleId = BigInt(req.body.roleId);
+        // Look up the target role to check its roleCode
+        const targetRole = await prisma_1.default.role.findUnique({
+            where: { id: targetRoleId },
+        });
+        if (!targetRole) {
+            res.status(404).json({
+                success: false,
+                message: "Target role not found",
+            });
+            return;
+        }
+        // Admins cannot assign SUPER_ADMIN role
+        if (callerRole !== "SUPER_ADMIN" && targetRole.roleCode === "SUPER_ADMIN") {
+            res.status(403).json({
+                success: false,
+                message: "Only Super Admins can assign the Super Admin role",
+            });
+            return;
+        }
+        // Admins cannot assign ADMIN role either — only Super Admin can
+        if (callerRole !== "SUPER_ADMIN" && targetRole.roleCode === "ADMIN") {
+            res.status(403).json({
+                success: false,
+                message: "Only Super Admins can assign the Admin role",
+            });
+            return;
+        }
         const userRole = await userRoleService.assignRole({
             employeeId: BigInt(req.body.employeeId),
-            roleId: BigInt(req.body.roleId),
-            assignedBy: BigInt(req.body.assignedBy),
+            roleId: targetRoleId,
+            assignedBy: BigInt(req.user.employeeId),
+        });
+        // Record Audit Log for Role Assignment
+        const actorName = req.user
+            ? `${req.user.username} (${req.user.role || 'USER'})`
+            : "System Admin";
+        const employee = await prisma_1.default.employee.findUnique({
+            where: { id: BigInt(req.body.employeeId) },
+        });
+        const targetEmployeeName = employee
+            ? `${employee.firstName} ${employee.lastName}`
+            : `Employee #${req.body.employeeId}`;
+        await prisma_1.default.auditLog.create({
+            data: {
+                actorName,
+                action: "Role Assignment",
+                detail: `Assigned ${targetRole.roleCode} role to ${targetEmployeeName}`,
+                type: "role",
+                ipAddress: req.ip || "Internal",
+            },
         });
         res.status(201).json({
             success: true,
@@ -92,7 +144,26 @@ const getUserRoleById = async (req, res) => {
 exports.getUserRoleById = getUserRoleById;
 const deleteUserRole = async (req, res) => {
     try {
-        await userRoleService.deleteUserRole(BigInt(String(req.params.id)));
+        const id = BigInt(String(req.params.id));
+        const existingUserRole = await userRoleService.getUserRoleById(id);
+        await userRoleService.deleteUserRole(id);
+        // Record Audit Log
+        const authReq = req;
+        const actorName = authReq.user
+            ? `${authReq.user.username} (${authReq.user.role || 'USER'})`
+            : "System Admin";
+        const detail = existingUserRole
+            ? `Removed role '${existingUserRole.role.roleCode}' from ${existingUserRole.employee.firstName} ${existingUserRole.employee.lastName}`
+            : `Deleted user role assignment #${id}`;
+        await prisma_1.default.auditLog.create({
+            data: {
+                actorName,
+                action: "Role Assignment",
+                detail,
+                type: "role",
+                ipAddress: req.ip || "Internal",
+            },
+        });
         res.status(200).json({
             success: true,
             message: "User Role Deleted Successfully",

@@ -6,6 +6,7 @@ import skillRepository, {
 } from "./skill.repository";
 import { ApprovalStatus } from "@prisma/client";
 import { serializeBigInt } from "../../utils/prismaSerializer";
+import auditService from "../audit/audit.service";
 
 class SkillService {
   async getCatalogSkills() {
@@ -90,10 +91,43 @@ class SkillService {
     const status = action === "APPROVE" ? ApprovalStatus.APPROVED : ApprovalStatus.REJECTED;
 
     if (requestKind === "SKILL") {
+      const existing = await skillRepository.getUserSkillById(id);
+      if (!existing) {
+        throw new Error("Skill request not found");
+      }
+      if (existing.status !== ApprovalStatus.PENDING) {
+        throw new Error("This request has already been finalized and cannot be modified.");
+      }
+
       const updated = await skillRepository.updateSkillApproval(id, status, reason, reviewerName);
+      
+      // Emit Real-Time System Audit Log
+      await auditService.recordAuditLog({
+        actorName: reviewerName,
+        action: `Skill Request ${action}D`,
+        detail: `${reviewerName} ${action.toLowerCase()}d skill request #${id} (${existing.skillName})${reason ? ` with comment: "${reason}"` : ''}`,
+        type: "role",
+      });
+
       return serializeBigInt(updated);
     } else {
+      const existing = await skillRepository.getUserProjectById(id);
+      if (!existing) {
+        throw new Error("Project request not found");
+      }
+      if (existing.status !== ApprovalStatus.PENDING) {
+        throw new Error("This request has already been finalized and cannot be modified.");
+      }
       const updated = await skillRepository.updateProjectApproval(id, status, reason, reviewerName);
+
+      // Emit Real-Time System Audit Log
+      await auditService.recordAuditLog({
+        actorName: reviewerName,
+        action: `Project Request ${action}D`,
+        detail: `${reviewerName} ${action.toLowerCase()}d project request #${id} (${existing.projectName})${reason ? ` with comment: "${reason}"` : ''}`,
+        type: "role",
+      });
+
       return serializeBigInt(updated);
     }
   }

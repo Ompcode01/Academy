@@ -4,6 +4,7 @@ import asyncHandler from "../../utils/asyncHandler";
 import { successResponse, errorResponse } from "../../utils/response";
 import courseService from "./course.service";
 import { serializeBigInt } from "../../utils/prismaSerializer";
+import prisma from "../../config/prisma";
 
 // GET /api/courses
 export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -45,30 +46,51 @@ export const createCourse = asyncHandler(
     const userDepartmentId = req.user?.departmentId ? BigInt(req.user.departmentId as string) : null;
 
     let departmentId: bigint | null = null;
-    if (userRole === "TEACHER") {
+
+    // Rule: ADMIN (and TEACHER) department must be fixed to their assigned department
+    if (userRole === "ADMIN" || userRole === "TEACHER") {
       departmentId = userDepartmentId;
-    } else {
+    } else if (userRole === "SUPER_ADMIN") {
+      // SUPER_ADMIN can pick a specific department OR select "ALL" / global (null)
       if (
         req.body.departmentId !== undefined &&
         req.body.departmentId !== null &&
         req.body.departmentId !== "global" &&
+        req.body.departmentId !== "ALL" &&
         req.body.departmentId !== ""
       ) {
         departmentId = BigInt(req.body.departmentId);
       } else {
         departmentId = null;
       }
+    } else {
+      departmentId = userDepartmentId;
     }
 
-    // Auto-set creatorId from JWT
     const data = {
       ...req.body,
       categoryId: BigInt(req.body.categoryId),
       creatorId: userEmployeeId,
       departmentId,
+      enrollmentType: req.body.enrollmentType || "SELF",
+      enrolledUserIds: req.body.enrolledUserIds || [],
+      teacherIds: req.body.teacherIds || [],
     };
 
     const course = await courseService.createCourse(data);
+
+    // Audit Log
+    const actorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "Course Published",
+        detail: `Published '${course.title}'`,
+        type: "course",
+        ipAddress: req.ip || "Internal",
+      },
+    });
+
     return successResponse(res, serializeBigInt(course), "Course created successfully", 201);
   }
 );
@@ -81,6 +103,19 @@ export const updateCourse = asyncHandler(
     if (data.categoryId) data.categoryId = BigInt(data.categoryId);
     if (data.departmentId) data.departmentId = BigInt(data.departmentId);
     const course = await courseService.updateCourse(id, data);
+
+    // Audit Log
+    const actorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "Course Updated",
+        detail: `Updated course '${course.title}'`,
+        type: "course",
+        ipAddress: req.ip || "Internal",
+      },
+    });
+
     return successResponse(res, serializeBigInt(course), "Course updated successfully");
   }
 );
@@ -89,7 +124,21 @@ export const updateCourse = asyncHandler(
 export const deleteCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const id = BigInt(req.params.id as string);
+    const existingCourse = await courseService.getCourseById(id);
     await courseService.deleteCourse(id);
+
+    // Audit Log
+    const actorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "Course Deleted",
+        detail: `Deleted course '${existingCourse?.title || id}'`,
+        type: "course",
+        ipAddress: req.ip || "Internal",
+      },
+    });
+
     return successResponse(res, null, "Course deleted successfully");
   }
 );
@@ -133,5 +182,71 @@ export const createContent = asyncHandler(
       sectionId,
     });
     return successResponse(res, serializeBigInt(content), "Content created successfully", 201);
+  }
+);
+
+// POST /api/courses/:id/enroll (Self Enrollment)
+export const selfEnrollCourse = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const courseId = BigInt(req.params.id as string);
+    const userId = BigInt(req.user?.userId as string);
+    const enrollment = await courseService.selfEnrollCourse(userId, courseId);
+    return successResponse(res, serializeBigInt(enrollment), "Successfully enrolled in course");
+  }
+);
+
+// POST /api/courses/:id/admin-enroll (Single User Admin Enrollment)
+export const adminEnrollUser = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const courseId = BigInt(req.params.id as string);
+    const { identifier } = req.body;
+    if (!identifier) {
+      return errorResponse(res, "Username or email is required", "BAD_REQUEST", 400);
+    }
+    const result = await courseService.adminEnrollUser(courseId, identifier);
+    return successResponse(res, serializeBigInt(result), result.message);
+  }
+);
+
+// POST /api/courses/:id/bulk-enroll (Bulk Excel File Upload Enrollment)
+export const bulkEnrollUsers = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const courseId = BigInt(req.params.id as string);
+    if (!req.file || !req.file.buffer) {
+      return errorResponse(res, "Excel/CSV file is required for bulk enrolment", "BAD_REQUEST", 400);
+    }
+    const result = await courseService.bulkEnrollUsers(courseId, req.file.buffer);
+    return successResponse(
+      res,
+      serializeBigInt(result),
+      `Bulk enrolment complete. ${result.successCount} enrolled, ${result.failedCount} failed.`
+    );
+  }
+);
+
+// POST /api/courses/verify-user (Pre-enrollment single user verification)
+export const verifyUser = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { identifier } = req.body;
+    if (!identifier) {
+      return errorResponse(res, "Username or email is required", "BAD_REQUEST", 400);
+    }
+    const result = await courseService.verifyUser(identifier);
+    return successResponse(res, serializeBigInt(result), `User '${result.name}' verified successfully in database.`);
+  }
+);
+
+// POST /api/courses/verify-bulk-file (Pre-enrollment bulk Excel verification)
+export const verifyBulkFile = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    if (!req.file || !req.file.buffer) {
+      return errorResponse(res, "Excel/CSV file is required for verification", "BAD_REQUEST", 400);
+    }
+    const result = await courseService.verifyBulkFile(req.file.buffer);
+    return successResponse(
+      res,
+      serializeBigInt(result),
+      `Verification complete. ${result.successCount} valid employees found, ${result.failedCount} invalid.`
+    );
   }
 );

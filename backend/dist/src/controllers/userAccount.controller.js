@@ -32,16 +32,34 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserAccount = exports.getUserAccountById = exports.getUserAccounts = exports.createUserAccount = void 0;
 const userAccountService = __importStar(require("../services/userAccount.service"));
 const serializer_1 = require("../utils/serializer");
+const prisma_1 = __importDefault(require("../config/prisma"));
 const createUserAccount = async (req, res) => {
     try {
         const account = await userAccountService.createUserAccount({
             employeeId: BigInt(req.body.employeeId),
             username: req.body.username,
             password: req.body.password,
+        });
+        // Record Audit Log
+        const authReq = req;
+        const actorName = authReq.user
+            ? `${authReq.user.username} (${authReq.user.role || 'USER'})`
+            : "System Admin";
+        await prisma_1.default.auditLog.create({
+            data: {
+                actorName,
+                action: "Account Created",
+                detail: `Created user account '${account.username}'`,
+                type: "user",
+                ipAddress: req.ip || "Internal",
+            },
         });
         res.status(201).json({
             success: true,
@@ -93,7 +111,23 @@ const getUserAccountById = async (req, res) => {
 exports.getUserAccountById = getUserAccountById;
 const deleteUserAccount = async (req, res) => {
     try {
-        await userAccountService.deleteUserAccount(BigInt(String(req.params.id)));
+        const id = BigInt(String(req.params.id));
+        const existingAccount = await userAccountService.getUserAccountById(id);
+        await userAccountService.deleteUserAccount(id);
+        // Record Audit Log
+        const authReq = req;
+        const actorName = authReq.user
+            ? `${authReq.user.username} (${authReq.user.role || 'USER'})`
+            : "System Admin";
+        await prisma_1.default.auditLog.create({
+            data: {
+                actorName,
+                action: "Account Deleted",
+                detail: `Deleted user account '${existingAccount?.username || id}'`,
+                type: "user",
+                ipAddress: req.ip || "Internal",
+            },
+        });
         res.status(200).json({
             success: true,
             message: "User Account Deleted Successfully",

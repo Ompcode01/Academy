@@ -30,11 +30,17 @@ import {
 import { useAuthStore } from "@/store/auth.store";
 import { recordRecentCourseAccess } from "@/services/api/recentAccess.service";
 import LearnerQuizModal from "@/components/courses/learner/LearnerQuizModal";
+import LearnerAssignmentModal from "@/components/courses/learner/LearnerAssignmentModal";
 import LearnerCertificateModal from "@/components/certificates/LearnerCertificateModal";
 
 interface LessonItem {
   id: number;
   title: string;
+  contentType: string;
+  description?: string;
+  contentUrl?: string;
+  quizConfigJson?: string;
+  assignmentConfigJson?: string;
   completed: boolean;
   active?: boolean;
 }
@@ -63,11 +69,11 @@ export default function CoursePreviewPage() {
   const [completedLessonIds, setCompletedLessonIds] = useState<number[]>([]);
   const [progressPercent, setProgressPercent] = useState(0);
   const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
-  const [selectedLessonId, setSelectedLessonId] = useState<number>(1);
-  const [selectedLessonTitle, setSelectedLessonTitle] = useState("1.1 Overview & Introduction");
+  const [selectedLesson, setSelectedLesson] = useState<LessonItem | null>(null);
 
   // Modals
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
+  const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
 
   // Load course details & learner progress
@@ -100,16 +106,20 @@ export default function CoursePreviewPage() {
             completedCount: 0,
             totalCount: sec.contents?.length || 0,
             lessons: (sec.contents || []).map((cnt: any, cIdx: number) => ({
-              id: cnt.id || cIdx + 1,
+              id: Number(cnt.id || cIdx + 1),
               title: `${sIdx + 1}.${cIdx + 1} ${cnt.title}`,
+              contentType: cnt.contentType || "LESSON",
+              description: cnt.description || "",
+              contentUrl: cnt.contentUrl || "",
+              quizConfigJson: cnt.quizConfigJson || "",
+              assignmentConfigJson: cnt.assignmentConfigJson || "",
               completed: false,
               active: sIdx === 0 && cIdx === 0,
             })),
           }));
           setModules(parsed);
           if (parsed[0]?.lessons[0]) {
-            setSelectedLessonId(parsed[0].lessons[0].id);
-            setSelectedLessonTitle(parsed[0].lessons[0].title);
+            setSelectedLesson(parsed[0].lessons[0]);
           }
         }
       }
@@ -143,13 +153,13 @@ export default function CoursePreviewPage() {
   // Sync elapsed time to backend every 30 seconds
   useEffect(() => {
     const syncInterval = setInterval(() => {
-      if (courseId && selectedLessonId) {
-        updateLessonProgress(courseId, selectedLessonId, completedLessonIds.includes(selectedLessonId), 30);
+      if (courseId && selectedLesson) {
+        updateLessonProgress(courseId, selectedLesson.id, completedLessonIds.includes(selectedLesson.id), 30);
       }
     }, 30000);
 
     return () => clearInterval(syncInterval);
-  }, [courseId, selectedLessonId, completedLessonIds]);
+  }, [courseId, selectedLesson, completedLessonIds]);
 
   const toggleModule = (moduleId: number) => {
     setExpandedModules((prev) =>
@@ -193,8 +203,14 @@ export default function CoursePreviewPage() {
   };
 
   const currentTitle = course?.title || "Course Experience";
+  const selectedLessonId = selectedLesson?.id || 1;
   const isLessonCompleted = completedLessonIds.includes(selectedLessonId);
   const isCourseFullyCompleted = progressPercent >= 100 || Boolean(progressData?.certificate);
+
+  // Check if learner has an assignment submission
+  const latestSubmission = (progressData?.submissions || []).find(
+    (s: any) => s.submissionType === "ASSIGNMENT"
+  );
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)] flex-col bg-background">
@@ -322,8 +338,12 @@ export default function CoursePreviewPage() {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  setSelectedLessonId(lesson.id);
-                                  setSelectedLessonTitle(lesson.title);
+                                  setSelectedLesson(lesson);
+                                  if (lesson.contentType === "QUIZ") {
+                                    setIsQuizModalOpen(true);
+                                  } else if (lesson.contentType === "ASSIGNMENT") {
+                                    setIsAssignmentModalOpen(true);
+                                  }
                                 }}
                                 className="flex items-center gap-2 text-left flex-1 truncate"
                               >
@@ -335,6 +355,12 @@ export default function CoursePreviewPage() {
                                   <Circle className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40" />
                                 )}
                                 <span className="truncate">{lesson.title}</span>
+                                {lesson.contentType === "QUIZ" && (
+                                  <span className="text-[9px] bg-indigo-500/10 text-indigo-600 font-bold px-1.5 py-0.5 rounded ml-1">QUIZ</span>
+                                )}
+                                {lesson.contentType === "ASSIGNMENT" && (
+                                  <span className="text-[9px] bg-purple-500/10 text-purple-600 font-bold px-1.5 py-0.5 rounded ml-1">ASSIGNMENT</span>
+                                )}
                               </button>
 
                               <button
@@ -364,24 +390,35 @@ export default function CoursePreviewPage() {
           <div className="px-6 pt-5 pb-3 flex items-center justify-between border-b border-border">
             <div>
               <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mb-0.5">
-                Active Lecture Unit
+                Active Unit: {selectedLesson?.contentType || "LESSON"}
               </span>
               <h2 className="text-lg font-bold text-foreground">
-                {selectedLessonTitle}
+                {selectedLesson?.title || "1.1 Overview & Introduction"}
               </h2>
             </div>
-            <Button
-              size="sm"
-              variant={isLessonCompleted ? "outline" : "default"}
-              onClick={() => handleToggleLessonComplete(selectedLessonId)}
-              className="gap-1.5 font-bold text-xs"
-            >
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-              {isLessonCompleted ? "Completed ✓" : "Mark Lesson Complete"}
-            </Button>
+            <div className="flex items-center gap-2">
+              {selectedLesson?.contentType === "ASSIGNMENT" && (
+                <Button
+                  size="sm"
+                  onClick={() => setIsAssignmentModalOpen(true)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs gap-1.5"
+                >
+                  {latestSubmission ? "View Assignment & Grade" : "Submit Assignment"}
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant={isLessonCompleted ? "outline" : "default"}
+                onClick={() => handleToggleLessonComplete(selectedLessonId)}
+                className="gap-1.5 font-bold text-xs"
+              >
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                {isLessonCompleted ? "Completed ✓" : "Mark Lesson Complete"}
+              </Button>
+            </div>
           </div>
 
-          {/* Player Box */}
+          {/* Player Box / Content Display */}
           <div className="px-6 pt-4">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-slate-900 border border-border shadow-lg">
               {(course as any)?.thumbnail ? (
@@ -399,13 +436,29 @@ export default function CoursePreviewPage() {
                   <BookOpen className="h-6 w-6 text-primary" />
                   <div className="text-left">
                     <p className="text-sm font-bold text-white uppercase tracking-wider">{currentTitle}</p>
-                    <p className="text-xs text-white/70">{selectedLessonTitle}</p>
+                    <p className="text-xs text-white/70">{selectedLesson?.title || "Interactive Lesson"}</p>
                   </div>
                 </div>
 
-                <button className="mt-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl transition-all hover:scale-110 cursor-pointer">
-                  <Play className="h-7 w-7 fill-current ml-0.5" />
-                </button>
+                {selectedLesson?.contentType === "ASSIGNMENT" ? (
+                  <Button
+                    onClick={() => setIsAssignmentModalOpen(true)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-6 py-3 rounded-full shadow-2xl"
+                  >
+                    Open Assignment Submission Workspace →
+                  </Button>
+                ) : selectedLesson?.contentType === "QUIZ" ? (
+                  <Button
+                    onClick={() => setIsQuizModalOpen(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-6 py-3 rounded-full shadow-2xl"
+                  >
+                    Start Interactive Quiz →
+                  </Button>
+                ) : (
+                  <button className="mt-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl transition-all hover:scale-110 cursor-pointer">
+                    <Play className="h-7 w-7 fill-current ml-0.5" />
+                  </button>
+                )}
               </div>
 
               <div className="absolute bottom-3 right-3 rounded-md bg-black/70 px-2.5 py-1 text-xs font-mono text-white backdrop-blur-sm flex items-center gap-1">
@@ -438,10 +491,30 @@ export default function CoursePreviewPage() {
           <div className="px-6 py-5 flex-1">
             {activeTab === "overview" && (
               <div className="space-y-3">
-                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Course Overview &amp; Learning Goals</h4>
+                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Lesson Description &amp; Instructions</h4>
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  {course?.description || course?.shortDescription || `Master the principles of ${currentTitle}. This course provides structured modules, practical scenario exercises, and comprehensive evaluations.`}
+                  {selectedLesson?.description || course?.description || course?.shortDescription || `Master the principles of ${currentTitle}. This unit provides structured lessons, practical scenario exercises, and comprehensive evaluations.`}
                 </p>
+
+                {/* Display Graded Results Banner if Available */}
+                {latestSubmission && (
+                  <div className="mt-4 p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-purple-700 dark:text-purple-300">Assignment Submission Status</span>
+                      <Badge variant="outline" className="bg-purple-600 text-white text-[10px]">
+                        {latestSubmission.status}
+                      </Badge>
+                    </div>
+                    {latestSubmission.status === "GRADED" && (
+                      <div className="text-xs space-y-1">
+                        <p className="font-bold text-foreground">Score: {latestSubmission.score}/{latestSubmission.maxScore} ({latestSubmission.grade})</p>
+                        {latestSubmission.feedback && (
+                          <p className="text-muted-foreground italic">Teacher Feedback: "{latestSubmission.feedback}"</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
             {activeTab === "resources" && (
@@ -470,7 +543,7 @@ export default function CoursePreviewPage() {
             )}
             {activeTab === "notes" && (
               <textarea
-                placeholder={`Personal notes for ${selectedLessonTitle}...`}
+                placeholder={`Personal notes for ${selectedLesson?.title || "Lesson"}...`}
                 className="min-h-[100px] w-full rounded-xl border border-border bg-card p-4 text-xs resize-none focus:outline-none"
               />
             )}
@@ -483,7 +556,23 @@ export default function CoursePreviewPage() {
         <LearnerQuizModal
           open={isQuizModalOpen}
           courseId={courseId}
+          contentId={selectedLesson?.id}
+          quizTitle={selectedLesson?.title || "Module Quiz Check"}
           onClose={() => setIsQuizModalOpen(false)}
+          onSuccess={() => loadCourseAndProgress()}
+        />
+      )}
+
+      {/* Interactive Assignment Modal */}
+      {courseId && (
+        <LearnerAssignmentModal
+          open={isAssignmentModalOpen}
+          courseId={courseId}
+          contentId={selectedLesson?.id}
+          assignmentTitle={selectedLesson?.title || "Module Practical Assignment"}
+          instructions={selectedLesson?.description || "Complete the practical assignment instructions."}
+          existingSubmission={latestSubmission}
+          onClose={() => setIsAssignmentModalOpen(false)}
           onSuccess={() => loadCourseAndProgress()}
         />
       )}

@@ -15,6 +15,10 @@ import courseRoutes from "./modules/course/course.routes";
 import categoryRoutes from "./modules/course/category.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 import skillRoutes from "./routes/skill.routes";
+import certificateRoutes from "./routes/certificate.routes";
+import eventRoutes from "./routes/event.routes";
+import auditRoutes from "./routes/audit.routes";
+
 const app = express();
 
 app.use(cors());
@@ -26,11 +30,9 @@ app.use(express.urlencoded({
 }));
 
 app.get("/", (req, res) => {
-
     res.json({
         message: "LMS Backend Running"
     });
-
 });
 
 app.use("/api/departments", departmentRoutes);
@@ -47,5 +49,10 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/skills", skillRoutes);
+app.use("/api/certificates", certificateRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/admin/audit-logs", auditRoutes);
+
 app.use(errorHandler);
+
 export default app;

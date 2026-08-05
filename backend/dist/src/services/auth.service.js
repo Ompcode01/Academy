@@ -13,7 +13,11 @@ const login = async (data) => {
             username: data.username,
         },
         include: {
-            employee: true,
+            employee: {
+                include: {
+                    department: true,
+                },
+            },
         },
     });
     if (!account) {
@@ -44,10 +48,25 @@ const login = async (data) => {
             role: true,
         },
     });
+    const primaryRole = roles[0]?.role?.roleCode || "LEARNER";
     const token = (0, jwt_1.generateToken)({
         userId: account.id.toString(),
         employeeId: account.employeeId.toString(),
         username: account.username,
+        role: primaryRole,
+        departmentId: account.employee.departmentId.toString(),
+    });
+    // Record Audit Log for successful login
+    const actorName = `${account.employee.firstName} ${account.employee.lastName} (${primaryRole})`;
+    await prisma_1.default.auditLog.create({
+        data: {
+            actorName,
+            action: "Login Success",
+            detail: "Successfully authenticated to LMS Portal",
+            type: "login",
+            actorId: account.employeeId,
+            ipAddress: "192.168.1.38",
+        },
     });
     return {
         token,

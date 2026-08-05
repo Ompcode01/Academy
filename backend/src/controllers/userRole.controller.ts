@@ -54,6 +54,27 @@ export const assignRole = async (
 
       });
 
+    // Record Audit Log for Role Assignment
+    const actorName = req.user
+      ? `${req.user.username} (${req.user.role || 'USER'})`
+      : "System Admin";
+    const employee = await prisma.employee.findUnique({
+      where: { id: BigInt(req.body.employeeId) },
+    });
+    const targetEmployeeName = employee
+      ? `${employee.firstName} ${employee.lastName}`
+      : `Employee #${req.body.employeeId}`;
+
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "Role Assignment",
+        detail: `Assigned ${targetRole.roleCode} role to ${targetEmployeeName}`,
+        type: "role",
+        ipAddress: req.ip || "Internal",
+      },
+    });
+
     res.status(201).json({
 
       success: true,
@@ -146,9 +167,30 @@ export const deleteUserRole = async (
 
   try {
 
-    await userRoleService.deleteUserRole(
-      BigInt(String(req.params.id))
-    );
+    const id = BigInt(String(req.params.id));
+    const existingUserRole = await userRoleService.getUserRoleById(id);
+
+    await userRoleService.deleteUserRole(id);
+
+    // Record Audit Log
+    const authReq = req as AuthRequest;
+    const actorName = authReq.user
+      ? `${authReq.user.username} (${authReq.user.role || 'USER'})`
+      : "System Admin";
+
+    const detail = existingUserRole
+      ? `Removed role '${existingUserRole.role.roleCode}' from ${existingUserRole.employee.firstName} ${existingUserRole.employee.lastName}`
+      : `Deleted user role assignment #${id}`;
+
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "Role Assignment",
+        detail,
+        type: "role",
+        ipAddress: req.ip || "Internal",
+      },
+    });
 
     res.status(200).json({
 

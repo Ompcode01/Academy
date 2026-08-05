@@ -9,59 +9,44 @@ export const authorizeRoles =
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-
     try {
-
-      const employeeId = BigInt(req.user.employeeId);
-
-      const userRoles = await prisma.userRole.findMany({
-
-        where: {
-
-          employeeId,
-          isActive: true,
-
-        },
-
-        include: {
-
-          role: true,
-
-        },
-
-      });
-
-      const roleCodes = userRoles.map(
-        (r) => r.role.roleCode
-      );
-
-      const hasRole = allowedRoles.some(
-        (role) => roleCodes.includes(role)
-      );
-
-      if (!hasRole) {
-
-        res.status(403).json({
-
-          success: false,
-          message: "Access Denied",
-
-        });
-
+      if (!req.user) {
+        res.status(401).json({ success: false, message: "Unauthorized" });
         return;
       }
 
-      next();
+      // Fast-path: Check role directly from JWT payload
+      const tokenRole = req.user.role;
+      if (tokenRole && allowedRoles.includes(tokenRole)) {
+        return next();
+      }
 
-    } catch (error) {
+      // Fallback: Query database user_roles
+      const empIdRaw = req.user.employeeId || req.user.userId || req.user.id;
+      if (empIdRaw) {
+        const employeeId = BigInt(empIdRaw);
+        const userRoles = await prisma.userRole.findMany({
+          where: { employeeId, isActive: true },
+          include: { role: true },
+        });
 
+        const roleCodes = userRoles.map((r) => r.role.roleCode);
+        const hasRole = allowedRoles.some((role) => roleCodes.includes(role));
+
+        if (hasRole) {
+          return next();
+        }
+      }
+
+      res.status(403).json({
+        success: false,
+        message: "Access Denied: Required role missing",
+      });
+    } catch (error: any) {
+      console.error("Authorization Middleware Error:", error);
       res.status(500).json({
-
         success: false,
         message: "Authorization Failed",
-
       });
-
     }
-
   };

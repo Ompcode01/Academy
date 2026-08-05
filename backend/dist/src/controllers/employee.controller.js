@@ -32,9 +32,13 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEmployee = exports.updateEmployee = exports.getEmployeeById = exports.getEmployees = exports.createEmployee = void 0;
 const employeeService = __importStar(require("../services/employee.service"));
+const prisma_1 = __importDefault(require("../config/prisma"));
 const serialize = (obj) => JSON.parse(JSON.stringify(obj, (_, value) => typeof value === "bigint" ? value.toString() : value));
 const createEmployee = async (req, res) => {
     try {
@@ -116,7 +120,24 @@ const updateEmployee = async (req, res) => {
 exports.updateEmployee = updateEmployee;
 const deleteEmployee = async (req, res) => {
     try {
-        await employeeService.deleteEmployee(BigInt(String(req.params.id)));
+        const callerRole = req.user?.role;
+        const targetId = BigInt(String(req.params.id));
+        // Check if the target employee holds an ADMIN or SUPER_ADMIN role
+        const targetRoles = await prisma_1.default.userRole.findMany({
+            where: { employeeId: targetId, isActive: true },
+            include: { role: true },
+        });
+        const targetRoleCodes = targetRoles.map((r) => r.role.roleCode);
+        const targetIsAdmin = targetRoleCodes.includes("ADMIN") || targetRoleCodes.includes("SUPER_ADMIN");
+        // Only SUPER_ADMIN can delete admin-level employees
+        if (targetIsAdmin && callerRole !== "SUPER_ADMIN") {
+            res.status(403).json({
+                success: false,
+                message: "Only Super Admins can delete admin-level employees",
+            });
+            return;
+        }
+        await employeeService.deleteEmployee(targetId);
         res.json({
             success: true,
             message: "Employee deleted successfully",

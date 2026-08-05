@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import * as userAccountService from "../services/userAccount.service";
 import { serialize } from "../utils/serializer";
+import prisma from "../config/prisma";
+import { AuthRequest } from "../middleware/auth.middleware";
 
 export const createUserAccount = async (
   req: Request,
@@ -17,6 +19,22 @@ export const createUserAccount = async (
         password: req.body.password,
 
       });
+
+    // Record Audit Log
+    const authReq = req as AuthRequest;
+    const actorName = authReq.user
+      ? `${authReq.user.username} (${authReq.user.role || 'USER'})`
+      : "System Admin";
+
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "Account Created",
+        detail: `Created user account '${account.username}'`,
+        type: "user",
+        ipAddress: req.ip || "Internal",
+      },
+    });
 
     res.status(201).json({
 
@@ -112,9 +130,26 @@ export const deleteUserAccount = async (
 
   try {
 
-    await userAccountService.deleteUserAccount(
-      BigInt(String(req.params.id))
-    );
+    const id = BigInt(String(req.params.id));
+    const existingAccount = await userAccountService.getUserAccountById(id);
+
+    await userAccountService.deleteUserAccount(id);
+
+    // Record Audit Log
+    const authReq = req as AuthRequest;
+    const actorName = authReq.user
+      ? `${authReq.user.username} (${authReq.user.role || 'USER'})`
+      : "System Admin";
+
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "Account Deleted",
+        detail: `Deleted user account '${existingAccount?.username || id}'`,
+        type: "user",
+        ipAddress: req.ip || "Internal",
+      },
+    });
 
     res.status(200).json({
 

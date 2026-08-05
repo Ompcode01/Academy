@@ -220,3 +220,47 @@ export const verifyBulkFile = async (file: File) => {
   });
   return response.data;
 };
+
+// Learner Progress & Submissions
+export const getLearnerCourseProgress = async (courseId: number) => {
+  const response = await api.get(`/courses/${courseId}/my-progress`);
+  return response.data;
+};
+
+export const updateLessonProgress = async (
+  courseId: number,
+  data: { contentId: number; isCompleted: boolean; additionalSeconds?: number }
+) => {
+  const response = await api.post(`/courses/${courseId}/progress`, data);
+  return response.data;
+};
+
+export const submitQuiz = async (
+  courseId: number,
+  data: { contentId?: number; score: number; maxScore: number; answersJson?: string }
+) => {
+  const response = await api.post(`/courses/${courseId}/quiz/submit`, data);
+  return response.data;
+};
+
+export const submitAssignment = async (
+  courseId: number,
+  data: { contentId?: number; submissionText: string; fileUrl?: string }
+) => {
+  const response = await api.post(`/courses/${courseId}/assignment/submit`, data);
+  return response.data;
+};
+
+// Teacher & Admin Submissions Review
+export const getTeacherSubmissions = async () => {
+  const response = await api.get("/courses/teacher/submissions");
+  return response.data;
+};
+
+export const gradeSubmission = async (
+  submissionId: number,
+  data: { grade: string; score: number; feedback: string }
+) => {
+  const response = await api.post(`/courses/admin/grade-submission/${submissionId}`, data);
+  return response.data;
+};
