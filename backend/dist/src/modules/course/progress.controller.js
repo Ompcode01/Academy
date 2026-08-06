@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gradeAssessmentSubmission = exports.getAdminLearnerProgressMatrix = exports.recordQuizSubmission = exports.updateLessonProgress = exports.getLearnerProgress = void 0;
+exports.gradeAssessmentSubmission = exports.getTeacherSubmissions = exports.recordAssignmentSubmission = exports.getAdminLearnerProgressMatrix = exports.recordQuizSubmission = exports.updateLessonProgress = exports.getLearnerProgress = void 0;
 const progress_service_1 = __importDefault(require("./progress.service"));
 const getLearnerProgress = async (req, res) => {
     try {
@@ -56,6 +56,30 @@ const getAdminLearnerProgressMatrix = async (req, res) => {
     }
 };
 exports.getAdminLearnerProgressMatrix = getAdminLearnerProgressMatrix;
+const recordAssignmentSubmission = async (req, res) => {
+    try {
+        const courseId = BigInt(String(req.params.id));
+        const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+        const { contentId, submissionText, fileUrl } = req.body;
+        const data = await progress_service_1.default.recordAssignmentSubmission(userId, courseId, contentId ? BigInt(contentId) : null, submissionText || "", fileUrl || "");
+        res.json({ success: true, message: "Assignment submitted successfully and queued for grading", data });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+exports.recordAssignmentSubmission = recordAssignmentSubmission;
+const getTeacherSubmissions = async (req, res) => {
+    try {
+        const teacherId = req.user?.employeeId ? BigInt(req.user.employeeId) : undefined;
+        const data = await progress_service_1.default.getTeacherSubmissions(teacherId, req.user?.role);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+exports.getTeacherSubmissions = getTeacherSubmissions;
 const gradeAssessmentSubmission = async (req, res) => {
     try {
         const submissionId = BigInt(String(req.params.submissionId));

@@ -162,6 +162,7 @@ model Course {
   language         String?         @db.VarChar(50)
   status           CourseStatus    @default(DRAFT)
   enrollmentType   String          @default("SELF") @db.VarChar(50)
+  isMandatory      Boolean         @default(false)
   isActive         Boolean         @default(true)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
@@ -238,10 +239,15 @@ model Enrollment {
   userId           BigInt    
   courseId         BigInt    @db.UnsignedBigInt
   enrolledAt       DateTime  @default(now())
+  startDate        DateTime?
   completedAt      DateTime?
+  dueDate          DateTime?
+  lastActivityAt   DateTime?
   status           String    @default("IN_PROGRESS") @db.VarChar(30)
   progress         Decimal   @default(0.00) @db.Decimal(5, 2)
   timeSpentSeconds Int       @default(0)
+  sessionsCount    Int       @default(1)
+  isMandatory      Boolean   @default(false)
   createdAt        DateTime  @default(now())
   user             Employee  @relation(fields: [userId], references: [id], onDelete: Cascade)
   course           Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -249,6 +255,7 @@ model Enrollment {
   @@unique([userId, courseId])
   @@index([userId])
   @@index([courseId])
+  @@index([status])
   @@map("enrollments")
 }
 
@@ -414,6 +421,7 @@ model CertificateTemplate {
   primaryColor      String   @default("#d97706") @db.VarChar(20)
   enableCertificate Boolean  @default(true)
   passingThreshold  Int      @default(70)
+  validityDays      Int      @default(365)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -427,6 +435,8 @@ model IssuedCertificate {
   userId           BigInt
   courseId         BigInt   @db.UnsignedBigInt
   issuedAt         DateTime @default(now())
+  expiresAt        DateTime?
+  status           String   @default("ACTIVE") @db.VarChar(30)
   recipientName    String   @db.VarChar(100)
   courseTitle      String   @db.VarChar(200)
   templateSnapshot String?  @db.Text
@@ -459,18 +469,22 @@ model Event {
 }
 
 model AuditLog {
-  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  timestamp DateTime @default(now())
-  actorId   BigInt?
-  actorName String   @default("System") @db.VarChar(100)
-  action    String   @db.VarChar(100)
-  detail    String   @db.Text
-  type      String   @default("system") @db.VarChar(50) // role, login, course, security, user, settings, system
-  ipAddress String?  @db.VarChar(50)
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  timestamp      DateTime @default(now())
+  actorId        BigInt?
+  actorName      String   @default("System") @db.VarChar(100)
+  username       String?  @db.VarChar(100)
+  departmentName String?  @db.VarChar(100)
+  action         String   @db.VarChar(100)
+  detail         String   @db.Text
+  type           String   @default("system") @db.VarChar(50) // role, login, course, security, user, settings, system
+  ipAddress      String?  @db.VarChar(50)
 
   @@index([type])
   @@index([timestamp])
+  @@index([username])
+  @@index([departmentName])
   @@map("audit_logs")
-
 }
+
 

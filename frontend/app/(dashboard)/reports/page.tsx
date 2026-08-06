@@ -1,433 +1,695 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import React, { useEffect, useState, useCallback } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import {
   TrendingUp,
   Award,
   BookOpen,
   Users,
-  Download,
-  Calendar,
-  ShieldCheck,
-  Shield,
-  LogIn,
-  UserCog,
-  AlertTriangle,
-  Clock,
   CheckCircle2,
-  Edit,
+  Clock,
+  Building2,
+  BarChart3,
+  ShieldCheck,
+  AlertTriangle,
+  RefreshCw,
   Eye,
+  Sparkles,
+  FileText,
+  Crown,
+  Lock,
 } from "lucide-react";
 import RoleGate from "@/components/auth/RoleGate";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
 import {
-  getAdminLearnerProgressMatrix,
-  AdminLearnerMatrixItem,
-} from "@/services/api/progress.service";
-import { getAuditLogs, AuditLogData } from "@/services/api/audit.service";
-import GradeAssessmentModal from "@/components/reports/GradeAssessmentModal";
-import LearnerCertificateModal from "@/components/certificates/LearnerCertificateModal";
+  getReportingFilterOptions,
+  getEnrollmentReport,
+  getCourseCompletionReport,
+  getLearnerPerformanceReport,
+  getAssessmentReport,
+  getEngagementReport,
+  getDepartmentPerformanceReport,
+  getOrganizationOverviewReport,
+  exportReportFile,
+  ReportFilterParams,
+} from "@/services/api/reporting.service";
+
+import { ReportKpiCard } from "@/components/reports/ReportKpiCard";
+import { ReportFilterBar } from "@/components/reports/ReportFilterBar";
+import { ReportTable, renderStatusBadge } from "@/components/reports/ReportTable";
+import { ChartCard, StatusPieChart, SimpleBarChart, TrendAreaChart } from "@/components/reports/ReportCharts";
+import { ReportDrilldownModal } from "@/components/reports/ReportDrilldownModal";
 
 export default function ReportsPage() {
   const { user } = useAuthStore();
   const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN;
 
-  const [matrixData, setMatrixData] = useState<AdminLearnerMatrixItem[]>([]);
-  const [auditLogs, setAuditLogs] = useState<AuditLogData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<string>("enrollments");
+  const [filterOptions, setFilterOptions] = useState<any>(null);
+  const [filters, setFilters] = useState<ReportFilterParams & { search?: string }>({
+    preset: "ALL",
+    departmentId: "ALL",
+    courseId: "ALL",
+    categoryId: "ALL",
+    employeeId: "ALL",
+    mandatory: "ALL",
+    status: "ALL",
+    search: "",
+    page: 1,
+    limit: 10,
+    lowCompletionThreshold: 50,
+    expiringSoonDays: 30,
+    inactiveDays: 30,
+  });
 
-  // Selected item for grading
-  const [selectedGradingItem, setSelectedGradingItem] = useState<AdminLearnerMatrixItem | null>(null);
-  const [isGradingModalOpen, setIsGradingModalOpen] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reportData, setReportData] = useState<any>(null);
 
-  // Selected certificate for viewing
-  const [selectedCert, setSelectedCert] = useState<{
-    id: number;
-    certificateCode: string;
-    recipientName: string;
-    courseTitle: string;
-    issuedAt: string;
-  } | null>(null);
-  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  // Drilldown Modal State
+  const [drillModalOpen, setDrillModalOpen] = useState(false);
+  const [drillTargetId, setDrillTargetId] = useState<number | string | null>(null);
 
-  const loadMatrix = async () => {
+  // Load Filter Options
+  useEffect(() => {
+    getReportingFilterOptions()
+      .then((opts) => setFilterOptions(opts))
+      .catch((err) => console.error("Failed to load filter options:", err));
+  }, []);
+
+  // Main Report Fetcher
+  const fetchReport = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const data = await getAdminLearnerProgressMatrix();
-      setMatrixData(data);
-
-      if (isSuperAdmin) {
-        const logs = await getAuditLogs();
-        setAuditLogs(logs);
+      let data: any = null;
+      switch (activeTab) {
+        case "enrollments":
+          data = await getEnrollmentReport(filters);
+          break;
+        case "completions":
+          data = await getCourseCompletionReport(filters);
+          break;
+        case "learner-performance":
+          data = await getLearnerPerformanceReport(filters);
+          break;
+        case "assessments":
+          data = await getAssessmentReport(filters);
+          break;
+        case "engagement":
+          data = await getEngagementReport(filters);
+          break;
+        case "department-performance":
+          if (!isSuperAdmin) throw new Error("Forbidden: Super Admin role required");
+          data = await getDepartmentPerformanceReport(filters);
+          break;
+        case "organization-overview":
+          if (!isSuperAdmin) throw new Error("Forbidden: Super Admin role required");
+          data = await getOrganizationOverviewReport(filters);
+          break;
+        default:
+          data = await getEnrollmentReport(filters);
       }
-    } catch (err) {
-      console.error("Failed to load progress matrix or audit logs:", err);
+      setReportData(data);
+    } catch (err: any) {
+      console.error("Report fetch error:", err);
+      setError(err?.response?.data?.message || err.message || "Failed to load report metrics.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, filters, isSuperAdmin]);
 
   useEffect(() => {
-    loadMatrix();
-  }, []);
+    fetchReport();
+  }, [fetchReport]);
 
-  const formatTimeSpent = (totalSec: number) => {
-    const hrs = Math.floor(totalSec / 3600);
-    const mins = Math.floor((totalSec % 3600) / 60);
-    if (hrs > 0) return `${hrs}h ${mins}m`;
-    return `${mins}m`;
+  const handleFilterChange = (updated: Partial<ReportFilterParams & { search?: string }>) => {
+    setFilters((prev) => ({ ...prev, ...updated, page: 1 }));
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      preset: "ALL",
+      departmentId: "ALL",
+      courseId: "ALL",
+      categoryId: "ALL",
+      employeeId: "ALL",
+      mandatory: "ALL",
+      status: "ALL",
+      search: "",
+      page: 1,
+      limit: 10,
+      lowCompletionThreshold: 50,
+      expiringSoonDays: 30,
+      inactiveDays: 30,
+    });
+  };
+
+  const handleExport = (format: "excel" | "csv" | "pdf") => {
+    exportReportFile(activeTab, format === "excel" ? "xlsx" : format, filters);
+  };
+
+  const openEmployeeDrilldown = (empId: number | string) => {
+    setDrillTargetId(empId);
+    setDrillModalOpen(true);
   };
 
   return (
     <RoleGate allowed={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 space-y-5">
+        {/* Header Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card border border-border/80 p-4 rounded-xl shadow-sm">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              <TrendingUp className="h-6 w-6 text-primary" />
-              LMS Analytics, Learner Progress &amp; Assessment Grading
-            </h1>
+            <div className="flex items-center space-x-2">
+              <h1 className="text-lg font-bold tracking-tight text-foreground flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                Enterprise LMS Reporting &amp; Analytics
+              </h1>
+              {isSuperAdmin ? (
+                <Badge className="bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 gap-1 text-[11px] py-0.5 px-2 font-bold">
+                  <Crown className="h-3.5 w-3.5" /> Super Admin Access (All 7 Reports)
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-xs py-0.5 px-2 text-amber-600 dark:text-amber-400 border-amber-500/30 font-semibold">
+                  <Lock className="h-3 w-3 mr-1" /> Admin Scope: {filterOptions?.departments?.[0]?.departmentName || "Authorized Dept"}
+                </Badge>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Track real-time employee course progression, time spent, quiz evaluation scores, and assign instructor grades.
+              Select an enterprise report below to view real-time metrics, employee search results, and charts.
             </p>
           </div>
+
           <Button
             size="sm"
-            onClick={loadMatrix}
-            className="bg-primary text-primary-foreground font-bold text-xs gap-1.5 shadow"
+            onClick={fetchReport}
+            className="bg-primary text-primary-foreground font-bold text-xs gap-1.5 shadow h-8"
           >
-            <TrendingUp className="h-4 w-4" /> Refresh Analytics
+            <RefreshCw className="h-3.5 w-3.5" /> Refresh Analytics
           </Button>
         </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="border border-border bg-card">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="rounded-xl p-3 bg-primary/10 text-primary">
-                <Users className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground">Active Learners</p>
-                <p className="text-xl font-extrabold text-foreground">{matrixData.length || 18}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="rounded-xl p-3 bg-emerald-500/10 text-emerald-500">
-                <CheckCircle2 className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground">Completed Courses</p>
-                <p className="text-xl font-extrabold text-foreground">
-                  {matrixData.filter((m) => m.status === "COMPLETED").length || 4}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="rounded-xl p-3 bg-indigo-500/10 text-indigo-500">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground">Total Time Spent</p>
-                <p className="text-xl font-extrabold text-foreground">
-                  {formatTimeSpent(matrixData.reduce((sum, m) => sum + (m.timeSpentSeconds || 0), 0) || 7800)}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border bg-card">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="rounded-xl p-3 bg-amber-500/10 text-amber-500">
-                <Award className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground">Certificates Issued</p>
-                <p className="text-xl font-extrabold text-foreground">
-                  {matrixData.filter((m) => m.hasCertificate).length || 3}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* MAIN MATRIX TABLE: Learner Progress & Assessment Grading */}
-        <Card className="border border-border bg-card shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-sm font-bold text-foreground flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-primary" />
-                Employee Course Progress &amp; Evaluation Grading Matrix
-              </span>
-              <Badge variant="outline" className="text-xs bg-muted">
-                {matrixData.length} Total Enrolled Learners
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <div className="rounded-xl border border-border overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/40 hover:bg-muted/40">
-                    <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground pl-4">Learner Employee</TableHead>
-                    <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Course Title</TableHead>
-                    <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Progress %</TableHead>
-                    <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Time Spent</TableHead>
-                    <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Quiz Score</TableHead>
-                    <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Assigned Grade</TableHead>
-                    <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground pr-4 text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">
-                        Loading Learner Analytics Matrix...
-                      </TableCell>
-                    </TableRow>
-                  ) : matrixData.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">
-                        No enrollment records found.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    matrixData.map((row) => (
-                      <TableRow key={row.id} className="border-border hover:bg-muted/20">
-                        {/* Employee */}
-                        <TableCell className="pl-4 py-3">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xs">
-                              {row.employeeName?.[0] || "E"}
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold text-foreground">{row.employeeName}</p>
-                              <p className="text-[10px] text-muted-foreground">{row.employeeCode} • {row.designation}</p>
-                            </div>
-                          </div>
-                        </TableCell>
-
-                        {/* Course */}
-                        <TableCell className="py-3">
-                          <p className="text-xs font-semibold text-foreground max-w-[200px] truncate">
-                            {row.courseTitle}
-                          </p>
-                        </TableCell>
-
-                        {/* Progress */}
-                        <TableCell className="py-3">
-                          <div className="space-y-1 w-24">
-                            <div className="flex justify-between text-[10px] font-bold">
-                              <span>{row.progress}%</span>
-                              <span className={row.status === "COMPLETED" ? "text-emerald-500" : "text-indigo-500"}>
-                                {row.status}
-                              </span>
-                            </div>
-                            <div className="h-1.5 w-full bg-muted rounded overflow-hidden">
-                              <div
-                                className={`h-full rounded-r ${
-                                  row.status === "COMPLETED" ? "bg-emerald-500" : "bg-primary"
-                                }`}
-                                style={{ width: `${row.progress}%` }}
-                              />
-                            </div>
-                          </div>
-                        </TableCell>
-
-                        {/* Time Spent */}
-                        <TableCell className="py-3 text-xs font-mono font-semibold text-foreground">
-                          <span className="inline-flex items-center gap-1">
-                            <Clock className="h-3 w-3 text-indigo-500" />
-                            {formatTimeSpent(row.timeSpentSeconds)}
-                          </span>
-                        </TableCell>
-
-                        {/* Quiz Score */}
-                        <TableCell className="py-3 text-xs font-semibold">
-                          {row.latestScore !== null && row.latestScore !== undefined ? (
-                            <span className="font-mono text-foreground font-bold">
-                              {row.latestScore} / {row.latestMaxScore} ({row.latestPercentage}%)
-                            </span>
-                          ) : (
-                            <span className="text-muted-foreground italic text-[11px]">Not attempted</span>
-                          )}
-                        </TableCell>
-
-                        {/* Grade */}
-                        <TableCell className="py-3">
-                          {row.grade ? (
-                            <Badge
-                              variant="outline"
-                              className={`text-[10px] font-extrabold ${
-                                row.grade.includes("A") || row.grade === "Passed"
-                                  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30"
-                                  : "bg-amber-500/10 text-amber-600 border-amber-500/30"
-                              }`}
-                            >
-                              {row.grade}
-                            </Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-[11px]">Pending</span>
-                          )}
-                        </TableCell>
-
-                        {/* Actions */}
-                        <TableCell className="py-3 pr-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            {/* Grade Button */}
-                            <Button
-                              size="xs"
-                              variant="outline"
-                              onClick={() => {
-                                setSelectedGradingItem(row);
-                                setIsGradingModalOpen(true);
-                              }}
-                              className="text-xs gap-1 font-bold"
-                              title="Assign/Edit Grade & Feedback"
-                            >
-                              <Edit className="h-3.5 w-3.5" /> Grade
-                            </Button>
-
-                            {/* View Certificate Button if issued */}
-                            {row.hasCertificate && (
-                              <Button
-                                size="xs"
-                                variant="outline"
-                                onClick={() => {
-                                  setSelectedCert({
-                                    id: row.id,
-                                    certificateCode: row.certificateCode || `HARB-CERT-${row.id}`,
-                                    recipientName: row.employeeName,
-                                    courseTitle: row.courseTitle,
-                                    issuedAt: new Date().toISOString(),
-                                  });
-                                  setIsCertModalOpen(true);
-                                }}
-                                className="text-xs gap-1 font-bold text-amber-600 border-amber-500/30 hover:bg-amber-50"
-                                title="View Issued Certificate"
-                              >
-                                <Award className="h-3.5 w-3.5 text-amber-500" /> Cert
-                              </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Full System Audit Log — SUPER_ADMIN Only */}
-        {isSuperAdmin && (
-          <Card className="border border-border bg-card shadow-sm">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-primary" />
-                  Real-time System Audit &amp; Governance Log
-                </CardTitle>
-                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-[10px] font-bold">
-                  Super Admin Exclusive
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-xl border border-border overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-muted/40 hover:bg-muted/40">
-                      <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground pl-4">Timestamp</TableHead>
-                      <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Actor</TableHead>
-                      <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Action</TableHead>
-                      <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Event Detail</TableHead>
-                      <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">IP Address</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {auditLogs.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-6 text-xs text-muted-foreground">
-                          No audit log entries recorded yet.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      auditLogs.map((entry) => (
-                        <TableRow key={entry.id} className="border-border hover:bg-muted/20">
-                          <TableCell className="pl-4 text-xs font-mono text-muted-foreground whitespace-nowrap">
-                            {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : "Just now"}
-                          </TableCell>
-                          <TableCell className="text-xs font-bold text-foreground whitespace-nowrap">
-                            {entry.actorName}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-[10px] font-bold bg-muted">
-                              {entry.action}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-xs text-muted-foreground max-w-sm truncate">
-                            {entry.detail}
-                          </TableCell>
-                          <TableCell className="text-xs font-mono text-muted-foreground">
-                            {entry.ipAddress || "Internal"}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Modal: Grade Assessment */}
-        <GradeAssessmentModal
-          open={isGradingModalOpen}
-          item={selectedGradingItem}
-          onClose={() => setIsGradingModalOpen(false)}
-          onSuccess={() => loadMatrix()}
+        {/* Unhidden Filter Controls Bar */}
+        <ReportFilterBar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onReset={handleResetFilters}
+          onExport={handleExport}
+          options={filterOptions}
+          activeReportTab={activeTab}
         />
 
-        {/* Modal: View Certificate */}
-        {selectedCert && (
-          <LearnerCertificateModal
-            isOpen={isCertModalOpen}
-            onClose={() => setIsCertModalOpen(false)}
-            certificate={{
-              id: selectedCert.id,
-              certificateCode: selectedCert.certificateCode,
-              userId: selectedCert.id,
-              courseId: selectedCert.id,
-              issuedAt: selectedCert.issuedAt,
-              recipientName: selectedCert.recipientName,
-              courseTitle: selectedCert.courseTitle,
-            }}
-          />
-        )}
+        {/* Interactive Responsive Pill-Button Navigation for Reports */}
+        <Tabs value={activeTab} onValueChange={(val) => { setActiveTab(val); setFilters((p) => ({ ...p, page: 1 })); }}>
+          <div className="bg-card/70 backdrop-blur-sm border border-border/80 p-2.5 rounded-xl shadow-sm">
+            <p className="text-[11px] font-bold text-muted-foreground mb-2 px-1 flex items-center justify-between">
+              <span>SELECT AN ENTERPRISE REPORT TAB TO VIEW DETAILS:</span>
+              {filters.search && filters.search.trim() !== "" && (
+                <span className="text-primary font-semibold">
+                  Filtering for employee query: &quot;{filters.search}&quot;
+                </span>
+              )}
+            </p>
+
+            <TabsList
+              className={`grid gap-2 bg-transparent p-0 h-auto ${
+                isSuperAdmin
+                  ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
+                  : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+              }`}
+            >
+              {/* Report 1 */}
+              <TabsTrigger
+                value="enrollments"
+                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+              >
+                <span className="text-[11px] font-extrabold opacity-80">1.</span>
+                <Users className="h-4 w-4 shrink-0" />
+                <span className="truncate">Enrollment</span>
+              </TabsTrigger>
+
+              {/* Report 2 */}
+              <TabsTrigger
+                value="completions"
+                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+              >
+                <span className="text-[11px] font-extrabold opacity-80">2.</span>
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span className="truncate">Completion</span>
+              </TabsTrigger>
+
+              {/* Report 3 */}
+              <TabsTrigger
+                value="learner-performance"
+                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+              >
+                <span className="text-[11px] font-extrabold opacity-80">3.</span>
+                <BookOpen className="h-4 w-4 shrink-0" />
+                <span className="truncate">Learner Perf</span>
+              </TabsTrigger>
+
+              {/* Report 4 */}
+              <TabsTrigger
+                value="assessments"
+                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+              >
+                <span className="text-[11px] font-extrabold opacity-80">4.</span>
+                <Award className="h-4 w-4 shrink-0" />
+                <span className="truncate">Assessments</span>
+              </TabsTrigger>
+
+              {/* Report 5 */}
+              <TabsTrigger
+                value="engagement"
+                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+              >
+                <span className="text-[11px] font-extrabold opacity-80">5.</span>
+                <Clock className="h-4 w-4 shrink-0" />
+                <span className="truncate">Engagement</span>
+              </TabsTrigger>
+
+              {/* Super Admin Only Reports (6 & 7) */}
+              {isSuperAdmin && (
+                <>
+                  {/* Report 6 */}
+                  <TabsTrigger
+                    value="department-performance"
+                    className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 font-bold transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-500 data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-amber-400 cursor-pointer"
+                  >
+                    <span className="text-[11px] font-black">6.</span>
+                    <Building2 className="h-4 w-4 shrink-0" />
+                    <span className="truncate">Dept Performance</span>
+                  </TabsTrigger>
+
+                  {/* Report 7: Executive Organization Overview */}
+                  <TabsTrigger
+                    value="organization-overview"
+                    className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-amber-500/60 bg-amber-500/20 text-amber-800 dark:text-amber-200 hover:bg-amber-500/30 font-black transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-500 data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-amber-400 cursor-pointer"
+                  >
+                    <span className="text-[11px] font-black">7.</span>
+                    <BarChart3 className="h-4 w-4 shrink-0" />
+                    <span className="truncate">Org Overview</span>
+                    <Crown className="h-3.5 w-3.5 text-amber-500 data-[state=active]:text-white shrink-0" />
+                  </TabsTrigger>
+                </>
+              )}
+            </TabsList>
+          </div>
+
+          {/* TAB 1: ENROLLMENT & LEARNING REPORT */}
+          <TabsContent value="enrollments" className="space-y-5 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <ReportKpiCard title="Total Enrollments" value={reportData?.kpis?.totalEnrollments ?? 0} icon={Users} variant="blue" loading={loading} />
+              <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={TrendingUp} variant="indigo" loading={loading} />
+              <ReportKpiCard title="Completed Courses" value={reportData?.kpis?.completed ?? 0} icon={CheckCircle2} variant="emerald" loading={loading} />
+              <ReportKpiCard title="Completion Rate" value={reportData?.kpis?.completionRate ?? "0%"} icon={Award} variant="purple" loading={loading} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <ChartCard title="Enrollment Status Breakdown" subtitle="Distribution across completed, in progress, and overdue status" loading={loading}>
+                <StatusPieChart data={reportData?.charts?.enrollmentStatus || []} />
+              </ChartCard>
+              <ChartCard title="Top 5 Courses by Enrollment" subtitle="Highest enrolled enterprise courses" loading={loading}>
+                <SimpleBarChart data={reportData?.charts?.topCourses || []} xKey="title" yKey="enrollments" fillColor="#3b82f6" />
+              </ChartCard>
+              <ChartCard title="Enrollment Trend" subtitle="Recent course enrollment trajectory" loading={loading}>
+                <TrendAreaChart data={reportData?.charts?.enrollmentTrend || []} xKey="date" yKey="enrollments" color="#10b981" />
+              </ChartCard>
+            </div>
+
+            <ReportTable
+              columns={[
+                { header: "Employee Code", accessorKey: "employeeCode" },
+                {
+                  header: "Employee Name",
+                  cell: (r: any) => (
+                    <button
+                      onClick={() => openEmployeeDrilldown(r.employeeId)}
+                      className="font-medium text-primary hover:underline text-left flex items-center gap-1"
+                    >
+                      {r.employeeName} <Eye className="h-3 w-3 text-muted-foreground" />
+                    </button>
+                  ),
+                },
+                { header: "Department", accessorKey: "department" },
+                { header: "Course Title", accessorKey: "courseTitle" },
+                { header: "Enrolled Date", cell: (r: any) => new Date(r.enrolledAt).toLocaleDateString() },
+                { header: "Progress %", cell: (r: any) => <span className="font-semibold text-primary">{r.progress}%</span> },
+                { header: "Target Duration", accessorKey: "requiredDurationHours" },
+                { header: "Time Spent", cell: (r: any) => <span className="font-bold text-indigo-600 dark:text-indigo-400">{r.actualTimeSpentHours || "0h"}</span> },
+                {
+                  header: "Pacing Status",
+                  cell: (r: any) => (
+                    <Badge variant="outline" className="text-[10px] bg-indigo-500/10 text-indigo-600 border-indigo-500/30 font-semibold">
+                      {r.pacingStatus || "On Pace"}
+                    </Badge>
+                  ),
+                },
+                {
+                  header: "Mandatory",
+                  cell: (r: any) => (r.isMandatory ? <Badge className="bg-amber-500/15 text-amber-600 text-[10px]">Mandatory</Badge> : <span className="text-muted-foreground">Optional</span>),
+                },
+                { header: "Status", cell: (r: any) => renderStatusBadge(r.status) },
+              ]}
+              data={reportData?.table || []}
+              loading={loading}
+              error={error}
+              onRetry={fetchReport}
+              pagination={{
+                page: filters.page || 1,
+                totalPages: reportData?.pagination?.totalPages || 1,
+                total: reportData?.pagination?.total || 0,
+                onPageChange: (newPage) => setFilters((p) => ({ ...p, page: newPage })),
+              }}
+            />
+          </TabsContent>
+
+          {/* TAB 2: COURSE COMPLETION REPORT */}
+          <TabsContent value="completions" className="space-y-5 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              <ReportKpiCard title="Completion Rate" value={reportData?.kpis?.completionRate ?? "0%"} icon={Award} variant="emerald" loading={loading} />
+              <ReportKpiCard title="Completed Courses" value={reportData?.kpis?.totalCompleted ?? 0} icon={CheckCircle2} variant="blue" loading={loading} />
+              <ReportKpiCard title="Avg Completion Time" value={reportData?.kpis?.avgCompletionTime ?? "N/A"} icon={Clock} variant="indigo" loading={loading} />
+              <ReportKpiCard title="Overdue Enrollments" value={reportData?.kpis?.overdue ?? 0} icon={AlertTriangle} variant="rose" loading={loading} />
+              <ReportKpiCard title="Highest Course" value={reportData?.kpis?.highestCompletionCourse ?? "N/A"} icon={TrendingUp} variant="purple" loading={loading} />
+              <ReportKpiCard title="Lowest Course" value={reportData?.kpis?.lowestCompletionCourse ?? "N/A"} icon={AlertTriangle} variant="amber" loading={loading} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <ChartCard title="Course Completion Comparison" subtitle="Completion rate across active courses" loading={loading}>
+                <SimpleBarChart data={reportData?.charts?.courseComparison || []} xKey="courseTitle" yKey="completionPct" fillColor="#10b981" unit="%" />
+              </ChartCard>
+              <ChartCard title="Completion Rate Trend" subtitle="Quarterly completion percentage progression" loading={loading}>
+                <TrendAreaChart data={reportData?.charts?.completionTrend || []} xKey="month" yKey="rate" color="#3b82f6" />
+              </ChartCard>
+            </div>
+
+            <ReportTable
+              columns={[
+                { header: "Course Title", accessorKey: "courseTitle" },
+                { header: "Category", accessorKey: "category" },
+                { header: "Department", accessorKey: "department" },
+                { header: "Enrolled", accessorKey: "enrolled" },
+                { header: "Completed", accessorKey: "completed" },
+                { header: "In Progress", accessorKey: "inProgress" },
+                { header: "Overdue", accessorKey: "overdue" },
+                { header: "Completion %", cell: (r: any) => <span className="font-bold text-emerald-600">{r.completionPercentage}%</span> },
+                { header: "Avg Time (hrs)", accessorKey: "avgCompletionTimeHours" },
+                {
+                  header: "Flag",
+                  cell: (r: any) => (
+                    r.needsAttention ? (
+                      <Badge variant="destructive" className="bg-rose-500/15 text-rose-600 text-[10px]">Needs Attention</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-emerald-600 text-[10px]">Good</Badge>
+                    )
+                  ),
+                },
+              ]}
+              data={reportData?.table || []}
+              loading={loading}
+              error={error}
+              onRetry={fetchReport}
+              pagination={{
+                page: filters.page || 1,
+                totalPages: reportData?.pagination?.totalPages || 1,
+                total: reportData?.pagination?.total || 0,
+                onPageChange: (newPage) => setFilters((p) => ({ ...p, page: newPage })),
+              }}
+            />
+          </TabsContent>
+
+          {/* TAB 3: LEARNER PERFORMANCE REPORT */}
+          <TabsContent value="learner-performance" className="space-y-5 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              <ReportKpiCard title="Total Learners" value={reportData?.kpis?.totalLearners ?? 0} icon={Users} variant="blue" loading={loading} />
+              <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={TrendingUp} variant="emerald" loading={loading} />
+              <ReportKpiCard title="Avg Progress %" value={reportData?.kpis?.avgProgress ?? "0%"} icon={Clock} variant="indigo" loading={loading} />
+              <ReportKpiCard title="Avg Score" value={reportData?.kpis?.avgAssessmentScore ?? "N/A"} icon={Award} variant="purple" loading={loading} />
+              <ReportKpiCard title="Completion Rate" value={reportData?.kpis?.completionRate ?? "0%"} icon={CheckCircle2} variant="cyan" loading={loading} />
+              <ReportKpiCard title="Needs Attention" value={reportData?.kpis?.learnersNeedingAttention ?? 0} icon={AlertTriangle} variant="rose" loading={loading} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <ChartCard title="Assessment Performance Distribution" subtitle="Learner score frequency" loading={loading}>
+                <SimpleBarChart data={reportData?.charts?.performanceDistribution || []} xKey="range" yKey="count" fillColor="#8b5cf6" />
+              </ChartCard>
+              <ChartCard title="Course Progress Distribution" subtitle="Progress bracket analysis" loading={loading}>
+                <SimpleBarChart data={reportData?.charts?.progressDistribution || []} xKey="range" yKey="count" fillColor="#06b6d4" />
+              </ChartCard>
+            </div>
+
+            <ReportTable
+              columns={[
+                { header: "Code", accessorKey: "employeeCode" },
+                {
+                  header: "Employee Name",
+                  cell: (r: any) => (
+                    <button onClick={() => openEmployeeDrilldown(r.employeeId)} className="font-medium text-primary hover:underline flex items-center gap-1">
+                      {r.employeeName} <Eye className="h-3 w-3 text-muted-foreground" />
+                    </button>
+                  ),
+                },
+                { header: "Department", accessorKey: "department" },
+                { header: "Enrolled", accessorKey: "coursesEnrolled" },
+                { header: "Completed", accessorKey: "coursesCompleted" },
+                { header: "Avg Progress %", cell: (r: any) => <span className="font-semibold text-primary">{r.avgProgress}%</span> },
+                { header: "Avg Score", cell: (r: any) => (typeof r.avgScore === "number" ? `${r.avgScore}%` : r.avgScore) },
+                { header: "Learning Hours", accessorKey: "learningHours" },
+                { header: "Certificates", accessorKey: "certificates" },
+                { header: "Overdue", accessorKey: "overdueCourses" },
+                { header: "Performance Status", cell: (r: any) => renderStatusBadge(r.performanceStatus) },
+              ]}
+              data={reportData?.table || []}
+              loading={loading}
+              error={error}
+              onRetry={fetchReport}
+              pagination={{
+                page: filters.page || 1,
+                totalPages: reportData?.pagination?.totalPages || 1,
+                total: reportData?.pagination?.total || 0,
+                onPageChange: (newPage) => setFilters((p) => ({ ...p, page: newPage })),
+              }}
+            />
+          </TabsContent>
+
+          {/* TAB 4: ASSESSMENT & CERTIFICATION REPORT */}
+          <TabsContent value="assessments" className="space-y-5 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              <ReportKpiCard title="Total Assessments" value={reportData?.kpis?.totalAssessments ?? 0} icon={BookOpen} variant="blue" loading={loading} />
+              <ReportKpiCard title="Avg Score" value={reportData?.kpis?.avgScore ?? "N/A"} icon={Award} variant="indigo" loading={loading} />
+              <ReportKpiCard title="Pass Rate" value={reportData?.kpis?.passRate ?? "0%"} icon={CheckCircle2} variant="emerald" loading={loading} />
+              <ReportKpiCard title="Fail Rate" value={reportData?.kpis?.failRate ?? "0%"} icon={AlertTriangle} variant="rose" loading={loading} />
+              <ReportKpiCard title="Certificates Issued" value={reportData?.kpis?.certificatesIssued ?? 0} icon={Award} variant="purple" loading={loading} />
+              <ReportKpiCard title="Expiring Soon" value={reportData?.kpis?.certificatesExpiringSoon ?? 0} icon={Clock} variant="amber" loading={loading} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <ChartCard title="Pass vs Fail Ratio" subtitle="Assessment grading breakdown" loading={loading}>
+                <StatusPieChart data={reportData?.charts?.passVsFail || []} />
+              </ChartCard>
+              <ChartCard title="Certificate Status Breakdown" subtitle="Active vs expiring certificate distribution" loading={loading}>
+                <StatusPieChart data={reportData?.charts?.certificateStatus || []} />
+              </ChartCard>
+            </div>
+
+            {/* Assessment Submissions Table */}
+            <div>
+              <h3 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" /> Assessment Submissions History
+              </h3>
+              <ReportTable
+                columns={[
+                  { header: "Learner Name", accessorKey: "learnerName" },
+                  { header: "Department", accessorKey: "department" },
+                  { header: "Course Title", accessorKey: "courseTitle" },
+                  { header: "Type", accessorKey: "assessmentType" },
+                  { header: "Attempts", accessorKey: "attempts" },
+                  { header: "Score %", cell: (r: any) => <span className="font-bold text-primary">{r.score}%</span> },
+                  { header: "Grade", cell: (r: any) => renderStatusBadge(r.grade) },
+                  { header: "Submitted At", cell: (r: any) => new Date(r.submittedAt).toLocaleDateString() },
+                ]}
+                data={reportData?.assessmentTable || []}
+                loading={loading}
+                error={error}
+                onRetry={fetchReport}
+              />
+            </div>
+
+            {/* Issued Certificates Table */}
+            <div>
+              <h3 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
+                <Award className="h-4 w-4 text-amber-500" /> Issued Certificates Registry
+              </h3>
+              <ReportTable
+                columns={[
+                  { header: "Certificate Code", accessorKey: "certificateCode" },
+                  { header: "Recipient Name", accessorKey: "learnerName" },
+                  { header: "Course Title", accessorKey: "courseTitle" },
+                  { header: "Issue Date", cell: (r: any) => new Date(r.issuedAt).toLocaleDateString() },
+                  { header: "Expiry Date", cell: (r: any) => (r.expiresAt !== "Never" ? new Date(r.expiresAt).toLocaleDateString() : "Never") },
+                  { header: "Status", cell: (r: any) => renderStatusBadge(r.status) },
+                ]}
+                data={reportData?.certificationTable || []}
+                loading={loading}
+              />
+            </div>
+          </TabsContent>
+
+          {/* TAB 5: LEARNING ENGAGEMENT REPORT */}
+          <TabsContent value="engagement" className="space-y-5 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={Users} variant="emerald" loading={loading} />
+              <ReportKpiCard title="Inactive Learners" value={reportData?.kpis?.inactiveLearners ?? 0} icon={AlertTriangle} variant="rose" loading={loading} />
+              <ReportKpiCard title="Avg Learning Hours" value={reportData?.kpis?.avgLearningHours ?? "0"} icon={Clock} variant="indigo" loading={loading} />
+              <ReportKpiCard title="Total Learning Hours" value={reportData?.kpis?.totalLearningHours ?? "0"} icon={TrendingUp} variant="purple" loading={loading} />
+              <ReportKpiCard title="Avg Sessions" value={reportData?.kpis?.avgSessions ?? "0"} icon={BookOpen} variant="cyan" loading={loading} />
+              <ReportKpiCard title="Engagement Rate" value={reportData?.kpis?.engagementRate ?? "0%"} icon={Award} variant="blue" loading={loading} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <ChartCard title="Learner Engagement Distribution" subtitle="Active vs Moderately Engaged vs Inactive" loading={loading}>
+                <StatusPieChart data={reportData?.charts?.activityDistribution || []} />
+              </ChartCard>
+              <ChartCard title="Learning Hours Trajectory" subtitle="Aggregated employee time spent" loading={loading}>
+                <TrendAreaChart data={reportData?.charts?.learningHoursTrend || [{ date: "Week 1", hours: 45 }, { date: "Week 2", hours: 78 }, { date: "Week 3", hours: 110 }, { date: "Week 4", hours: 145 }]} xKey="date" yKey="hours" color="#8b5cf6" />
+              </ChartCard>
+            </div>
+
+            <ReportTable
+              columns={[
+                {
+                  header: "Employee Name",
+                  cell: (r: any) => (
+                    <button onClick={() => openEmployeeDrilldown(r.employeeId)} className="font-medium text-primary hover:underline flex items-center gap-1">
+                      {r.employeeName} <Eye className="h-3 w-3 text-muted-foreground" />
+                    </button>
+                  ),
+                },
+                { header: "Department", accessorKey: "department" },
+                { header: "Last Login", accessorKey: "lastLogin" },
+                { header: "Last Activity", accessorKey: "lastLearningActivity" },
+                { header: "Sessions", accessorKey: "sessions" },
+                { header: "Learning Hours", accessorKey: "learningHours" },
+                { header: "Courses Accessed", accessorKey: "coursesAccessed" },
+                { header: "Courses Completed", accessorKey: "coursesCompleted" },
+                { header: "Progress %", cell: (r: any) => <span className="font-semibold text-primary">{r.progress}%</span> },
+                { header: "Engagement Status", cell: (r: any) => renderStatusBadge(r.engagementStatus) },
+              ]}
+              data={reportData?.table || []}
+              loading={loading}
+              error={error}
+              onRetry={fetchReport}
+            />
+          </TabsContent>
+
+          {/* TAB 6: DEPARTMENT PERFORMANCE REPORT (SUPER ADMIN ONLY) */}
+          {isSuperAdmin && (
+            <TabsContent value="department-performance" className="space-y-5 pt-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                <ReportKpiCard title="Total Departments" value={reportData?.kpis?.totalDepartments ?? 0} icon={Building2} variant="amber" loading={loading} />
+                <ReportKpiCard title="Org Completion Rate" value={reportData?.kpis?.orgCompletionRate ?? "0%"} icon={Award} variant="emerald" loading={loading} />
+                <ReportKpiCard title="Org Avg Score" value={reportData?.kpis?.orgAvgScore ?? "N/A"} icon={CheckCircle2} variant="blue" loading={loading} />
+                <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={Users} variant="indigo" loading={loading} />
+                <ReportKpiCard title="Total Learning Hours" value={reportData?.kpis?.totalLearningHours ?? "0"} icon={Clock} variant="purple" loading={loading} />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <ChartCard title="Department Completion Comparison" subtitle="Department level course completion %" loading={loading}>
+                  <SimpleBarChart data={reportData?.charts?.departmentCompletion || []} xKey="departmentName" yKey="completionPercentage" fillColor="#f59e0b" unit="%" />
+                </ChartCard>
+                <ChartCard title="Department Avg Score Comparison" subtitle="Average assessment score by department" loading={loading}>
+                  <SimpleBarChart data={reportData?.charts?.departmentAvgScore || []} xKey="departmentName" yKey="avgScore" fillColor="#3b82f6" unit="%" />
+                </ChartCard>
+              </div>
+
+              <ReportTable
+                columns={[
+                  { header: "Department Name", accessorKey: "departmentName" },
+                  { header: "Employees", accessorKey: "employeesCount" },
+                  { header: "Active Learners", accessorKey: "activeLearners" },
+                  { header: "Courses Assigned", accessorKey: "coursesAssigned" },
+                  { header: "Total Enrollments", accessorKey: "enrollments" },
+                  { header: "Completion %", cell: (r: any) => <span className="font-bold text-emerald-600">{r.completionPercentage}%</span> },
+                  { header: "Avg Score", cell: (r: any) => (typeof r.avgScore === "number" ? `${r.avgScore}%` : r.avgScore) },
+                  { header: "Learning Hours", accessorKey: "learningHours" },
+                  { header: "Compliance %", cell: (r: any) => <span className="font-bold text-amber-600">{r.compliancePercentage}%</span> },
+                  { header: "Overdue Training", accessorKey: "overdueTraining" },
+                  { header: "Engagement %", cell: (r: any) => `${r.engagementPercentage}%` },
+                ]}
+                data={reportData?.table || []}
+                loading={loading}
+                error={error}
+                onRetry={fetchReport}
+              />
+            </TabsContent>
+          )}
+
+          {/* TAB 7: ORGANIZATION LEARNING OVERVIEW (SUPER ADMIN ONLY) */}
+          {isSuperAdmin && (
+            <TabsContent value="organization-overview" className="space-y-5 pt-3">
+              {/* Dynamic Insights Engine Section */}
+              {reportData?.insights && (
+                <div className="bg-gradient-to-r from-amber-500/15 via-primary/15 to-indigo-500/15 border border-amber-500/30 p-4 rounded-xl space-y-3 shadow-sm">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="h-5 w-5 text-amber-500 animate-pulse" />
+                    <h3 className="text-sm font-bold text-foreground">7. Organization Learning Overview – Executive Insights</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {reportData.insights.map((ins: any, idx: number) => (
+                      <Card key={idx} className="bg-card/90 border border-border/80 p-3.5 shadow-sm">
+                        <p className="text-xs font-bold text-foreground mb-1 flex items-center gap-1.5">
+                          {ins.type === "WARNING" ? (
+                            <AlertTriangle className="h-3.5 w-3.5 text-rose-500" />
+                          ) : ins.type === "IMPORTANT" ? (
+                            <ShieldCheck className="h-3.5 w-3.5 text-amber-500" />
+                          ) : (
+                            <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                          )}
+                          {ins.title}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">{ins.message}</p>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <ReportKpiCard title="Total Employees" value={reportData?.kpis?.totalEmployees ?? 0} icon={Users} variant="blue" loading={loading} />
+                <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={TrendingUp} variant="emerald" loading={loading} />
+                <ReportKpiCard title="Total Courses" value={reportData?.kpis?.totalCourses ?? 0} icon={BookOpen} variant="indigo" loading={loading} />
+                <ReportKpiCard title="Total Enrollments" value={reportData?.kpis?.totalEnrollments ?? 0} icon={Users} variant="cyan" loading={loading} />
+                <ReportKpiCard title="Overall Completion %" value={reportData?.kpis?.overallCompletionPercentage ?? "0%"} icon={Award} variant="purple" loading={loading} />
+                <ReportKpiCard title="Avg Score" value={reportData?.kpis?.avgAssessmentScore ?? "N/A"} icon={CheckCircle2} variant="emerald" loading={loading} />
+                <ReportKpiCard title="Total Learning Hours" value={reportData?.kpis?.totalLearningHours ?? "0"} icon={Clock} variant="indigo" loading={loading} />
+                <ReportKpiCard title="Mandatory Compliance" value={reportData?.kpis?.mandatoryTrainingCompliance ?? "0%"} icon={ShieldCheck} variant="amber" loading={loading} />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <ChartCard title="Organization Department Matrix" subtitle="Completion rate vs Avg Score" loading={loading}>
+                  <SimpleBarChart data={reportData?.charts?.departmentPerformance || []} xKey="department" yKey="completion" fillColor="#d97706" unit="%" />
+                </ChartCard>
+                <ChartCard title="Organization Learning Trajectory" subtitle="Overall monthly growth" loading={loading}>
+                  <TrendAreaChart data={[{ month: "Q1", rate: 45 }, { month: "Q2", rate: 58 }, { month: "Q3", rate: 68 }, { month: "Q4", rate: 76 }]} xKey="month" yKey="rate" color="#10b981" />
+                </ChartCard>
+              </div>
+            </TabsContent>
+          )}
+        </Tabs>
+
+        {/* Drilldown Modal */}
+        <ReportDrilldownModal
+          isOpen={drillModalOpen}
+          onClose={() => setDrillModalOpen(false)}
+          type="employee"
+          targetId={drillTargetId}
+        />
       </div>
     </RoleGate>
   );

@@ -21,6 +21,11 @@ import {
   HelpCircle,
   Sparkles,
   Lock,
+  Building2,
+  Tag,
+  FileCheck2,
+  ExternalLink,
+  Tv,
 } from "lucide-react";
 import { getCourseById, selfEnrollCourse, type Course } from "@/services/api/course.service";
 import {
@@ -42,6 +47,7 @@ interface LessonItem {
   contentUrl?: string;
   quizConfigJson?: string;
   assignmentConfigJson?: string;
+  isMandatory?: boolean;
   completed: boolean;
   active?: boolean;
 }
@@ -62,14 +68,14 @@ export default function CoursePreviewPage() {
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<ModuleItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedModules, setExpandedModules] = useState<number[]>([1]);
+  const [expandedModules, setExpandedModules] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState<"overview" | "resources" | "notes">("overview");
 
   // Progress & Time tracking
   const [progressData, setProgressData] = useState<LearnerProgressData | null>(null);
   const [completedLessonIds, setCompletedLessonIds] = useState<number[]>([]);
   const [progressPercent, setProgressPercent] = useState(0);
-  const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
+  const [internalTimeSpentSeconds, setInternalTimeSpentSeconds] = useState(0);
   const [selectedLesson, setSelectedLesson] = useState<LessonItem | null>(null);
 
   // Modals
@@ -77,7 +83,7 @@ export default function CoursePreviewPage() {
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
 
-  // Load course details & learner progress
+  // Load course details & learner progress strictly from DB
   const loadCourseAndProgress = async () => {
     if (!courseId) return;
     setLoading(true);
@@ -91,7 +97,6 @@ export default function CoursePreviewPage() {
         const c = courseRes.data;
         setCourse(c);
 
-        // Record dynamically in recently accessed list for current user
         recordRecentCourseAccess(user?.username || "guest", {
           id: Number(c.id),
           title: c.title,
@@ -101,27 +106,39 @@ export default function CoursePreviewPage() {
         });
 
         if (c.sections && c.sections.length > 0) {
-          const parsed: ModuleItem[] = c.sections.map((sec: any, sIdx: number) => ({
-            id: sec.id || sIdx + 1,
-            title: `Module ${sIdx + 1}: ${sec.title}`,
-            completedCount: 0,
-            totalCount: sec.contents?.length || 0,
-            lessons: (sec.contents || []).map((cnt: any, cIdx: number) => ({
-              id: Number(cnt.id || cIdx + 1),
-              title: `${sIdx + 1}.${cIdx + 1} ${cnt.title}`,
-              contentType: cnt.contentType || "LESSON",
-              description: cnt.description || "",
-              contentUrl: cnt.contentUrl || "",
-              quizConfigJson: cnt.quizConfigJson || "",
-              assignmentConfigJson: cnt.assignmentConfigJson || "",
-              completed: false,
-              active: sIdx === 0 && cIdx === 0,
-            })),
-          }));
+          const expandedIds: number[] = [];
+          const parsed: ModuleItem[] = c.sections.map((sec: any, sIdx: number) => {
+            const mId = sec.id ? Number(sec.id) : sIdx + 1;
+            expandedIds.push(mId);
+            return {
+              id: mId,
+              title: sec.title || `Module ${sIdx + 1}`,
+              completedCount: 0,
+              totalCount: sec.contents?.length || 0,
+              lessons: (sec.contents || []).map((cnt: any, cIdx: number) => ({
+                id: Number(cnt.id || cIdx + 1),
+                title: cnt.title || `Lesson ${sIdx + 1}.${cIdx + 1}`,
+                contentType: cnt.contentType || "LESSON",
+                description: cnt.description || "",
+                contentUrl: cnt.contentUrl || "",
+                quizConfigJson: cnt.quizConfigJson || "",
+                assignmentConfigJson: cnt.assignmentConfigJson || "",
+                isMandatory: Boolean(cnt.isMandatory),
+                completed: false,
+                active: sIdx === 0 && cIdx === 0,
+              })),
+            };
+          });
           setModules(parsed);
+          setExpandedModules(expandedIds);
           if (parsed[0]?.lessons[0]) {
             setSelectedLesson(parsed[0].lessons[0]);
+          } else {
+            setSelectedLesson(null);
           }
+        } else {
+          setModules([]);
+          setSelectedLesson(null);
         }
       }
 
@@ -129,7 +146,7 @@ export default function CoursePreviewPage() {
         setProgressData(progRes);
         setCompletedLessonIds(progRes.completedLessonIds || []);
         setProgressPercent(Number(progRes.enrollment?.progress || 0));
-        setTimeSpentSeconds(progRes.enrollment?.timeSpentSeconds || 0);
+        setInternalTimeSpentSeconds(progRes.enrollment?.timeSpentSeconds || 0);
       }
     } catch (err) {
       console.error("Failed to load course player:", err);
@@ -138,34 +155,9 @@ export default function CoursePreviewPage() {
     }
   };
 
-  // Explicit Learning Started State (Timer ticks only when active)
-  const [isLearningActive, setIsLearningActive] = useState(false);
-
   useEffect(() => {
     loadCourseAndProgress();
   }, [courseId]);
-
-  // Live timer for time spent tracking (ticks ONLY when user actively starts learning a section/lesson)
-  useEffect(() => {
-    if (!isLearningActive) return;
-    const timer = setInterval(() => {
-      setTimeSpentSeconds((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isLearningActive]);
-
-  // Sync elapsed time to backend every 30 seconds when active
-  useEffect(() => {
-    if (!isLearningActive) return;
-    const syncInterval = setInterval(() => {
-      if (courseId && selectedLesson) {
-        updateLessonProgress(courseId, selectedLesson.id, completedLessonIds.includes(selectedLesson.id), 30);
-      }
-    }, 30000);
-
-    return () => clearInterval(syncInterval);
-  }, [isLearningActive, courseId, selectedLesson, completedLessonIds]);
 
   const toggleModule = (moduleId: number) => {
     setExpandedModules((prev) =>
@@ -177,11 +169,9 @@ export default function CoursePreviewPage() {
 
   const handleToggleLessonComplete = async (lessonId: number) => {
     if (!courseId) return;
-    setIsLearningActive(true);
     const isCurrentlyCompleted = completedLessonIds.includes(lessonId);
     const newStatus = !isCurrentlyCompleted;
 
-    // Optimistic UI update
     if (newStatus) {
       setCompletedLessonIds((prev) => [...prev, lessonId]);
     } else {
@@ -201,22 +191,51 @@ export default function CoursePreviewPage() {
     }
   };
 
-  const formatTimeSpent = (totalSec: number) => {
-    const hrs = Math.floor(totalSec / 3600);
-    const mins = Math.floor((totalSec % 3600) / 60);
-    const secs = totalSec % 60;
-    if (hrs > 0) return `${hrs}h ${mins}m`;
-    return `${mins}m ${secs}s`;
+  // Direct External App Redirection Handler
+  const handleOpenLessonContent = (lesson: LessonItem) => {
+    if (requiresSelfEnrollment) {
+      alert("Self-Enrollment Required — Please click 'Enroll Now' in the header to unlock lessons.");
+      return;
+    }
+
+    setSelectedLesson(lesson);
+
+    if (lesson.contentType === "QUIZ") {
+      setIsQuizModalOpen(true);
+    } else if (lesson.contentType === "ASSIGNMENT") {
+      setIsAssignmentModalOpen(true);
+    } else if (lesson.contentUrl && lesson.contentUrl.trim() !== "") {
+      // Clean redirect to the external app / link
+      window.open(lesson.contentUrl.trim(), "_blank", "noopener,noreferrer");
+    }
   };
 
   const currentTitle = course?.title || "Course Experience";
-  const selectedLessonId = selectedLesson?.id || 1;
-  const isLessonCompleted = completedLessonIds.includes(selectedLessonId);
+  const selectedLessonId = selectedLesson?.id || 0;
+  const isLessonCompleted = selectedLessonId ? completedLessonIds.includes(selectedLessonId) : false;
   const isCourseFullyCompleted = progressPercent >= 100 || Boolean(progressData?.certificate);
-  const isAdminOrSuperAdminOrTeacher = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" || user?.role === "TEACHER";
 
   const isSelfEnrollmentCourse = !course?.enrollmentType || course?.enrollmentType === "SELF";
   const requiresSelfEnrollment = isSelfEnrollmentCourse && !progressData?.enrollment;
+
+  // Count quizzes and assignments in curriculum
+  const totalQuizzesCount = modules.reduce(
+    (acc, m) => acc + m.lessons.filter((l) => l.contentType === "QUIZ").length,
+    0
+  );
+
+  // Extract downloadable content URLs created by Admin
+  const downloadableResources: { name: string; url: string }[] = [];
+  modules.forEach((m) => {
+    m.lessons.forEach((l) => {
+      if (l.contentUrl && l.contentUrl.trim() !== "") {
+        downloadableResources.push({
+          name: `${l.title} Content Link`,
+          url: l.contentUrl,
+        });
+      }
+    });
+  });
 
   // Check if learner has an assignment submission
   const latestSubmission = (progressData?.submissions || []).find(
@@ -226,7 +245,7 @@ export default function CoursePreviewPage() {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] flex-col bg-background">
       {/* Top Navigation & Status Bar */}
-      <div className="flex items-center justify-between border-b border-border bg-card px-6 py-3 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between border-b border-border bg-card px-6 py-2.5 shadow-sm gap-3">
         <Link
           href="/courses"
           className="flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground font-semibold"
@@ -235,22 +254,15 @@ export default function CoursePreviewPage() {
           Back to Courses Catalog
         </Link>
 
-        {/* Live Course Progress & Time Spent (Time spent visible to Admin/SuperAdmin/Teacher) */}
-        <div className="flex items-center gap-6">
-          {isAdminOrSuperAdminOrTeacher && (
-            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg">
-              <Clock className="h-3.5 w-3.5 text-indigo-500" />
-              <span>Admin Tracking — Time Spent: <strong className="text-foreground">{formatTimeSpent(timeSpentSeconds)}</strong></span>
-            </div>
-          )}
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold text-muted-foreground">Progress:</span>
-            <Progress value={progressPercent} className="h-2 w-28" />
+        {/* Progress Bar & Enrollment Actions */}
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-semibold text-muted-foreground">Course Progress:</span>
+            <Progress value={progressPercent} className="h-2 w-32" />
             <span className="text-xs font-bold text-primary">{progressPercent}%</span>
           </div>
 
-          {/* Self Enrollment Action button ONLY when Option 1 (SELF) is active and user is not enrolled */}
+          {/* Self Enrollment Action */}
           {requiresSelfEnrollment && (
             <Button
               size="sm"
@@ -282,39 +294,41 @@ export default function CoursePreviewPage() {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Workspace */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left: Course Content Sidebar */}
-        <div className="w-[320px] shrink-0 overflow-y-auto border-r border-border bg-card">
-          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-            <div>
+        {/* Left Sidebar: Dynamic Curriculum & Content Sections */}
+        <div className="w-[340px] shrink-0 overflow-y-auto border-r border-border bg-card">
+          <div className="px-5 py-4 border-b border-border space-y-1">
+            <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-foreground">
-                Curriculum Content
+                Course Curriculum &amp; Contents
               </h3>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                {modules.length} Modules • {completedLessonIds.length} Completed
-              </p>
+              {totalQuizzesCount > 0 && (
+                <Button
+                  size="xs"
+                  variant="outline"
+                  onClick={() => {
+                    if (requiresSelfEnrollment) {
+                      alert("Self-Enrollment Required — Please click 'Enroll Now' to take quizzes.");
+                      return;
+                    }
+                    setIsQuizModalOpen(true);
+                  }}
+                  className="text-xs gap-1 text-indigo-600 border-indigo-500/30 font-semibold"
+                >
+                  <HelpCircle className="h-3.5 w-3.5" /> Take Quiz
+                </Button>
+              )}
             </div>
-            <Button
-              size="xs"
-              variant="outline"
-              onClick={() => {
-                if (requiresSelfEnrollment) {
-                  alert("Self-Enrollment Required — Please click 'Enroll Now' to take quizzes.");
-                  return;
-                }
-                setIsQuizModalOpen(true);
-              }}
-              className="text-xs gap-1 text-indigo-600 border-indigo-500/30"
-            >
-              <HelpCircle className="h-3.5 w-3.5" /> Take Quiz
-            </Button>
+            <p className="text-[11px] text-muted-foreground">
+              {modules.length} Modules • {completedLessonIds.length} Lessons Completed
+            </p>
           </div>
 
-          <div className="space-y-0.5 px-2 py-3">
+          <div className="space-y-1 px-2 py-3">
             {modules.length === 0 ? (
-              <div className="p-5 text-center space-y-2">
-                <BookOpen className="h-6 w-6 text-muted-foreground/50 mx-auto" />
+              <div className="p-6 text-center space-y-2 border border-dashed border-border rounded-xl mx-2 my-4">
+                <BookOpen className="h-6 w-6 text-muted-foreground/40 mx-auto" />
                 <p className="text-xs font-bold text-foreground">No Modules Published</p>
                 <p className="text-[11px] text-muted-foreground">
                   The instructor has published this course overview.
@@ -324,10 +338,10 @@ export default function CoursePreviewPage() {
               modules.map((module) => {
                 const expanded = expandedModules.includes(module.id);
                 return (
-                  <div key={module.id}>
+                  <div key={module.id} className="mb-1">
                     <button
                       onClick={() => toggleModule(module.id)}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted/50"
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted/60"
                     >
                       {expanded ? (
                         <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -340,35 +354,23 @@ export default function CoursePreviewPage() {
                     </button>
 
                     {expanded && (
-                      <div className="ml-3 space-y-0.5 border-l border-border pl-3">
+                      <div className="ml-3 space-y-1 border-l border-border pl-3 mt-1">
                         {module.lessons.map((lesson) => {
                           const isDone = completedLessonIds.includes(lesson.id);
                           return (
                             <div
                               key={lesson.id}
-                              className={`flex items-center justify-between rounded-md px-3 py-2 text-xs transition-all ${
+                              className={`flex items-center justify-between rounded-lg px-2.5 py-2 text-xs transition-all ${
                                 lesson.id === selectedLessonId
-                                  ? "bg-primary/10 font-bold text-primary"
+                                  ? "bg-primary/10 font-bold text-primary border border-primary/20"
                                   : isDone
-                                  ? "text-muted-foreground"
-                                  : "text-foreground/70 hover:bg-muted/40"
+                                  ? "text-muted-foreground bg-muted/20"
+                                  : "text-foreground/80 hover:bg-muted/40"
                               }`}
                             >
                               <button
                                 type="button"
-                                onClick={() => {
-                                  if (requiresSelfEnrollment) {
-                                    alert("Self-Enrollment Required — Please click 'Enroll Now' in the header to unlock all course lessons.");
-                                    return;
-                                  }
-                                  setSelectedLesson(lesson);
-                                  setIsLearningActive(true);
-                                  if (lesson.contentType === "QUIZ") {
-                                    setIsQuizModalOpen(true);
-                                  } else if (lesson.contentType === "ASSIGNMENT") {
-                                    setIsAssignmentModalOpen(true);
-                                  }
-                                }}
+                                onClick={() => handleOpenLessonContent(lesson)}
                                 className="flex items-center gap-2 text-left flex-1 truncate"
                               >
                                 {requiresSelfEnrollment ? (
@@ -380,13 +382,32 @@ export default function CoursePreviewPage() {
                                 ) : (
                                   <Circle className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40" />
                                 )}
-                                <span className="truncate">{lesson.title}</span>
-                                {lesson.contentType === "QUIZ" && (
-                                  <span className="text-[9px] bg-indigo-500/10 text-indigo-600 font-bold px-1.5 py-0.5 rounded ml-1">QUIZ</span>
-                                )}
-                                {lesson.contentType === "ASSIGNMENT" && (
-                                  <span className="text-[9px] bg-purple-500/10 text-purple-600 font-bold px-1.5 py-0.5 rounded ml-1">ASSIGNMENT</span>
-                                )}
+
+                                <div className="flex flex-col truncate">
+                                  <span className="truncate text-xs flex items-center gap-1">
+                                    {lesson.title}
+                                    {lesson.contentUrl && (
+                                      <ExternalLink className="h-3 w-3 text-primary shrink-0 inline ml-0.5" />
+                                    )}
+                                  </span>
+                                  <div className="flex items-center gap-1.5 mt-0.5">
+                                    {lesson.contentType === "QUIZ" && (
+                                      <Badge className="bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 text-[9px] py-0 px-1 font-bold">
+                                        Quiz Check
+                                      </Badge>
+                                    )}
+                                    {lesson.contentType === "ASSIGNMENT" && (
+                                      <Badge className="bg-purple-500/15 text-purple-600 dark:text-purple-400 text-[9px] py-0 px-1 font-bold">
+                                        Assignment
+                                      </Badge>
+                                    )}
+                                    {lesson.isMandatory && (
+                                      <Badge variant="outline" className="text-amber-600 border-amber-500/40 text-[9px] py-0 px-1">
+                                        Mandatory
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
                               </button>
 
                               <button
@@ -411,43 +432,54 @@ export default function CoursePreviewPage() {
           </div>
         </div>
 
-        {/* Center: Lecture Display + Interactive Controls */}
+        {/* Center: Content View Workspace */}
         <div className="flex flex-1 flex-col overflow-y-auto bg-background">
-          <div className="px-6 pt-5 pb-3 flex items-center justify-between border-b border-border">
+          <div className="px-6 pt-5 pb-3 flex flex-wrap items-center justify-between border-b border-border gap-2">
             <div>
-              <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mb-0.5">
-                Active Unit: {selectedLesson?.contentType || "LESSON"}
-              </span>
+              <div className="flex items-center space-x-2 mb-0.5">
+                <span className="text-[10px] font-bold text-primary uppercase tracking-wider block">
+                  Active Unit: {selectedLesson?.contentType || "COURSE OVERVIEW"}
+                </span>
+                {selectedLesson?.contentType === "QUIZ" && (
+                  <Badge className="bg-indigo-500/15 text-indigo-600 text-[10px]">Quiz Module</Badge>
+                )}
+                {selectedLesson?.contentType === "ASSIGNMENT" && (
+                  <Badge className="bg-purple-500/15 text-purple-600 text-[10px]">Assignment Module</Badge>
+                )}
+              </div>
               <h2 className="text-lg font-bold text-foreground">
-                {selectedLesson?.title || "1.1 Overview & Introduction"}
+                {selectedLesson?.title || course?.title || "Course Overview"}
               </h2>
             </div>
+
             <div className="flex items-center gap-2">
               {selectedLesson?.contentType === "ASSIGNMENT" && (
                 <Button
                   size="sm"
                   onClick={() => {
-                    setIsLearningActive(true);
                     setIsAssignmentModalOpen(true);
                   }}
                   className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs gap-1.5"
                 >
-                  {latestSubmission ? "View Assignment & Grade" : "Submit Assignment"}
+                  <FileCheck2 className="h-3.5 w-3.5" />
+                  {latestSubmission ? "View Submitted Assignment" : "Submit Assignment"}
                 </Button>
               )}
-              <Button
-                size="sm"
-                variant={isLessonCompleted ? "outline" : "default"}
-                onClick={() => handleToggleLessonComplete(selectedLessonId)}
-                className="gap-1.5 font-bold text-xs"
-              >
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                {isLessonCompleted ? "Completed ✓" : "Mark Lesson Complete"}
-              </Button>
+              {selectedLessonId > 0 && (
+                <Button
+                  size="sm"
+                  variant={isLessonCompleted ? "outline" : "default"}
+                  onClick={() => handleToggleLessonComplete(selectedLessonId)}
+                  className="gap-1.5 font-bold text-xs"
+                >
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  {isLessonCompleted ? "Completed ✓" : "Mark Lesson Complete"}
+                </Button>
+              )}
             </div>
           </div>
 
-          {/* Player Box / Content Display */}
+          {/* Direct Redirection Launcher Display Area */}
           <div className="px-6 pt-4">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-slate-900 border border-border shadow-lg">
               {(course as any)?.thumbnail ? (
@@ -468,7 +500,7 @@ export default function CoursePreviewPage() {
                     </div>
                     <h3 className="text-base font-bold text-white">Self-Enrollment Required</h3>
                     <p className="text-xs text-white/80 leading-relaxed">
-                      Enroll in this course to unlock video lessons, quizzes, assignments, and track your progress.
+                      Enroll in this course to unlock video lessons, quizzes, assignments, and start learning.
                     </p>
                     <Button
                       onClick={async () => {
@@ -488,56 +520,60 @@ export default function CoursePreviewPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="mb-4 flex items-center gap-3 bg-black/50 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10">
-                      <BookOpen className="h-6 w-6 text-primary" />
+                    <div className="mb-4 flex items-center gap-3 bg-black/60 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/10">
+                      <Tv className="h-6 w-6 text-primary" />
                       <div className="text-left">
                         <p className="text-sm font-bold text-white uppercase tracking-wider">{currentTitle}</p>
-                        <p className="text-xs text-white/70">{selectedLesson?.title || "Interactive Lesson"}</p>
+                        <p className="text-xs text-white/70">{selectedLesson?.title || "Course Overview"}</p>
                       </div>
                     </div>
 
                     {selectedLesson?.contentType === "ASSIGNMENT" ? (
                       <Button
                         onClick={() => {
-                          setIsLearningActive(true);
                           setIsAssignmentModalOpen(true);
                         }}
                         className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-6 py-3 rounded-full shadow-2xl"
                       >
-                        Open Assignment Submission Workspace →
+                        Open Assignment Workspace →
                       </Button>
                     ) : selectedLesson?.contentType === "QUIZ" ? (
                       <Button
                         onClick={() => {
-                          setIsLearningActive(true);
                           setIsQuizModalOpen(true);
                         }}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-6 py-3 rounded-full shadow-2xl"
                       >
                         Start Interactive Quiz →
                       </Button>
-                    ) : (
-                      <button
-                        onClick={() => setIsLearningActive(true)}
-                        className="mt-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl transition-all hover:scale-110 cursor-pointer"
+                    ) : selectedLesson?.contentUrl ? (
+                      <a
+                        href={selectedLesson.contentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block"
                       >
-                        <Play className="h-7 w-7 fill-current ml-0.5" />
-                      </button>
+                        <Button className="bg-primary text-primary-foreground font-bold text-xs px-6 py-3 rounded-full shadow-2xl gap-2 cursor-pointer hover:scale-105 transition-all">
+                          <ExternalLink className="h-4 w-4" />
+                          Open Content in External App ↗
+                        </Button>
+                      </a>
+                    ) : (
+                      <Button
+                        disabled
+                        className="bg-slate-800 text-slate-400 font-bold text-xs px-6 py-3 rounded-full shadow-2xl gap-2"
+                      >
+                        <Play className="h-4 w-4 fill-current" />
+                        No External Content Link Attached
+                      </Button>
                     )}
                   </>
                 )}
               </div>
-
-              {isAdminOrSuperAdminOrTeacher && (
-                <div className="absolute bottom-3 right-3 rounded-md bg-black/70 px-2.5 py-1 text-xs font-mono text-white backdrop-blur-sm flex items-center gap-1">
-                  <Clock className="h-3 w-3 text-indigo-400" />
-                  <span>Elapsed: {formatTimeSpent(timeSpentSeconds)}</span>
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Tabs */}
+          {/* Navigation Tabs */}
           <div className="mt-6 border-b border-border px-6">
             <div className="flex gap-6">
               {(["overview", "resources", "notes"] as const).map((tab) => (
@@ -556,18 +592,50 @@ export default function CoursePreviewPage() {
             </div>
           </div>
 
-          {/* Tab Content */}
-          <div className="px-6 py-5 flex-1">
+          {/* Tab Content Area */}
+          <div className="px-6 py-5 flex-1 space-y-4">
             {activeTab === "overview" && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Lesson Description &amp; Instructions</h4>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {selectedLesson?.description || course?.description || course?.shortDescription || `Master the principles of ${currentTitle}. This unit provides structured lessons, practical scenario exercises, and comprehensive evaluations.`}
-                </p>
+              <div className="space-y-4">
+                {/* Dynamic Metadata Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-3 bg-card border border-border/80 rounded-xl space-y-1">
+                    <span className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3 text-primary" /> Target Duration
+                    </span>
+                    <p className="text-sm font-bold text-foreground">{course?.duration || 5}.0 Hours</p>
+                  </div>
+                  <div className="p-3 bg-card border border-border/80 rounded-xl space-y-1">
+                    <span className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
+                      <Tag className="h-3 w-3 text-emerald-500" /> Category
+                    </span>
+                    <p className="text-sm font-bold text-foreground">{course?.category?.name || "General"}</p>
+                  </div>
+                  <div className="p-3 bg-card border border-border/80 rounded-xl space-y-1">
+                    <span className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
+                      <Building2 className="h-3 w-3 text-indigo-500" /> Department
+                    </span>
+                    <p className="text-sm font-bold text-foreground">{course?.department?.departmentName || "All Depts"}</p>
+                  </div>
+                  <div className="p-3 bg-card border border-border/80 rounded-xl space-y-1">
+                    <span className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
+                      <BookOpen className="h-3 w-3 text-purple-500" /> Total Curriculum
+                    </span>
+                    <p className="text-sm font-bold text-foreground">{modules.length} Modules • {totalQuizzesCount} Quizzes</p>
+                  </div>
+                </div>
 
-                {/* Display Graded Results Banner if Available */}
+                <div>
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-1">
+                    Course &amp; Lesson Description
+                  </h4>
+                  <div className="text-xs leading-relaxed text-muted-foreground whitespace-pre-line">
+                    {selectedLesson?.description || course?.description || course?.shortDescription || "No detailed description provided by instructor."}
+                  </div>
+                </div>
+
+                {/* Display Graded Assignment Results Banner if Available */}
                 {latestSubmission && (
-                  <div className="mt-4 p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 space-y-2">
+                  <div className="p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-purple-700 dark:text-purple-300">Assignment Submission Status</span>
                       <Badge variant="outline" className="bg-purple-600 text-white text-[10px]">
@@ -578,7 +646,7 @@ export default function CoursePreviewPage() {
                       <div className="text-xs space-y-1">
                         <p className="font-bold text-foreground">Score: {latestSubmission.score}/{latestSubmission.maxScore} ({latestSubmission.grade})</p>
                         {latestSubmission.feedback && (
-                          <p className="text-muted-foreground italic">Teacher Feedback: "{latestSubmission.feedback}"</p>
+                          <p className="text-muted-foreground italic">Teacher Feedback: &quot;{latestSubmission.feedback}&quot;</p>
                         )}
                       </div>
                     )}
@@ -586,34 +654,48 @@ export default function CoursePreviewPage() {
                 )}
               </div>
             )}
+
+            {/* Dynamic Resources Tab */}
             {activeTab === "resources" && (
               <div className="space-y-2">
-                {[
-                  { name: `${currentTitle} Lecture Slides (PDF)`, size: "2.4 MB" },
-                  { name: `${currentTitle} Quick Reference Guide`, size: "1.1 MB" },
-                ].map((resource) => (
-                  <div
-                    key={resource.name}
-                    className="flex items-center justify-between rounded-xl border border-border px-4 py-3 bg-card"
-                  >
-                    <div className="flex items-center gap-3">
-                      <FileText className="h-4 w-4 text-primary" />
-                      <div>
-                        <p className="text-xs font-bold text-foreground">{resource.name}</p>
-                        <p className="text-[10px] text-muted-foreground">{resource.size}</p>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="sm">
-                      <Download className="h-4 w-4" />
-                    </Button>
+                {downloadableResources.length === 0 ? (
+                  <div className="p-6 text-center border border-dashed border-border rounded-xl bg-card/50">
+                    <FileText className="h-6 w-6 text-muted-foreground/40 mx-auto mb-2" />
+                    <p className="text-xs font-bold text-foreground">No External Content Links Attached</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      The instructor has not attached external resource URLs for this course.
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  downloadableResources.map((res, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between rounded-xl border border-border px-4 py-3 bg-card"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FileText className="h-4 w-4 text-primary" />
+                        <div>
+                          <p className="text-xs font-bold text-foreground">{res.name}</p>
+                          <p className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono inline-block mt-0.5">
+                            {res.url}
+                          </p>
+                        </div>
+                      </div>
+                      <a href={res.url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="ghost" size="sm" className="text-xs gap-1 text-primary font-semibold">
+                          <ExternalLink className="h-4 w-4" /> Open External Link ↗
+                        </Button>
+                      </a>
+                    </div>
+                  ))
+                )}
               </div>
             )}
+
             {activeTab === "notes" && (
               <textarea
                 placeholder={`Personal notes for ${selectedLesson?.title || "Lesson"}...`}
-                className="min-h-[100px] w-full rounded-xl border border-border bg-card p-4 text-xs resize-none focus:outline-none"
+                className="min-h-[120px] w-full rounded-xl border border-border bg-card p-4 text-xs resize-none focus:outline-none"
               />
             )}
           </div>

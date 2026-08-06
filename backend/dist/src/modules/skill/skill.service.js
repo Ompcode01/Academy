@@ -64,11 +64,11 @@ class SkillService {
         return (0, prismaSerializer_1.serializeBigInt)(deleted);
     }
     // Approval Management (Admin)
-    async getApprovalRequests(filters) {
-        const requests = await skill_repository_1.default.getAllSkillRequests(filters);
+    async getApprovalRequests(filters, userContext) {
+        const requests = await skill_repository_1.default.getAllSkillRequests(filters, userContext);
         return (0, prismaSerializer_1.serializeBigInt)(requests);
     }
-    async handleApprovalAction(id, requestKind, action, reason, reviewerName) {
+    async handleApprovalAction(id, requestKind, action, reason, reviewerName, reviewerContext) {
         const status = action === "APPROVE" ? client_1.ApprovalStatus.APPROVED : client_1.ApprovalStatus.REJECTED;
         if (requestKind === "SKILL") {
             const existing = await skill_repository_1.default.getUserSkillById(id);
@@ -77,6 +77,13 @@ class SkillService {
             }
             if (existing.status !== client_1.ApprovalStatus.PENDING) {
                 throw new Error("This request has already been finalized and cannot be modified.");
+            }
+            // Department scoping check for non-SUPER_ADMIN reviewers
+            if (reviewerContext && reviewerContext.role !== "SUPER_ADMIN" && reviewerContext.departmentId) {
+                const submitter = await skill_repository_1.default.getEmployeeById(existing.userId);
+                if (submitter && submitter.departmentId !== reviewerContext.departmentId) {
+                    throw new Error("Access denied: You can only approve or reject skill requests for your own department.");
+                }
             }
             const updated = await skill_repository_1.default.updateSkillApproval(id, status, reason, reviewerName);
             // Emit Real-Time System Audit Log
@@ -95,6 +102,13 @@ class SkillService {
             }
             if (existing.status !== client_1.ApprovalStatus.PENDING) {
                 throw new Error("This request has already been finalized and cannot be modified.");
+            }
+            // Department scoping check for non-SUPER_ADMIN reviewers
+            if (reviewerContext && reviewerContext.role !== "SUPER_ADMIN" && reviewerContext.departmentId) {
+                const submitter = await skill_repository_1.default.getEmployeeById(existing.userId);
+                if (submitter && submitter.departmentId !== reviewerContext.departmentId) {
+                    throw new Error("Access denied: You can only approve or reject project requests for your own department.");
+                }
             }
             const updated = await skill_repository_1.default.updateProjectApproval(id, status, reason, reviewerName);
             // Emit Real-Time System Audit Log

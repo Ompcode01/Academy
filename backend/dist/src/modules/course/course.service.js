@@ -71,14 +71,14 @@ class CourseService {
         };
         switch (role) {
             case "SUPER_ADMIN":
-                return {}; // No restrictions
+                return {}; // Super Admin sees all courses across all departments
             case "ADMIN":
                 return {
                     OR: [
                         { departmentId: null },
                         ...(departmentId ? [{ departmentId }] : []),
                         ...(employeeId ? [{ creatorId: employeeId }] : []),
-                        superAdminOrAdminCourseCondition,
+                        ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
                     ],
                 };
             case "TEACHER":
@@ -87,7 +87,7 @@ class CourseService {
                         { departmentId: null },
                         ...(departmentId ? [{ departmentId }] : []),
                         ...(employeeId ? [{ creatorId: employeeId }] : []),
-                        superAdminOrAdminCourseCondition,
+                        ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
                     ],
                 };
             case "LEARNER":
@@ -96,7 +96,7 @@ class CourseService {
                     OR: [
                         { departmentId: null },
                         ...(departmentId ? [{ departmentId }] : []),
-                        superAdminOrAdminCourseCondition,
+                        ...(employeeId ? [{ enrollments: { some: { userId: employeeId } } }] : []),
                     ],
                 };
             case "GUEST":
@@ -113,39 +113,14 @@ class CourseService {
         return course;
     }
     async createCourse(data) {
-        const course = await course_repository_1.default.create(data);
-        if (data.enrolledUserIds && data.enrolledUserIds.length > 0) {
-            const uniqueUserIds = Array.from(new Set(data.enrolledUserIds));
-            for (const uIdStr of uniqueUserIds) {
-                try {
-                    const uId = BigInt(uIdStr);
-                    await prisma_1.default.enrollment.upsert({
-                        where: {
-                            userId_courseId: {
-                                userId: uId,
-                                courseId: course.id,
-                            },
-                        },
-                        create: {
-                            userId: uId,
-                            courseId: course.id,
-                            status: "IN_PROGRESS",
-                            progress: 0,
-                        },
-                        update: {},
-                    });
-                }
-                catch (e) {
-                    console.error("Batch enrollment error for user:", uIdStr, e);
-                }
-            }
+        const { teacherIds, enrolledUserIds, sections, ...createFields } = data;
+        const course = await course_repository_1.default.create(createFields);
+        if (sections && Array.isArray(sections) && sections.length > 0) {
+            await this.saveCourseSectionsAndContents(course.id, sections);
         }
-        return course;
-    }
-    async updateCourse(id, data) {
-        await this.getCourseById(id);
-        const { enrolledUserIds, ...courseData } = data;
-        const course = await course_repository_1.default.update(id, courseData);
+        if (teacherIds && teacherIds.length > 0) {
+            await this.assignTeachers(course.id, teacherIds);
+        }
         if (enrolledUserIds && enrolledUserIds.length > 0) {
             const uniqueUserIds = Array.from(new Set(enrolledUserIds));
             for (const uIdStr of uniqueUserIds) {
@@ -172,7 +147,121 @@ class CourseService {
                 }
             }
         }
-        return course;
+        return this.getCourseById(course.id);
+    }
+    async saveCourseSectionsAndContents(courseId, sections) {
+        if (!sections || !Array.isArray(sections) || sections.length === 0)
+            return;
+        for (let sIdx = 0; sIdx < sections.length; sIdx++) {
+            const secData = sections[sIdx];
+            const sectionTitle = secData.title || `Module ${sIdx + 1}`;
+            const section = await prisma_1.default.courseSection.create({
+                data: {
+                    courseId,
+                    title: sectionTitle,
+                    description: secData.description || null,
+                    sectionOrder: secData.sectionOrder || sIdx + 1,
+                    isPublished: true,
+                },
+            });
+            if (secData.contents && Array.isArray(secData.contents)) {
+                for (let cIdx = 0; cIdx < secData.contents.length; cIdx++) {
+                    const cntData = secData.contents[cIdx];
+                    const quizJson = cntData.quizConfigJson || (cntData.questions ? JSON.stringify(cntData.questions) : null);
+                    const assignmentJson = cntData.assignmentConfigJson ||
+                        (cntData.contentType === "ASSIGNMENT"
+                            ? JSON.stringify({
+                                instructions: cntData.description || cntData.instructions || "Complete practical assignment.",
+                                maxScore: cntData.maxScore || 100,
+                                requiresGrading: true,
+                            })
+                            : null);
+                    await prisma_1.default.learningContent.create({
+                        data: {
+                            sectionId: section.id,
+                            title: cntData.title || `Content ${cIdx + 1}`,
+                            contentType: cntData.contentType || "LESSON",
+                            contentUrl: cntData.contentUrl || cntData.videoUrl || null,
+                            description: cntData.description || null,
+                            duration: cntData.duration || 10,
+                            contentOrder: cntData.contentOrder || cIdx + 1,
+                            isMandatory: true,
+                            isPublished: true,
+                            quizConfigJson: quizJson,
+                            assignmentConfigJson: assignmentJson,
+                        },
+                    });
+                }
+            }
+        }
+    }
+    async updateCourse(id, data) {
+        await this.getCourseById(id);
+        const { enrolledUserIds, teacherIds, sections, ...courseData } = data;
+        const course = await course_repository_1.default.update(id, courseData);
+        if (sections && Array.isArray(sections) && sections.length > 0) {
+            // Soft-delete existing sections for clean update
+            await prisma_1.default.courseSection.updateMany({
+                where: { courseId: id },
+                data: { isActive: false },
+            });
+            await this.saveCourseSectionsAndContents(id, sections);
+        }
+        if (teacherIds) {
+            await this.assignTeachers(id, teacherIds);
+        }
+        if (enrolledUserIds && enrolledUserIds.length > 0) {
+            const uniqueUserIds = Array.from(new Set(enrolledUserIds));
+            for (const uIdStr of uniqueUserIds) {
+                try {
+                    const uId = BigInt(uIdStr);
+                    await prisma_1.default.enrollment.upsert({
+                        where: {
+                            userId_courseId: {
+                                userId: uId,
+                                courseId: course.id,
+                            },
+                        },
+                        create: {
+                            userId: uId,
+                            courseId: course.id,
+                            status: "IN_PROGRESS",
+                            progress: 0,
+                        },
+                        update: {},
+                    });
+                }
+                catch (e) {
+                    console.error("Batch enrollment error for user:", uIdStr, e);
+                }
+            }
+        }
+        return this.getCourseById(id);
+    }
+    async assignTeachers(courseId, teacherIdStrs) {
+        // Delete existing teachers not in list and insert new ones
+        const teacherIds = teacherIdStrs.map((s) => BigInt(s));
+        await prisma_1.default.courseTeacher.deleteMany({
+            where: {
+                courseId,
+                teacherId: { notIn: teacherIds },
+            },
+        });
+        for (const tId of teacherIds) {
+            await prisma_1.default.courseTeacher.upsert({
+                where: {
+                    courseId_teacherId: {
+                        courseId,
+                        teacherId: tId,
+                    },
+                },
+                create: {
+                    courseId,
+                    teacherId: tId,
+                },
+                update: {},
+            });
+        }
     }
     async verifyUser(identifier) {
         const trimmed = identifier.trim();

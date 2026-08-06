@@ -19,6 +19,7 @@ import certificateRoutes from "./routes/certificate.routes";
 import eventRoutes from "./routes/event.routes";
 import auditRoutes from "./routes/audit.routes";
 import notificationRoutes from "./routes/notification.routes";
+import reportingRoutes from "./routes/reporting.routes";
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use("/api/certificates", certificateRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/admin/audit-logs", auditRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/reports", reportingRoutes);
 
 app.use(errorHandler);
 

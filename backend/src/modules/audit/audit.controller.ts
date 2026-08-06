@@ -4,9 +4,22 @@ import auditService from "./audit.service";
 
 export const getAuditLogs = async (req: AuthRequest, res: Response) => {
   try {
-    const logs = await auditService.getAuditLogs(100);
-    res.json({ success: true, data: logs });
+    const { username, departmentName, type, search, page, limit, dateFrom, dateTo } = req.query;
+
+    const result = await auditService.getAuditLogs({
+      username: username as string,
+      departmentName: departmentName as string,
+      type: type as string,
+      search: search as string,
+      dateFrom: dateFrom as string,
+      dateTo: dateTo as string,
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 20,
+    });
+
+    res.json({ success: true, ...result });
   } catch (error: any) {
+    console.error("Audit log retrieval error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

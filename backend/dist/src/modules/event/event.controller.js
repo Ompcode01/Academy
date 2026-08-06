@@ -7,7 +7,14 @@ exports.deleteEvent = exports.updateEvent = exports.createEvent = exports.getEve
 const event_service_1 = __importDefault(require("./event.service"));
 const getEvents = async (req, res) => {
     try {
-        const events = await event_service_1.default.getAllEvents();
+        const userContext = req.user
+            ? {
+                role: req.user.role,
+                employeeId: req.user.employeeId ? BigInt(req.user.employeeId) : null,
+                departmentId: req.user.departmentId ? BigInt(req.user.departmentId) : null,
+            }
+            : undefined;
+        const events = await event_service_1.default.getAllEvents(userContext);
         res.json({ success: true, data: events });
     }
     catch (error) {
@@ -17,12 +24,20 @@ const getEvents = async (req, res) => {
 exports.getEvents = getEvents;
 const createEvent = async (req, res) => {
     try {
-        const { title, description, eventDate, eventTime, url, eventType, courseId } = req.body;
+        const { title, description, eventDate, eventTime, url, eventType, courseId, departmentId } = req.body;
         if (!title || !eventDate) {
             return res.status(400).json({ success: false, message: "Title and Event Date are required." });
         }
         const creatorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
         const creatorId = req.user?.employeeId ? BigInt(req.user.employeeId) : null;
+        // Admin inherits their department automatically unless explicit
+        let targetDeptId = null;
+        if (departmentId && departmentId !== "all" && departmentId !== "global") {
+            targetDeptId = BigInt(departmentId);
+        }
+        else if (req.user?.role === "ADMIN" && req.user.departmentId) {
+            targetDeptId = BigInt(req.user.departmentId);
+        }
         const event = await event_service_1.default.createEvent({
             title,
             description,
@@ -31,6 +46,7 @@ const createEvent = async (req, res) => {
             url,
             eventType: eventType || "site",
             courseId: courseId ? BigInt(courseId) : null,
+            departmentId: targetDeptId,
             creatorId,
             creatorName,
         });

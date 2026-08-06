@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Plus,
@@ -58,6 +58,8 @@ interface CurriculumBuilderViewProps {
   category?: string;
   durationHours?: number;
   status?: "Draft" | "Published";
+  sections?: SectionItem[];
+  onSectionsChange?: (sections: SectionItem[]) => void;
 }
 
 export default function CurriculumBuilderView({
@@ -66,8 +68,16 @@ export default function CurriculumBuilderView({
   category = "Development",
   durationHours = 0,
   status = "Draft",
+  sections: initialSections = [],
+  onSectionsChange,
 }: CurriculumBuilderViewProps) {
-  const [sections, setSections] = useState<SectionItem[]>([]);
+  const [sections, setSectionsState] = useState<SectionItem[]>(initialSections);
+
+  useEffect(() => {
+    if (initialSections && initialSections.length > 0) {
+      setSectionsState(initialSections);
+    }
+  }, [initialSections]);
 
   // Modal States
   const [addSectionOpen, setAddSectionOpen] = useState(false);
@@ -79,8 +89,18 @@ export default function CurriculumBuilderView({
   const [assignmentBuilderOpen, setAssignmentBuilderOpen] = useState(false);
   const [submissionsReviewOpen, setSubmissionsReviewOpen] = useState(false);
 
+  const updateSections = (updater: (prev: SectionItem[]) => SectionItem[]) => {
+    setSectionsState((prev) => {
+      const next = updater(prev);
+      if (onSectionsChange) {
+        onSectionsChange(next);
+      }
+      return next;
+    });
+  };
+
   const toggleSection = (id: number) => {
-    setSections((prev) =>
+    updateSections((prev) =>
       prev.map((s) => (s.id === id ? { ...s, expanded: !s.expanded } : s))
     );
   };
@@ -88,16 +108,16 @@ export default function CurriculumBuilderView({
   const handleAddSection = (title: string, description: string) => {
     const newSec: SectionItem = {
       id: Date.now(),
-      title: `Section ${sections.length + 1}: ${title}`,
+      title: title.startsWith("Section") ? title : `Section ${sections.length + 1}: ${title}`,
       description,
       expanded: true,
       contents: [],
     };
-    setSections((prev) => [...prev, newSec]);
+    updateSections((prev) => [...prev, newSec]);
   };
 
   const handleDeleteSection = (secId: number) => {
-    setSections((prev) => prev.filter((s) => s.id !== secId));
+    updateSections((prev) => prev.filter((s) => s.id !== secId));
   };
 
   const handleOpenPicker = (secId: number) => {
@@ -135,7 +155,7 @@ export default function CurriculumBuilderView({
       duration: data.duration,
       status: "Published",
     };
-    setSections((prev) =>
+    updateSections((prev) =>
       prev.map((s) =>
         s.id === activeSectionId
           ? { ...s, contents: [...s.contents, newItem] }
@@ -155,7 +175,7 @@ export default function CurriculumBuilderView({
       duration: quizData.durationMinutes,
       status: "Published",
     };
-    setSections((prev) =>
+    updateSections((prev) =>
       prev.map((s) =>
         s.id === activeSectionId
           ? { ...s, contents: [...s.contents, newItem] }
@@ -174,7 +194,7 @@ export default function CurriculumBuilderView({
       maxMarks: assignmentData.maxMarks,
       status: "Draft",
     };
-    setSections((prev) =>
+    updateSections((prev) =>
       prev.map((s) =>
         s.id === activeSectionId
           ? { ...s, contents: [...s.contents, newItem] }
@@ -184,7 +204,7 @@ export default function CurriculumBuilderView({
   };
 
   const handleDeleteContent = (secId: number, contentId: number) => {
-    setSections((prev) =>
+    updateSections((prev) =>
       prev.map((s) =>
         s.id === secId
           ? { ...s, contents: s.contents.filter((c) => c.id !== contentId) }

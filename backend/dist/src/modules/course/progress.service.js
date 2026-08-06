@@ -8,21 +8,10 @@ const prisma_1 = __importDefault(require("../../config/prisma"));
 const serializer_1 = require("../../utils/serializer");
 class ProgressService {
     async getLearnerCourseProgress(userId, courseId) {
-        // 1. Get or create enrollment
-        let enrollment = await prisma_1.default.enrollment.findUnique({
+        // 1. Get existing enrollment (Do NOT auto-create)
+        const enrollment = await prisma_1.default.enrollment.findUnique({
             where: { userId_courseId: { userId, courseId } },
         });
-        if (!enrollment) {
-            enrollment = await prisma_1.default.enrollment.create({
-                data: {
-                    userId,
-                    courseId,
-                    status: "IN_PROGRESS",
-                    progress: 0,
-                    timeSpentSeconds: 0,
-                },
-            });
-        }
         // 2. Get completed lessons
         const completedLessons = await prisma_1.default.userLessonProgress.findMany({
             where: { userId, courseId, isCompleted: true },
@@ -169,7 +158,7 @@ class ProgressService {
     // Admin Progress Reports & Analytics
     async getAdminLearnerProgressMatrix() {
         const enrollments = await prisma_1.default.enrollment.findMany({
-            orderBy: { updatedAt: "desc" },
+            orderBy: { createdAt: "desc" },
         });
         const userIds = Array.from(new Set(enrollments.map((e) => e.userId)));
         const courseIds = Array.from(new Set(enrollments.map((e) => e.courseId)));
@@ -223,6 +212,73 @@ class ProgressService {
         });
         return (0, serializer_1.serialize)(matrix);
     }
+    async recordAssignmentSubmission(userId, courseId, contentId, submissionText, fileUrl) {
+        const attemptCount = await prisma_1.default.assessmentSubmission.count({
+            where: { userId, courseId, contentId: contentId ?? undefined, submissionType: "ASSIGNMENT" },
+        });
+        const submission = await prisma_1.default.assessmentSubmission.create({
+            data: {
+                userId,
+                courseId,
+                contentId: contentId ?? null,
+                submissionType: "ASSIGNMENT",
+                submissionText,
+                fileUrl: fileUrl || null,
+                status: "SUBMITTED",
+                score: 0,
+                maxScore: 100,
+                attemptNumber: attemptCount + 1,
+            },
+        });
+        return (0, serializer_1.serialize)(submission);
+    }
+    async getTeacherSubmissions(teacherEmployeeId, userRole) {
+        let courseIds = undefined;
+        if (userRole === "TEACHER" && teacherEmployeeId) {
+            const assigned = await prisma_1.default.courseTeacher.findMany({
+                where: { teacherId: teacherEmployeeId },
+                select: { courseId: true },
+            });
+            const created = await prisma_1.default.course.findMany({
+                where: { creatorId: teacherEmployeeId },
+                select: { id: true },
+            });
+            courseIds = Array.from(new Set([...assigned.map((a) => a.courseId), ...created.map((c) => c.id)]));
+        }
+        const submissions = await prisma_1.default.assessmentSubmission.findMany({
+            where: {
+                submissionType: "ASSIGNMENT",
+                ...(courseIds ? { courseId: { in: courseIds } } : {}),
+            },
+            orderBy: { submittedAt: "desc" },
+        });
+        const userIds = Array.from(new Set(submissions.map((s) => s.userId)));
+        const cIds = Array.from(new Set(submissions.map((s) => s.courseId)));
+        const [employees, courses] = await Promise.all([
+            prisma_1.default.employee.findMany({
+                where: { id: { in: userIds } },
+                select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+            }),
+            prisma_1.default.course.findMany({
+                where: { id: { in: cIds } },
+                select: { id: true, title: true },
+            }),
+        ]);
+        const empMap = new Map(employees.map((e) => [e.id.toString(), e]));
+        const courseMap = new Map(courses.map((c) => [c.id.toString(), c]));
+        const result = submissions.map((sub) => {
+            const emp = empMap.get(sub.userId.toString());
+            const course = courseMap.get(sub.courseId.toString());
+            return {
+                ...sub,
+                studentName: emp ? `${emp.firstName} ${emp.lastName}` : `User #${sub.userId}`,
+                studentCode: emp ? emp.employeeCode : "EMP-NA",
+                studentEmail: emp ? emp.officialEmail : "",
+                courseTitle: course ? course.title : `Course #${sub.courseId}`,
+            };
+        });
+        return (0, serializer_1.serialize)(result);
+    }
     async gradeAssessmentSubmission(submissionId, grade, score, feedback, graderName) {
         const sub = await prisma_1.default.assessmentSubmission.findUnique({
             where: { id: submissionId },
@@ -234,6 +290,7 @@ class ProgressService {
         const updated = await prisma_1.default.assessmentSubmission.update({
             where: { id: submissionId },
             data: {
+                status: "GRADED",
                 grade,
                 score,
                 percentage,

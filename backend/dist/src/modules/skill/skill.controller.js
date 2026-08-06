@@ -162,7 +162,13 @@ const getApprovalRequests = async (req, res) => {
     try {
         const status = req.query.status ? String(req.query.status) : undefined;
         const search = req.query.search ? String(req.query.search) : undefined;
-        const requests = await skill_service_1.default.getApprovalRequests({ status, search });
+        const userContext = req.user
+            ? {
+                role: req.user.role,
+                departmentId: req.user.departmentId ? BigInt(req.user.departmentId) : null,
+            }
+            : undefined;
+        const requests = await skill_service_1.default.getApprovalRequests({ status, search }, userContext);
         res.json({ success: true, data: requests });
     }
     catch (error) {
@@ -200,7 +206,13 @@ const handleApprovalAction = async (req, res) => {
             }
             reviewerName = `${fullName} (${userRole})`;
         }
-        const result = await skill_service_1.default.handleApprovalAction(BigInt(id), requestKind, action, reason || null, reviewerName);
+        const userContext = req.user
+            ? {
+                role: req.user.role,
+                departmentId: req.user.departmentId ? BigInt(req.user.departmentId) : null,
+            }
+            : undefined;
+        const result = await skill_service_1.default.handleApprovalAction(BigInt(id), requestKind, action, reason || null, reviewerName, userContext);
         res.json({
             success: true,
             message: `Request ${action.toLowerCase()}d successfully`,

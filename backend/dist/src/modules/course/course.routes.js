@@ -16,10 +16,12 @@ router.post("/verify-user", auth_middleware_1.authenticate, (0, role_middleware_
 router.post("/verify-bulk-file", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), course_controller_1.verifyBulkFile);
 // Progress & Learner Execution
 router.get("/admin/learner-matrix", auth_middleware_1.authenticate, progress_controller_1.getAdminLearnerProgressMatrix);
-router.post("/admin/grade-submission/:submissionId", auth_middleware_1.authenticate, progress_controller_1.gradeAssessmentSubmission);
+router.get("/teacher/submissions", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), progress_controller_1.getTeacherSubmissions);
+router.post("/admin/grade-submission/:submissionId", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), progress_controller_1.gradeAssessmentSubmission);
 router.get("/:id/my-progress", auth_middleware_1.authenticate, progress_controller_1.getLearnerProgress);
 router.post("/:id/progress", auth_middleware_1.authenticate, progress_controller_1.updateLessonProgress);
 router.post("/:id/quiz/submit", auth_middleware_1.authenticate, progress_controller_1.recordQuizSubmission);
+router.post("/:id/assignment/submit", auth_middleware_1.authenticate, progress_controller_1.recordAssignmentSubmission);
 // Enrolment Routes
 router.post("/:id/enroll", auth_middleware_1.authenticate, course_controller_1.selfEnrollCourse);
 router.post("/:id/admin-enroll", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), course_controller_1.adminEnrollUser);

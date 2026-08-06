@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Calendar, Layout, Users, TrendingUp, Settings } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Calendar, Layout, Users, TrendingUp, Settings, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
 
@@ -22,7 +22,14 @@ export default function SecondaryNav({ isSidebarOpen, onToggleSidebar }: Seconda
     { label: "Events", href: "/events", icon: Calendar },
   ];
 
-  if (userRole === ROLES.SUPER_ADMIN || userRole === ROLES.ADMIN) {
+  if (userRole === ROLES.SUPER_ADMIN) {
+    navItems.push(
+      { label: "Users", href: "/users", icon: Users },
+      { label: "Reports", href: "/reports", icon: TrendingUp },
+      { label: "Audit Logs", href: "/admin/audit-logs", icon: ShieldCheck },
+      { label: "Settings", href: "/settings", icon: Settings }
+    );
+  } else if (userRole === ROLES.ADMIN) {
     navItems.push(
       { label: "Users", href: "/users", icon: Users },
       { label: "Reports", href: "/reports", icon: TrendingUp },

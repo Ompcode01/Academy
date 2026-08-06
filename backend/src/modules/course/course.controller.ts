@@ -85,7 +85,7 @@ export const createCourse = asyncHandler(
       data: {
         actorName,
         action: "Course Published",
-        detail: `Published '${course.title}'`,
+        detail: `Published '${course?.title || "Course"}'`,
         type: "course",
         ipAddress: req.ip || "Internal",
       },
@@ -110,7 +110,7 @@ export const updateCourse = asyncHandler(
       data: {
         actorName,
         action: "Course Updated",
-        detail: `Updated course '${course.title}'`,
+        detail: `Updated course '${course?.title || "Course"}'`,
         type: "course",
         ipAddress: req.ip || "Internal",
       },

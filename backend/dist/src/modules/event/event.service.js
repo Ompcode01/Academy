@@ -7,8 +7,26 @@ exports.EventService = void 0;
 const prisma_1 = __importDefault(require("../../config/prisma"));
 const serializer_1 = require("../../utils/serializer");
 class EventService {
-    async getAllEvents() {
+    async getAllEvents(userContext) {
+        let whereClause = {};
+        if (!userContext || userContext.role !== "SUPER_ADMIN") {
+            const deptId = userContext?.departmentId;
+            const empId = userContext?.employeeId;
+            whereClause = {
+                OR: [
+                    { departmentId: null },
+                    ...(deptId ? [{ departmentId: deptId }] : []),
+                    ...(empId ? [{ creatorId: empId }] : []),
+                ],
+            };
+        }
         const events = await prisma_1.default.event.findMany({
+            where: whereClause,
+            include: {
+                department: {
+                    select: { id: true, departmentName: true, departmentCode: true },
+                },
+            },
             orderBy: { eventDate: "asc" },
         });
         return (0, serializer_1.serialize)(events);
@@ -23,6 +41,7 @@ class EventService {
                 url: data.url || null,
                 eventType: data.eventType || "site",
                 courseId: data.courseId || null,
+                departmentId: data.departmentId || null,
                 creatorId: data.creatorId || null,
                 creatorName: data.creatorName || "System Admin",
             },

@@ -1,22 +1,29 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import CurriculumBuilderView from "../builder/CurriculumBuilderView";
+import CurriculumBuilderView, { SectionItem } from "../builder/CurriculumBuilderView";
 
 interface ModulesFormProps {
+  sections?: SectionItem[];
+  onSectionsChange?: (sections: SectionItem[]) => void;
   onNext?: () => void;
   onBack?: () => void;
   onCancel?: () => void;
 }
 
 export default function ModulesForm({
+  sections,
+  onSectionsChange,
   onNext,
   onBack,
   onCancel,
 }: ModulesFormProps) {
   return (
     <div className="space-y-6">
-      <CurriculumBuilderView />
+      <CurriculumBuilderView
+        sections={sections}
+        onSectionsChange={onSectionsChange}
+      />
 
       {/* Stepper Control Footer */}
       <div className="flex items-center justify-between border-t border-border pt-5">

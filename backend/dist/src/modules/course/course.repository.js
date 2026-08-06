@@ -35,6 +35,13 @@ class CourseRepository {
                 include: {
                     category: true,
                     department: true,
+                    teachers: {
+                        include: {
+                            teacher: {
+                                select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+                            },
+                        },
+                    },
                     creator: {
                         select: {
                             id: true,
@@ -68,6 +75,13 @@ class CourseRepository {
             include: {
                 category: true,
                 department: true,
+                teachers: {
+                    include: {
+                        teacher: {
+                            select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+                        },
+                    },
+                },
                 creator: {
                     select: {
                         id: true,
@@ -108,6 +122,13 @@ class CourseRepository {
             include: {
                 category: true,
                 department: true,
+                teachers: {
+                    include: {
+                        teacher: {
+                            select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+                        },
+                    },
+                },
                 creator: {
                     select: {
                         id: true,
@@ -126,6 +147,13 @@ class CourseRepository {
             include: {
                 category: true,
                 department: true,
+                teachers: {
+                    include: {
+                        teacher: {
+                            select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+                        },
+                    },
+                },
                 creator: {
                     select: {
                         id: true,
@@ -180,6 +208,8 @@ class CourseRepository {
                 contentOrder: data.contentOrder,
                 isMandatory: data.isMandatory ?? false,
                 isPublished: data.isPublished ?? false,
+                quizConfigJson: data.quizConfigJson || null,
+                assignmentConfigJson: data.assignmentConfigJson || null,
             },
         });
     }

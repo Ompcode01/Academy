@@ -121,23 +121,44 @@ class SkillRepository {
         });
     }
     // Approval Management (Admin View)
-    async getAllSkillRequests(filters) {
+    async getAllSkillRequests(filters, userContext) {
         const { status, search } = filters;
         const skillWhere = {};
         const projectWhere = {};
+        if (userContext && userContext.role !== "SUPER_ADMIN" && userContext.departmentId) {
+            const deptEmployees = await prisma_1.default.employee.findMany({
+                where: { departmentId: userContext.departmentId },
+                select: { id: true },
+            });
+            const deptEmployeeIds = deptEmployees.map((e) => e.id);
+            skillWhere.userId = { in: deptEmployeeIds };
+            projectWhere.userId = { in: deptEmployeeIds };
+        }
         if (status) {
             skillWhere.status = status;
             projectWhere.status = status;
         }
         if (search) {
-            skillWhere.OR = [
-                { skillName: { contains: search } },
-                { category: { contains: search } },
+            skillWhere.AND = [
+                ...(skillWhere.userId ? [{ userId: skillWhere.userId }] : []),
+                {
+                    OR: [
+                        { skillName: { contains: search } },
+                        { category: { contains: search } },
+                    ],
+                },
             ];
-            projectWhere.OR = [
-                { projectName: { contains: search } },
-                { projectType: { contains: search } },
+            delete skillWhere.userId;
+            projectWhere.AND = [
+                ...(projectWhere.userId ? [{ userId: projectWhere.userId }] : []),
+                {
+                    OR: [
+                        { projectName: { contains: search } },
+                        { projectType: { contains: search } },
+                    ],
+                },
             ];
+            delete projectWhere.userId;
         }
         const [skills, projects, employees] = await Promise.all([
             prisma_1.default.userSkill.findMany({
@@ -156,6 +177,7 @@ class SkillRepository {
                     officialEmail: true,
                     designation: true,
                     profileImage: true,
+                    departmentId: true,
                 },
             }),
         ]);
@@ -247,6 +269,12 @@ class SkillRepository {
             },
         });
         return updated;
+    }
+    async getEmployeeById(id) {
+        return prisma_1.default.employee.findUnique({
+            where: { id },
+            select: { id: true, departmentId: true },
+        });
     }
     // Dashboard Overview metrics for a user
     async getUserOverviewStats(userId) {

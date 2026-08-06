@@ -67,6 +67,7 @@ exports.createCourse = (0, asyncHandler_1.default)(async (req, res) => {
         departmentId,
         enrollmentType: req.body.enrollmentType || "SELF",
         enrolledUserIds: req.body.enrolledUserIds || [],
+        teacherIds: req.body.teacherIds || [],
     };
     const course = await course_service_1.default.createCourse(data);
     // Audit Log
@@ -75,7 +76,7 @@ exports.createCourse = (0, asyncHandler_1.default)(async (req, res) => {
         data: {
             actorName,
             action: "Course Published",
-            detail: `Published '${course.title}'`,
+            detail: `Published '${course?.title || "Course"}'`,
             type: "course",
             ipAddress: req.ip || "Internal",
         },
@@ -97,7 +98,7 @@ exports.updateCourse = (0, asyncHandler_1.default)(async (req, res) => {
         data: {
             actorName,
             action: "Course Updated",
-            detail: `Updated course '${course.title}'`,
+            detail: `Updated course '${course?.title || "Course"}'`,
             type: "course",
             ipAddress: req.ip || "Internal",
         },
