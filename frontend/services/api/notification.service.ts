@@ -9,15 +9,24 @@ export interface Notification {
   link: string | null;
   isRead: boolean;
   metadata: Record<string, any> | null;
+  roleTarget: string | null;
   createdAt: string;
+}
+
+export interface PaginationInfo {
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
 }
 
 export const getNotifications = async (
   limit: number = 20,
-  unreadOnly: boolean = false
+  unreadOnly: boolean = false,
+  page: number = 1
 ) => {
   const response = await api.get("/notifications", {
-    params: { limit, unreadOnly },
+    params: { limit, unreadOnly, page },
   });
   return response.data;
 };

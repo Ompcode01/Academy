@@ -8,15 +8,19 @@ import {
   type Notification,
 } from "@/services/api/notification.service";
 
+type FilterMode = "all" | "unread";
+
 interface NotificationStore {
   notifications: Notification[];
   unreadCount: number;
   isOpen: boolean;
   isLoading: boolean;
+  filter: FilterMode;
 
   // Actions
   togglePanel: () => void;
   closePanel: () => void;
+  setFilter: (filter: FilterMode) => void;
   fetchNotifications: (limit?: number) => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
   markRead: (id: string) => Promise<void>;
@@ -29,6 +33,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   unreadCount: 0,
   isOpen: false,
   isLoading: false,
+  filter: "all",
 
   togglePanel: () => {
     const wasOpen = get().isOpen;
@@ -41,10 +46,16 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
 
   closePanel: () => set({ isOpen: false }),
 
-  fetchNotifications: async (limit = 20) => {
+  setFilter: (filter: FilterMode) => {
+    set({ filter });
+    get().fetchNotifications();
+  },
+
+  fetchNotifications: async (limit = 30) => {
     try {
       set({ isLoading: true });
-      const res = await getNotifications(limit);
+      const unreadOnly = get().filter === "unread";
+      const res = await getNotifications(limit, unreadOnly);
       if (res?.success) {
         set({ notifications: res.data || [] });
       }

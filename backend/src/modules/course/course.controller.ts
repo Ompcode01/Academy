@@ -5,6 +5,7 @@ import { successResponse, errorResponse } from "../../utils/response";
 import courseService from "./course.service";
 import { serializeBigInt } from "../../utils/prismaSerializer";
 import prisma from "../../config/prisma";
+import notificationService from "../notification/notification.service";
 
 // GET /api/courses
 export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -90,6 +91,33 @@ export const createCourse = asyncHandler(
         ipAddress: req.ip || "Internal",
       },
     });
+
+    // Notify department employees about the new course
+    if (course) {
+      notificationService.notifyCourseCreated({
+        id: course.id,
+        title: course.title,
+        departmentId: course.departmentId || null,
+        creatorId: data.creatorId,
+      });
+
+      // Notify individually enrolled users
+      if (data.enrolledUserIds && data.enrolledUserIds.length > 0) {
+        const enrollerName = req.user?.username || "An administrator";
+        for (const uIdStr of data.enrolledUserIds) {
+          try {
+            notificationService.notifyEnrollment({
+              userId: BigInt(uIdStr),
+              courseId: course.id,
+              courseTitle: course.title,
+              enrolledBy: enrollerName,
+            });
+          } catch (e) {
+            // Non-blocking: enrollment notification failure should not break the flow
+          }
+        }
+      }
+    }
 
     return successResponse(res, serializeBigInt(course), "Course created successfully", 201);
   }
@@ -204,6 +232,23 @@ export const adminEnrollUser = asyncHandler(
       return errorResponse(res, "Username or email is required", "BAD_REQUEST", 400);
     }
     const result = await courseService.adminEnrollUser(courseId, identifier);
+
+    // Notify the enrolled user
+    if (result.enrollment) {
+      try {
+        const courseData = await courseService.getCourseById(courseId);
+        const enrollerName = req.user?.username || "An administrator";
+        notificationService.notifyEnrollment({
+          userId: result.enrollment.userId,
+          courseId,
+          courseTitle: courseData.title,
+          enrolledBy: enrollerName,
+        });
+      } catch (e) {
+        // Non-blocking: notification failure should not break enrollment
+      }
+    }
+
     return successResponse(res, serializeBigInt(result), result.message);
   }
 );

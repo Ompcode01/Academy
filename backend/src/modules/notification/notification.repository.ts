@@ -9,6 +9,7 @@ export interface CreateNotificationInput {
   message: string;
   link?: string | null;
   metadata?: any;
+  roleTarget?: string | null;
 }
 
 const notificationRepository = {
@@ -21,6 +22,7 @@ const notificationRepository = {
         message: data.message,
         link: data.link || null,
         metadata: data.metadata || undefined,
+        roleTarget: data.roleTarget || null,
       },
     });
   },
@@ -34,23 +36,40 @@ const notificationRepository = {
         message: d.message,
         link: d.link || null,
         metadata: d.metadata || undefined,
+        roleTarget: d.roleTarget || null,
       })),
+    });
+  },
+
+  async findById(id: bigint) {
+    return prisma.notification.findUnique({
+      where: { id },
     });
   },
 
   async getForUser(
     userId: bigint,
-    options: { limit?: number; unreadOnly?: boolean } = {}
+    options: { limit?: number; page?: number; unreadOnly?: boolean } = {}
   ) {
-    const { limit = 20, unreadOnly = false } = options;
-    return prisma.notification.findMany({
-      where: {
-        userId,
-        ...(unreadOnly ? { isRead: false } : {}),
-      },
-      orderBy: { createdAt: "desc" },
-      take: limit,
-    });
+    const { limit = 20, page = 1, unreadOnly = false } = options;
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      userId,
+      ...(unreadOnly ? { isRead: false } : {}),
+    };
+
+    const [notifications, total] = await Promise.all([
+      prisma.notification.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.notification.count({ where }),
+    ]);
+
+    return { notifications, total };
   },
 
   async getUnreadCount(userId: bigint) {

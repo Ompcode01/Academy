@@ -10,13 +10,17 @@ const notificationService = {
 
   async getForUser(
     userId: bigint,
-    options: { limit?: number; unreadOnly?: boolean } = {}
+    options: { limit?: number; page?: number; unreadOnly?: boolean } = {}
   ) {
     return notificationRepository.getForUser(userId, options);
   },
 
   async getUnreadCount(userId: bigint) {
     return notificationRepository.getUnreadCount(userId);
+  },
+
+  async findById(id: bigint) {
+    return notificationRepository.findById(id);
   },
 
   async markAsRead(id: bigint) {
@@ -75,11 +79,101 @@ const notificationService = {
         message: `${creatorName} published a new course: "${course.title}"`,
         link: `/courses/${course.id}/preview`,
         metadata: { courseId: Number(course.id) },
+        roleTarget: "LEARNER",
       }));
 
       await notificationRepository.createMany(notifications);
     } catch (err) {
       console.error("Failed to send course creation notifications:", err);
+    }
+  },
+
+  /**
+   * Notify a learner that they have been enrolled in a course.
+   */
+  async notifyEnrollment(enrollment: {
+    userId: bigint;
+    courseId: bigint;
+    courseTitle: string;
+    enrolledBy?: string;
+  }) {
+    try {
+      const enrollerLabel = enrollment.enrolledBy || "An administrator";
+      await notificationRepository.create({
+        userId: enrollment.userId,
+        type: "ENROLLMENT",
+        title: "Course Enrollment",
+        message: `${enrollerLabel} enrolled you in the course: "${enrollment.courseTitle}"`,
+        link: `/courses/${enrollment.courseId}/preview`,
+        metadata: { courseId: Number(enrollment.courseId) },
+        roleTarget: "LEARNER",
+      });
+    } catch (err) {
+      console.error("Failed to send enrollment notification:", err);
+    }
+  },
+
+  /**
+   * Notify admins when a learner completes a course.
+   */
+  async notifyCourseCompleted(data: {
+    userId: bigint;
+    courseId: bigint;
+    courseTitle: string;
+    learnerName: string;
+    departmentId?: bigint | null;
+  }) {
+    try {
+      const admins = await this._getAdminEmployeeIds(data.departmentId);
+      if (admins.length === 0) return;
+
+      const notifications: CreateNotificationInput[] = admins.map((adminId) => ({
+        userId: adminId,
+        type: "COURSE_COMPLETED",
+        title: "Course Completed",
+        message: `${data.learnerName} has completed the course: "${data.courseTitle}"`,
+        link: `/courses/${data.courseId}/preview`,
+        metadata: {
+          courseId: Number(data.courseId),
+          learnerId: Number(data.userId),
+        },
+        roleTarget: "ADMIN",
+      }));
+
+      await notificationRepository.createMany(notifications);
+    } catch (err) {
+      console.error("Failed to send course completion notifications:", err);
+    }
+  },
+
+  /**
+   * Notify all SUPER_ADMIN users for system-level events
+   * (e.g., new admin creation, platform settings changes).
+   */
+  async notifySystemEvent(event: {
+    type: string;
+    title: string;
+    message: string;
+    link?: string;
+    metadata?: any;
+  }) {
+    try {
+      const superAdmins = await this._getSuperAdminEmployeeIds();
+      if (superAdmins.length === 0) return;
+
+      const notifications: CreateNotificationInput[] = superAdmins.map((adminId) => ({
+        userId: adminId,
+        type: event.type || "SYSTEM_EVENT",
+        title: event.title,
+        message: event.message,
+        link: event.link || null,
+        metadata: event.metadata || null,
+        roleTarget: "SUPER_ADMIN",
+      }));
+
+      await notificationRepository.createMany(notifications);
+    } catch (err) {
+      console.error("Failed to send system event notifications:", err);
     }
   },
 
@@ -111,6 +205,7 @@ const notificationService = {
         message: `${submitterName} submitted skill "${skill.skillName}" for approval.`,
         link: "/skill-cloud",
         metadata: { userSkillId: Number(skill.id) },
+        roleTarget: "ADMIN",
       }));
 
       await notificationRepository.createMany(notifications);
@@ -130,6 +225,7 @@ const notificationService = {
         title: "Skill Approved ✓",
         message: `Your skill "${skillName}" has been approved by an administrator.`,
         link: "/skill-cloud",
+        roleTarget: "LEARNER",
       });
     } catch (err) {
       console.error("Failed to send skill approval notification:", err);
@@ -151,6 +247,7 @@ const notificationService = {
         title: "Skill Rejected",
         message: `Your skill "${skillName}" was rejected.${reason ? ` Reason: ${reason}` : ""}`,
         link: "/skill-cloud",
+        roleTarget: "LEARNER",
       });
     } catch (err) {
       console.error("Failed to send skill rejection notification:", err);
@@ -185,6 +282,7 @@ const notificationService = {
         message: `${submitterName} submitted project "${project.projectName}" for approval.`,
         link: "/skill-cloud",
         metadata: { userProjectId: Number(project.id) },
+        roleTarget: "ADMIN",
       }));
 
       await notificationRepository.createMany(notifications);
@@ -204,6 +302,7 @@ const notificationService = {
         title: "Project Approved ✓",
         message: `Your project "${projectName}" has been approved by an administrator.`,
         link: "/skill-cloud",
+        roleTarget: "LEARNER",
       });
     } catch (err) {
       console.error("Failed to send project approval notification:", err);
@@ -225,6 +324,7 @@ const notificationService = {
         title: "Project Rejected",
         message: `Your project "${projectName}" was rejected.${reason ? ` Reason: ${reason}` : ""}`,
         link: "/skill-cloud",
+        roleTarget: "LEARNER",
       });
     } catch (err) {
       console.error("Failed to send project rejection notification:", err);
@@ -263,6 +363,25 @@ const notificationService = {
     }
 
     return [...new Set(matchingIds)];
+  },
+
+  /**
+   * Get employee IDs for SUPER_ADMIN users only.
+   */
+  async _getSuperAdminEmployeeIds(): Promise<bigint[]> {
+    const superAdminRoles = await prisma.userRole.findMany({
+      where: {
+        role: {
+          roleCode: "SUPER_ADMIN",
+        },
+        isActive: true,
+      },
+      select: {
+        employeeId: true,
+      },
+    });
+
+    return [...new Set(superAdminRoles.map((r) => r.employeeId))];
   },
 };
 

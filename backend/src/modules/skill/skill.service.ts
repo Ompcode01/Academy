@@ -7,6 +7,7 @@ import skillRepository, {
 import { ApprovalStatus } from "@prisma/client";
 import { serializeBigInt } from "../../utils/prismaSerializer";
 import auditService from "../audit/audit.service";
+import notificationService from "../notification/notification.service";
 
 class SkillService {
   async getCatalogSkills() {
@@ -22,6 +23,14 @@ class SkillService {
 
   async createUserSkill(data: CreateUserSkillData) {
     const created = await skillRepository.createUserSkill(data);
+
+    // Fire notification to admins for approval
+    notificationService.notifySkillSubmitted({
+      id: created.id,
+      skillName: created.skillName,
+      userId: created.userId,
+    });
+
     return serializeBigInt(created);
   }
 
@@ -37,6 +46,14 @@ class SkillService {
       status: ApprovalStatus.PENDING,
       rejectionReason: null,
     });
+
+    // Re-trigger admin notification for the resubmitted skill
+    notificationService.notifySkillSubmitted({
+      id: updated.id,
+      skillName: updated.skillName,
+      userId: updated.userId,
+    });
+
     return serializeBigInt(updated);
   }
 
@@ -53,6 +70,14 @@ class SkillService {
 
   async createUserProject(data: CreateUserProjectData) {
     const created = await skillRepository.createUserProject(data);
+
+    // Fire notification to admins for approval
+    notificationService.notifyProjectSubmitted({
+      id: created.id,
+      projectName: created.projectName,
+      userId: created.userId,
+    });
+
     return serializeBigInt(created);
   }
 
@@ -67,6 +92,14 @@ class SkillService {
       status: ApprovalStatus.PENDING,
       rejectionReason: null,
     });
+
+    // Re-trigger admin notification for the resubmitted project
+    notificationService.notifyProjectSubmitted({
+      id: updated.id,
+      projectName: updated.projectName,
+      userId: updated.userId,
+    });
+
     return serializeBigInt(updated);
   }
 
@@ -121,6 +154,13 @@ class SkillService {
         type: "role",
       });
 
+      // Notify the learner about the approval/rejection
+      if (action === "APPROVE") {
+        notificationService.notifySkillApproved(existing.userId, existing.skillName);
+      } else {
+        notificationService.notifySkillRejected(existing.userId, existing.skillName, reason);
+      }
+
       return serializeBigInt(updated);
     } else {
       const existing = await skillRepository.getUserProjectById(id);
@@ -148,6 +188,13 @@ class SkillService {
         detail: `${reviewerName} ${action.toLowerCase()}d project request #${id} (${existing.projectName})${reason ? ` with comment: "${reason}"` : ''}`,
         type: "role",
       });
+
+      // Notify the learner about the approval/rejection
+      if (action === "APPROVE") {
+        notificationService.notifyProjectApproved(existing.userId, existing.projectName);
+      } else {
+        notificationService.notifyProjectRejected(existing.userId, existing.projectName, reason);
+      }
 
       return serializeBigInt(updated);
     }

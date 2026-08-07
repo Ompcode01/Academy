@@ -389,18 +389,20 @@ model SkillApprovalLog {
 }
 
 model Notification {
-  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  userId    BigInt   // recipient employee ID
-  type      String   @db.VarChar(50)
-  title     String   @db.VarChar(200)
-  message   String   @db.Text
-  link      String?  @db.VarChar(500)
-  isRead    Boolean  @default(false)
-  metadata  Json?
-  createdAt DateTime @default(now())
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  userId     BigInt   // recipient employee ID
+  type       String   @db.VarChar(50)
+  title      String   @db.VarChar(200)
+  message    String   @db.Text
+  link       String?  @db.VarChar(500)
+  isRead     Boolean  @default(false)
+  metadata   Json?
+  roleTarget String?  @db.VarChar(20) // LEARNER, ADMIN, SUPER_ADMIN — null = user-specific
+  createdAt  DateTime @default(now())
 
   @@index([userId])
   @@index([userId, isRead])
+  @@index([roleTarget])
   @@map("notifications")
 }
 

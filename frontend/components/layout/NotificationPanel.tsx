@@ -12,6 +12,10 @@ import {
   Trash2,
   Loader2,
   Inbox,
+  GraduationCap,
+  Trophy,
+  Shield,
+  UserPlus,
 } from "lucide-react";
 import type { Notification } from "@/services/api/notification.service";
 
@@ -24,6 +28,16 @@ const TYPE_CONFIG: Record<
     icon: BookOpen,
     accent: "border-l-blue-500",
     bg: "bg-blue-500/10 text-blue-600",
+  },
+  ENROLLMENT: {
+    icon: GraduationCap,
+    accent: "border-l-indigo-500",
+    bg: "bg-indigo-500/10 text-indigo-600",
+  },
+  COURSE_COMPLETED: {
+    icon: Trophy,
+    accent: "border-l-teal-500",
+    bg: "bg-teal-500/10 text-teal-600",
   },
   SKILL_SUBMITTED: {
     icon: Award,
@@ -54,6 +68,16 @@ const TYPE_CONFIG: Record<
     icon: Briefcase,
     accent: "border-l-red-500",
     bg: "bg-red-500/10 text-red-600",
+  },
+  SYSTEM_EVENT: {
+    icon: Shield,
+    accent: "border-l-orange-500",
+    bg: "bg-orange-500/10 text-orange-600",
+  },
+  ADMIN_CREATED: {
+    icon: UserPlus,
+    accent: "border-l-cyan-500",
+    bg: "bg-cyan-500/10 text-cyan-600",
   },
 };
 
@@ -152,10 +176,55 @@ function NotificationCard({ notification }: { notification: Notification }) {
   );
 }
 
+/* ─── Filter Tab Button ────────────────────────────────── */
+function FilterTab({
+  label,
+  active,
+  count,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  count?: number;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative px-3 py-1.5 text-[11px] font-semibold rounded-md transition-all duration-200 cursor-pointer ${
+        active
+          ? "bg-[#C82333]/10 text-[#C82333]"
+          : "text-[#6C757D] hover:text-[#212529] hover:bg-slate-100"
+      }`}
+    >
+      {label}
+      {count !== undefined && count > 0 && (
+        <span
+          className={`ml-1.5 inline-flex items-center justify-center h-4 min-w-[16px] rounded-full px-1 text-[9px] font-bold ${
+            active
+              ? "bg-[#C82333] text-white"
+              : "bg-slate-200 text-slate-600"
+          }`}
+        >
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </button>
+  );
+}
+
 /* ─── Main Panel ───────────────────────────────────────── */
 export default function NotificationPanel() {
-  const { notifications, isOpen, isLoading, unreadCount, markAllRead, closePanel } =
-    useNotificationStore();
+  const {
+    notifications,
+    isOpen,
+    isLoading,
+    unreadCount,
+    filter,
+    setFilter,
+    markAllRead,
+    closePanel,
+  } = useNotificationStore();
 
   if (!isOpen) return null;
 
@@ -192,6 +261,21 @@ export default function NotificationPanel() {
           )}
         </div>
 
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-1 px-4 py-2 border-b border-[#F0F2F5] bg-[#FAFBFC]">
+          <FilterTab
+            label="All"
+            active={filter === "all"}
+            onClick={() => setFilter("all")}
+          />
+          <FilterTab
+            label="Unread"
+            active={filter === "unread"}
+            count={unreadCount}
+            onClick={() => setFilter("unread")}
+          />
+        </div>
+
         {/* Notification List */}
         <div className="max-h-[400px] overflow-y-auto divide-y divide-[#F0F2F5]">
           {isLoading ? (
@@ -207,10 +291,12 @@ export default function NotificationPanel() {
                 <Inbox className="h-8 w-8 text-[#ADB5BD]" />
               </div>
               <p className="text-sm font-semibold text-[#6C757D]">
-                All caught up!
+                {filter === "unread" ? "No unread notifications" : "All caught up!"}
               </p>
               <p className="text-[11px] text-[#ADB5BD] mt-1 text-center">
-                You have no notifications at the moment.
+                {filter === "unread"
+                  ? "Switch to 'All' to see your notification history."
+                  : "You have no notifications at the moment."}
               </p>
             </div>
           ) : (
