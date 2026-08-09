@@ -17,7 +17,7 @@ function extractUserId(req: AuthRequest): bigint {
 
 /**
  * GET /api/notifications
- * Query: ?limit=20&page=1&unreadOnly=true
+ * Query: ?limit=20&page=1&unreadOnly=true&category=COURSE
  */
 export const getNotifications = async (req: AuthRequest, res: Response) => {
   try {
@@ -25,11 +25,13 @@ export const getNotifications = async (req: AuthRequest, res: Response) => {
     const limit = req.query.limit ? Number(req.query.limit) : 20;
     const page = req.query.page ? Number(req.query.page) : 1;
     const unreadOnly = req.query.unreadOnly === "true";
+    const category = req.query.category ? String(req.query.category) : undefined;
 
     const { notifications, total } = await notificationService.getForUser(userId, {
       limit,
       page,
       unreadOnly,
+      category,
     });
 
     res.json({
@@ -120,5 +122,64 @@ export const deleteNotification = async (req: AuthRequest, res: Response) => {
     res.json({ success: true, message: "Notification deleted" });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * POST /api/notifications/announcements
+ */
+export const createAnnouncement = async (req: AuthRequest, res: Response) => {
+  try {
+    const actorId = extractUserId(req);
+    const actorRole = req.user?.role || "LEARNER";
+    const { title, message, targetRole, courseId, departmentId, priority } = req.body;
+
+    if (!title || !message) {
+      return res.status(400).json({ success: false, message: "Title and message are required" });
+    }
+
+    await notificationService.notifyAnnouncement({
+      actorId,
+      actorRole,
+      title,
+      message,
+      targetRole,
+      courseId: courseId ? BigInt(courseId) : undefined,
+      departmentId: departmentId ? BigInt(departmentId) : undefined,
+      priority: priority || "NORMAL",
+    });
+
+    res.json({ success: true, message: "Announcement broadcasted successfully" });
+  } catch (error: any) {
+    console.error("Error creating announcement:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to broadcast announcement" });
+  }
+};
+
+/**
+ * POST /api/notifications/escalate
+ */
+export const createEscalation = async (req: AuthRequest, res: Response) => {
+  try {
+    const actorId = extractUserId(req);
+    const { title, message, courseId, accusedTeacherId, priority } = req.body;
+
+    if (!title || !message) {
+      return res.status(400).json({ success: false, message: "Title and message are required for escalation" });
+    }
+
+    await notificationService.notifyEscalation({
+      actorId,
+      title,
+      message,
+      courseId: courseId ? BigInt(courseId) : undefined,
+      accusedTeacherId: accusedTeacherId ? BigInt(accusedTeacherId) : undefined,
+      priority: priority || "HIGH",
+    });
+
+    res.json({ success: true, message: "Issue escalated successfully to administration" });
+  } catch (error: any) {
+    console.error("Error creating escalation:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to escalate issue" });
   }
 };

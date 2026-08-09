@@ -30,6 +30,9 @@ export const upsertTemplate = async (req: AuthRequest, res: Response) => {
 
 export const issueCertificate = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user?.role === "GUEST") {
+      return res.status(403).json({ success: false, message: "Guests are not permitted to generate or receive certificates." });
+    }
     const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
     const { courseId, recipientName, courseTitle } = req.body;
 
@@ -46,6 +49,9 @@ export const issueCertificate = async (req: AuthRequest, res: Response) => {
 
 export const getMyCertificates = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user?.role === "GUEST") {
+      return res.json({ success: true, data: [] });
+    }
     const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
     const certificates = await certificateService.getUserCertificates(userId);
     res.json({ success: true, data: certificates });
@@ -56,10 +62,19 @@ export const getMyCertificates = async (req: AuthRequest, res: Response) => {
 
 export const getAllCertificates = async (req: AuthRequest, res: Response) => {
   try {
-    const certificates = await certificateService.getAllCertificates();
+    const userRole = req.user?.role || "GUEST";
+    const employeeId = req.user?.employeeId ? BigInt(req.user.employeeId) : undefined;
+    const departmentId = req.user?.departmentId ? BigInt(req.user.departmentId) : undefined;
+
+    const certificates = await certificateService.getCertificatesForUser({
+      role: userRole,
+      employeeId,
+      departmentId,
+    });
     res.json({ success: true, data: certificates });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("getAllCertificates Controller Error:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to fetch certificates" });
   }
 };
 

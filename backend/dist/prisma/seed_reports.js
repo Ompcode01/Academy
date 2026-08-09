@@ -268,49 +268,6 @@ async function main() {
                     lastActivityAt,
                 },
             });
-            // Seed Assessment Submissions for COMPLETED and IN_PROGRESS enrollments
-            if (status === "COMPLETED" || status === "IN_PROGRESS") {
-                const score = status === "COMPLETED" ? 80 + (i % 20) : 55 + (i % 30);
-                const maxScore = 100;
-                const percentage = score;
-                await prisma.assessmentSubmission.create({
-                    data: {
-                        userId: emp.id,
-                        courseId: course.id,
-                        submissionType: j % 2 === 0 ? "QUIZ" : "ASSIGNMENT",
-                        score,
-                        maxScore,
-                        percentage,
-                        grade: percentage >= 70 ? "PASS" : "FAIL",
-                        status: "GRADED",
-                        attemptNumber: 1 + (i % 2),
-                        submittedAt: lastActivityAt || enrolledAt,
-                        gradedAt: lastActivityAt || enrolledAt,
-                    },
-                });
-            }
-            // Seed Issued Certificate for COMPLETED enrollments
-            if (status === "COMPLETED") {
-                const certCode = `CERT-${emp.id}-${course.id}-${1000 + i}`;
-                const issueDate = completedAt || new Date();
-                // Some active, some expiring soon (within 30 days)
-                const expireDays = (i % 3 === 0) ? 15 : 365;
-                const expiresAt = new Date(issueDate.getTime() + expireDays * 86400000);
-                await prisma.issuedCertificate.upsert({
-                    where: { certificateCode: certCode },
-                    update: { expiresAt, status: expiresAt < new Date() ? "EXPIRED" : "ACTIVE" },
-                    create: {
-                        certificateCode: certCode,
-                        userId: emp.id,
-                        courseId: course.id,
-                        recipientName: `${emp.firstName} ${emp.lastName}`,
-                        courseTitle: course.title,
-                        issuedAt: issueDate,
-                        expiresAt,
-                        status: expiresAt < new Date() ? "EXPIRED" : "ACTIVE",
-                    },
-                });
-            }
         }
     }
     console.log("Rich reporting data seeded successfully!");

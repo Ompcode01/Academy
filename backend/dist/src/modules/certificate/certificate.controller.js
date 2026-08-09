@@ -35,6 +35,9 @@ const upsertTemplate = async (req, res) => {
 exports.upsertTemplate = upsertTemplate;
 const issueCertificate = async (req, res) => {
     try {
+        if (req.user?.role === "GUEST") {
+            return res.status(403).json({ success: false, message: "Guests are not permitted to generate or receive certificates." });
+        }
         const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
         const { courseId, recipientName, courseTitle } = req.body;
         if (!courseId || !recipientName || !courseTitle) {
@@ -50,6 +53,9 @@ const issueCertificate = async (req, res) => {
 exports.issueCertificate = issueCertificate;
 const getMyCertificates = async (req, res) => {
     try {
+        if (req.user?.role === "GUEST") {
+            return res.json({ success: true, data: [] });
+        }
         const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
         const certificates = await certificate_service_1.default.getUserCertificates(userId);
         res.json({ success: true, data: certificates });
@@ -61,11 +67,19 @@ const getMyCertificates = async (req, res) => {
 exports.getMyCertificates = getMyCertificates;
 const getAllCertificates = async (req, res) => {
     try {
-        const certificates = await certificate_service_1.default.getAllCertificates();
+        const userRole = req.user?.role || "GUEST";
+        const employeeId = req.user?.employeeId ? BigInt(req.user.employeeId) : undefined;
+        const departmentId = req.user?.departmentId ? BigInt(req.user.departmentId) : undefined;
+        const certificates = await certificate_service_1.default.getCertificatesForUser({
+            role: userRole,
+            employeeId,
+            departmentId,
+        });
         res.json({ success: true, data: certificates });
     }
     catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error("getAllCertificates Controller Error:", error);
+        res.status(500).json({ success: false, message: error.message || "Failed to fetch certificates" });
     }
 };
 exports.getAllCertificates = getAllCertificates;

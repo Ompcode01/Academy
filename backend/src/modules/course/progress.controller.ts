@@ -4,6 +4,19 @@ import progressService from "./progress.service";
 
 export const getLearnerProgress = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user?.role === "GUEST") {
+      return res.json({
+        success: true,
+        data: {
+          progressPercent: 0,
+          completedLessonIds: [],
+          isEnrolled: false,
+          isGuest: true,
+          sessionsCount: 0,
+          timeSpentSeconds: 0,
+        },
+      });
+    }
     const courseId = BigInt(String(req.params.id));
     const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
 
@@ -16,6 +29,9 @@ export const getLearnerProgress = async (req: AuthRequest, res: Response) => {
 
 export const getMyEnrollments = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user?.role === "GUEST") {
+      return res.json({ success: true, data: [] });
+    }
     const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
     const data = await progressService.getMyEnrollments(userId);
     res.json({ success: true, data });

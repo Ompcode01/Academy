@@ -207,80 +207,72 @@ export default function ReportsPage() {
 
         {/* Interactive Responsive Pill-Button Navigation for Reports */}
         <Tabs value={activeTab} onValueChange={(val) => { setActiveTab(val); setFilters((p) => ({ ...p, page: 1 })); }}>
-          <div className="bg-card/70 backdrop-blur-sm border border-border/80 p-2.5 rounded-xl shadow-sm">
-            <p className="text-[11px] font-bold text-muted-foreground mb-2 px-1 flex items-center justify-between">
-              <span>SELECT AN ENTERPRISE REPORT TAB TO VIEW DETAILS:</span>
+          <div className="bg-card/90 backdrop-blur-md border border-border/80 p-3 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between mb-2.5 px-1">
+              <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                Select Analytics Report ({isSuperAdmin ? "8 Enterprise Reports Available" : "6 Enterprise Reports Available"})
+              </span>
               {filters.search && filters.search.trim() !== "" && (
-                <span className="text-primary font-semibold">
-                  Filtering for employee query: &quot;{filters.search}&quot;
+                <span className="text-xs font-semibold text-primary">
+                  Searching: &quot;{filters.search}&quot;
                 </span>
               )}
-            </p>
+            </div>
 
             <TabsList
-              className={`grid gap-2 bg-transparent p-0 h-auto ${
-                isSuperAdmin
-                  ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
-                  : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
-              }`}
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 bg-transparent p-0 h-auto w-full"
             >
               {/* Report 1 */}
               <TabsTrigger
                 value="enrollments"
-                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
               >
-                <span className="text-[11px] font-extrabold opacity-80">1.</span>
-                <Users className="h-4 w-4 shrink-0" />
-                <span className="truncate">Enrollment</span>
+                <Users className="h-3.5 w-3.5 shrink-0 text-blue-500 data-[state=active]:text-primary-foreground" />
+                <span className="truncate">Enrollments</span>
               </TabsTrigger>
 
               {/* Report 2 */}
               <TabsTrigger
                 value="completions"
-                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
               >
-                <span className="text-[11px] font-extrabold opacity-80">2.</span>
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
-                <span className="truncate">Completion</span>
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500 data-[state=active]:text-primary-foreground" />
+                <span className="truncate">Completions</span>
               </TabsTrigger>
 
               {/* Report 3 */}
               <TabsTrigger
                 value="learner-performance"
-                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
               >
-                <span className="text-[11px] font-extrabold opacity-80">3.</span>
-                <BookOpen className="h-4 w-4 shrink-0" />
+                <BookOpen className="h-3.5 w-3.5 shrink-0 text-indigo-500 data-[state=active]:text-primary-foreground" />
                 <span className="truncate">Learner Perf</span>
               </TabsTrigger>
 
               {/* Report 4 */}
               <TabsTrigger
                 value="assessments"
-                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
               >
-                <span className="text-[11px] font-extrabold opacity-80">4.</span>
-                <Award className="h-4 w-4 shrink-0" />
+                <Award className="h-3.5 w-3.5 shrink-0 text-amber-500 data-[state=active]:text-primary-foreground" />
                 <span className="truncate">Assessments</span>
               </TabsTrigger>
 
               {/* Report 5 */}
               <TabsTrigger
                 value="engagement"
-                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-border/70 bg-card text-foreground hover:bg-accent/80 hover:border-primary/50 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-primary/40 cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
               >
-                <span className="text-[11px] font-extrabold opacity-80">5.</span>
-                <Clock className="h-4 w-4 shrink-0" />
+                <Clock className="h-3.5 w-3.5 shrink-0 text-purple-500 data-[state=active]:text-primary-foreground" />
                 <span className="truncate">Engagement</span>
               </TabsTrigger>
 
               {/* Report 6: Teacher Supervision Analytics */}
               <TabsTrigger
                 value="teacher-supervision"
-                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-purple-500/40 bg-purple-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20 font-bold transition-all duration-150 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:border-purple-600 data-[state=active]:shadow-md cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-purple-500/30 bg-purple-500/5 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 font-semibold transition-all duration-150 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:border-purple-600 data-[state=active]:shadow-md cursor-pointer"
               >
-                <span className="text-[11px] font-black">6.</span>
-                <ShieldCheck className="h-4 w-4 shrink-0 text-purple-600 data-[state=active]:text-white" />
+                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-purple-600 dark:text-purple-400 data-[state=active]:text-white" />
                 <span className="truncate">Teacher Supervision</span>
               </TabsTrigger>
 
@@ -290,22 +282,20 @@ export default function ReportsPage() {
                   {/* Report 7 */}
                   <TabsTrigger
                     value="department-performance"
-                    className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 font-bold transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-500 data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-amber-400 cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 hover:bg-amber-500/20 font-bold transition-all duration-150 data-[state=active]:bg-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-600 data-[state=active]:shadow-md cursor-pointer"
                   >
-                    <span className="text-[11px] font-black">7.</span>
-                    <Building2 className="h-4 w-4 shrink-0" />
-                    <span className="truncate">Dept Performance</span>
+                    <Building2 className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400 data-[state=active]:text-white" />
+                    <span className="truncate">Dept Perf</span>
                   </TabsTrigger>
 
                   {/* Report 8: Executive Organization Overview */}
                   <TabsTrigger
                     value="organization-overview"
-                    className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-amber-500/60 bg-amber-500/20 text-amber-800 dark:text-amber-200 hover:bg-amber-500/30 font-black transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-500 data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-amber-400 cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-amber-500/60 bg-amber-500/20 text-amber-900 dark:text-amber-200 hover:bg-amber-500/30 font-black transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-amber-700 data-[state=active]:text-white data-[state=active]:border-amber-600 data-[state=active]:shadow-md cursor-pointer"
                   >
-                    <span className="text-[11px] font-black">8.</span>
-                    <BarChart3 className="h-4 w-4 shrink-0" />
+                    <BarChart3 className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300 data-[state=active]:text-white" />
                     <span className="truncate">Org Overview</span>
-                    <Crown className="h-3.5 w-3.5 text-amber-500 data-[state=active]:text-white shrink-0" />
+                    <Crown className="h-3 w-3 text-amber-500 data-[state=active]:text-white shrink-0 ml-0.5" />
                   </TabsTrigger>
                 </>
               )}

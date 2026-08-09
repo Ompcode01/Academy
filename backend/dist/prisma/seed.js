@@ -158,7 +158,7 @@ async function main() {
     });
     await prisma.userAccount.upsert({
         where: { employeeId: guestEmp.id },
-        update: {},
+        update: { passwordHash, isActive: true, username: "guest" },
         create: {
             employeeId: guestEmp.id,
             username: "guest",
@@ -170,6 +170,28 @@ async function main() {
         update: {},
         create: { employeeId: guestEmp.id, roleId: guestRole.id },
     });
+    // Seed default Guest Access Grant (Engineering Dept & Global access for default guest)
+    const existingGrant = await prisma.guestAccessGrant.findFirst({
+        where: { userId: guestEmp.id },
+    });
+    if (!existingGrant) {
+        await prisma.guestAccessGrant.create({
+            data: {
+                userId: guestEmp.id,
+                departmentId: eng.id,
+                scope: "DEPARTMENT",
+                grantedById: superadminEmp.id,
+                isActive: true,
+            },
+        });
+        await prisma.guestAccessGrant.create({
+            data: {
+                scope: "GLOBAL",
+                grantedById: superadminEmp.id,
+                isActive: true,
+            },
+        });
+    }
     // 5 Dedicated Learners for testing across different departments
     const dummyLearners = [
         { code: "EMP101", username: "learner1", first: "Aarav", last: "Verma", dept: eng, email: "learner1@company.com" },

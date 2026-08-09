@@ -68,6 +68,7 @@ export default function CoursePreviewPage() {
   const router = useRouter();
   const courseId = params?.id ? Number(params.id) : null;
   const { user } = useAuthStore();
+  const isGuest = user?.role === "GUEST";
 
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<ModuleItem[]>([]);
@@ -91,6 +92,10 @@ export default function CoursePreviewPage() {
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+
+  // Guest restriction modal
+  const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
+  const [guestModalLessonTitle, setGuestModalLessonTitle] = useState<string | null>(null);
 
   // Load course details & learner progress strictly from DB
   const loadCourseAndProgress = async () => {
@@ -180,6 +185,11 @@ export default function CoursePreviewPage() {
 
   // Handle explicit self enrollment
   const handleEnrollNow = async () => {
+    if (isGuest) {
+      setGuestModalLessonTitle(null);
+      setIsGuestModalOpen(true);
+      return;
+    }
     if (!courseId || enrolling) return;
     setEnrolling(true);
     try {
@@ -202,6 +212,11 @@ export default function CoursePreviewPage() {
   };
 
   const handleToggleLessonComplete = async (lessonId: number) => {
+    if (isGuest) {
+      setGuestModalLessonTitle(null);
+      setIsGuestModalOpen(true);
+      return;
+    }
     if (!courseId) return;
     const isCurrentlyCompleted = completedLessonIds.includes(lessonId);
     const newStatus = !isCurrentlyCompleted;
@@ -226,6 +241,11 @@ export default function CoursePreviewPage() {
   };
 
   const handleMarkModuleComplete = async (module: ModuleItem) => {
+    if (isGuest) {
+      setGuestModalLessonTitle(null);
+      setIsGuestModalOpen(true);
+      return;
+    }
     if (!courseId || module.lessons.length === 0) return;
 
     const uncompletedLessons = module.lessons.filter(
@@ -249,6 +269,11 @@ export default function CoursePreviewPage() {
   };
 
   const handleCertificateClick = () => {
+    if (isGuest) {
+      setGuestModalLessonTitle(null);
+      setIsGuestModalOpen(true);
+      return;
+    }
     if (!isCourseFullyCompleted) {
       alert(
         `Certificate Locked (${progressPercent}% Completed) — Please complete 100% of all course sections and lessons to unlock your official certificate.`
@@ -259,6 +284,11 @@ export default function CoursePreviewPage() {
   };
 
   const handleOpenLessonContent = (lesson: LessonItem) => {
+    if (isGuest) {
+      setGuestModalLessonTitle(lesson.title);
+      setIsGuestModalOpen(true);
+      return;
+    }
     if (requiresSelfEnrollment) {
       alert("Self-Enrollment Required — Please click 'Enroll Now' on the course overview page to unlock lessons.");
       return;
@@ -420,11 +450,20 @@ export default function CoursePreviewPage() {
               <div className="pt-2 flex flex-wrap items-center gap-6 text-xs text-slate-300 border-t border-slate-800">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-primary shrink-0" />
-                  <span>Created by <strong className="text-white font-semibold">{creatorName}</strong></span>
+                  <span>
+                    Created by <strong className="text-white font-semibold">{course.creatorInfo?.creatorName || creatorName}</strong>
+                    <span className={`ml-1.5 px-1.5 py-0.5 text-[9px] font-extrabold rounded border uppercase ${
+                      course.creatorInfo?.creatorRole === "SUPER_ADMIN"
+                        ? "bg-red-500/20 text-red-400 border-red-500/30"
+                        : "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                    }`}>
+                      {course.creatorInfo?.creatorRole === "SUPER_ADMIN" ? "Super Admin" : "Admin"}
+                    </span>
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Building2 className="h-4 w-4 text-amber-400 shrink-0" />
-                  <span>Audience: <strong className="text-white font-semibold">{departmentLabel}</strong></span>
+                  <span>Department: <strong className="text-white font-semibold">{course.creatorInfo?.creatorDepartment || departmentLabel}</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-emerald-400 shrink-0" />
@@ -451,7 +490,23 @@ export default function CoursePreviewPage() {
 
               {/* Action Button & Enrolment Logic */}
               <div className="p-5 space-y-4">
-                {isEnrolled ? (
+                {isGuest ? (
+                  <div className="space-y-3 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200">
+                    <div className="flex items-center gap-2 font-bold text-xs">
+                      <Lock className="h-4 w-4 text-amber-600 shrink-0" />
+                      <span>Guest Preview Mode</span>
+                    </div>
+                    <p className="text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">
+                      You are exploring the course curriculum in read-only mode. Video content, quizzes, assignments, and certificates are locked.
+                    </p>
+                    <Button
+                      onClick={() => router.push("/login")}
+                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold h-10 text-xs shadow-md cursor-pointer"
+                    >
+                      Sign In as Learner to Enroll
+                    </Button>
+                  </div>
+                ) : isEnrolled ? (
                   <div className="space-y-3">
                     <Button
                       onClick={() => setViewMode("player")}
@@ -1007,6 +1062,47 @@ export default function CoursePreviewPage() {
           onClose={() => setIsCertModalOpen(false)}
           certificate={(progressData?.certificate as any) || null}
         />
+      )}
+
+      {/* Guest Restriction Notice Modal */}
+      {isGuestModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 max-w-md w-full space-y-4 text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center">
+              <Lock className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Guest Preview Only
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                {guestModalLessonTitle
+                  ? `The activity '${guestModalLessonTitle}' is locked in Guest Preview mode.`
+                  : "Learning content, quizzes, assignments, and certificates are locked in Guest Preview mode."}
+              </p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                To watch full video materials, attempt quizzes, submit assignments, and track progress, please log in with an enrolled learner account.
+              </p>
+            </div>
+            <div className="flex items-center gap-2.5 pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsGuestModalOpen(false)}
+                className="w-1/2 text-xs font-semibold"
+              >
+                Continue Preview
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => router.push("/login")}
+                className="w-1/2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer"
+              >
+                Sign In as Learner
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

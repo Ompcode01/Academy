@@ -32,7 +32,12 @@ exports.getCourses = (0, asyncHandler_1.default)(async (req, res) => {
 // GET /api/courses/:id
 exports.getCourseById = (0, asyncHandler_1.default)(async (req, res) => {
     const id = BigInt(req.params.id);
-    const course = await course_service_1.default.getCourseById(id);
+    const userContext = {
+        role: req.user?.role || "GUEST",
+        employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
+        departmentId: req.user?.departmentId ? BigInt(req.user.departmentId) : undefined,
+    };
+    const course = await course_service_1.default.getCourseById(id, userContext);
     return (0, response_1.successResponse)(res, (0, prismaSerializer_1.serializeBigInt)(course), "Course fetched successfully");
 });
 // POST /api/courses
@@ -194,8 +199,11 @@ exports.createContent = (0, asyncHandler_1.default)(async (req, res) => {
 });
 // POST /api/courses/:id/enroll (Self Enrollment)
 exports.selfEnrollCourse = (0, asyncHandler_1.default)(async (req, res) => {
+    if (req.user?.role === "GUEST") {
+        return (0, response_1.errorResponse)(res, "Guests are not permitted to enroll in courses. Please log in with a learner account.", "FORBIDDEN", 403);
+    }
     const courseId = BigInt(req.params.id);
-    const userId = BigInt(req.user?.userId);
+    const userId = BigInt(req.user?.userId || req.user?.employeeId);
     const enrollment = await course_service_1.default.selfEnrollCourse(userId, courseId);
     return (0, response_1.successResponse)(res, (0, prismaSerializer_1.serializeBigInt)(enrollment), "Successfully enrolled in course");
 });

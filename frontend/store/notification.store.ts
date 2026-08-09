@@ -16,11 +16,13 @@ interface NotificationStore {
   isOpen: boolean;
   isLoading: boolean;
   filter: FilterMode;
+  categoryFilter: string;
 
   // Actions
   togglePanel: () => void;
   closePanel: () => void;
   setFilter: (filter: FilterMode) => void;
+  setCategoryFilter: (category: string) => void;
   fetchNotifications: (limit?: number) => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
   markRead: (id: string) => Promise<void>;
@@ -34,6 +36,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   isOpen: false,
   isLoading: false,
   filter: "all",
+  categoryFilter: "ALL",
 
   togglePanel: () => {
     const wasOpen = get().isOpen;
@@ -51,11 +54,17 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
     get().fetchNotifications();
   },
 
+  setCategoryFilter: (categoryFilter: string) => {
+    set({ categoryFilter });
+    get().fetchNotifications();
+  },
+
   fetchNotifications: async (limit = 30) => {
     try {
       set({ isLoading: true });
       const unreadOnly = get().filter === "unread";
-      const res = await getNotifications(limit, unreadOnly);
+      const category = get().categoryFilter;
+      const res = await getNotifications(limit, unreadOnly, 1, category);
       if (res?.success) {
         set({ notifications: res.data || [] });
       }
@@ -69,11 +78,11 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   fetchUnreadCount: async () => {
     try {
       const res = await getUnreadCount();
-      if (res?.success) {
-        set({ unreadCount: res.data.count });
+      if (res?.success && res.data) {
+        set({ unreadCount: res.data.count || 0 });
       }
-    } catch (err) {
-      console.error("Failed to fetch unread count:", err);
+    } catch {
+      // Ignore background notification polling errors silently
     }
   },
 

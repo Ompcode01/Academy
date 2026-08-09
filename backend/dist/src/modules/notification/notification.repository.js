@@ -7,12 +7,17 @@ const notificationRepository = {
         return prisma.notification.create({
             data: {
                 userId: data.userId,
+                actorId: data.actorId || null,
                 type: data.type,
+                category: data.category || "GENERAL",
+                priority: data.priority || "NORMAL",
                 title: data.title,
                 message: data.message,
                 link: data.link || null,
+                entityType: data.entityType || null,
+                entityId: data.entityId || null,
                 metadata: data.metadata || undefined,
-                ...(data.roleTarget ? { roleTarget: data.roleTarget } : {}),
+                roleTarget: data.roleTarget || null,
             },
         });
     },
@@ -20,12 +25,17 @@ const notificationRepository = {
         return prisma.notification.createMany({
             data: items.map((d) => ({
                 userId: d.userId,
+                actorId: d.actorId || null,
                 type: d.type,
+                category: d.category || "GENERAL",
+                priority: d.priority || "NORMAL",
                 title: d.title,
                 message: d.message,
                 link: d.link || null,
+                entityType: d.entityType || null,
+                entityId: d.entityId || null,
                 metadata: d.metadata || undefined,
-                ...(d.roleTarget ? { roleTarget: d.roleTarget } : {}),
+                roleTarget: d.roleTarget || null,
             })),
         });
     },
@@ -35,11 +45,12 @@ const notificationRepository = {
         });
     },
     async getForUser(userId, options = {}) {
-        const { limit = 20, page = 1, unreadOnly = false } = options;
+        const { limit = 20, page = 1, unreadOnly = false, category } = options;
         const skip = (page - 1) * limit;
         const where = {
             userId,
             ...(unreadOnly ? { isRead: false } : {}),
+            ...(category && category !== "ALL" ? { category } : {}),
         };
         try {
             const [notifications, total] = await Promise.all([

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, GraduationCap, Calendar, Layout, Users, TrendingUp, Settings, ShieldCheck } from "lucide-react";

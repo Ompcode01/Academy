@@ -10,6 +10,10 @@ router.use(auth_middleware_1.authenticate);
 router.get("/", notification_controller_1.getNotifications);
 // GET /api/notifications/unread-count
 router.get("/unread-count", notification_controller_1.getUnreadCount);
+// POST /api/notifications/announcements
+router.post("/announcements", notification_controller_1.createAnnouncement);
+// POST /api/notifications/escalate
+router.post("/escalate", notification_controller_1.createEscalation);
 // PATCH /api/notifications/read-all  (must come before /:id to avoid route collision)
 router.patch("/read-all", notification_controller_1.markAllAsRead);
 // PATCH /api/notifications/:id/read

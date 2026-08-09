@@ -1,11 +1,28 @@
 import prisma from "../../config/prisma";
 import { serialize } from "../../utils/serializer";
+import guestGrantService from "../../services/guestGrant.service";
 
 export class EventService {
   async getAllEvents(userContext?: { role?: string; employeeId?: bigint | null; departmentId?: bigint | null }) {
     let whereClause: any = {};
 
-    if (!userContext || userContext.role !== "SUPER_ADMIN") {
+    if (userContext?.role === "GUEST") {
+      const empId = userContext.employeeId ? BigInt(userContext.employeeId) : undefined;
+      const { isGlobal, departmentIds } = await guestGrantService.getGuestPermittedDepartmentIds(empId);
+
+      if (isGlobal) {
+        whereClause = {};
+      } else if (departmentIds.length > 0) {
+        whereClause = {
+          OR: [
+            { departmentId: null },
+            { departmentId: { in: departmentIds } },
+          ],
+        };
+      } else {
+        whereClause = { departmentId: null };
+      }
+    } else if (!userContext || userContext.role !== "SUPER_ADMIN") {
       const deptId = userContext?.departmentId;
       const empId = userContext?.employeeId;
 
@@ -67,6 +84,23 @@ export class EventService {
       },
     });
 
+    // Dispatch Notifications to target audience
+    try {
+      const notificationService = (await import("../notification/notification.service")).default;
+      await notificationService.notifyCalendarEvent({
+        eventId: created.id,
+        title: created.title,
+        eventDate: created.eventDate,
+        eventType: created.eventType,
+        courseId: created.courseId,
+        departmentId: created.departmentId,
+        action: "CREATED",
+        actorId: data.creatorId ? BigInt(data.creatorId) : undefined,
+      });
+    } catch (err) {
+      console.error("Failed to trigger calendar event creation notification:", err);
+    }
+
     return serialize(created);
   }
 
@@ -103,6 +137,21 @@ export class EventService {
       },
     });
 
+    try {
+      const notificationService = (await import("../notification/notification.service")).default;
+      await notificationService.notifyCalendarEvent({
+        eventId: updated.id,
+        title: updated.title,
+        eventDate: updated.eventDate,
+        eventType: updated.eventType,
+        courseId: updated.courseId,
+        departmentId: updated.departmentId,
+        action: "UPDATED",
+      });
+    } catch (err) {
+      console.error("Failed to trigger calendar event update notification:", err);
+    }
+
     return serialize(updated);
   }
 
@@ -119,6 +168,21 @@ export class EventService {
         type: "course",
       },
     });
+
+    try {
+      const notificationService = (await import("../notification/notification.service")).default;
+      await notificationService.notifyCalendarEvent({
+        eventId: deleted.id,
+        title: deleted.title,
+        eventDate: deleted.eventDate,
+        eventType: deleted.eventType,
+        courseId: deleted.courseId,
+        departmentId: deleted.departmentId,
+        action: "CANCELLED",
+      });
+    } catch (err) {
+      console.error("Failed to trigger calendar event deletion notification:", err);
+    }
 
     return serialize(deleted);
   }

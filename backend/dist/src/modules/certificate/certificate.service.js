@@ -108,6 +108,73 @@ class CertificateService {
         });
         return (0, prismaSerializer_1.serializeBigInt)(certificates);
     }
+    async getCertificatesForUser(userContext) {
+        const { role, employeeId } = userContext;
+        if (role === "GUEST") {
+            return [];
+        }
+        let whereClause = {};
+        if (role === "SUPER_ADMIN" || role === "ADMIN") {
+            // Admin and Super Admin show all learner certificates
+            whereClause = {};
+        }
+        else {
+            // Learner and Teacher show only their own certificates
+            if (!employeeId)
+                return [];
+            whereClause = { userId: employeeId };
+        }
+        const rawCerts = await prisma_1.default.issuedCertificate.findMany({
+            where: whereClause,
+            orderBy: { issuedAt: "desc" },
+        });
+        const userIds = Array.from(new Set(rawCerts.map((c) => c.userId)));
+        const courseIds = Array.from(new Set(rawCerts.map((c) => c.courseId)));
+        const [employees, courses] = await Promise.all([
+            prisma_1.default.employee.findMany({
+                where: { id: { in: userIds } },
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    employeeCode: true,
+                    officialEmail: true,
+                    department: { select: { id: true, departmentName: true } },
+                },
+            }),
+            prisma_1.default.course.findMany({
+                where: { id: { in: courseIds } },
+                select: {
+                    id: true,
+                    title: true,
+                    department: { select: { id: true, departmentName: true } },
+                },
+            }),
+        ]);
+        const empMap = new Map(employees.map((e) => [e.id.toString(), e]));
+        const courseMap = new Map(courses.map((c) => [c.id.toString(), c]));
+        const certificates = rawCerts.map((cert) => {
+            const emp = empMap.get(cert.userId.toString());
+            const crs = courseMap.get(cert.courseId.toString());
+            return {
+                ...cert,
+                user: emp || {
+                    id: cert.userId,
+                    firstName: cert.recipientName.split(" ")[0] || "Learner",
+                    lastName: cert.recipientName.split(" ").slice(1).join(" ") || "",
+                    employeeCode: "EMP-NA",
+                    officialEmail: "",
+                    department: null,
+                },
+                course: crs || {
+                    id: cert.courseId,
+                    title: cert.courseTitle,
+                    department: null,
+                },
+            };
+        });
+        return (0, prismaSerializer_1.serializeBigInt)(certificates);
+    }
     async getAllCertificates() {
         const certificates = await prisma_1.default.issuedCertificate.findMany({
             orderBy: { issuedAt: "desc" },

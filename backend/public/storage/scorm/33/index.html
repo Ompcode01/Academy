@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SCORM 1.2 Test Module</title>
+  <script>
+    function finishScorm() {
+      if (window.API) {
+        window.API.LMSInitialize("");
+        window.API.LMSSetValue("cmi.core.lesson_status", "completed");
+        window.API.LMSSetValue("cmi.core.score.raw", "95");
+        window.API.LMSCommit("");
+        window.API.LMSFinish("");
+      }
+    }
+  </script>
+</head>
+<body onload="finishScorm()">
+  <h1>SCORM 1.2 Interactive Learning Module</h1>
+  <p>Test content loaded successfully!</p>
+</body>
+</html>

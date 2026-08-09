@@ -131,16 +131,19 @@ export class ProgressService {
       },
     });
 
-    // 4. Auto Issue Certificate if completed
+    // 4. Auto Issue Certificate and Create Skill Cloud Entry if completed
     let issuedCert = null;
+    let autoSkill = null;
     if (isNowCompleted) {
       issuedCert = await this.checkAndIssueCertificate(userId, courseId);
+      autoSkill = await this.checkAndCreateSkillCloudEntry(userId, courseId);
     }
 
     return serialize({
       enrollment,
       calculatedProgress,
       issuedCert,
+      autoSkill,
     });
   }
 
@@ -223,6 +226,81 @@ export class ProgressService {
     });
 
     return serialize(createdCert);
+  }
+
+  async checkAndCreateSkillCloudEntry(userId: bigint, courseId: bigint) {
+    try {
+      const course = await prisma.course.findUnique({
+        where: { id: courseId },
+        include: { category: true },
+      });
+      if (!course) return null;
+
+      const skillName = course.title;
+      const categoryName = course.category?.name || "Course Skill";
+
+      // Check if user already has a UserSkill entry for this course skill
+      const existingSkill = await prisma.userSkill.findFirst({
+        where: {
+          userId,
+          skillName,
+        },
+      });
+
+      if (existingSkill) {
+        return serialize(existingSkill);
+      }
+
+      // Determine Proficiency Level & Star Rating based on Course Level
+      const courseLevelUpper = (course.level || "BEGINNER").toUpperCase();
+      let proficiencyLevel = "Beginner";
+      let rating = 2; // Default 2 stars for beginner
+
+      if (courseLevelUpper.includes("INTERMEDIATE") || courseLevelUpper.includes("MEDIUM")) {
+        proficiencyLevel = "Intermediate";
+        rating = 3;
+      } else if (courseLevelUpper.includes("ADVANCED")) {
+        proficiencyLevel = "Advanced";
+        rating = 4;
+      } else if (courseLevelUpper.includes("EXPERT") || courseLevelUpper.includes("MASTER")) {
+        proficiencyLevel = "Expert";
+        rating = 5;
+      } else {
+        proficiencyLevel = "Beginner";
+        rating = 2;
+      }
+
+      // Create PENDING UserSkill record for Admin / SA Approval
+      const userSkill = await prisma.userSkill.create({
+        data: {
+          userId,
+          skillName,
+          category: categoryName,
+          skillType: "Course Completion Skill",
+          proficiencyLevel,
+          rating,
+          yearsOfExp: 1.0,
+          description: `Auto-submitted upon 100% course completion of "${course.title}". Course Level: ${course.level || "Beginner"}.`,
+          status: "PENDING",
+        },
+      });
+
+      // Notify Admin and Super Admin that skill approval is required
+      try {
+        await notificationService.notifySkillSubmitted({
+          id: userSkill.id,
+          skillName: userSkill.skillName,
+          userId,
+        });
+      } catch (err) {
+        console.error("Failed to send skill notification:", err);
+      }
+
+      return serialize(userSkill);
+    } catch (err) {
+      console.error("Failed to auto-create skill cloud entry on completion:", err);
+      return null;
+    }
   }
 
   // Admin Progress Reports & Analytics
@@ -318,6 +396,27 @@ export class ProgressService {
         attemptNumber: attemptCount + 1,
       },
     });
+
+    // Notify assigned teachers of new assignment submission
+    try {
+      const emp = await prisma.employee.findUnique({ where: { id: userId }, select: { firstName: true, lastName: true } });
+      const course = await prisma.course.findUnique({ where: { id: courseId }, select: { title: true } });
+      let contentTitle = "Assignment Task";
+      if (contentId) {
+        const cnt = await prisma.learningContent.findUnique({ where: { id: contentId }, select: { title: true } });
+        if (cnt) contentTitle = cnt.title;
+      }
+      await notificationService.notifySubmissionCreated({
+        learnerId: userId,
+        learnerName: emp ? `${emp.firstName} ${emp.lastName}` : "Learner",
+        courseId,
+        courseTitle: course?.title || "Course",
+        contentTitle,
+        submissionType: "ASSIGNMENT",
+      });
+    } catch (err) {
+      console.error("Failed to trigger assignment submission notification:", err);
+    }
 
     return serialize(submission);
   }

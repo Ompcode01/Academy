@@ -6,6 +6,8 @@ import {
   markAsRead,
   markAllAsRead,
   deleteNotification,
+  createAnnouncement,
+  createEscalation,
 } from "../modules/notification/notification.controller";
 
 const router = Router();
@@ -18,6 +20,12 @@ router.get("/", getNotifications);
 
 // GET /api/notifications/unread-count
 router.get("/unread-count", getUnreadCount);
+
+// POST /api/notifications/announcements
+router.post("/announcements", createAnnouncement);
+
+// POST /api/notifications/escalate
+router.post("/escalate", createEscalation);
 
 // PATCH /api/notifications/read-all  (must come before /:id to avoid route collision)
 router.patch("/read-all", markAllAsRead);

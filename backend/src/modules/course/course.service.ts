@@ -2,6 +2,7 @@ import courseRepository from "./course.repository";
 import prisma from "../../config/prisma";
 import * as XLSX from "xlsx";
 import notificationService from "../notification/notification.service";
+import guestGrantService from "../../services/guestGrant.service";
 
 interface CourseFilters {
   search?: string;
@@ -21,8 +22,38 @@ interface UserContext {
 class CourseService {
   async getAllCourses(filters: CourseFilters = {}, userContext?: UserContext) {
     // Build role-scoped where clause
-    const scopeWhere = this.buildScopeFilter(userContext);
-    return courseRepository.findAll(filters, scopeWhere);
+    const scopeWhere = await this.buildScopeFilter(userContext);
+    const result = await courseRepository.findAll(filters, scopeWhere);
+
+    // Enrich courses with creatorInfo for Guest/Learner/Admin UI
+    const enrichedCourses = result.courses.map((course: any) => {
+      const creatorRoles = course.creator?.assignedRoles?.map((r: any) => r.role?.roleCode) || [];
+      const creatorRole = creatorRoles.includes("SUPER_ADMIN")
+        ? "SUPER_ADMIN"
+        : creatorRoles.includes("ADMIN")
+        ? "ADMIN"
+        : "TEACHER";
+
+      const creatorName = course.creator
+        ? `${course.creator.firstName} ${course.creator.lastName}`
+        : "System Administrator";
+
+      const creatorDepartment = course.department?.departmentName || course.creator?.department?.departmentName || "Global Organization";
+
+      return {
+        ...course,
+        creatorInfo: {
+          creatorRole,
+          creatorName,
+          creatorDepartment,
+        },
+      };
+    });
+
+    return {
+      ...result,
+      courses: enrichedCourses,
+    };
   }
 
   /**
@@ -31,25 +62,12 @@ class CourseService {
    * - ADMIN: courses in their department OR created by SUPER_ADMIN / ADMIN OR global courses OR created by themselves
    * - TEACHER: courses in their department OR created by SUPER_ADMIN / ADMIN OR global courses OR created by themselves
    * - LEARNER: PUBLISHED courses in their department OR created by SUPER_ADMIN / ADMIN OR global published courses
-   * - GUEST: only PUBLISHED courses
+   * - GUEST: only PUBLISHED courses permitted by GuestAccessGrant
    */
-  private buildScopeFilter(userContext?: UserContext): any {
+  private async buildScopeFilter(userContext?: UserContext): Promise<any> {
     if (!userContext) return {};
 
     const { role, employeeId, departmentId } = userContext;
-
-    const superAdminOrAdminCourseCondition = {
-      creator: {
-        assignedRoles: {
-          some: {
-            role: {
-              roleCode: { in: ["SUPER_ADMIN", "ADMIN"] },
-            },
-            isActive: true,
-          },
-        },
-      },
-    };
 
     switch (role) {
       case "SUPER_ADMIN":
@@ -83,8 +101,23 @@ class CourseService {
           ],
         };
 
-      case "GUEST":
-        return { status: "PUBLISHED" };
+      case "GUEST": {
+        const { isGlobal, departmentIds } = await guestGrantService.getGuestPermittedDepartmentIds(employeeId);
+        if (isGlobal) {
+          return { status: "PUBLISHED" };
+        }
+        if (departmentIds.length > 0) {
+          return {
+            status: "PUBLISHED",
+            OR: [
+              { departmentId: null },
+              { departmentId: { in: departmentIds } },
+            ],
+          };
+        }
+        // No grants active -> 0 courses allowed
+        return { status: "PUBLISHED", id: BigInt(-1) };
+      }
 
       default:
         return { status: "PUBLISHED" };
@@ -98,14 +131,10 @@ class CourseService {
     }
 
     // Determine creator role & info
-    const creatorRoles = await prisma.userRoleAssignment.findMany({
-      where: { userId: course.creatorId, isActive: true },
-      include: { role: true },
-    });
-    const roleCodes = creatorRoles.map((r) => r.role.roleCode);
-    const creatorRole = roleCodes.includes("SUPER_ADMIN")
+    const creatorRoles = (course as any).creator?.assignedRoles?.map((r: any) => r.role?.roleCode) || [];
+    const creatorRole = creatorRoles.includes("SUPER_ADMIN")
       ? "SUPER_ADMIN"
-      : roleCodes.includes("ADMIN")
+      : creatorRoles.includes("ADMIN")
       ? "ADMIN"
       : "TEACHER";
 
@@ -115,7 +144,7 @@ class CourseService {
 
     const creatorDepartment = (course as any).department
       ? (course as any).department.departmentName
-      : "Global Organization";
+      : (course as any).creator?.department?.departmentName || "Global Organization";
 
     const creatorInfo = {
       creatorRole,
@@ -123,10 +152,20 @@ class CourseService {
       creatorDepartment,
     };
 
-    // If user is GUEST, enforce scope & sanitize sensitive content URLs
+    // If user is GUEST, enforce scope & sanitize sensitive content URLs & assessment payloads
     if (userContext?.role === "GUEST") {
       if (course.status !== "PUBLISHED") {
         throw new Error("Course is not available in Guest Preview mode.");
+      }
+
+      // Check Guest grant permission
+      const { isGlobal, departmentIds } = await guestGrantService.getGuestPermittedDepartmentIds(userContext.employeeId);
+      if (!isGlobal) {
+        const courseDeptId = course.departmentId;
+        const isPermittedDept = courseDeptId ? departmentIds.some((d) => d.toString() === courseDeptId.toString()) : true;
+        if (!isPermittedDept) {
+          throw new Error("Access Denied: Guest access permission not granted for this department's courses.");
+        }
       }
 
       // Sanitize learning content items to prevent payload exposure
@@ -135,6 +174,8 @@ class CourseService {
         contents: (sec.contents || []).map((cnt: any) => ({
           ...cnt,
           contentUrl: null,
+          quizConfigJson: null,
+          assignmentConfigJson: null,
           metaData: null,
           fileSize: null,
           isLockedForGuest: true,
@@ -145,6 +186,7 @@ class CourseService {
         ...course,
         sections: sanitizedSections,
         creatorInfo,
+        isGuestPreview: true,
       };
     }
 
@@ -322,6 +364,7 @@ class CourseService {
       for (const uIdStr of uniqueUserIds) {
         try {
           const uId = BigInt(uIdStr);
+          const isNew = !(await prisma.enrollment.findUnique({ where: { userId_courseId: { userId: uId, courseId: course.id } } }));
           await prisma.enrollment.upsert({
             where: {
               userId_courseId: {
@@ -337,6 +380,16 @@ class CourseService {
             },
             update: {},
           });
+
+          if (isNew) {
+            notificationService.notifyEnrollment({
+              userId: uId,
+              courseId: course.id,
+              courseTitle: course.title,
+              enrolledBy: userContext?.username || "Administrator",
+            });
+            notificationService.syncLearnerCalendarEventsOnEnrollment(uId, course.id);
+          }
         } catch (e) {
           console.error("Batch enrollment error for user:", uIdStr, e);
         }

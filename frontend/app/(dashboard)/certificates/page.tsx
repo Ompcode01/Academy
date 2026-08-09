@@ -19,8 +19,13 @@ import {
 } from "@/services/api/certificate.service";
 import CertificatePreview from "@/components/certificates/CertificatePreview";
 import LearnerCertificateModal from "@/components/certificates/LearnerCertificateModal";
+import { useAuthStore } from "@/store/auth.store";
+import { ROLES } from "@/lib/rbac";
 
 export default function CertificatesPage() {
+  const { user } = useAuthStore();
+  const userRole = user?.role || ROLES.GUEST;
+
   const [certificates, setCertificates] = useState<IssuedCertificateData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,6 +80,26 @@ export default function CertificatesPage() {
     );
   });
 
+  const getPageTitle = () => {
+    if (userRole === ROLES.SUPER_ADMIN || userRole === ROLES.ADMIN) {
+      return "Certificate Management & Verifications";
+    }
+    if (userRole === ROLES.GUEST) {
+      return "Guest Preview — Certificates";
+    }
+    return "My Earned Certificates";
+  };
+
+  const getPageSubtitle = () => {
+    if (userRole === ROLES.SUPER_ADMIN || userRole === ROLES.ADMIN) {
+      return "Audit and verify all course completion certificates issued to learners.";
+    }
+    if (userRole === ROLES.GUEST) {
+      return "Guest Preview Mode: Guest accounts do not complete courses or earn certificates.";
+    }
+    return "View, download, and print your official course completion certificates.";
+  };
+
   return (
     <div className="p-6 space-y-6 pb-12">
       {/* Header Bar */}
@@ -82,10 +107,10 @@ export default function CertificatesPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
             <Award className="h-6 w-6 text-amber-500" />
-            Certificate Management &amp; Verifications
+            {getPageTitle()}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Manage global certificate templates, audit issued credentials, and verify certificate codes.
+            {getPageSubtitle()}
           </p>
         </div>
 
@@ -97,89 +122,6 @@ export default function CertificatesPage() {
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </button>
-        </div>
-      </div>
-
-      {/* Top Banner & Verification Form */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Verification Card */}
-        <div className="lg:col-span-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
-            <ShieldCheck className="h-5 w-5 text-emerald-500" />
-            Verify Certificate Credential
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-            Enter a unique certificate serial number (e.g. <code>HARB-2026-X892A</code>) to verify authenticity.
-          </p>
-
-          <form onSubmit={handleVerify} className="flex gap-2">
-            <input
-              type="text"
-              value={verifyInput}
-              onChange={(e) => setVerifyInput(e.target.value)}
-              placeholder="Enter Certificate Code..."
-              className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:outline-none dark:border-slate-800 dark:bg-slate-800 dark:text-white"
-            />
-            <button
-              type="submit"
-              className="rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow"
-            >
-              Verify
-            </button>
-          </form>
-
-          {verifyError && (
-            <div className="mt-3 rounded-lg bg-rose-50 p-3 text-xs text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
-              {verifyError}
-            </div>
-          )}
-
-          {verifyResult && (
-            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-800/40 dark:bg-emerald-950/30 text-xs space-y-2">
-              <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-300 font-bold">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Authentic Credential
-                </span>
-                <span className="font-mono">{verifyResult.certificateCode}</span>
-              </div>
-              <p><b>Recipient:</b> {verifyResult.recipientName}</p>
-              <p><b>Course:</b> {verifyResult.courseTitle}</p>
-              <p><b>Issued On:</b> {new Date(verifyResult.issuedAt).toLocaleDateString()}</p>
-              <button
-                onClick={() => {
-                  setSelectedCert(verifyResult);
-                  setIsModalOpen(true);
-                }}
-                className="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
-              >
-                <Eye className="h-3.5 w-3.5" /> View Certificate Preview
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Global Statistics Card */}
-        <div className="lg:col-span-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950 p-6 text-white shadow-xl flex flex-col justify-between">
-          <div>
-            <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs font-bold text-amber-300 border border-amber-500/30">
-              Academy Credential System
-            </span>
-            <h2 className="text-xl font-bold mt-3">Verifiable Certificate Management</h2>
-            <p className="text-xs text-slate-300 mt-1 max-w-lg">
-              Certificates are automatically styled using the <b>Harbinger Group</b> double gold border design template and dynamically issued upon course completion.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mt-6 border-t border-slate-700/60 pt-4 text-xs">
-            <div>
-              <span className="text-slate-400 block text-[11px]">Total Issued Certificates</span>
-              <span className="text-2xl font-extrabold text-white mt-0.5 block">{certificates.length}</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[11px]">Dynamic Extraction</span>
-              <span className="text-2xl font-extrabold text-amber-400 mt-0.5 block">Active</span>
-            </div>
-          </div>
         </div>
       </div>
 

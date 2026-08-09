@@ -377,6 +377,272 @@ const notificationService = {
             console.error("Failed to send project rejection notification:", err);
         }
     },
+    /**
+     * Account Events: Created, activated/deactivated, role changed, security/password events.
+     */
+    async notifyAccountEvent(data) {
+        try {
+            await notification_repository_1.default.create({
+                userId: data.userId,
+                actorId: data.actorId,
+                type: data.eventType,
+                category: data.eventType.includes("PASSWORD") || data.eventType.includes("SECURITY") ? "SECURITY" : "ACCOUNT",
+                priority: data.priority || "NORMAL",
+                title: data.title,
+                message: data.message,
+                link: "/settings",
+                entityType: "USER",
+                entityId: data.userId,
+                roleTarget: "LEARNER",
+            });
+        }
+        catch (err) {
+            console.error("Failed to send account event notification:", err);
+        }
+    },
+    /**
+     * Department Events: Created, updated, employee transferred.
+     */
+    async notifyDepartmentEvent(data) {
+        try {
+            const admins = await this._getAdminEmployeeIds(data.departmentId);
+            if (admins.length === 0)
+                return;
+            const notifications = admins.map((adminId) => ({
+                userId: adminId,
+                actorId: data.actorId,
+                type: "DEPARTMENT_EVENT",
+                category: "DEPARTMENT",
+                priority: "NORMAL",
+                title: data.title,
+                message: data.message,
+                link: "/organization",
+                entityType: "DEPARTMENT",
+                entityId: data.departmentId,
+                roleTarget: "ADMIN",
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to send department event notification:", err);
+        }
+    },
+    /**
+     * Learner submits a quiz or assignment task -> Notify assigned Course Teachers.
+     */
+    async notifySubmissionCreated(data) {
+        try {
+            // Find assigned teachers for this course
+            const courseTeachers = await prisma.courseTeacher.findMany({
+                where: { courseId: data.courseId },
+                select: { teacherId: true },
+            });
+            let recipientTeacherIds = courseTeachers.map((ct) => ct.teacherId);
+            if (recipientTeacherIds.length === 0) {
+                // Fallback to course creator
+                const course = await prisma.course.findUnique({
+                    where: { id: data.courseId },
+                    select: { creatorId: true },
+                });
+                if (course?.creatorId)
+                    recipientTeacherIds = [course.creatorId];
+            }
+            if (recipientTeacherIds.length === 0)
+                return;
+            const notifications = recipientTeacherIds.map((tId) => ({
+                userId: tId,
+                actorId: data.learnerId,
+                type: "SUBMISSION_RECEIVED",
+                category: "EVALUATION",
+                priority: "NORMAL",
+                title: `New ${data.submissionType} Submission`,
+                message: `Learner ${data.learnerName} submitted "${data.contentTitle}" in course '${data.courseTitle}'. Pending evaluation.`,
+                link: `/reports`,
+                entityType: data.submissionType,
+                entityId: data.courseId,
+                roleTarget: "TEACHER",
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to send submission received notification to teacher:", err);
+        }
+    },
+    /**
+     * Targeted Announcements (SA -> LMS wide, Admin -> Dept/Course, Teacher -> Assigned Course Enrolled Learners)
+     */
+    async notifyAnnouncement(data) {
+        try {
+            let recipientIds = [];
+            if (data.courseId) {
+                // Broadcast to enrolled learners of this course
+                const enrollments = await prisma.enrollment.findMany({
+                    where: { courseId: data.courseId },
+                    select: { userId: true },
+                });
+                recipientIds = enrollments.map((e) => e.userId);
+            }
+            else if (data.departmentId) {
+                // Broadcast to department employees
+                const employees = await prisma.employee.findMany({
+                    where: { departmentId: data.departmentId },
+                    select: { id: true },
+                });
+                recipientIds = employees.map((e) => e.id);
+            }
+            else if (data.actorRole === "SUPER_ADMIN") {
+                // LMS-wide role broadcast
+                const whereClause = {};
+                if (data.targetRole && data.targetRole !== "ALL") {
+                    whereClause.assignedRoles = {
+                        some: { role: { roleCode: data.targetRole }, isActive: true },
+                    };
+                }
+                const employees = await prisma.employee.findMany({
+                    where: whereClause,
+                    select: { id: true },
+                });
+                recipientIds = employees.map((e) => e.id);
+            }
+            // Filter out actor
+            recipientIds = recipientIds.filter((id) => id !== data.actorId);
+            if (recipientIds.length === 0)
+                return;
+            const notifications = recipientIds.map((rId) => ({
+                userId: rId,
+                actorId: data.actorId,
+                type: "ANNOUNCEMENT",
+                category: "ANNOUNCEMENT",
+                priority: data.priority || "NORMAL",
+                title: data.title,
+                message: data.message,
+                link: data.courseId ? `/courses/${data.courseId}/preview` : "/dashboard",
+                entityType: data.courseId ? "COURSE" : "ANNOUNCEMENT",
+                entityId: data.courseId || undefined,
+                roleTarget: data.targetRole || "LEARNER",
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to broadcast announcement notification:", err);
+        }
+    },
+    /**
+     * Issue Escalations / Complaints: Notify SA and Admin, NEVER notify accused teacher.
+     */
+    async notifyEscalation(data) {
+        try {
+            const saAndAdmins = await this._getAdminEmployeeIds();
+            // Explicit Rule 7: Complaints against a teacher MUST NOT notify that teacher
+            const recipientIds = saAndAdmins.filter((id) => id !== data.accusedTeacherId && id !== data.actorId);
+            if (recipientIds.length === 0)
+                return;
+            const notifications = recipientIds.map((adminId) => ({
+                userId: adminId,
+                actorId: data.actorId,
+                type: "ESCALATION",
+                category: "ESCALATION",
+                priority: data.priority || "HIGH",
+                title: `Escalation: ${data.title}`,
+                message: data.message,
+                link: "/admin/audit-logs",
+                entityType: "ESCALATION",
+                entityId: data.courseId || undefined,
+                roleTarget: "ADMIN",
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to send escalation notification:", err);
+        }
+    },
+    /**
+     * Calendar Event Notifications: Audience matching logic.
+     */
+    async notifyCalendarEvent(data) {
+        try {
+            let recipientIds = [];
+            if (data.eventType === "course" && data.courseId) {
+                // Only enrolled learners & assigned teachers
+                const enrollments = await prisma.enrollment.findMany({
+                    where: { courseId: data.courseId },
+                    select: { userId: true },
+                });
+                const teachers = await prisma.courseTeacher.findMany({
+                    where: { courseId: data.courseId },
+                    select: { teacherId: true },
+                });
+                recipientIds = [
+                    ...enrollments.map((e) => e.userId),
+                    ...teachers.map((t) => t.teacherId),
+                ];
+            }
+            else if (data.eventType === "department" && data.departmentId) {
+                const employees = await prisma.employee.findMany({
+                    where: { departmentId: data.departmentId },
+                    select: { id: true },
+                });
+                recipientIds = employees.map((e) => e.id);
+            }
+            else {
+                // Site / Everyone
+                const employees = await prisma.employee.findMany({ select: { id: true } });
+                recipientIds = employees.map((e) => e.id);
+            }
+            recipientIds = [...new Set(recipientIds)].filter((id) => id !== data.actorId);
+            if (recipientIds.length === 0)
+                return;
+            const actionText = data.action === "CREATED" ? "New Event Added" : `Calendar Event ${data.action}`;
+            const dateStr = data.eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+            const notifications = recipientIds.map((rId) => ({
+                userId: rId,
+                actorId: data.actorId,
+                type: `EVENT_${data.action}`,
+                category: "EVENT",
+                priority: "NORMAL",
+                title: `${actionText}: ${data.title}`,
+                message: `Event "${data.title}" is scheduled for ${dateStr}. Click to view calendar.`,
+                link: "/events",
+                entityType: "EVENT",
+                entityId: data.eventId,
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to send calendar event notification:", err);
+        }
+    },
+    /**
+     * Auto-sync active course events when a learner enrolls in a course.
+     */
+    async syncLearnerCalendarEventsOnEnrollment(userId, courseId) {
+        try {
+            const activeCourseEvents = await prisma.event.findMany({
+                where: {
+                    courseId,
+                    eventDate: { gte: new Date() },
+                },
+            });
+            if (activeCourseEvents.length === 0)
+                return;
+            const notifications = activeCourseEvents.map((evt) => ({
+                userId,
+                type: "EVENT_ENROLLED_SYNC",
+                category: "EVENT",
+                priority: "NORMAL",
+                title: `Upcoming Course Event: ${evt.title}`,
+                message: `You have an upcoming event for your course: "${evt.title}" on ${evt.eventDate.toLocaleDateString()}.`,
+                link: "/events",
+                entityType: "EVENT",
+                entityId: evt.id,
+                roleTarget: "LEARNER",
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to sync calendar events on enrollment:", err);
+        }
+    },
     // ─── INTERNAL HELPERS ──────────────────────────────────
     /**
      * Get employee IDs for all SUPER_ADMIN users AND ADMIN users belonging to departmentId.

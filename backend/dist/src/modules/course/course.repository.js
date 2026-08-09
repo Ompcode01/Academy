@@ -48,6 +48,18 @@ class CourseRepository {
                             firstName: true,
                             lastName: true,
                             employeeCode: true,
+                            officialEmail: true,
+                            department: {
+                                select: {
+                                    id: true,
+                                    departmentCode: true,
+                                    departmentName: true,
+                                },
+                            },
+                            assignedRoles: {
+                                where: { isActive: true },
+                                include: { role: true },
+                            },
                         },
                     },
                     sections: {
@@ -88,6 +100,18 @@ class CourseRepository {
                         firstName: true,
                         lastName: true,
                         employeeCode: true,
+                        officialEmail: true,
+                        department: {
+                            select: {
+                                id: true,
+                                departmentCode: true,
+                                departmentName: true,
+                            },
+                        },
+                        assignedRoles: {
+                            where: { isActive: true },
+                            include: { role: true },
+                        },
                     },
                 },
                 sections: {

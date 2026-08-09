@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteNotification = exports.markAllAsRead = exports.markAsRead = exports.getUnreadCount = exports.getNotifications = void 0;
+exports.createEscalation = exports.createAnnouncement = exports.deleteNotification = exports.markAllAsRead = exports.markAsRead = exports.getUnreadCount = exports.getNotifications = void 0;
 const notification_service_1 = __importDefault(require("./notification.service"));
 const prismaSerializer_1 = require("../../utils/prismaSerializer");
 function extractUserId(req) {
@@ -20,7 +20,7 @@ function extractUserId(req) {
 }
 /**
  * GET /api/notifications
- * Query: ?limit=20&page=1&unreadOnly=true
+ * Query: ?limit=20&page=1&unreadOnly=true&category=COURSE
  */
 const getNotifications = async (req, res) => {
     try {
@@ -28,10 +28,12 @@ const getNotifications = async (req, res) => {
         const limit = req.query.limit ? Number(req.query.limit) : 20;
         const page = req.query.page ? Number(req.query.page) : 1;
         const unreadOnly = req.query.unreadOnly === "true";
+        const category = req.query.category ? String(req.query.category) : undefined;
         const { notifications, total } = await notification_service_1.default.getForUser(userId, {
             limit,
             page,
             unreadOnly,
+            category,
         });
         res.json({
             success: true,
@@ -125,3 +127,58 @@ const deleteNotification = async (req, res) => {
     }
 };
 exports.deleteNotification = deleteNotification;
+/**
+ * POST /api/notifications/announcements
+ */
+const createAnnouncement = async (req, res) => {
+    try {
+        const actorId = extractUserId(req);
+        const actorRole = req.user?.role || "LEARNER";
+        const { title, message, targetRole, courseId, departmentId, priority } = req.body;
+        if (!title || !message) {
+            return res.status(400).json({ success: false, message: "Title and message are required" });
+        }
+        await notification_service_1.default.notifyAnnouncement({
+            actorId,
+            actorRole,
+            title,
+            message,
+            targetRole,
+            courseId: courseId ? BigInt(courseId) : undefined,
+            departmentId: departmentId ? BigInt(departmentId) : undefined,
+            priority: priority || "NORMAL",
+        });
+        res.json({ success: true, message: "Announcement broadcasted successfully" });
+    }
+    catch (error) {
+        console.error("Error creating announcement:", error);
+        res.status(500).json({ success: false, message: error.message || "Failed to broadcast announcement" });
+    }
+};
+exports.createAnnouncement = createAnnouncement;
+/**
+ * POST /api/notifications/escalate
+ */
+const createEscalation = async (req, res) => {
+    try {
+        const actorId = extractUserId(req);
+        const { title, message, courseId, accusedTeacherId, priority } = req.body;
+        if (!title || !message) {
+            return res.status(400).json({ success: false, message: "Title and message are required for escalation" });
+        }
+        await notification_service_1.default.notifyEscalation({
+            actorId,
+            title,
+            message,
+            courseId: courseId ? BigInt(courseId) : undefined,
+            accusedTeacherId: accusedTeacherId ? BigInt(accusedTeacherId) : undefined,
+            priority: priority || "HIGH",
+        });
+        res.json({ success: true, message: "Issue escalated successfully to administration" });
+    }
+    catch (error) {
+        console.error("Error creating escalation:", error);
+        res.status(500).json({ success: false, message: error.message || "Failed to escalate issue" });
+    }
+};
+exports.createEscalation = createEscalation;

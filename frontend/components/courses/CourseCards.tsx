@@ -157,16 +157,28 @@ export default function CourseCards({
                     </div>
                   </div>
 
-                  {/* Instructor & Actions Footer */}
+                  {/* Creator Info & Metadata */}
                   <div className="pt-2 border-t border-border flex items-center justify-between gap-2 shrink-0">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="bg-primary/10 text-[9px] font-semibold text-primary">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-[11px] text-muted-foreground truncate font-medium max-w-[80px]" title={instructorName}>
-                        {instructorName}
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex items-center gap-1">
+                        <Avatar className="h-5 w-5 shrink-0">
+                          <AvatarFallback className="bg-primary/10 text-[8px] font-semibold text-primary">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-[11px] text-foreground font-semibold truncate max-w-[90px]" title={instructorName}>
+                          {instructorName}
+                        </span>
+                        <span className={`text-[8px] font-extrabold px-1 rounded border uppercase shrink-0 ${
+                          course.creatorInfo?.creatorRole === "SUPER_ADMIN"
+                            ? "bg-red-500/10 text-red-600 border-red-500/20"
+                            : "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                        }`}>
+                          {course.creatorInfo?.creatorRole === "SUPER_ADMIN" ? "SA" : "Admin"}
+                        </span>
+                      </div>
+                      <span className="text-[9px] text-muted-foreground truncate pl-6">
+                        {course.creatorInfo?.creatorDepartment || departmentCode}
                       </span>
                     </div>
 

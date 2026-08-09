@@ -26,6 +26,11 @@ export interface Course {
     lastName: string;
     employeeCode: string;
   };
+  creatorInfo?: {
+    creatorRole: string;
+    creatorName: string;
+    creatorDepartment: string;
+  };
   sections?: CourseSection[];
 }
 

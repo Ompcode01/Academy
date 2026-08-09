@@ -34,7 +34,12 @@ export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) =
 export const getCourseById = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const id = BigInt(req.params.id as string);
-    const course = await courseService.getCourseById(id);
+    const userContext = {
+      role: req.user?.role || "GUEST",
+      employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
+      departmentId: req.user?.departmentId ? BigInt(req.user.departmentId) : undefined,
+    };
+    const course = await courseService.getCourseById(id, userContext);
     return successResponse(res, serializeBigInt(course), "Course fetched successfully");
   }
 );
@@ -231,8 +236,11 @@ export const createContent = asyncHandler(
 // POST /api/courses/:id/enroll (Self Enrollment)
 export const selfEnrollCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
+    if (req.user?.role === "GUEST") {
+      return errorResponse(res, "Guests are not permitted to enroll in courses. Please log in with a learner account.", "FORBIDDEN", 403);
+    }
     const courseId = BigInt(req.params.id as string);
-    const userId = BigInt(req.user?.userId as string);
+    const userId = BigInt(req.user?.userId || req.user?.employeeId as string);
     const enrollment = await courseService.selfEnrollCourse(userId, courseId);
     return successResponse(res, serializeBigInt(enrollment), "Successfully enrolled in course");
   }

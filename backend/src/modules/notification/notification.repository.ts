@@ -4,10 +4,15 @@ const prisma = new PrismaClient();
 
 export interface CreateNotificationInput {
   userId: bigint;
+  actorId?: bigint | null;
   type: string;
+  category?: string;
+  priority?: string;
   title: string;
   message: string;
   link?: string | null;
+  entityType?: string | null;
+  entityId?: bigint | null;
   metadata?: any;
   roleTarget?: string | null;
 }
@@ -17,13 +22,18 @@ const notificationRepository = {
     return prisma.notification.create({
       data: {
         userId: data.userId,
+        actorId: data.actorId || null,
         type: data.type,
+        category: data.category || "GENERAL",
+        priority: data.priority || "NORMAL",
         title: data.title,
         message: data.message,
         link: data.link || null,
+        entityType: data.entityType || null,
+        entityId: data.entityId || null,
         metadata: data.metadata || undefined,
-        ...(data.roleTarget ? { roleTarget: data.roleTarget } : {}),
-      } as any,
+        roleTarget: data.roleTarget || null,
+      },
     });
   },
 
@@ -31,13 +41,18 @@ const notificationRepository = {
     return prisma.notification.createMany({
       data: items.map((d) => ({
         userId: d.userId,
+        actorId: d.actorId || null,
         type: d.type,
+        category: d.category || "GENERAL",
+        priority: d.priority || "NORMAL",
         title: d.title,
         message: d.message,
         link: d.link || null,
+        entityType: d.entityType || null,
+        entityId: d.entityId || null,
         metadata: d.metadata || undefined,
-        ...(d.roleTarget ? { roleTarget: d.roleTarget } : {}),
-      })) as any,
+        roleTarget: d.roleTarget || null,
+      })),
     });
   },
 
@@ -49,14 +64,15 @@ const notificationRepository = {
 
   async getForUser(
     userId: bigint,
-    options: { limit?: number; page?: number; unreadOnly?: boolean } = {}
+    options: { limit?: number; page?: number; unreadOnly?: boolean; category?: string } = {}
   ) {
-    const { limit = 20, page = 1, unreadOnly = false } = options;
+    const { limit = 20, page = 1, unreadOnly = false, category } = options;
     const skip = (page - 1) * limit;
 
     const where: any = {
       userId,
       ...(unreadOnly ? { isRead: false } : {}),
+      ...(category && category !== "ALL" ? { category } : {}),
     };
 
     try {

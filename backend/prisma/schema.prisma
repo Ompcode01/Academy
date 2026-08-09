@@ -14,9 +14,10 @@ model Department {
   isActive       Boolean    @default(true)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
-  employees      Employee[]
-  courses        Course[]
-  events         Event[]
+  employees         Employee[]
+  courses           Course[]
+  events            Event[]
+  guestAccessGrants GuestAccessGrant[]
 
   @@map("departments")
 }
@@ -43,8 +44,10 @@ model Employee {
   rolesAssigned    UserRole[]       @relation("AssignedByEmployee")
   assignedRoles    UserRole[]
   createdCourses   Course[]
-  assignedCourses  CourseTeacher[]
-  enrollments      Enrollment[]
+  assignedCourses    CourseTeacher[]
+  enrollments        Enrollment[]
+  guestGrants        GuestAccessGrant[] @relation("GuestUserGrants")
+  grantedGuestGrants GuestAccessGrant[] @relation("GrantedByEmployee")
 
   @@index([departmentId])
   @@index([managerId])
@@ -391,17 +394,24 @@ model SkillApprovalLog {
 model Notification {
   id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
   userId     BigInt   // recipient employee ID
+  actorId    BigInt?  // actor who triggered event
   type       String   @db.VarChar(50)
+  category   String   @default("GENERAL") @db.VarChar(50)
+  priority   String   @default("NORMAL") @db.VarChar(20)
   title      String   @db.VarChar(200)
   message    String   @db.Text
   link       String?  @db.VarChar(500)
+  entityType String?  @db.VarChar(50)
+  entityId   BigInt?  @db.UnsignedBigInt
   isRead     Boolean  @default(false)
   metadata   Json?
-  roleTarget String?  @db.VarChar(20) // LEARNER, ADMIN, SUPER_ADMIN — null = user-specific
+  roleTarget String?  @db.VarChar(20) // LEARNER, TEACHER, ADMIN, SUPER_ADMIN
   createdAt  DateTime @default(now())
 
   @@index([userId])
   @@index([userId, isRead])
+  @@index([userId, category])
+  @@index([category])
   @@index([roleTarget])
   @@map("notifications")
 }
@@ -488,5 +498,31 @@ model AuditLog {
   @@index([departmentName])
   @@map("audit_logs")
 }
+
+enum GuestAccessScope {
+  GLOBAL
+  DEPARTMENT
+}
+
+model GuestAccessGrant {
+  id           BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  userId       BigInt?
+  departmentId BigInt?
+  scope        GuestAccessScope @default(DEPARTMENT)
+  grantedById  BigInt
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  user       Employee?   @relation("GuestUserGrants", fields: [userId], references: [id], onDelete: Cascade)
+  department Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  grantedBy  Employee    @relation("GrantedByEmployee", fields: [grantedById], references: [id])
+
+  @@index([userId])
+  @@index([departmentId])
+  @@index([scope])
+  @@map("guest_access_grants")
+}
+
 
 

@@ -8,12 +8,14 @@ import { Search, Bell, LogOut, ChevronDown, User, Settings } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import NotificationPanel from "@/components/layout/NotificationPanel";
+import GuestBanner from "@/components/layout/GuestBanner";
 
 const fullNameMap: Record<string, string> = {
   omprakash: "Omprakash Pandey",
   priyanka: "Priyanka Davhare",
   rahul: "Rahul Sharma",
   sneha: "Sneha Patil",
+  guest: "Guest Visitor",
 };
 
 export default function TopBar() {
@@ -49,7 +51,9 @@ export default function TopBar() {
   const initials = getInitials(fullName);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between bg-[#0B132B] px-6 text-white shrink-0 select-none">
+    <>
+      <GuestBanner />
+      <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between bg-[#0B132B] px-6 text-white shrink-0 select-none">
       {/* Left Logo and Tagline */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
@@ -154,5 +158,6 @@ export default function TopBar() {
         </div>
       </div>
     </header>
-  );
+  </>
+);
 }
