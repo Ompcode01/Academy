@@ -25,15 +25,29 @@ export const getNotifications = async (
   unreadOnly: boolean = false,
   page: number = 1
 ) => {
-  const response = await api.get("/notifications", {
-    params: { limit, unreadOnly, page },
-  });
-  return response.data;
+  try {
+    const response = await api.get("/notifications", {
+      params: { limit, unreadOnly, page },
+    });
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch notifications:", err);
+    return {
+      success: true,
+      data: [],
+      pagination: { total: 0, page: 1, limit, hasMore: false },
+    };
+  }
 };
 
 export const getUnreadCount = async (): Promise<{ success: boolean; data: { count: number } }> => {
-  const response = await api.get("/notifications/unread-count");
-  return response.data;
+  try {
+    const response = await api.get("/notifications/unread-count");
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch unread notification count:", err);
+    return { success: true, data: { count: 0 } };
+  }
 };
 
 export const markNotificationAsRead = async (id: string) => {

@@ -135,9 +135,53 @@ The database contains seeded test accounts across all roles and departments for 
 ### Teacher & Admin Grading Interface
 - Provided the `/courses/teacher/submissions` review workspace where instructors and admins can view pending submissions, assign letter grades (`A+`, `A`, `B`, `C`), and provide written feedback.
 
-### Automated Certificate Generation
-- Upon reaching 100% course progress or passing required evaluations, learners unlock a downloadable certificate workspace (`LearnerCertificateModal`).
+---
+
+## 8. Udemy-Style Learner Experience Refactoring (`preview/page.tsx`)
+
+### Course Discovery & Landing Page Overview (`viewMode === "overview"`)
+- Renders a rich **Course Overview Landing Page** when a learner selects a course from the catalog or dashboard.
+- **Dynamic Metadata & Counts**: Title, Short & Full Description, Thumbnail, Target Audience/Department, Category Tag, Level (`Beginner`, `Intermediate`, `Advanced`), Course Status (`PUBLISHED`), Total Duration, and dynamic curriculum metrics (Total Sections, Total Lessons, Total Quizzes, Total Assignments).
+- **Creator vs Instructor Distinction**:
+  - `Created by`: Strictly displays `creatorName` (Admin/SA creator, e.g. `Sneha Patil`). Curriculum updates by teachers never overwrite course creator attribution.
+  - `Instructor Information`: Displays assigned faculty teacher (`instructorName`).
+- **Enrolment Action Box**:
+  - Displays **"Enroll Now (Free)"** for `SELF` courses (executes self-enrollment and opens player).
+  - Displays **"Admin Enrolment Required"** for `ADMIN_ASSIGNED` courses (restricts player access until assigned).
+  - Displays **"Continue Learning"** with a live progress bar (`X% Completed`) for enrolled learners.
+
+### Interactive Course Player (`viewMode === "player"`)
+- Sticky top header with progress bar (`X% Completed`), lesson breadcrumbs, `< Overview` button, and permanent **"Claim Certificate" / "Certificate (Locked)"** button.
+- Main viewport for Video, PDF, External Links, Quizzes, and Assignments.
+- Section accordions in the sidebar with module-level **"Mark Section"** completion buttons.
 
 ---
 
-*Report updated on 2026-08-05. All build routes, authentication endpoints, and unit integration tests verified with 0 errors.*
+## 9. Business Rules, Progress Enforcement & Certificate Export
+
+### High-Water Mark & 100% Course Completion Permanence
+- **High-Water Mark Calculation**: Progress strictly evaluates as `Math.max(currentProgress, calculatedProgress)`. Re-clicking or reviewing completed lessons never decreases progress.
+- **100% Completion Lock**: Once a course reaches 100% completion (`status: "COMPLETED"`, `progress: 100`), its score locks permanently at **100% Completed** across dashboard tiles and the player.
+
+### Active Curriculum Calculation (`isActive: true`)
+- Restricts total lesson and progress calculation strictly to active published sections and contents (`isActive: true`). Soft-deleted items from previous course edits are excluded, ensuring 1 out of 1 active lesson evaluates to **100% Completed**.
+
+### Quiz Attempt History Isolation
+- Stores all quiz attempts in `AssessmentSubmission` with attempt numbers (`attemptNumber`, `score`, `percentage`, `grade`, `submittedAt`). Taking a quiz multiple times records attempt history without degrading overall progress.
+
+### Un-intrusive Background Real-Time Time Tracking
+- Background pings (`15s` active player heartbeats) continuously record accumulated viewing time (`timeSpentSeconds`) in the database for Admin, Super Admin, and Teacher supervision reporting. Time tracking is suppressed on completed courses to prevent duplicate padding.
+
+### Dashboard & Catalog Progress Overlay Badges
+- Integrated `GET /courses/my-enrollments` endpoint.
+- Every course card on the **Learner Dashboard** (`/dashboard`) and **Academy Curriculum Catalog** (`/courses`) displays a dynamic progress badge overlay:
+  - **Completed Courses**: Green **`✓ 100% Done`** badge overlay.
+  - **In-Progress Courses**: Amber **`X% Progress`** badge overlay with progress bar.
+
+### High-Definition Vector PDF Certificate Download
+- Streamlined certificate export in `LearnerCertificateModal.tsx` to native browser print/PDF rendering (`window.print()`), completely resolving DOM SVG XML parsing errors (`EntityRef: expecting ';'`) and CORS canvas tainting (`toDataURL` SecurityError).
+- Produces high-definition vector PDF certificate documents displaying exact ornate double gold borders, Cinzel/Inter typography, Harbinger logo, signatory details, and verification serial codes.
+
+---
+
+*Report updated on 2026-08-09. All build routes, authentication endpoints, and unit integration tests verified with 0 errors.*

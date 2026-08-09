@@ -24,6 +24,7 @@ const statusColors: Record<string, string> = {
 
 interface CourseCardsProps {
   courses: Course[];
+  userEnrollments?: Array<{ courseId: number; progress: number; status: string }>;
   currentPage?: number;
   totalCourses?: number;
   pageSize?: number;
@@ -34,6 +35,7 @@ interface CourseCardsProps {
 
 export default function CourseCards({
   courses,
+  userEnrollments = [],
   currentPage = 1,
   totalCourses = 0,
   pageSize = 10,
@@ -79,6 +81,8 @@ export default function CourseCards({
               (course as any).thumbnail ||
               "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80";
 
+            const matchedEnrollment = userEnrollments.find((e) => Number(e.courseId) === Number(course.id));
+
             return (
               <div
                 key={course.id}
@@ -102,6 +106,19 @@ export default function CourseCards({
                   <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded">
                     {course.level || "Beginner"}
                   </span>
+
+                  {/* Learner Progress Badge Overlay */}
+                  {matchedEnrollment && (
+                    <span className={
+                      matchedEnrollment.status === "COMPLETED" || matchedEnrollment.progress === 100
+                        ? "absolute bottom-2 left-2 bg-emerald-600/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded flex items-center gap-1 shadow"
+                        : "absolute bottom-2 left-2 bg-amber-500/90 text-slate-950 text-[9px] font-extrabold px-2 py-0.5 rounded shadow"
+                    }>
+                      {matchedEnrollment.status === "COMPLETED" || matchedEnrollment.progress === 100
+                        ? "✓ 100% Done"
+                        : `${matchedEnrollment.progress}% Progress`}
+                    </span>
+                  )}
                 </div>
 
                 {/* Content */}
@@ -117,6 +134,15 @@ export default function CourseCards({
                     <h4 className="text-sm font-bold text-[#212529] line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                       {course.title}
                     </h4>
+
+                    {matchedEnrollment && (
+                      <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
+                        <div
+                          className="bg-emerald-500 h-full transition-all"
+                          style={{ width: `${matchedEnrollment.progress}%` }}
+                        />
+                      </div>
+                    )}
 
                     {/* Category Badge */}
                     <div className="pt-0.5">

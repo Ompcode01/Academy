@@ -1085,6 +1085,157 @@ class ReportingService {
         });
     }
     // -------------------------------------------------------------
+    // TEACHER SUPERVISION & PERFORMANCE REPORT (Rules 9, 10, 14, 15)
+    // -------------------------------------------------------------
+    static async getTeacherPerformanceReport(filters, user) {
+        const deptScope = resolveDepartmentScope(filters, user);
+        // 1. Get all employees who are Teachers (assigned in CourseTeacher or have TEACHER userRole)
+        const courseTeachers = await prisma_1.default.courseTeacher.findMany({
+            select: { teacherId: true, courseId: true },
+        });
+        const teacherRoleUsers = await prisma_1.default.userRole.findMany({
+            where: { role: { roleCode: "TEACHER" } },
+            select: { employeeId: true },
+        });
+        const teacherEmployeeIds = Array.from(new Set([
+            ...courseTeachers.map((ct) => ct.teacherId),
+            ...teacherRoleUsers.map((tr) => tr.employeeId),
+        ]));
+        const teacherEmployees = await prisma_1.default.employee.findMany({
+            where: {
+                id: { in: teacherEmployeeIds },
+                ...(deptScope ? { departmentId: deptScope } : {}),
+            },
+            include: {
+                department: true,
+                assignedCourses: {
+                    include: { course: true },
+                },
+                createdCourses: true,
+            },
+        });
+        // 2. Build teacher summaries
+        const teacherSummaries = await Promise.all(teacherEmployees.map(async (t) => {
+            const assignedCourseIds = Array.from(new Set([
+                ...t.assignedCourses.map((ac) => ac.courseId),
+                ...t.createdCourses.map((cc) => cc.id),
+            ]));
+            // Rule 10: Count DISTINCT learners under this teacher across all assigned courses
+            const enrollments = await prisma_1.default.enrollment.findMany({
+                where: { courseId: { in: assignedCourseIds } },
+                select: { userId: true, status: true, progress: true },
+            });
+            const distinctLearnerIds = Array.from(new Set(enrollments.map((e) => e.userId)));
+            // Get all submissions for this teacher's courses
+            const submissions = await prisma_1.default.assessmentSubmission.findMany({
+                where: { courseId: { in: assignedCourseIds } },
+                orderBy: { submittedAt: "desc" },
+            });
+            const pendingEvaluations = submissions.filter((s) => s.status === "SUBMITTED").length;
+            const evaluatedCount = submissions.filter((s) => s.status === "GRADED").length;
+            const needsRevisionCount = submissions.filter((s) => s.status === "NEEDS_REVISION").length;
+            const evaluatedSubs = submissions.filter((s) => s.status === "GRADED" && s.percentage != null);
+            const totalPercentage = evaluatedSubs.reduce((acc, curr) => acc + (curr.percentage || 0), 0);
+            const averagePercentage = evaluatedSubs.length > 0 ? Math.round(totalPercentage / evaluatedSubs.length) : 0;
+            const courseTitles = Array.from(new Set([
+                ...t.assignedCourses.map((ac) => ac.course.title),
+                ...t.createdCourses.map((cc) => cc.title),
+            ]));
+            return {
+                teacherId: Number(t.id),
+                teacherName: `${t.firstName} ${t.lastName}`,
+                employeeCode: t.employeeCode,
+                officialEmail: t.officialEmail,
+                departmentName: t.department?.departmentName || "General",
+                assignedCoursesCount: assignedCourseIds.length,
+                courseTitles,
+                distinctLearnersCount: distinctLearnerIds.length,
+                totalSubmissions: submissions.length,
+                pendingEvaluations,
+                evaluatedCount,
+                needsRevisionCount,
+                averagePercentage,
+            };
+        }));
+        // 3. Fetch comprehensive timeline audit log for all teacher-learner interactions
+        const allTeacherCourseIds = Array.from(new Set(courseTeachers.map((ct) => ct.courseId)));
+        const allSubmissions = await prisma_1.default.assessmentSubmission.findMany({
+            where: {
+                ...(allTeacherCourseIds.length > 0 ? { courseId: { in: allTeacherCourseIds } } : {}),
+            },
+            orderBy: { submittedAt: "desc" },
+            take: 100,
+        });
+        const userIds = Array.from(new Set(allSubmissions.map((s) => s.userId)));
+        const courseIds = Array.from(new Set(allSubmissions.map((s) => s.courseId)));
+        const contentIds = Array.from(new Set(allSubmissions.map((s) => s.contentId).filter(Boolean)));
+        const [students, courses, contents] = await Promise.all([
+            prisma_1.default.employee.findMany({
+                where: { id: { in: userIds } },
+                select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
+            }),
+            prisma_1.default.course.findMany({
+                where: { id: { in: courseIds } },
+                select: { id: true, title: true },
+            }),
+            prisma_1.default.learningContent.findMany({
+                where: { id: { in: contentIds } },
+                select: { id: true, title: true, contentType: true },
+            }),
+        ]);
+        const studentMap = new Map(students.map((s) => [s.id.toString(), s]));
+        const courseMap = new Map(courses.map((c) => [c.id.toString(), c]));
+        const contentMap = new Map(contents.map((cnt) => [cnt.id.toString(), cnt]));
+        const auditTrail = allSubmissions.map((sub) => {
+            const student = studentMap.get(sub.userId.toString());
+            const course = courseMap.get(sub.courseId.toString());
+            const cnt = sub.contentId ? contentMap.get(sub.contentId.toString()) : null;
+            return {
+                submissionId: Number(sub.id),
+                userId: Number(sub.userId),
+                studentName: student ? `${student.firstName} ${student.lastName}` : `User #${sub.userId}`,
+                studentCode: student?.employeeCode || "EMP-NA",
+                courseId: Number(sub.courseId),
+                courseTitle: course?.title || `Course #${sub.courseId}`,
+                contentTitle: cnt?.title || (sub.submissionType === "QUIZ" ? "Quiz Assessment" : "Assignment Task"),
+                submissionType: sub.submissionType,
+                attemptNumber: sub.attemptNumber,
+                submissionText: sub.submissionText || "",
+                fileUrl: sub.fileUrl || "",
+                submittedAt: sub.submittedAt,
+                status: sub.status,
+                score: sub.score,
+                maxScore: sub.maxScore,
+                percentage: sub.percentage,
+                grade: sub.grade,
+                feedback: sub.feedback,
+                gradedBy: sub.gradedBy,
+                gradedAt: sub.gradedAt,
+            };
+        });
+        // Summary KPIs
+        const totalTeachers = teacherSummaries.length;
+        const totalAssignedCourses = teacherSummaries.reduce((acc, t) => acc + t.assignedCoursesCount, 0);
+        const totalSupervisedLearners = teacherSummaries.reduce((acc, t) => acc + t.distinctLearnersCount, 0);
+        const totalSubmissions = teacherSummaries.reduce((acc, t) => acc + t.totalSubmissions, 0);
+        const pendingEvaluations = teacherSummaries.reduce((acc, t) => acc + t.pendingEvaluations, 0);
+        const evaluatedSubmissions = teacherSummaries.reduce((acc, t) => acc + t.evaluatedCount, 0);
+        const needsRevisionCount = teacherSummaries.reduce((acc, t) => acc + t.needsRevisionCount, 0);
+        return sanitizeData({
+            kpis: {
+                totalTeachers,
+                totalAssignedCourses,
+                totalSupervisedLearners,
+                totalSubmissions,
+                pendingEvaluations,
+                evaluatedSubmissions,
+                needsRevisionCount,
+            },
+            teacherSummaries,
+            auditTrail,
+        });
+    }
+    // -------------------------------------------------------------
     // EXPORT ENGINE (Excel / CSV)
     // -------------------------------------------------------------
     static async exportReport(reportType, format, filters, user) {

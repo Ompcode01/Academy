@@ -7,6 +7,7 @@ const skill_repository_1 = __importDefault(require("./skill.repository"));
 const client_1 = require("@prisma/client");
 const prismaSerializer_1 = require("../../utils/prismaSerializer");
 const audit_service_1 = __importDefault(require("../audit/audit.service"));
+const notification_service_1 = __importDefault(require("../notification/notification.service"));
 class SkillService {
     async getCatalogSkills() {
         await skill_repository_1.default.seedDefaultSkills();
@@ -19,6 +20,12 @@ class SkillService {
     }
     async createUserSkill(data) {
         const created = await skill_repository_1.default.createUserSkill(data);
+        // Fire notification to admins for approval
+        notification_service_1.default.notifySkillSubmitted({
+            id: created.id,
+            skillName: created.skillName,
+            userId: created.userId,
+        });
         return (0, prismaSerializer_1.serializeBigInt)(created);
     }
     async updateUserSkill(id, data) {
@@ -31,6 +38,12 @@ class SkillService {
             ...data,
             status: client_1.ApprovalStatus.PENDING,
             rejectionReason: null,
+        });
+        // Re-trigger admin notification for the resubmitted skill
+        notification_service_1.default.notifySkillSubmitted({
+            id: updated.id,
+            skillName: updated.skillName,
+            userId: updated.userId,
         });
         return (0, prismaSerializer_1.serializeBigInt)(updated);
     }
@@ -45,6 +58,12 @@ class SkillService {
     }
     async createUserProject(data) {
         const created = await skill_repository_1.default.createUserProject(data);
+        // Fire notification to admins for approval
+        notification_service_1.default.notifyProjectSubmitted({
+            id: created.id,
+            projectName: created.projectName,
+            userId: created.userId,
+        });
         return (0, prismaSerializer_1.serializeBigInt)(created);
     }
     async updateUserProject(id, data) {
@@ -56,6 +75,12 @@ class SkillService {
             ...data,
             status: client_1.ApprovalStatus.PENDING,
             rejectionReason: null,
+        });
+        // Re-trigger admin notification for the resubmitted project
+        notification_service_1.default.notifyProjectSubmitted({
+            id: updated.id,
+            projectName: updated.projectName,
+            userId: updated.userId,
         });
         return (0, prismaSerializer_1.serializeBigInt)(updated);
     }
@@ -93,6 +118,13 @@ class SkillService {
                 detail: `${reviewerName} ${action.toLowerCase()}d skill request #${id} (${existing.skillName})${reason ? ` with comment: "${reason}"` : ''}`,
                 type: "role",
             });
+            // Notify the learner about the approval/rejection
+            if (action === "APPROVE") {
+                notification_service_1.default.notifySkillApproved(existing.userId, existing.skillName);
+            }
+            else {
+                notification_service_1.default.notifySkillRejected(existing.userId, existing.skillName, reason);
+            }
             return (0, prismaSerializer_1.serializeBigInt)(updated);
         }
         else {
@@ -118,6 +150,13 @@ class SkillService {
                 detail: `${reviewerName} ${action.toLowerCase()}d project request #${id} (${existing.projectName})${reason ? ` with comment: "${reason}"` : ''}`,
                 type: "role",
             });
+            // Notify the learner about the approval/rejection
+            if (action === "APPROVE") {
+                notification_service_1.default.notifyProjectApproved(existing.userId, existing.projectName);
+            }
+            else {
+                notification_service_1.default.notifyProjectRejected(existing.userId, existing.projectName, reason);
+            }
             return (0, prismaSerializer_1.serializeBigInt)(updated);
         }
     }

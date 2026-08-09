@@ -9,6 +9,7 @@ const response_1 = require("../../utils/response");
 const course_service_1 = __importDefault(require("./course.service"));
 const prismaSerializer_1 = require("../../utils/prismaSerializer");
 const prisma_1 = __importDefault(require("../../config/prisma"));
+const notification_service_1 = __importDefault(require("../notification/notification.service"));
 // GET /api/courses
 exports.getCourses = (0, asyncHandler_1.default)(async (req, res) => {
     const { search, categoryId, isPublished, status, departmentId, page, limit } = req.query;
@@ -37,11 +38,18 @@ exports.getCourseById = (0, asyncHandler_1.default)(async (req, res) => {
 // POST /api/courses
 exports.createCourse = (0, asyncHandler_1.default)(async (req, res) => {
     const userRole = req.user?.role || "LEARNER";
+    if (userRole === "TEACHER") {
+        res.status(403).json({
+            success: false,
+            message: "Forbidden: Teachers are not permitted to create new courses. Only Admin and Super Admin can create courses.",
+        });
+        return;
+    }
     const userEmployeeId = BigInt(req.user?.employeeId);
     const userDepartmentId = req.user?.departmentId ? BigInt(req.user.departmentId) : null;
     let departmentId = null;
-    // Rule: ADMIN (and TEACHER) department must be fixed to their assigned department
-    if (userRole === "ADMIN" || userRole === "TEACHER") {
+    // Rule: ADMIN department must be fixed to their assigned department
+    if (userRole === "ADMIN") {
         departmentId = userDepartmentId;
     }
     else if (userRole === "SUPER_ADMIN") {
@@ -81,6 +89,32 @@ exports.createCourse = (0, asyncHandler_1.default)(async (req, res) => {
             ipAddress: req.ip || "Internal",
         },
     });
+    // Notify department employees about the new course
+    if (course) {
+        notification_service_1.default.notifyCourseCreated({
+            id: course.id,
+            title: course.title,
+            departmentId: course.departmentId || null,
+            creatorId: data.creatorId,
+        });
+        // Notify individually enrolled users
+        if (data.enrolledUserIds && data.enrolledUserIds.length > 0) {
+            const enrollerName = req.user?.username || "An administrator";
+            for (const uIdStr of data.enrolledUserIds) {
+                try {
+                    notification_service_1.default.notifyEnrollment({
+                        userId: BigInt(uIdStr),
+                        courseId: course.id,
+                        courseTitle: course.title,
+                        enrolledBy: enrollerName,
+                    });
+                }
+                catch (e) {
+                    // Non-blocking: enrollment notification failure should not break the flow
+                }
+            }
+        }
+    }
     return (0, response_1.successResponse)(res, (0, prismaSerializer_1.serializeBigInt)(course), "Course created successfully", 201);
 });
 // PUT /api/courses/:id
@@ -91,7 +125,12 @@ exports.updateCourse = (0, asyncHandler_1.default)(async (req, res) => {
         data.categoryId = BigInt(data.categoryId);
     if (data.departmentId)
         data.departmentId = BigInt(data.departmentId);
-    const course = await course_service_1.default.updateCourse(id, data);
+    const userContext = {
+        role: req.user?.role || "GUEST",
+        employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
+        username: req.user?.username || "System User",
+    };
+    const course = await course_service_1.default.updateCourse(id, data, userContext);
     // Audit Log
     const actorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
     await prisma_1.default.auditLog.create({
@@ -168,6 +207,22 @@ exports.adminEnrollUser = (0, asyncHandler_1.default)(async (req, res) => {
         return (0, response_1.errorResponse)(res, "Username or email is required", "BAD_REQUEST", 400);
     }
     const result = await course_service_1.default.adminEnrollUser(courseId, identifier);
+    // Notify the enrolled user
+    if (result.enrollment) {
+        try {
+            const courseData = await course_service_1.default.getCourseById(courseId);
+            const enrollerName = req.user?.username || "An administrator";
+            notification_service_1.default.notifyEnrollment({
+                userId: result.enrollment.userId,
+                courseId,
+                courseTitle: courseData.title,
+                enrolledBy: enrollerName,
+            });
+        }
+        catch (e) {
+            // Non-blocking: notification failure should not break enrollment
+        }
+    }
     return (0, response_1.successResponse)(res, (0, prismaSerializer_1.serializeBigInt)(result), result.message);
 });
 // POST /api/courses/:id/bulk-enroll (Bulk Excel File Upload Enrollment)

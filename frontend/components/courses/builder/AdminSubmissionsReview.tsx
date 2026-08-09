@@ -48,6 +48,7 @@ export default function AdminSubmissionsReview({
   const [givenMarks, setGivenMarks] = useState<number>(85);
   const [letterGrade, setLetterGrade] = useState<string>("A");
   const [feedbackText, setFeedbackText] = useState<string>("Great architectural work!");
+  const [evaluationStatus, setEvaluationStatus] = useState<string>("GRADED");
   const [submittingGrade, setSubmittingGrade] = useState(false);
 
   const fetchSubmissions = async () => {
@@ -85,6 +86,7 @@ export default function AdminSubmissionsReview({
         grade: letterGrade,
         score: givenMarks,
         feedback: feedbackText,
+        status: evaluationStatus,
       });
 
       if (res?.success) {
@@ -184,6 +186,10 @@ export default function AdminSubmissionsReview({
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
                           Pending Review
                         </span>
+                      ) : item.status === "NEEDS_REVISION" ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-600 border border-purple-500/20">
+                          Needs Revision
+                        </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
                           Graded
@@ -193,6 +199,8 @@ export default function AdminSubmissionsReview({
                     <td className="p-3 font-bold">
                       {item.status === "GRADED" ? (
                         <span>{item.score}/{item.maxScore} ({item.grade || "Passed"})</span>
+                      ) : item.status === "NEEDS_REVISION" ? (
+                        <span className="text-purple-600 text-[11px]">Revision Requested</span>
                       ) : (
                         <span className="text-muted-foreground">-</span>
                       )}
@@ -206,13 +214,14 @@ export default function AdminSubmissionsReview({
                           setGivenMarks(item.score || 85);
                           setLetterGrade(item.grade || "A");
                           setFeedbackText(item.feedback || "Well structured submission.");
+                          setEvaluationStatus(item.status === "NEEDS_REVISION" ? "NEEDS_REVISION" : "GRADED");
                         }}
                         className={`h-7 gap-1 text-xs font-bold ${
                           item.status === "SUBMITTED" ? "bg-purple-600 hover:bg-purple-700 text-white" : ""
                         }`}
                       >
                         <Award className="h-3.5 w-3.5" />
-                        {item.status === "SUBMITTED" ? "Grade Now" : "Edit Grade"}
+                        {item.status === "SUBMITTED" ? "Evaluate Now" : "Edit Grade"}
                       </Button>
                     </td>
                   </tr>
@@ -228,7 +237,7 @@ export default function AdminSubmissionsReview({
             <DialogContent className="sm:max-w-md bg-card border-border">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold text-foreground">
-                  Grade Submission: {gradingItem.studentName}
+                  Evaluate Submission: {gradingItem.studentName}
                 </DialogTitle>
               </DialogHeader>
 
@@ -239,6 +248,18 @@ export default function AdminSubmissionsReview({
                     <p className="italic">"{gradingItem.submissionText}"</p>
                   </div>
                 )}
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold">Evaluation Status</label>
+                  <select
+                    value={evaluationStatus}
+                    onChange={(e) => setEvaluationStatus(e.target.value)}
+                    className="w-full h-9 rounded-lg border border-input bg-background px-3 text-xs text-foreground font-bold"
+                  >
+                    <option value="GRADED">Mark as Evaluated &amp; Graded</option>
+                    <option value="NEEDS_REVISION">Request Revision / Resubmission</option>
+                  </select>
+                </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">

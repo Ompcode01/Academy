@@ -10,9 +10,10 @@ import {
   purgeDeletedRecentCourses,
   RecentCourseItem,
 } from "@/services/api/recentAccess.service";
+import { getMyEnrollments, UserEnrollmentItem } from "@/services/api/progress.service";
 import { useEventsStore } from "@/store/events.store";
 import { ROLES } from "@/lib/rbac";
-import { List, BookOpen } from "lucide-react";
+import { List, BookOpen, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EventCalendar from "@/components/events/EventCalendar";
 import AdminSubmissionsReview from "@/components/courses/builder/AdminSubmissionsReview";
@@ -28,6 +29,7 @@ export default function Dashboard() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [userEnrollments, setUserEnrollments] = useState<UserEnrollmentItem[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,6 +55,10 @@ export default function Dashboard() {
           setCourses(activeCourses);
         }
 
+        // Load user enrollments & progress
+        const myEnrolls = await getMyEnrollments();
+        setUserEnrollments(myEnrolls);
+
         // Purge deleted courses from local recent access storage
         const activeIds = activeCourses.map((c) => Number(c.id));
         const cleanRecent = purgeDeletedRecentCourses(username, activeIds);
@@ -75,11 +81,25 @@ export default function Dashboard() {
     loadData();
   }, [fetchEvents, username]);
 
-  // Sync user's recently accessed courses from local storage
+  // Sync user's recently accessed courses with live API course data
   useEffect(() => {
     const activeIds = courses.map((c) => Number(c.id));
     if (activeIds.length > 0) {
-      setRecentlyAccessedPrograms(purgeDeletedRecentCourses(username, activeIds));
+      const rawRecent = purgeDeletedRecentCourses(username, activeIds);
+      const syncedRecent = rawRecent.map((recent) => {
+        const liveMatch = courses.find((c) => Number(c.id) === Number(recent.id));
+        if (liveMatch) {
+          return {
+            ...recent,
+            title: liveMatch.title,
+            category: liveMatch.category?.name || recent.category || "General",
+            thumbnail: (liveMatch as any).thumbnail || recent.thumbnail,
+            level: liveMatch.level || recent.level,
+          };
+        }
+        return recent;
+      });
+      setRecentlyAccessedPrograms(syncedRecent);
     } else {
       setRecentlyAccessedPrograms(getRecentlyAccessedCourses(username));
     }
@@ -189,6 +209,8 @@ export default function Dashboard() {
                 "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80";
               const level = prog.level || matchedCourse?.level || "Beginner";
 
+              const matchedEnrollment = userEnrollments.find((e) => Number(e.courseId) === Number(prog.id));
+
               return (
                 <div
                   key={prog.id}
@@ -205,12 +227,33 @@ export default function Dashboard() {
                     <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded">
                       {level}
                     </span>
+
+                    {/* Progress Badge overlay */}
+                    {matchedEnrollment && (
+                      <span className={
+                        matchedEnrollment.status === "COMPLETED" || matchedEnrollment.progress === 100
+                          ? "absolute bottom-2 left-2 bg-emerald-600/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded flex items-center gap-1 shadow"
+                          : "absolute bottom-2 left-2 bg-amber-500/90 text-slate-950 text-[9px] font-extrabold px-2 py-0.5 rounded shadow"
+                      }>
+                        {matchedEnrollment.status === "COMPLETED" || matchedEnrollment.progress === 100
+                          ? "✓ 100% Done"
+                          : `${matchedEnrollment.progress}% Progress`}
+                      </span>
+                    )}
                   </div>
 
                   <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
                     <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug">
                       {prog.title}
                     </h4>
+                    {matchedEnrollment && (
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200">
+                        <div
+                          className="bg-emerald-500 h-full transition-all"
+                          style={{ width: `${matchedEnrollment.progress}%` }}
+                        />
+                      </div>
+                    )}
                     <div className="flex items-center justify-between text-[10px] text-[#6C757D] font-semibold">
                       <span>{prog.category || "General"}</span>
                       <span className="text-[#C82333] font-bold">
@@ -249,40 +292,65 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin">
-            {courses.map((prog) => (
-              <div
-                key={prog.id}
-                onClick={() => handleCourseClick(Number(prog.id))}
-                className="w-52 shrink-0 bg-white rounded-xl border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group cursor-pointer"
-              >
-                {/* Thumbnail Cover Image */}
-                <div className="h-28 w-full relative bg-slate-100 overflow-hidden">
-                  <img
-                    src={
-                      (prog as any).thumbnail ||
-                      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80"
-                    }
-                    alt={prog.title}
-                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded">
-                    {prog.level || "Beginner"}
-                  </span>
-                </div>
+            {courses.map((prog) => {
+              const matchedEnrollment = userEnrollments.find((e) => Number(e.courseId) === Number(prog.id));
 
-                <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
-                  <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug">
-                    {prog.title}
-                  </h4>
-                  <div className="flex items-center justify-between text-[10px] text-[#6C757D] font-semibold">
-                    <span>{prog.category?.name || "General"}</span>
-                    <span className="text-[#C82333] font-bold">
-                      {userRole === ROLES.GUEST ? "Preview Only" : "View Course →"}
+              return (
+                <div
+                  key={prog.id}
+                  onClick={() => handleCourseClick(Number(prog.id))}
+                  className="w-52 shrink-0 bg-white rounded-xl border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group cursor-pointer"
+                >
+                  {/* Thumbnail Cover Image */}
+                  <div className="h-28 w-full relative bg-slate-100 overflow-hidden">
+                    <img
+                      src={
+                        (prog as any).thumbnail ||
+                        "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80"
+                      }
+                      alt={prog.title}
+                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded">
+                      {prog.level || "Beginner"}
                     </span>
+
+                    {/* Progress Badge overlay */}
+                    {matchedEnrollment && (
+                      <span className={
+                        matchedEnrollment.status === "COMPLETED" || matchedEnrollment.progress === 100
+                          ? "absolute bottom-2 left-2 bg-emerald-600/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded flex items-center gap-1 shadow"
+                          : "absolute bottom-2 left-2 bg-amber-500/90 text-slate-950 text-[9px] font-extrabold px-2 py-0.5 rounded shadow"
+                      }>
+                        {matchedEnrollment.status === "COMPLETED" || matchedEnrollment.progress === 100
+                          ? "✓ 100% Done"
+                          : `${matchedEnrollment.progress}% Progress`}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
+                    <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug">
+                      {prog.title}
+                    </h4>
+                    {matchedEnrollment && (
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200">
+                        <div
+                          className="bg-emerald-500 h-full transition-all"
+                          style={{ width: `${matchedEnrollment.progress}%` }}
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between text-[10px] text-[#6C757D] font-semibold">
+                      <span>{prog.category?.name || "General"}</span>
+                      <span className="text-[#C82333] font-bold">
+                        {userRole === ROLES.GUEST ? "Preview Only" : "View Course →"}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

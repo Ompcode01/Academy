@@ -10,6 +10,8 @@ import EnrollmentForm, { EnrollmentRuleData } from "@/components/courses/wizard/
 import CertificateForm, { CertificateRuleData } from "@/components/courses/wizard/CertificateForm";
 import ReviewPublishForm from "@/components/courses/wizard/ReviewPublishForm";
 import { getCourseById } from "@/services/api/course.service";
+import { useAuthStore } from "@/store/auth.store";
+import { ROLES } from "@/lib/rbac";
 
 const wizardSteps = [
   { number: 1, label: "Basic Info" },
@@ -59,6 +61,16 @@ function CreateCourseContent() {
       passingThreshold: 70,
     },
   });
+
+  const { user } = useAuthStore();
+  const isTeacher = user?.role === ROLES.TEACHER;
+
+  useEffect(() => {
+    if (isTeacher && !courseId) {
+      alert("Teachers cannot create new courses. You can edit your assigned courses multiple times.");
+      router.push("/courses");
+    }
+  }, [isTeacher, courseId, router]);
 
   useEffect(() => {
     if (courseId) {

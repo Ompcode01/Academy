@@ -117,10 +117,25 @@ export default function LearnerAssignmentModal({
           ) : (
             /* Submission Input Form */
             <div className="space-y-4">
-              {existingSubmission && (
+              {existingSubmission?.status === "NEEDS_REVISION" ? (
+                <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 text-xs text-purple-700 dark:text-purple-300 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-sm">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-purple-600" />
+                    Teacher Requested Changes / Revision
+                  </div>
+                  {existingSubmission.feedback && (
+                    <p className="italic bg-background p-3 rounded-lg border border-purple-500/20 text-muted-foreground">
+                      Teacher Comment: "{existingSubmission.feedback}"
+                    </p>
+                  )}
+                  <p className="font-semibold text-[11px]">
+                    Please update your solution below and submit your revision (Attempt #{ (existingSubmission.attemptNumber || 1) + 1 }).
+                  </p>
+                </div>
+              ) : existingSubmission && (
                 <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 shrink-0" />
-                  <span>You submitted on {new Date(existingSubmission.submittedAt).toLocaleDateString()}. Status: <strong>{existingSubmission.status} (Pending Teacher Review)</strong></span>
+                  <span>Submitted on {new Date(existingSubmission.submittedAt).toLocaleDateString()}. Status: <strong>Pending Teacher Review</strong> (Attempt #{existingSubmission.attemptNumber || 1})</span>
                 </div>
               )}
 
@@ -161,7 +176,7 @@ export default function LearnerAssignmentModal({
                   className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 gap-2"
                 >
                   <Upload className="h-4 w-4" />
-                  {submitting ? "Submitting..." : existingSubmission ? "Resubmit Assignment" : "Submit Assignment"}
+                  {submitting ? "Submitting..." : existingSubmission?.status === "NEEDS_REVISION" ? "Submit Revision Task" : existingSubmission ? "Resubmit Assignment" : "Submit Assignment"}
                 </Button>
               </div>
             </div>

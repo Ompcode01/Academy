@@ -14,6 +14,7 @@ router.get("/completions", reporting_controller_1.getCourseCompletionReport);
 router.get("/learner-performance", reporting_controller_1.getLearnerPerformanceReport);
 router.get("/assessments", reporting_controller_1.getAssessmentReport);
 router.get("/engagement", reporting_controller_1.getEngagementReport);
+router.get("/teacher-performance", reporting_controller_1.getTeacherPerformanceReport);
 // Super Admin Only Reports
 router.get("/department-performance", (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN"), reporting_controller_1.getDepartmentPerformanceReport);
 router.get("/organization-overview", (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN"), reporting_controller_1.getOrganizationOverviewReport);

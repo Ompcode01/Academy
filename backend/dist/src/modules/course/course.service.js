@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const course_repository_1 = __importDefault(require("./course.repository"));
 const prisma_1 = __importDefault(require("../../config/prisma"));
 const XLSX = __importStar(require("xlsx"));
+const notification_service_1 = __importDefault(require("../notification/notification.service"));
 class CourseService {
     async getAllCourses(filters = {}, userContext) {
         // Build role-scoped where clause
@@ -84,10 +85,8 @@ class CourseService {
             case "TEACHER":
                 return {
                     OR: [
-                        { departmentId: null },
-                        ...(departmentId ? [{ departmentId }] : []),
-                        ...(employeeId ? [{ creatorId: employeeId }] : []),
                         ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
+                        ...(employeeId ? [{ creatorId: employeeId }] : []),
                     ],
                 };
             case "LEARNER":
@@ -147,6 +146,13 @@ class CourseService {
                 }
             }
         }
+        // Trigger course creation and enrollment notifications
+        notification_service_1.default.notifyCourseCreated({
+            id: course.id,
+            title: course.title,
+            departmentId: course.departmentId,
+            creatorId: course.creatorId,
+        });
         return this.getCourseById(course.id);
     }
     async saveCourseSectionsAndContents(courseId, sections) {
@@ -195,8 +201,15 @@ class CourseService {
             }
         }
     }
-    async updateCourse(id, data) {
-        await this.getCourseById(id);
+    async updateCourse(id, data, userContext) {
+        const existing = await this.getCourseById(id);
+        // Rule 11: Teacher MUST NOT be able to modify department, audience, enrollment config, ownership, teacher assignment
+        if (userContext?.role === "TEACHER") {
+            delete data.departmentId;
+            delete data.enrolledUserIds;
+            delete data.teacherIds;
+            delete data.enrollmentType;
+        }
         const { enrolledUserIds, teacherIds, sections, ...courseData } = data;
         const course = await course_repository_1.default.update(id, courseData);
         if (sections && Array.isArray(sections) && sections.length > 0) {
@@ -207,10 +220,10 @@ class CourseService {
             });
             await this.saveCourseSectionsAndContents(id, sections);
         }
-        if (teacherIds) {
+        if (teacherIds && userContext?.role !== "TEACHER") {
             await this.assignTeachers(id, teacherIds);
         }
-        if (enrolledUserIds && enrolledUserIds.length > 0) {
+        if (enrolledUserIds && enrolledUserIds.length > 0 && userContext?.role !== "TEACHER") {
             const uniqueUserIds = Array.from(new Set(enrolledUserIds));
             for (const uIdStr of uniqueUserIds) {
                 try {
@@ -236,6 +249,15 @@ class CourseService {
                 }
             }
         }
+        // Rule 7, 8, 13: Notify enrolled learners & creators/admins about content updates
+        const teacherName = userContext?.username || "Instructor";
+        notification_service_1.default.notifyCourseUpdated({
+            courseId: id,
+            courseTitle: course.title,
+            teacherName,
+            addedOrUpdatedTitle: data.title || "Curriculum & Lessons",
+            contentType: "Course Update",
+        });
         return this.getCourseById(id);
     }
     async assignTeachers(courseId, teacherIdStrs) {
@@ -260,6 +282,15 @@ class CourseService {
                     teacherId: tId,
                 },
                 update: {},
+            });
+        }
+        // Notify assigned teachers
+        const cObj = await prisma_1.default.course.findUnique({ where: { id: courseId }, select: { title: true } });
+        if (cObj && teacherIds.length > 0) {
+            notification_service_1.default.notifyTeacherAssigned({
+                courseId,
+                courseTitle: cObj.title,
+                teacherIds,
             });
         }
     }
@@ -383,6 +414,14 @@ class CourseService {
         const course = await this.getCourseById(courseId);
         if (!course) {
             throw new Error("Course not found");
+        }
+        if (course.enrollmentType === "ADMIN_ASSIGNED" || course.enrollmentType === "MANUAL") {
+            const existing = await prisma_1.default.enrollment.findUnique({
+                where: { userId_courseId: { userId, courseId } },
+            });
+            if (!existing) {
+                throw new Error("Self-enrollment is restricted for this course. Access must be assigned by an Administrator.");
+            }
         }
         let enrollment = await prisma_1.default.enrollment.findUnique({
             where: {

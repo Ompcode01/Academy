@@ -147,6 +147,139 @@ const notificationService = {
   },
 
   /**
+   * Notify enrolled learners when a teacher updates course contents.
+   */
+  async notifyCourseUpdated(data: {
+    courseId: bigint;
+    courseTitle: string;
+    teacherName: string;
+    addedOrUpdatedTitle: string;
+    contentType?: string;
+  }) {
+    try {
+      const course = await prisma.course.findUnique({
+        where: { id: data.courseId },
+        select: { departmentId: true, creatorId: true },
+      });
+
+      // 1. Gather all Learner IDs: enrolled users + department employees
+      const recipientLearnerIds = new Set<bigint>();
+
+      const enrollments = await prisma.enrollment.findMany({
+        where: { courseId: data.courseId },
+        select: { userId: true },
+      });
+      enrollments.forEach((e) => recipientLearnerIds.add(e.userId));
+
+      const deptWhere: any = {};
+      if (course?.departmentId) {
+        deptWhere.departmentId = course.departmentId;
+      }
+      const deptEmployees = await prisma.employee.findMany({
+        where: deptWhere,
+        select: { id: true },
+      });
+      deptEmployees.forEach((emp) => recipientLearnerIds.add(emp.id));
+
+      const typeLabel = data.contentType ? ` (${data.contentType})` : "";
+      const notifications: CreateNotificationInput[] = Array.from(recipientLearnerIds).map((learnerId) => ({
+        userId: learnerId,
+        type: "COURSE_UPDATED",
+        title: "Course Content Updated",
+        message: `Your course '${data.courseTitle}' was updated by Teacher ${data.teacherName}. New content added: ${data.addedOrUpdatedTitle}${typeLabel}.`,
+        link: `/courses/${data.courseId}/preview`,
+        metadata: { courseId: Number(data.courseId) },
+        roleTarget: "LEARNER",
+      }));
+
+      // 2. Notify Course Creator (Admin/SA) and Admins / Super Admins
+      const adminEmployeeIds = await this._getAdminEmployeeIds(course?.departmentId);
+      if (course?.creatorId && !adminEmployeeIds.includes(course.creatorId)) {
+        adminEmployeeIds.push(course.creatorId);
+      }
+
+      for (const adminId of adminEmployeeIds) {
+        notifications.push({
+          userId: adminId,
+          type: "TEACHER_COURSE_UPDATED",
+          title: "Teacher Updated Course Content",
+          message: `Teacher ${data.teacherName} added/updated content: "${data.addedOrUpdatedTitle}" in course '${data.courseTitle}'.`,
+          link: `/courses/${data.courseId}/preview`,
+          metadata: { courseId: Number(data.courseId) },
+          roleTarget: "ADMIN",
+        });
+      }
+
+      if (notifications.length > 0) {
+        await notificationRepository.createMany(notifications);
+      }
+    } catch (err) {
+      console.error("Failed to send course update notifications:", err);
+    }
+  },
+
+  /**
+   * Notify assigned teachers when added to a course.
+   */
+  async notifyTeacherAssigned(data: {
+    courseId: bigint;
+    courseTitle: string;
+    teacherIds: bigint[];
+  }) {
+    try {
+      if (!data.teacherIds || data.teacherIds.length === 0) return;
+      const notifications: CreateNotificationInput[] = data.teacherIds.map((tId) => ({
+        userId: tId,
+        type: "TEACHER_ASSIGNED",
+        title: "Assigned as Course Instructor",
+        message: `You have been assigned as the instructor for course '${data.courseTitle}'. You can now view and edit its curriculum.`,
+        link: `/courses/${data.courseId}/preview`,
+        metadata: { courseId: Number(data.courseId) },
+        roleTarget: "TEACHER",
+      }));
+      await notificationRepository.createMany(notifications);
+    } catch (err) {
+      console.error("Failed to send teacher assignment notifications:", err);
+    }
+  },
+
+  /**
+   * Notify a learner when their submission is evaluated or marked for revision.
+   */
+  async notifySubmissionEvaluated(data: {
+    userId: bigint;
+    courseId: bigint;
+    courseTitle: string;
+    contentTitle: string;
+    teacherName: string;
+    status: string;
+    grade?: string | null;
+    score?: number | null;
+    feedback?: string | null;
+  }) {
+    try {
+      const isRevision = data.status === "NEEDS_REVISION";
+      const title = isRevision ? "Revision Required" : "Submission Evaluated";
+      const message = `Your submission for "${data.contentTitle}" in course '${data.courseTitle}' was evaluated by Teacher ${data.teacherName}. Status: ${data.status}.${data.grade ? ` Grade: ${data.grade}.` : ""}${data.feedback ? ` Feedback: ${data.feedback}` : ""}`;
+
+      await notificationRepository.create({
+        userId: data.userId,
+        type: isRevision ? "SUBMISSION_REVISION" : "SUBMISSION_GRADED",
+        title,
+        message,
+        link: `/courses/${data.courseId}/preview`,
+        metadata: {
+          courseId: Number(data.courseId),
+          status: data.status,
+        },
+        roleTarget: "LEARNER",
+      });
+    } catch (err) {
+      console.error("Failed to send submission evaluation notification:", err);
+    }
+  },
+
+  /**
    * Notify all SUPER_ADMIN users for system-level events
    * (e.g., new admin creation, platform settings changes).
    */

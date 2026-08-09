@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gradeAssessmentSubmission = exports.getTeacherSubmissions = exports.recordAssignmentSubmission = exports.getAdminLearnerProgressMatrix = exports.recordQuizSubmission = exports.updateLessonProgress = exports.getLearnerProgress = void 0;
+exports.gradeAssessmentSubmission = exports.getTeacherSubmissions = exports.recordAssignmentSubmission = exports.getAdminLearnerProgressMatrix = exports.recordQuizSubmission = exports.updateLessonProgress = exports.getMyEnrollments = exports.getLearnerProgress = void 0;
 const progress_service_1 = __importDefault(require("./progress.service"));
 const getLearnerProgress = async (req, res) => {
     try {
@@ -17,6 +17,17 @@ const getLearnerProgress = async (req, res) => {
     }
 };
 exports.getLearnerProgress = getLearnerProgress;
+const getMyEnrollments = async (req, res) => {
+    try {
+        const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+        const data = await progress_service_1.default.getMyEnrollments(userId);
+        res.json({ success: true, data });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+exports.getMyEnrollments = getMyEnrollments;
 const updateLessonProgress = async (req, res) => {
     try {
         const courseId = BigInt(String(req.params.id));
@@ -83,10 +94,10 @@ exports.getTeacherSubmissions = getTeacherSubmissions;
 const gradeAssessmentSubmission = async (req, res) => {
     try {
         const submissionId = BigInt(String(req.params.submissionId));
-        const { grade, score, feedback } = req.body;
-        const graderName = req.user ? `${req.user.username} (${req.user.role || 'ADMIN'})` : "Instructor Admin";
-        const data = await progress_service_1.default.gradeAssessmentSubmission(submissionId, grade || "Passed", Number(score) || 0, feedback || "", graderName);
-        res.json({ success: true, message: "Assessment graded successfully", data });
+        const { grade, score, feedback, status } = req.body;
+        const graderName = req.user ? `${req.user.username}` : "Instructor Admin";
+        const data = await progress_service_1.default.gradeAssessmentSubmission(submissionId, grade || "Passed", Number(score) || 0, feedback || "", graderName, status || "GRADED");
+        res.json({ success: true, message: `Assessment ${status === 'NEEDS_REVISION' ? 'marked for revision' : 'graded'} successfully`, data });
     }
     catch (error) {
         res.status(500).json({ success: false, message: error.message });

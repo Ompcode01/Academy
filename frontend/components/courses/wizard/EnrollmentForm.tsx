@@ -65,7 +65,8 @@ export default function EnrollmentForm({
   courseId,
 }: EnrollmentFormProps) {
   const { user } = useAuthStore();
-  const isAdmin = user?.role === "ADMIN" || user?.role === "TEACHER";
+  const isTeacher = user?.role === "TEACHER";
+  const isAdmin = user?.role === "ADMIN";
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
   // Selected Enrollment Type: SELF | ADMIN | BULK
@@ -274,7 +275,21 @@ export default function EnrollmentForm({
         </p>
       </div>
 
-      {/* 3 Enrolment Types Grid Cards */}
+      {/* Teacher Lock Restriction Alert */}
+      {isTeacher && (
+        <div className="p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200 space-y-1">
+          <div className="flex items-center gap-2 font-bold text-sm">
+            <Lock className="h-4 w-4 text-amber-600 shrink-0" />
+            <span>Enrollment &amp; Learner Access Restricted</span>
+          </div>
+          <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+            Enrollment configuration and learner assignment are managed exclusively by Admin and Super Admin. As a Teacher, you cannot modify enrollment models, add learners, or remove learners from this course.
+          </p>
+        </div>
+      )}
+
+      <div className={isTeacher ? "pointer-events-none opacity-60 select-none" : ""}>
+        {/* 3 Enrolment Types Grid Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Type 1: Self Enrolment */}
         <div
@@ -798,6 +813,7 @@ export default function EnrollmentForm({
               : "As Super Admin, selecting Global opens course visibility to all departments."}
           </p>
         </div>
+      </div>
       </div>
 
       {/* Stepper Footer */}

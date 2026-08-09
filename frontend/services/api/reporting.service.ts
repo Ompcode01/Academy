@@ -59,6 +59,11 @@ export const getOrganizationOverviewReport = async (params: ReportFilterParams) 
   return response.data.data;
 };
 
+export const getTeacherPerformanceReport = async (params?: ReportFilterParams) => {
+  const response = await api.get("/reports/teacher-performance", { params });
+  return response.data.data;
+};
+
 export const getEmployeeDrilldown = async (id: number | string) => {
   const response = await api.get(`/reports/drilldown/employee/${id}`);
   return response.data.data;

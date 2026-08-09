@@ -1,5 +1,6 @@
 import prisma from "../../config/prisma";
 import { serialize } from "../../utils/serializer";
+import notificationService from "../notification/notification.service";
 
 export class ProgressService {
   async getLearnerCourseProgress(userId: bigint, courseId: bigint) {
@@ -34,6 +35,20 @@ export class ProgressService {
     });
   }
 
+  async getMyEnrollments(userId: bigint) {
+    const enrollments = await prisma.enrollment.findMany({
+      where: { userId },
+      select: {
+        courseId: true,
+        progress: true,
+        status: true,
+        completedAt: true,
+        timeSpentSeconds: true,
+      },
+    });
+    return serialize(enrollments);
+  }
+
   async updateLessonProgress(
     userId: bigint,
     courseId: bigint,
@@ -54,43 +69,65 @@ export class ProgressService {
       });
     }
 
-    // 2. Calculate course total lessons & completed count
+    // 2. Calculate course total active lessons & completed count
     const sections = await prisma.courseSection.findMany({
-      where: { courseId },
-      include: { contents: true },
+      where: { courseId, isActive: true },
+      include: {
+        contents: {
+          where: { isActive: true },
+        },
+      },
     });
-    const totalLessons = sections.reduce((sum, sec) => sum + sec.contents.length, 0);
+
+    const activeContentIds = sections.flatMap((sec) => sec.contents.map((c) => c.id));
+    const totalLessons = activeContentIds.length;
 
     const completedCount = await prisma.userLessonProgress.count({
-      where: { userId, courseId, isCompleted: true },
+      where: {
+        userId,
+        courseId,
+        isCompleted: true,
+        contentId: { in: activeContentIds },
+      },
     });
 
     const calculatedProgress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 100;
 
-    // 3. Update Enrollment
+    // 3. Update Enrollment using High-Water Mark rule & 100% Permanence
     let enrollment = await prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
     });
 
-    const isNowCompleted = calculatedProgress >= 100;
-    const updatedStatus = isNowCompleted ? "COMPLETED" : "IN_PROGRESS";
+    const currentProgress = Number(enrollment?.progress || 0);
+    const currentStatus = enrollment?.status;
+
+    // High-Water Mark: Progress can ONLY increase, never decrease!
+    // Once 100% or COMPLETED, lock at 100% permanently.
+    const isCompletedBefore = currentStatus === "COMPLETED" || currentProgress >= 100;
+    const finalProgress = isCompletedBefore ? 100 : Math.max(currentProgress, calculatedProgress);
+
+    const isNowCompleted = finalProgress >= 100;
+    const updatedStatus = isNowCompleted ? "COMPLETED" : (currentStatus || "IN_PROGRESS");
     const completedAtDate = isNowCompleted ? (enrollment?.completedAt || new Date()) : null;
+
+    // Don't accumulate duplicate timeSpentSeconds if course is already completed
+    const timeDelta = isCompletedBefore ? 0 : Math.max(0, additionalSeconds);
 
     enrollment = await prisma.enrollment.upsert({
       where: { userId_courseId: { userId, courseId } },
       update: {
-        progress: calculatedProgress,
+        progress: finalProgress,
         status: updatedStatus,
         completedAt: completedAtDate,
-        timeSpentSeconds: { increment: Math.max(0, additionalSeconds) },
+        timeSpentSeconds: { increment: timeDelta },
       },
       create: {
         userId,
         courseId,
-        progress: calculatedProgress,
+        progress: finalProgress,
         status: updatedStatus,
         completedAt: completedAtDate,
-        timeSpentSeconds: Math.max(0, additionalSeconds),
+        timeSpentSeconds: timeDelta,
       },
     });
 
@@ -302,7 +339,6 @@ export class ProgressService {
 
     const submissions = await prisma.assessmentSubmission.findMany({
       where: {
-        submissionType: "ASSIGNMENT",
         ...(courseIds ? { courseId: { in: courseIds } } : {}),
       },
       orderBy: { submittedAt: "desc" },
@@ -310,8 +346,9 @@ export class ProgressService {
 
     const userIds = Array.from(new Set(submissions.map((s) => s.userId)));
     const cIds = Array.from(new Set(submissions.map((s) => s.courseId)));
+    const contentIds = Array.from(new Set(submissions.map((s) => s.contentId).filter(Boolean) as bigint[]));
 
-    const [employees, courses] = await Promise.all([
+    const [employees, courses, contents] = await Promise.all([
       prisma.employee.findMany({
         where: { id: { in: userIds } },
         select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true },
@@ -320,20 +357,27 @@ export class ProgressService {
         where: { id: { in: cIds } },
         select: { id: true, title: true },
       }),
+      prisma.learningContent.findMany({
+        where: { id: { in: contentIds } },
+        select: { id: true, title: true, contentType: true },
+      }),
     ]);
 
     const empMap = new Map(employees.map((e) => [e.id.toString(), e]));
     const courseMap = new Map(courses.map((c) => [c.id.toString(), c]));
+    const contentMap = new Map(contents.map((cnt) => [cnt.id.toString(), cnt]));
 
     const result = submissions.map((sub) => {
       const emp = empMap.get(sub.userId.toString());
       const course = courseMap.get(sub.courseId.toString());
+      const cnt = sub.contentId ? contentMap.get(sub.contentId.toString()) : null;
       return {
         ...sub,
         studentName: emp ? `${emp.firstName} ${emp.lastName}` : `User #${sub.userId}`,
         studentCode: emp ? emp.employeeCode : "EMP-NA",
         studentEmail: emp ? emp.officialEmail : "",
         courseTitle: course ? course.title : `Course #${sub.courseId}`,
+        contentTitle: cnt ? cnt.title : sub.submissionType === "QUIZ" ? "Quiz Assessment" : "Assignment Task",
       };
     });
 
@@ -345,7 +389,8 @@ export class ProgressService {
     grade: string,
     score: number,
     feedback: string,
-    graderName: string
+    graderName: string,
+    status: string = "GRADED"
   ) {
     const sub = await prisma.assessmentSubmission.findUnique({
       where: { id: submissionId },
@@ -358,14 +403,34 @@ export class ProgressService {
     const updated = await prisma.assessmentSubmission.update({
       where: { id: submissionId },
       data: {
-        status: "GRADED",
-        grade,
+        status: status || "GRADED",
+        grade: grade || "N/A",
         score,
         percentage,
-        feedback,
+        feedback: feedback || null,
         gradedBy: graderName,
         gradedAt: new Date(),
       },
+    });
+
+    // Notify learner of evaluation outcome
+    const course = await prisma.course.findUnique({ where: { id: sub.courseId } });
+    let contentTitle = "Assessment";
+    if (sub.contentId) {
+      const cnt = await prisma.learningContent.findUnique({ where: { id: sub.contentId } });
+      if (cnt) contentTitle = cnt.title;
+    }
+
+    notificationService.notifySubmissionEvaluated({
+      userId: sub.userId,
+      courseId: sub.courseId,
+      courseTitle: course?.title || "Course",
+      contentTitle,
+      teacherName: graderName,
+      status: updated.status,
+      grade: updated.grade,
+      score: updated.score,
+      feedback: updated.feedback,
     });
 
     return serialize(updated);

@@ -21,6 +21,7 @@ import {
 
 import {
   getLearnerProgress,
+  getMyEnrollments,
   updateLessonProgress,
   recordQuizSubmission,
   recordAssignmentSubmission,
@@ -37,6 +38,7 @@ router.post("/verify-user", authenticate, authorizeRoles("TEACHER", "ADMIN", "SU
 router.post("/verify-bulk-file", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), verifyBulkFile);
 
 // Progress & Learner Execution
+router.get("/my-enrollments", authenticate, getMyEnrollments);
 router.get("/admin/learner-matrix", authenticate, getAdminLearnerProgressMatrix);
 router.get("/teacher/submissions", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), getTeacherSubmissions);
 router.post("/admin/grade-submission/:submissionId", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), gradeAssessmentSubmission);

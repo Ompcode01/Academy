@@ -12,11 +12,13 @@ import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
 import RoleGate from "@/components/auth/RoleGate";
 import { getCourses, type Course, deleteCourse } from "@/services/api/course.service";
+import { getMyEnrollments, UserEnrollmentItem } from "@/services/api/progress.service";
 
 export default function CoursesPage() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [userEnrollments, setUserEnrollments] = useState<UserEnrollmentItem[]>([]);
   const [totalCourses, setTotalCourses] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -33,19 +35,23 @@ export default function CoursesPage() {
   const fetchCoursesList = async () => {
     try {
       setLoading(true);
-      const res = await getCourses({
-        search,
-        categoryId,
-        departmentId,
-        status,
-        page: currentPage,
-        limit: pageSize,
-      });
+      const [res, myEnrolls] = await Promise.all([
+        getCourses({
+          search,
+          categoryId,
+          departmentId,
+          status,
+          page: currentPage,
+          limit: pageSize,
+        }),
+        getMyEnrollments(),
+      ]);
 
       if (res?.success) {
         setCourses(res.data.courses || []);
         setTotalCourses(res.data.total || 0);
       }
+      setUserEnrollments(myEnrolls || []);
     } catch (err) {
       console.error("Failed to load courses:", err);
     } finally {
@@ -107,7 +113,7 @@ export default function CoursesPage() {
             Manage, classify, and organize all learning courses in the academy database.
           </p>
         </div>
-        <RoleGate allowed={["TEACHER", "ADMIN", "SUPER_ADMIN"]}>
+        <RoleGate allowed={["ADMIN", "SUPER_ADMIN"]}>
           <Button
             onClick={() => router.push("/courses/create")}
             className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 self-start sm:self-center"
@@ -146,6 +152,7 @@ export default function CoursesPage() {
       ) : (
         <CourseCards
           courses={courses}
+          userEnrollments={userEnrollments}
           currentPage={currentPage}
           totalCourses={totalCourses}
           pageSize={pageSize}

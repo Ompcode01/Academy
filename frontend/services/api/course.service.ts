@@ -259,7 +259,7 @@ export const getTeacherSubmissions = async () => {
 
 export const gradeSubmission = async (
   submissionId: number,
-  data: { grade: string; score: number; feedback: string }
+  data: { grade: string; score: number; feedback: string; status?: string }
 ) => {
   const response = await api.post(`/courses/admin/grade-submission/${submissionId}`, data);
   return response.data;

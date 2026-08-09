@@ -14,8 +14,21 @@ export const getLearnerProgress = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getMyEnrollments = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const data = await progressService.getMyEnrollments(userId);
+    res.json({ success: true, data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const updateLessonProgress = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user?.role === "GUEST") {
+      return res.status(403).json({ success: false, message: "Guest accounts cannot track lesson completion or progress." });
+    }
     const courseId = BigInt(String(req.params.id));
     const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
     const { contentId, isCompleted, additionalSeconds } = req.body;
@@ -40,6 +53,9 @@ export const updateLessonProgress = async (req: AuthRequest, res: Response) => {
 
 export const recordQuizSubmission = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user?.role === "GUEST") {
+      return res.status(403).json({ success: false, message: "Guest accounts cannot attempt quizzes." });
+    }
     const courseId = BigInt(String(req.params.id));
     const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
     const { contentId, score, maxScore, answersJson } = req.body;
@@ -70,6 +86,9 @@ export const getAdminLearnerProgressMatrix = async (req: AuthRequest, res: Respo
 
 export const recordAssignmentSubmission = async (req: AuthRequest, res: Response) => {
   try {
+    if (req.user?.role === "GUEST") {
+      return res.status(403).json({ success: false, message: "Guest accounts cannot submit assignments." });
+    }
     const courseId = BigInt(String(req.params.id));
     const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
     const { contentId, submissionText, fileUrl } = req.body;
@@ -101,19 +120,20 @@ export const getTeacherSubmissions = async (req: AuthRequest, res: Response) => 
 export const gradeAssessmentSubmission = async (req: AuthRequest, res: Response) => {
   try {
     const submissionId = BigInt(String(req.params.submissionId));
-    const { grade, score, feedback } = req.body;
+    const { grade, score, feedback, status } = req.body;
 
-    const graderName = req.user ? `${req.user.username} (${req.user.role || 'ADMIN'})` : "Instructor Admin";
+    const graderName = req.user ? `${req.user.username}` : "Instructor Admin";
 
     const data = await progressService.gradeAssessmentSubmission(
       submissionId,
       grade || "Passed",
       Number(score) || 0,
       feedback || "",
-      graderName
+      graderName,
+      status || "GRADED"
     );
 
-    res.json({ success: true, message: "Assessment graded successfully", data });
+    res.json({ success: true, message: `Assessment ${status === 'NEEDS_REVISION' ? 'marked for revision' : 'graded'} successfully`, data });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

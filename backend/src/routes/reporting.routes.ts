@@ -8,6 +8,7 @@ import {
   getLearnerPerformanceReport,
   getAssessmentReport,
   getEngagementReport,
+  getTeacherPerformanceReport,
   getDepartmentPerformanceReport,
   getOrganizationOverviewReport,
   getEmployeeDrilldown,
@@ -26,6 +27,7 @@ router.get("/completions", getCourseCompletionReport);
 router.get("/learner-performance", getLearnerPerformanceReport);
 router.get("/assessments", getAssessmentReport);
 router.get("/engagement", getEngagementReport);
+router.get("/teacher-performance", getTeacherPerformanceReport);
 
 // Super Admin Only Reports
 router.get("/department-performance", authorizeRoles("SUPER_ADMIN"), getDepartmentPerformanceReport);

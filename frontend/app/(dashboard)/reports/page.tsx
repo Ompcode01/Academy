@@ -44,6 +44,7 @@ import { ReportFilterBar } from "@/components/reports/ReportFilterBar";
 import { ReportTable, renderStatusBadge } from "@/components/reports/ReportTable";
 import { ChartCard, StatusPieChart, SimpleBarChart, TrendAreaChart } from "@/components/reports/ReportCharts";
 import { ReportDrilldownModal } from "@/components/reports/ReportDrilldownModal";
+import TeacherPerformanceReport from "@/components/reports/TeacherPerformanceReport";
 
 export default function ReportsPage() {
   const { user } = useAuthStore();
@@ -273,25 +274,35 @@ export default function ReportsPage() {
                 <span className="truncate">Engagement</span>
               </TabsTrigger>
 
-              {/* Super Admin Only Reports (6 & 7) */}
+              {/* Report 6: Teacher Supervision Analytics */}
+              <TabsTrigger
+                value="teacher-supervision"
+                className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-purple-500/40 bg-purple-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-500/20 font-bold transition-all duration-150 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:border-purple-600 data-[state=active]:shadow-md cursor-pointer"
+              >
+                <span className="text-[11px] font-black">6.</span>
+                <ShieldCheck className="h-4 w-4 shrink-0 text-purple-600 data-[state=active]:text-white" />
+                <span className="truncate">Teacher Supervision</span>
+              </TabsTrigger>
+
+              {/* Super Admin Only Reports (7 & 8) */}
               {isSuperAdmin && (
                 <>
-                  {/* Report 6 */}
+                  {/* Report 7 */}
                   <TabsTrigger
                     value="department-performance"
                     className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 font-bold transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-500 data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-amber-400 cursor-pointer"
                   >
-                    <span className="text-[11px] font-black">6.</span>
+                    <span className="text-[11px] font-black">7.</span>
                     <Building2 className="h-4 w-4 shrink-0" />
                     <span className="truncate">Dept Performance</span>
                   </TabsTrigger>
 
-                  {/* Report 7: Executive Organization Overview */}
+                  {/* Report 8: Executive Organization Overview */}
                   <TabsTrigger
                     value="organization-overview"
                     className="flex items-center justify-center gap-1.5 text-xs py-2.5 px-3 rounded-lg border border-amber-500/60 bg-amber-500/20 text-amber-800 dark:text-amber-200 hover:bg-amber-500/30 font-black transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-500 data-[state=active]:shadow-md data-[state=active]:ring-2 data-[state=active]:ring-amber-400 cursor-pointer"
                   >
-                    <span className="text-[11px] font-black">7.</span>
+                    <span className="text-[11px] font-black">8.</span>
                     <BarChart3 className="h-4 w-4 shrink-0" />
                     <span className="truncate">Org Overview</span>
                     <Crown className="h-3.5 w-3.5 text-amber-500 data-[state=active]:text-white shrink-0" />
@@ -681,6 +692,11 @@ export default function ReportsPage() {
               </div>
             </TabsContent>
           )}
+
+          {/* TAB: TEACHER SUPERVISION & PERFORMANCE */}
+          <TabsContent value="teacher-supervision" className="pt-3">
+            <TeacherPerformanceReport />
+          </TabsContent>
         </Tabs>
 
         {/* Drilldown Modal */}

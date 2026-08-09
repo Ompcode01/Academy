@@ -12,6 +12,7 @@ const notificationRepository = {
                 message: data.message,
                 link: data.link || null,
                 metadata: data.metadata || undefined,
+                ...(data.roleTarget ? { roleTarget: data.roleTarget } : {}),
             },
         });
     },
@@ -24,24 +25,49 @@ const notificationRepository = {
                 message: d.message,
                 link: d.link || null,
                 metadata: d.metadata || undefined,
+                ...(d.roleTarget ? { roleTarget: d.roleTarget } : {}),
             })),
         });
     },
-    async getForUser(userId, options = {}) {
-        const { limit = 20, unreadOnly = false } = options;
-        return prisma.notification.findMany({
-            where: {
-                userId,
-                ...(unreadOnly ? { isRead: false } : {}),
-            },
-            orderBy: { createdAt: "desc" },
-            take: limit,
+    async findById(id) {
+        return prisma.notification.findUnique({
+            where: { id },
         });
     },
+    async getForUser(userId, options = {}) {
+        const { limit = 20, page = 1, unreadOnly = false } = options;
+        const skip = (page - 1) * limit;
+        const where = {
+            userId,
+            ...(unreadOnly ? { isRead: false } : {}),
+        };
+        try {
+            const [notifications, total] = await Promise.all([
+                prisma.notification.findMany({
+                    where,
+                    orderBy: { createdAt: "desc" },
+                    skip,
+                    take: limit,
+                }),
+                prisma.notification.count({ where }),
+            ]);
+            return { notifications, total };
+        }
+        catch (err) {
+            console.error("Failed to query notifications for user:", err);
+            return { notifications: [], total: 0 };
+        }
+    },
     async getUnreadCount(userId) {
-        return prisma.notification.count({
-            where: { userId, isRead: false },
-        });
+        try {
+            return await prisma.notification.count({
+                where: { userId, isRead: false },
+            });
+        }
+        catch (err) {
+            console.error("Failed to count unread notifications:", err);
+            return 0;
+        }
     },
     async markAsRead(id) {
         return prisma.notification.update({

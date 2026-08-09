@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Printer, Download, Award, ShieldCheck } from "lucide-react";
+import { X, Printer, Award, ShieldCheck, FileText } from "lucide-react";
 import CertificatePreview from "./CertificatePreview";
 import { IssuedCertificateData } from "@/services/api/certificate.service";
 
@@ -26,7 +26,7 @@ export default function LearnerCertificateModal({
     }
   }
 
-  const handlePrint = () => {
+  const handleDownloadPDF = () => {
     window.print();
   };
 
@@ -41,16 +41,19 @@ export default function LearnerCertificateModal({
               Official Course Completion Certificate
             </h2>
           </div>
+
+          {/* OFFICIAL HIGH-RES PDF DOWNLOAD ACTION */}
           <div className="flex items-center gap-2">
             <button
-              onClick={handlePrint}
-              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow"
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-extrabold text-white hover:bg-emerald-700 transition-all shadow-md cursor-pointer"
+              title="Download official PDF certificate"
             >
-              <Printer className="h-4 w-4" /> Print / Save as PDF
+              <Printer className="h-4 w-4" /> Download / Print PDF Certificate
             </button>
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -59,21 +62,23 @@ export default function LearnerCertificateModal({
 
         {/* Certificate Display Area */}
         <div className="p-6 bg-slate-100 dark:bg-slate-950 max-h-[80vh] overflow-y-auto print:p-0 print:bg-white">
-          <CertificatePreview
-            logoUrl={template.logoUrl}
-            headerTitle={template.headerTitle || "CERTIFICATE"}
-            headerSubtitle={template.headerSubtitle || "OF ACHIEVEMENT"}
-            certifyText={template.certifyText || "This is to certify that"}
-            recipientName={certificate.recipientName}
-            completionText={template.completionText || "has successfully completed and passed the course"}
-            courseTitle={certificate.courseTitle}
-            signatoryName={template.signatoryName || "Richard Wilson"}
-            signatoryTitle={template.signatoryTitle || "Authorized Director"}
-            signatureUrl={template.signatureUrl}
-            completionDate={certificate.issuedAt}
-            certificateCode={certificate.certificateCode}
-            primaryColor={template.primaryColor || "#d97706"}
-          />
+          <div id="certificate-preview-container">
+            <CertificatePreview
+              logoUrl={template.logoUrl}
+              headerTitle={template.headerTitle || "CERTIFICATE"}
+              headerSubtitle={template.headerSubtitle || "OF ACHIEVEMENT"}
+              certifyText={template.certifyText || "This is to certify that"}
+              recipientName={certificate.recipientName}
+              completionText={template.completionText || "has successfully completed and passed the course"}
+              courseTitle={certificate.courseTitle}
+              signatoryName={template.signatoryName || "Richard Wilson"}
+              signatoryTitle={template.signatoryTitle || "Authorized Director"}
+              signatureUrl={template.signatureUrl}
+              completionDate={certificate.issuedAt}
+              certificateCode={certificate.certificateCode}
+              primaryColor={template.primaryColor || "#d97706"}
+            />
+          </div>
         </div>
 
         {/* Modal Footer */}
@@ -82,7 +87,13 @@ export default function LearnerCertificateModal({
             <ShieldCheck className="h-4 w-4 text-emerald-500" />
             Serial Code: <strong className="font-mono text-slate-800 dark:text-slate-200">{certificate.certificateCode}</strong>
           </span>
-          <span>Verified Credential Issued by Harbinger Group Academy</span>
+          
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold hover:underline cursor-pointer"
+          >
+            <FileText className="h-3.5 w-3.5" /> Save Official PDF Document
+          </button>
         </div>
       </div>
     </div>

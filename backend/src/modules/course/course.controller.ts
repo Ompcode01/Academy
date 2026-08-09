@@ -43,13 +43,21 @@ export const getCourseById = asyncHandler(
 export const createCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userRole = req.user?.role || "LEARNER";
+    if (userRole === "TEACHER") {
+      res.status(403).json({
+        success: false,
+        message: "Forbidden: Teachers are not permitted to create new courses. Only Admin and Super Admin can create courses.",
+      });
+      return;
+    }
+
     const userEmployeeId = BigInt(req.user?.employeeId as string);
     const userDepartmentId = req.user?.departmentId ? BigInt(req.user.departmentId as string) : null;
 
     let departmentId: bigint | null = null;
 
-    // Rule: ADMIN (and TEACHER) department must be fixed to their assigned department
-    if (userRole === "ADMIN" || userRole === "TEACHER") {
+    // Rule: ADMIN department must be fixed to their assigned department
+    if (userRole === "ADMIN") {
       departmentId = userDepartmentId;
     } else if (userRole === "SUPER_ADMIN") {
       // SUPER_ADMIN can pick a specific department OR select "ALL" / global (null)
@@ -130,7 +138,14 @@ export const updateCourse = asyncHandler(
     const data = { ...req.body };
     if (data.categoryId) data.categoryId = BigInt(data.categoryId);
     if (data.departmentId) data.departmentId = BigInt(data.departmentId);
-    const course = await courseService.updateCourse(id, data);
+
+    const userContext = {
+      role: req.user?.role || "GUEST",
+      employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
+      username: req.user?.username || "System User",
+    };
+
+    const course = await courseService.updateCourse(id, data, userContext);
 
     // Audit Log
     const actorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";

@@ -58,6 +58,24 @@ export interface AdminLearnerMatrixItem {
   certificateCode?: string | null;
 }
 
+export interface UserEnrollmentItem {
+  courseId: number;
+  progress: number;
+  status: string;
+  completedAt?: string | null;
+  timeSpentSeconds: number;
+}
+
+export async function getMyEnrollments(): Promise<UserEnrollmentItem[]> {
+  try {
+    const res = await api.get(`/courses/my-enrollments`);
+    return res.data?.data || [];
+  } catch (err) {
+    console.error("Failed to fetch my enrollments:", err);
+    return [];
+  }
+}
+
 export async function getLearnerCourseProgress(courseId: number): Promise<LearnerProgressData | null> {
   try {
     const res = await api.get(`/courses/${courseId}/my-progress`);

@@ -3,15 +3,25 @@ import { AuthRequest } from "../../middleware/auth.middleware";
 import notificationService from "./notification.service";
 import { serializeBigInt } from "../../utils/prismaSerializer";
 
+function extractUserId(req: AuthRequest): bigint {
+  const candidate = req.user?.employeeId || req.user?.userId || req.user?.id;
+  if (!candidate || candidate === "undefined" || candidate === "null") {
+    return BigInt(1);
+  }
+  try {
+    return BigInt(candidate);
+  } catch {
+    return BigInt(1);
+  }
+}
+
 /**
  * GET /api/notifications
  * Query: ?limit=20&page=1&unreadOnly=true
  */
 export const getNotifications = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.employeeId
-      ? BigInt(req.user.employeeId)
-      : BigInt(1);
+    const userId = extractUserId(req);
     const limit = req.query.limit ? Number(req.query.limit) : 20;
     const page = req.query.page ? Number(req.query.page) : 1;
     const unreadOnly = req.query.unreadOnly === "true";
@@ -24,16 +34,17 @@ export const getNotifications = async (req: AuthRequest, res: Response) => {
 
     res.json({
       success: true,
-      data: serializeBigInt(notifications),
+      data: serializeBigInt(notifications || []),
       pagination: {
-        total,
+        total: total || 0,
         page,
         limit,
-        hasMore: page * limit < total,
+        hasMore: page * limit < (total || 0),
       },
     });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error in getNotifications:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to fetch notifications" });
   }
 };
 
@@ -42,15 +53,12 @@ export const getNotifications = async (req: AuthRequest, res: Response) => {
  */
 export const getUnreadCount = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.employeeId
-      ? BigInt(req.user.employeeId)
-      : BigInt(1);
-
+    const userId = extractUserId(req);
     const count = await notificationService.getUnreadCount(userId);
-
-    res.json({ success: true, data: { count } });
+    res.json({ success: true, data: { count: count || 0 } });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error in getUnreadCount:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to count unread notifications" });
   }
 };
 
@@ -60,9 +68,7 @@ export const getUnreadCount = async (req: AuthRequest, res: Response) => {
 export const markAsRead = async (req: AuthRequest, res: Response) => {
   try {
     const id = BigInt(req.params.id as string);
-    const userId = req.user?.employeeId
-      ? BigInt(req.user.employeeId)
-      : BigInt(1);
+    const userId = extractUserId(req);
 
     // Ownership check: only the recipient can mark their own notification as read
     const notification = await notificationService.findById(id);
@@ -85,10 +91,7 @@ export const markAsRead = async (req: AuthRequest, res: Response) => {
  */
 export const markAllAsRead = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.employeeId
-      ? BigInt(req.user.employeeId)
-      : BigInt(1);
-
+    const userId = extractUserId(req);
     await notificationService.markAllAsRead(userId);
     res.json({ success: true, message: "All notifications marked as read" });
   } catch (error: any) {
@@ -102,9 +105,7 @@ export const markAllAsRead = async (req: AuthRequest, res: Response) => {
 export const deleteNotification = async (req: AuthRequest, res: Response) => {
   try {
     const id = BigInt(req.params.id as string);
-    const userId = req.user?.employeeId
-      ? BigInt(req.user.employeeId)
-      : BigInt(1);
+    const userId = extractUserId(req);
 
     // Ownership check: only the recipient can delete their own notification
     const notification = await notificationService.findById(id);

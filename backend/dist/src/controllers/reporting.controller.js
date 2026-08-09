@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exportReport = exports.getEmployeeDrilldown = exports.getOrganizationOverviewReport = exports.getDepartmentPerformanceReport = exports.getEngagementReport = exports.getAssessmentReport = exports.getLearnerPerformanceReport = exports.getCourseCompletionReport = exports.getEnrollmentReport = exports.getFilterOptions = void 0;
+exports.exportReport = exports.getEmployeeDrilldown = exports.getOrganizationOverviewReport = exports.getTeacherPerformanceReport = exports.getDepartmentPerformanceReport = exports.getEngagementReport = exports.getAssessmentReport = exports.getLearnerPerformanceReport = exports.getCourseCompletionReport = exports.getEnrollmentReport = exports.getFilterOptions = void 0;
 const reporting_service_1 = require("../services/reporting.service");
 const getFilterOptions = async (req, res) => {
     try {
@@ -89,6 +89,18 @@ const getDepartmentPerformanceReport = async (req, res) => {
     }
 };
 exports.getDepartmentPerformanceReport = getDepartmentPerformanceReport;
+const getTeacherPerformanceReport = async (req, res) => {
+    try {
+        const filters = req.query;
+        const report = await reporting_service_1.ReportingService.getTeacherPerformanceReport(filters, req.user);
+        res.json({ success: true, data: report });
+    }
+    catch (error) {
+        console.error("Error fetching teacher performance report:", error);
+        res.status(500).json({ success: false, message: error.message || "Failed to fetch teacher performance report" });
+    }
+};
+exports.getTeacherPerformanceReport = getTeacherPerformanceReport;
 const getOrganizationOverviewReport = async (req, res) => {
     try {
         if (req.user?.role !== "SUPER_ADMIN") {

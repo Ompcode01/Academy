@@ -82,6 +82,17 @@ export const getDepartmentPerformanceReport = async (req: AuthRequest, res: Resp
   }
 };
 
+export const getTeacherPerformanceReport = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const filters: ReportFilterParams = req.query as any;
+    const report = await ReportingService.getTeacherPerformanceReport(filters, req.user);
+    res.json({ success: true, data: report });
+  } catch (error: any) {
+    console.error("Error fetching teacher performance report:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to fetch teacher performance report" });
+  }
+};
+
 export const getOrganizationOverviewReport = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     if (req.user?.role !== "SUPER_ADMIN") {

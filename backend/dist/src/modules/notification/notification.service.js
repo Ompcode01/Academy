@@ -14,6 +14,9 @@ const notificationService = {
     async getUnreadCount(userId) {
         return notification_repository_1.default.getUnreadCount(userId);
     },
+    async findById(id) {
+        return notification_repository_1.default.findById(id);
+    },
     async markAsRead(id) {
         return notification_repository_1.default.markAsRead(id);
     },
@@ -58,11 +61,188 @@ const notificationService = {
                 message: `${creatorName} published a new course: "${course.title}"`,
                 link: `/courses/${course.id}/preview`,
                 metadata: { courseId: Number(course.id) },
+                roleTarget: "LEARNER",
             }));
             await notification_repository_1.default.createMany(notifications);
         }
         catch (err) {
             console.error("Failed to send course creation notifications:", err);
+        }
+    },
+    /**
+     * Notify a learner that they have been enrolled in a course.
+     */
+    async notifyEnrollment(enrollment) {
+        try {
+            const enrollerLabel = enrollment.enrolledBy || "An administrator";
+            await notification_repository_1.default.create({
+                userId: enrollment.userId,
+                type: "ENROLLMENT",
+                title: "Course Enrollment",
+                message: `${enrollerLabel} enrolled you in the course: "${enrollment.courseTitle}"`,
+                link: `/courses/${enrollment.courseId}/preview`,
+                metadata: { courseId: Number(enrollment.courseId) },
+                roleTarget: "LEARNER",
+            });
+        }
+        catch (err) {
+            console.error("Failed to send enrollment notification:", err);
+        }
+    },
+    /**
+     * Notify admins when a learner completes a course.
+     */
+    async notifyCourseCompleted(data) {
+        try {
+            const admins = await this._getAdminEmployeeIds(data.departmentId);
+            if (admins.length === 0)
+                return;
+            const notifications = admins.map((adminId) => ({
+                userId: adminId,
+                type: "COURSE_COMPLETED",
+                title: "Course Completed",
+                message: `${data.learnerName} has completed the course: "${data.courseTitle}"`,
+                link: `/courses/${data.courseId}/preview`,
+                metadata: {
+                    courseId: Number(data.courseId),
+                    learnerId: Number(data.userId),
+                },
+                roleTarget: "ADMIN",
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to send course completion notifications:", err);
+        }
+    },
+    /**
+     * Notify enrolled learners when a teacher updates course contents.
+     */
+    async notifyCourseUpdated(data) {
+        try {
+            const course = await prisma.course.findUnique({
+                where: { id: data.courseId },
+                select: { departmentId: true, creatorId: true },
+            });
+            // 1. Gather all Learner IDs: enrolled users + department employees
+            const recipientLearnerIds = new Set();
+            const enrollments = await prisma.enrollment.findMany({
+                where: { courseId: data.courseId },
+                select: { userId: true },
+            });
+            enrollments.forEach((e) => recipientLearnerIds.add(e.userId));
+            const deptWhere = {};
+            if (course?.departmentId) {
+                deptWhere.departmentId = course.departmentId;
+            }
+            const deptEmployees = await prisma.employee.findMany({
+                where: deptWhere,
+                select: { id: true },
+            });
+            deptEmployees.forEach((emp) => recipientLearnerIds.add(emp.id));
+            const typeLabel = data.contentType ? ` (${data.contentType})` : "";
+            const notifications = Array.from(recipientLearnerIds).map((learnerId) => ({
+                userId: learnerId,
+                type: "COURSE_UPDATED",
+                title: "Course Content Updated",
+                message: `Your course '${data.courseTitle}' was updated by Teacher ${data.teacherName}. New content added: ${data.addedOrUpdatedTitle}${typeLabel}.`,
+                link: `/courses/${data.courseId}/preview`,
+                metadata: { courseId: Number(data.courseId) },
+                roleTarget: "LEARNER",
+            }));
+            // 2. Notify Course Creator (Admin/SA) and Admins / Super Admins
+            const adminEmployeeIds = await this._getAdminEmployeeIds(course?.departmentId);
+            if (course?.creatorId && !adminEmployeeIds.includes(course.creatorId)) {
+                adminEmployeeIds.push(course.creatorId);
+            }
+            for (const adminId of adminEmployeeIds) {
+                notifications.push({
+                    userId: adminId,
+                    type: "TEACHER_COURSE_UPDATED",
+                    title: "Teacher Updated Course Content",
+                    message: `Teacher ${data.teacherName} added/updated content: "${data.addedOrUpdatedTitle}" in course '${data.courseTitle}'.`,
+                    link: `/courses/${data.courseId}/preview`,
+                    metadata: { courseId: Number(data.courseId) },
+                    roleTarget: "ADMIN",
+                });
+            }
+            if (notifications.length > 0) {
+                await notification_repository_1.default.createMany(notifications);
+            }
+        }
+        catch (err) {
+            console.error("Failed to send course update notifications:", err);
+        }
+    },
+    /**
+     * Notify assigned teachers when added to a course.
+     */
+    async notifyTeacherAssigned(data) {
+        try {
+            if (!data.teacherIds || data.teacherIds.length === 0)
+                return;
+            const notifications = data.teacherIds.map((tId) => ({
+                userId: tId,
+                type: "TEACHER_ASSIGNED",
+                title: "Assigned as Course Instructor",
+                message: `You have been assigned as the instructor for course '${data.courseTitle}'. You can now view and edit its curriculum.`,
+                link: `/courses/${data.courseId}/preview`,
+                metadata: { courseId: Number(data.courseId) },
+                roleTarget: "TEACHER",
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to send teacher assignment notifications:", err);
+        }
+    },
+    /**
+     * Notify a learner when their submission is evaluated or marked for revision.
+     */
+    async notifySubmissionEvaluated(data) {
+        try {
+            const isRevision = data.status === "NEEDS_REVISION";
+            const title = isRevision ? "Revision Required" : "Submission Evaluated";
+            const message = `Your submission for "${data.contentTitle}" in course '${data.courseTitle}' was evaluated by Teacher ${data.teacherName}. Status: ${data.status}.${data.grade ? ` Grade: ${data.grade}.` : ""}${data.feedback ? ` Feedback: ${data.feedback}` : ""}`;
+            await notification_repository_1.default.create({
+                userId: data.userId,
+                type: isRevision ? "SUBMISSION_REVISION" : "SUBMISSION_GRADED",
+                title,
+                message,
+                link: `/courses/${data.courseId}/preview`,
+                metadata: {
+                    courseId: Number(data.courseId),
+                    status: data.status,
+                },
+                roleTarget: "LEARNER",
+            });
+        }
+        catch (err) {
+            console.error("Failed to send submission evaluation notification:", err);
+        }
+    },
+    /**
+     * Notify all SUPER_ADMIN users for system-level events
+     * (e.g., new admin creation, platform settings changes).
+     */
+    async notifySystemEvent(event) {
+        try {
+            const superAdmins = await this._getSuperAdminEmployeeIds();
+            if (superAdmins.length === 0)
+                return;
+            const notifications = superAdmins.map((adminId) => ({
+                userId: adminId,
+                type: event.type || "SYSTEM_EVENT",
+                title: event.title,
+                message: event.message,
+                link: event.link || null,
+                metadata: event.metadata || null,
+                roleTarget: "SUPER_ADMIN",
+            }));
+            await notification_repository_1.default.createMany(notifications);
+        }
+        catch (err) {
+            console.error("Failed to send system event notifications:", err);
         }
     },
     /**
@@ -87,6 +267,7 @@ const notificationService = {
                 message: `${submitterName} submitted skill "${skill.skillName}" for approval.`,
                 link: "/skill-cloud",
                 metadata: { userSkillId: Number(skill.id) },
+                roleTarget: "ADMIN",
             }));
             await notification_repository_1.default.createMany(notifications);
         }
@@ -105,6 +286,7 @@ const notificationService = {
                 title: "Skill Approved ✓",
                 message: `Your skill "${skillName}" has been approved by an administrator.`,
                 link: "/skill-cloud",
+                roleTarget: "LEARNER",
             });
         }
         catch (err) {
@@ -122,6 +304,7 @@ const notificationService = {
                 title: "Skill Rejected",
                 message: `Your skill "${skillName}" was rejected.${reason ? ` Reason: ${reason}` : ""}`,
                 link: "/skill-cloud",
+                roleTarget: "LEARNER",
             });
         }
         catch (err) {
@@ -150,6 +333,7 @@ const notificationService = {
                 message: `${submitterName} submitted project "${project.projectName}" for approval.`,
                 link: "/skill-cloud",
                 metadata: { userProjectId: Number(project.id) },
+                roleTarget: "ADMIN",
             }));
             await notification_repository_1.default.createMany(notifications);
         }
@@ -168,6 +352,7 @@ const notificationService = {
                 title: "Project Approved ✓",
                 message: `Your project "${projectName}" has been approved by an administrator.`,
                 link: "/skill-cloud",
+                roleTarget: "LEARNER",
             });
         }
         catch (err) {
@@ -185,6 +370,7 @@ const notificationService = {
                 title: "Project Rejected",
                 message: `Your project "${projectName}" was rejected.${reason ? ` Reason: ${reason}` : ""}`,
                 link: "/skill-cloud",
+                roleTarget: "LEARNER",
             });
         }
         catch (err) {
@@ -221,6 +407,23 @@ const notificationService = {
             }
         }
         return [...new Set(matchingIds)];
+    },
+    /**
+     * Get employee IDs for SUPER_ADMIN users only.
+     */
+    async _getSuperAdminEmployeeIds() {
+        const superAdminRoles = await prisma.userRole.findMany({
+            where: {
+                role: {
+                    roleCode: "SUPER_ADMIN",
+                },
+                isActive: true,
+            },
+            select: {
+                employeeId: true,
+            },
+        });
+        return [...new Set(superAdminRoles.map((r) => r.employeeId))];
     },
 };
 exports.default = notificationService;

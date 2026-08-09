@@ -28,6 +28,7 @@ import ContentTypePickerModal, { ContentTypeKey } from "./ContentTypePickerModal
 import AddContentModal from "./AddContentModal";
 import QuizBuilderModal from "./QuizBuilderModal";
 import AssignmentBuilderModal from "./AssignmentBuilderModal";
+import FeedbackBuilderModal from "./FeedbackBuilderModal";
 import AdminSubmissionsReview from "./AdminSubmissionsReview";
 
 export interface SectionItem {
@@ -87,14 +88,17 @@ export default function CurriculumBuilderView({
   const [addContentOpen, setAddContentOpen] = useState(false);
   const [quizBuilderOpen, setQuizBuilderOpen] = useState(false);
   const [assignmentBuilderOpen, setAssignmentBuilderOpen] = useState(false);
+  const [feedbackBuilderOpen, setFeedbackBuilderOpen] = useState(false);
   const [submissionsReviewOpen, setSubmissionsReviewOpen] = useState(false);
 
   const updateSections = (updater: (prev: SectionItem[]) => SectionItem[]) => {
     setSectionsState((prev) => {
       const next = updater(prev);
-      if (onSectionsChange) {
-        onSectionsChange(next);
-      }
+      Promise.resolve().then(() => {
+        if (onSectionsChange) {
+          onSectionsChange(next);
+        }
+      });
       return next;
     });
   };
@@ -131,6 +135,8 @@ export default function CurriculumBuilderView({
       setQuizBuilderOpen(true);
     } else if (type === "ASSIGNMENT") {
       setAssignmentBuilderOpen(true);
+    } else if (type === "FEEDBACK") {
+      setFeedbackBuilderOpen(true);
     } else {
       setAddContentOpen(true);
     }
@@ -193,6 +199,25 @@ export default function CurriculumBuilderView({
       dueDate: assignmentData.deadline,
       maxMarks: assignmentData.maxMarks,
       status: "Draft",
+    };
+    updateSections((prev) =>
+      prev.map((s) =>
+        s.id === activeSectionId
+          ? { ...s, contents: [...s.contents, newItem] }
+          : s
+      )
+    );
+  };
+
+  const handleSaveFeedback = (feedbackData: any) => {
+    if (!activeSectionId) return;
+    const newItem: ContentItem = {
+      id: Date.now(),
+      title: feedbackData.title,
+      contentType: "FEEDBACK",
+      questionsCount: feedbackData.questions.length,
+      description: feedbackData.description,
+      status: "Published",
     };
     updateSections((prev) =>
       prev.map((s) =>
@@ -469,6 +494,12 @@ export default function CurriculumBuilderView({
         open={assignmentBuilderOpen}
         onOpenChange={setAssignmentBuilderOpen}
         onSaveAssignment={handleSaveAssignment}
+      />
+
+      <FeedbackBuilderModal
+        open={feedbackBuilderOpen}
+        onOpenChange={setFeedbackBuilderOpen}
+        onSaveFeedback={handleSaveFeedback}
       />
 
       <AdminSubmissionsReview
