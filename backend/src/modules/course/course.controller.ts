@@ -6,6 +6,9 @@ import courseService from "./course.service";
 import { serializeBigInt } from "../../utils/prismaSerializer";
 import prisma from "../../config/prisma";
 import notificationService from "../notification/notification.service";
+import fs from "fs";
+import path from "path";
+import AdmZip from "adm-zip";
 
 // GET /api/courses
 export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -315,6 +318,194 @@ export const verifyBulkFile = asyncHandler(
       res,
       serializeBigInt(result),
       `Verification complete. ${result.successCount} valid employees found, ${result.failedCount} invalid.`
+    );
+  }
+);
+
+// POST /api/courses/upload-scorm (Upload & Extract SCORM Zip Package up to 100MB)
+export const uploadScormPackage = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    if (!req.file || !req.file.buffer) {
+      return errorResponse(res, "SCORM ZIP package file is required", "BAD_REQUEST", 400);
+    }
+
+    const originalName = req.file.originalname || "scorm-package.zip";
+    if (!originalName.toLowerCase().endsWith(".zip")) {
+      return errorResponse(res, "Only .zip SCORM package files are supported", "BAD_REQUEST", 400);
+    }
+
+    const folderId = `scorm-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    const storageBaseDir = path.join(process.cwd(), "public", "storage", "scorm", folderId);
+
+    if (!fs.existsSync(storageBaseDir)) {
+      fs.mkdirSync(storageBaseDir, { recursive: true });
+    }
+
+    const zip = new AdmZip(req.file.buffer);
+    zip.extractAllTo(storageBaseDir, true);
+
+    let launchFile = "index.html";
+
+    // 1. Try reading imsmanifest.xml if exists
+    const manifestPath = path.join(storageBaseDir, "imsmanifest.xml");
+    if (fs.existsSync(manifestPath)) {
+      try {
+        const manifestContent = fs.readFileSync(manifestPath, "utf-8");
+        const match = manifestContent.match(/<resource[^>]*href=["']([^"']+)["']/i) || manifestContent.match(/href=["']([^"']+\.html?)["']/i);
+        if (match && match[1]) {
+          launchFile = match[1];
+        }
+      } catch (err) {
+        console.warn("Failed to parse imsmanifest.xml:", err);
+      }
+    }
+
+    // 2. If launchFile does not exist on disk, scan directory for candidates
+    if (!fs.existsSync(path.join(storageBaseDir, launchFile))) {
+      const candidates = ["index.html", "index_lms.html", "story.html", "launcher.html", "scorm.html"];
+      let found = false;
+
+      for (const cand of candidates) {
+        if (fs.existsSync(path.join(storageBaseDir, cand))) {
+          launchFile = cand;
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        const findHtmlRecursive = (dir: string, baseDir: string): string | null => {
+          const files = fs.readdirSync(dir);
+          for (const f of files) {
+            const full = path.join(dir, f);
+            const stat = fs.statSync(full);
+            if (stat.isDirectory()) {
+              const sub = findHtmlRecursive(full, baseDir);
+              if (sub) return sub;
+            } else if (f.toLowerCase().endsWith(".html") || f.toLowerCase().endsWith(".htm")) {
+              return path.relative(baseDir, full).replace(/\\/g, "/");
+            }
+          }
+          return null;
+        };
+
+        const firstHtml = findHtmlRecursive(storageBaseDir, storageBaseDir);
+        if (firstHtml) {
+          launchFile = firstHtml;
+        }
+      }
+    }
+
+    const sizeMb = (req.file.size / (1024 * 1024)).toFixed(1);
+    const relativeUrl = `/storage/scorm/${folderId}/${launchFile}`;
+
+    return successResponse(
+      res,
+      {
+        entryUrl: relativeUrl,
+        folderId,
+        fileName: originalName,
+        fileSize: `${sizeMb} MB`,
+      },
+      "SCORM ZIP package uploaded and extracted successfully"
+    );
+  }
+);
+
+// POST /api/courses/upload-document
+export const uploadDocumentFile = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    if (!req.file) {
+      throw new Error("No document file provided.");
+    }
+
+    const originalName = req.file.originalname;
+    const sanitizedName = originalName.replace(/[^a-zA-Z0-9.-]/g, "_");
+    const uniqueName = `doc-${Date.now()}-${sanitizedName}`;
+    const storageDir = path.join(process.cwd(), "public", "storage", "uploads");
+
+    if (!fs.existsSync(storageDir)) {
+      fs.mkdirSync(storageDir, { recursive: true });
+    }
+
+    const filePath = path.join(storageDir, uniqueName);
+    fs.writeFileSync(filePath, req.file.buffer);
+
+    const sizeMb = (req.file.size / (1024 * 1024)).toFixed(1);
+    const relativeUrl = `/storage/uploads/${uniqueName}`;
+
+    let extractedSlides: Array<{
+      slideNum: number;
+      tag: string;
+      heading: string;
+      subheading: string;
+      bullets: string[];
+      color: string;
+    }> = [];
+
+    if (originalName.toLowerCase().endsWith(".pptx")) {
+      try {
+        const zip = new AdmZip(req.file.buffer);
+        const zipEntries = zip.getEntries();
+        const slideEntries = zipEntries
+          .filter((e) => e.entryName.match(/ppt\/slides\/slide\d+\.xml/i))
+          .sort((a, b) => {
+            const numA = parseInt(a.entryName.match(/slide(\d+)\.xml/i)?.[1] || "0", 10);
+            const numB = parseInt(b.entryName.match(/slide(\d+)\.xml/i)?.[1] || "0", 10);
+            return numA - numB;
+          });
+
+        const colors = [
+          "from-amber-500/20 to-orange-500/10 border-amber-500/30",
+          "from-blue-500/20 to-indigo-500/10 border-blue-500/30",
+          "from-emerald-500/20 to-teal-500/10 border-emerald-500/30",
+          "from-purple-500/20 to-pink-500/10 border-purple-500/30",
+          "from-red-500/20 to-rose-500/10 border-red-500/30",
+          "from-amber-500/20 to-yellow-500/10 border-amber-500/30",
+        ];
+
+        slideEntries.forEach((entry, idx) => {
+          const xmlText = entry.getData().toString("utf8");
+          const textMatches: string[] = [];
+          const regex = /<a:t[^>]*>(.*?)<\/a:t>/gi;
+          let match;
+          while ((match = regex.exec(xmlText)) !== null) {
+            const cleanText = match[1].replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim();
+            if (cleanText) {
+              textMatches.push(cleanText);
+            }
+          }
+
+          if (textMatches.length > 0) {
+            const heading = textMatches[0] || `Slide ${idx + 1}`;
+            const subheading = textMatches.length > 1 ? textMatches[1] : `Key Concepts`;
+            const bullets = textMatches.slice(2).filter((b) => b.length > 1);
+
+            extractedSlides.push({
+              slideNum: idx + 1,
+              tag: `Slide ${idx + 1}`,
+              heading,
+              subheading,
+              bullets: bullets.length > 0 ? bullets : [subheading],
+              color: colors[idx % colors.length],
+            });
+          }
+        });
+      } catch (err) {
+        console.error("PPTX slide extraction error:", err);
+      }
+    }
+
+    return successResponse(
+      res,
+      {
+        fileUrl: relativeUrl,
+        fileName: originalName,
+        fileSize: `${sizeMb} MB`,
+        extractedSlides: extractedSlides.length > 0 ? extractedSlides : undefined,
+        slidesConfigJson: extractedSlides.length > 0 ? JSON.stringify(extractedSlides) : undefined,
+      },
+      "Document file uploaded and processed successfully"
     );
   }
 );

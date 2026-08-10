@@ -29,8 +29,9 @@ import {
   ShieldCheck,
   Check,
   RefreshCw,
+  Archive,
 } from "lucide-react";
-import { getCourseById, selfEnrollCourse, type Course } from "@/services/api/course.service";
+import { getCourseById, selfEnrollCourse, type Course, getStorageUrl } from "@/services/api/course.service";
 import {
   getLearnerCourseProgress,
   updateLessonProgress,
@@ -41,6 +42,9 @@ import { recordRecentCourseAccess } from "@/services/api/recentAccess.service";
 import LearnerQuizModal from "@/components/courses/learner/LearnerQuizModal";
 import LearnerAssignmentModal from "@/components/courses/learner/LearnerAssignmentModal";
 import LearnerCertificateModal from "@/components/certificates/LearnerCertificateModal";
+import InteractiveDocViewer from "@/components/courses/player/InteractiveDocViewer";
+import InlineQuizPlayer from "@/components/courses/player/InlineQuizPlayer";
+import InlineAssignmentPlayer from "@/components/courses/player/InlineAssignmentPlayer";
 
 interface LessonItem {
   id: number;
@@ -812,51 +816,83 @@ export default function CoursePreviewPage() {
 
                 {/* Lesson Media / Viewport Handler */}
                 {selectedLesson.contentType === "QUIZ" ? (
-                  <div className="p-8 bg-slate-950 border border-slate-800 rounded-xl text-center space-y-4">
-                    <HelpCircle className="h-12 w-12 text-amber-500 mx-auto" />
-                    <div>
-                      <h3 className="text-base font-bold text-white">Course Quiz Assessment</h3>
-                      <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-                        Test your knowledge on this module. Complete objective and subjective questions.
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => setIsQuizModalOpen(true)}
-                      className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-2 px-6 h-10 shadow"
-                    >
-                      <Sparkles className="h-4 w-4" /> Launch Quiz
-                    </Button>
-                  </div>
+                  <InlineQuizPlayer
+                    quizTitle={selectedLesson.title}
+                    configJson={selectedLesson.quizConfigJson}
+                    onComplete={(score) => handleToggleLessonComplete(selectedLesson.id)}
+                  />
                 ) : selectedLesson.contentType === "ASSIGNMENT" ? (
-                  <div className="p-8 bg-slate-950 border border-slate-800 rounded-xl text-center space-y-4">
-                    <FileCheck2 className="h-12 w-12 text-purple-400 mx-auto" />
-                    <div>
-                      <h3 className="text-base font-bold text-white">Practical Assignment Submission</h3>
-                      <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-                        Submit written response or work artifacts for teacher evaluation and grading.
-                      </p>
+                  <InlineAssignmentPlayer
+                    assignmentTitle={selectedLesson.title}
+                    description={selectedLesson.description}
+                    configJson={selectedLesson.assignmentConfigJson}
+                    onComplete={() => handleToggleLessonComplete(selectedLesson.id)}
+                  />
+                ) : selectedLesson.contentType === "SCORM" || selectedLesson.contentUrl?.includes("/storage/scorm/") ? (
+                  <div className="w-full space-y-2">
+                    <div className="flex items-center justify-between px-1 text-xs text-slate-400">
+                      <span className="flex items-center gap-1.5 text-violet-400 font-semibold">
+                        <Archive className="h-4 w-4 text-violet-400" /> Interactive SCORM Package Player
+                      </span>
+                      {selectedLesson.contentUrl && (
+                        <button
+                          onClick={() => window.open(getStorageUrl(selectedLesson.contentUrl?.trim()), "_blank")}
+                          className="hover:text-white flex items-center gap-1 text-[11px] text-slate-400 transition-colors"
+                        >
+                          <ExternalLink className="h-3 w-3" /> Open in New Tab
+                        </button>
+                      )}
                     </div>
-                    <Button
-                      onClick={() => setIsAssignmentModalOpen(true)}
-                      className="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs gap-2 px-6 h-10 shadow"
-                    >
-                      <FileCheck2 className="h-4 w-4" /> Open Assignment Workspace
-                    </Button>
+                    <div className="w-full h-[650px] bg-white rounded-xl overflow-hidden border border-slate-800 shadow-2xl relative">
+                      <iframe
+                        src={getStorageUrl(selectedLesson.contentUrl)}
+                        className="w-full h-full border-0"
+                        title={selectedLesson.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
                   </div>
+                ) : selectedLesson.contentType === "YOUTUBE" && selectedLesson.contentUrl ? (
+                  <div className="w-full space-y-2">
+                    <div className="w-full h-[480px] bg-black rounded-xl overflow-hidden border border-slate-800 shadow-2xl">
+                      <iframe
+                        src={
+                          selectedLesson.contentUrl.includes("watch?v=")
+                            ? selectedLesson.contentUrl.replace("watch?v=", "embed/")
+                            : selectedLesson.contentUrl.includes("youtu.be/")
+                            ? selectedLesson.contentUrl.replace("youtu.be/", "www.youtube.com/embed/")
+                            : selectedLesson.contentUrl
+                        }
+                        className="w-full h-full border-0"
+                        title={selectedLesson.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
+                ) : selectedLesson.contentType === "PDF" || selectedLesson.contentType === "PPT" || (selectedLesson.contentUrl && selectedLesson.contentUrl.toLowerCase().match(/\.(pdf|ppt|pptx)$/)) ? (
+                  <InteractiveDocViewer
+                    key={selectedLesson.id || selectedLesson.title}
+                    title={selectedLesson.title}
+                    contentType={selectedLesson.contentType}
+                    contentUrl={selectedLesson.contentUrl}
+                    description={selectedLesson.description}
+                  />
                 ) : selectedLesson.contentUrl && selectedLesson.contentUrl.trim() !== "" ? (
                   <div className="p-8 bg-slate-950 border border-slate-800 rounded-xl text-center space-y-4">
                     <ExternalLink className="h-10 w-10 text-primary mx-auto" />
                     <div>
-                      <h3 className="text-base font-bold text-white">External Content Resource</h3>
+                      <h3 className="text-base font-bold text-white">Content Resource</h3>
                       <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-                        This lesson links to external interactive material configured by instructor.
+                        This lesson links to an interactive material configured by instructor.
                       </p>
                     </div>
                     <Button
-                      onClick={() => window.open(selectedLesson.contentUrl?.trim(), "_blank", "noopener,noreferrer")}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 px-6 h-10 shadow"
+                      onClick={() => window.open(getStorageUrl(selectedLesson.contentUrl?.trim()), "_blank", "noopener,noreferrer")}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
                     >
-                      <ExternalLink className="h-4 w-4" /> Launch Resource Link
+                      <ExternalLink className="h-4 w-4" /> Launch Content Resource
                     </Button>
                   </div>
                 ) : (
@@ -1014,6 +1050,21 @@ export default function CoursePreviewPage() {
                             <span className={isSelected ? "font-bold text-white" : "text-slate-300 font-medium"}>
                               {les.title}
                             </span>
+                            {les.contentType === "PPT" ? (
+                              <Badge className="bg-amber-500 text-slate-950 font-extrabold text-[9px] px-1.5 py-0">PPT</Badge>
+                            ) : les.contentType === "PDF" ? (
+                              <Badge className="bg-red-500 text-white font-extrabold text-[9px] px-1.5 py-0">PDF</Badge>
+                            ) : les.contentType === "SCORM" ? (
+                              <Badge className="bg-violet-600 text-white font-extrabold text-[9px] px-1.5 py-0">SCORM</Badge>
+                            ) : les.contentType === "YOUTUBE" ? (
+                              <Badge className="bg-red-600 text-white font-extrabold text-[9px] px-1.5 py-0">YouTube</Badge>
+                            ) : les.contentType === "QUIZ" ? (
+                              <Badge className="bg-amber-600 text-white font-extrabold text-[9px] px-1.5 py-0">Quiz</Badge>
+                            ) : les.contentType === "ASSIGNMENT" ? (
+                              <Badge className="bg-purple-600 text-white font-extrabold text-[9px] px-1.5 py-0">Assignment</Badge>
+                            ) : (
+                              <Badge className="bg-slate-700 text-slate-200 font-bold text-[9px] px-1.5 py-0">{les.contentType}</Badge>
+                            )}
                           </div>
                         </div>
                       );

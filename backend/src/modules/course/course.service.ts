@@ -397,11 +397,13 @@ class CourseService {
     }
 
     // Rule 7, 8, 13: Notify enrolled learners & creators/admins about content updates
-    const teacherName = userContext?.username || "Instructor";
+    const updaterName = userContext?.username || "Instructor";
+    const updaterRole = userContext?.role || "TEACHER";
     notificationService.notifyCourseUpdated({
       courseId: id,
       courseTitle: course.title,
-      teacherName,
+      updaterName,
+      updaterRole,
       addedOrUpdatedTitle: data.title || "Curriculum & Lessons",
       contentType: "Course Update",
     });

@@ -18,6 +18,7 @@ import {
   Globe,
   Lock,
 } from "lucide-react";
+import CoursePreviewModal from "../builder/CoursePreviewModal";
 
 interface ReviewPublishFormProps {
   courseId?: string | null;
@@ -58,6 +59,7 @@ export default function ReviewPublishForm({
   const router = useRouter();
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">("PUBLISHED");
   const [loading, setLoading] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
 
   const { basicInfo, sections, enrollment, certificate } = wizardData;
 
@@ -142,14 +144,25 @@ export default function ReviewPublishForm({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-          <Rocket className="h-6 w-6 text-primary" />
-          Review &amp; Publish Course
-        </h2>
-        <p className="text-xs text-muted-foreground mt-1">
-          Review all course details, curriculum structure, and accessibility rules before publishing.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Rocket className="h-6 w-6 text-primary" />
+            Review &amp; Publish Course
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Review all course details, curriculum structure, and accessibility rules before publishing.
+          </p>
+        </div>
+
+        <Button
+          onClick={() => setPreviewModalOpen(true)}
+          variant="outline"
+          className="gap-2 text-xs border-primary/40 text-primary hover:bg-primary/10 font-bold shrink-0 cursor-pointer"
+        >
+          <Eye className="h-4 w-4" />
+          Preview Course Player
+        </Button>
       </div>
 
       {/* Summary Grid */}
@@ -327,6 +340,20 @@ export default function ReviewPublishForm({
           </Button>
         </div>
       </div>
+
+      {/* Interactive Course Preview Modal */}
+      <CoursePreviewModal
+        open={previewModalOpen}
+        onOpenChange={setPreviewModalOpen}
+        courseTitle={basicInfo.title}
+        shortDescription={basicInfo.shortDescription}
+        description={basicInfo.description}
+        level={basicInfo.level}
+        durationHours={basicInfo.duration}
+        sections={sections}
+        enrollment={enrollment}
+        certificate={certificate}
+      />
     </div>
   );
 }

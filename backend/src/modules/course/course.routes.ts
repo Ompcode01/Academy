@@ -17,6 +17,8 @@ import {
   bulkEnrollUsers,
   verifyUser,
   verifyBulkFile,
+  uploadScormPackage,
+  uploadDocumentFile,
 } from "./course.controller";
 
 import {
@@ -31,7 +33,30 @@ import {
 } from "./progress.controller";
 
 const upload = multer({ storage: multer.memoryStorage() });
+const uploadScorm = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB size limit
+});
+
 const router = Router();
+
+// SCORM Package Upload Route (100MB limit)
+router.post(
+  "/upload-scorm",
+  authenticate,
+  authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"),
+  uploadScorm.single("file"),
+  uploadScormPackage
+);
+
+// Document File Upload Route (PDF, PPT, DOC)
+router.post(
+  "/upload-document",
+  authenticate,
+  authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"),
+  upload.single("file"),
+  uploadDocumentFile
+);
 
 // Pre-enrollment Verification Routes (usable during wizard creation)
 router.post("/verify-user", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), verifyUser);

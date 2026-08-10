@@ -22,6 +22,7 @@ import {
   Eye,
   Clock,
   BookOpen,
+  Archive,
 } from "lucide-react";
 import AddSectionModal from "./AddSectionModal";
 import ContentTypePickerModal, { ContentTypeKey } from "./ContentTypePickerModal";
@@ -30,6 +31,7 @@ import QuizBuilderModal from "./QuizBuilderModal";
 import AssignmentBuilderModal from "./AssignmentBuilderModal";
 import FeedbackBuilderModal from "./FeedbackBuilderModal";
 import AdminSubmissionsReview from "./AdminSubmissionsReview";
+import CoursePreviewModal from "./CoursePreviewModal";
 
 export interface SectionItem {
   id: number;
@@ -51,6 +53,8 @@ export interface ContentItem {
   maxMarks?: number;
   questionsCount?: number;
   status?: "Draft" | "Published";
+  quizConfigJson?: string;
+  assignmentConfigJson?: string;
 }
 
 interface CurriculumBuilderViewProps {
@@ -90,6 +94,7 @@ export default function CurriculumBuilderView({
   const [assignmentBuilderOpen, setAssignmentBuilderOpen] = useState(false);
   const [feedbackBuilderOpen, setFeedbackBuilderOpen] = useState(false);
   const [submissionsReviewOpen, setSubmissionsReviewOpen] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
 
   const updateSections = (updater: (prev: SectionItem[]) => SectionItem[]) => {
     setSectionsState((prev) => {
@@ -176,9 +181,10 @@ export default function CurriculumBuilderView({
       id: Date.now(),
       title: quizData.title,
       contentType: "QUIZ",
-      questionsCount: quizData.questions.length,
-      maxMarks: quizData.totalMarks,
-      duration: quizData.durationMinutes,
+      questionsCount: quizData.questions ? quizData.questions.length : 0,
+      maxMarks: quizData.totalMarks || 100,
+      duration: quizData.durationMinutes || 15,
+      quizConfigJson: JSON.stringify(quizData),
       status: "Published",
     };
     updateSections((prev) =>
@@ -196,8 +202,10 @@ export default function CurriculumBuilderView({
       id: Date.now(),
       title: assignmentData.title,
       contentType: "ASSIGNMENT",
+      description: assignmentData.instructions || assignmentData.description,
       dueDate: assignmentData.deadline,
-      maxMarks: assignmentData.maxMarks,
+      maxMarks: assignmentData.maxMarks || 100,
+      assignmentConfigJson: JSON.stringify(assignmentData),
       status: "Draft",
     };
     updateSections((prev) =>
@@ -240,6 +248,8 @@ export default function CurriculumBuilderView({
 
   const getContentIcon = (type: ContentTypeKey) => {
     switch (type) {
+      case "SCORM":
+        return <Archive className="h-4 w-4 text-violet-500" />;
       case "YOUTUBE":
         return <Video className="h-4 w-4 text-red-500" />;
       case "UDEMY":
@@ -289,7 +299,12 @@ export default function CurriculumBuilderView({
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2 text-xs">
+          <Button
+            onClick={() => setPreviewModalOpen(true)}
+            variant="outline"
+            size="sm"
+            className="gap-2 text-xs border-primary/30 text-primary hover:bg-primary/10 font-bold cursor-pointer"
+          >
             <Eye className="h-4 w-4" /> Preview Course
           </Button>
           <Button
@@ -507,6 +522,16 @@ export default function CurriculumBuilderView({
         onOpenChange={setSubmissionsReviewOpen}
         assignmentTitle="Java Mini Project"
         maxMarks={50}
+      />
+
+      <CoursePreviewModal
+        open={previewModalOpen}
+        onOpenChange={setPreviewModalOpen}
+        courseTitle={courseTitle}
+        level={level}
+        category={category}
+        durationHours={durationHours}
+        sections={sections}
       />
     </div>
   );

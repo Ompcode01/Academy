@@ -10,7 +10,13 @@ const role_middleware_1 = require("../../middleware/role.middleware");
 const course_controller_1 = require("./course.controller");
 const progress_controller_1 = require("./progress.controller");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
+const uploadScorm = (0, multer_1.default)({
+    storage: multer_1.default.memoryStorage(),
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB size limit
+});
 const router = (0, express_1.Router)();
+// SCORM Package Upload Route (100MB limit)
+router.post("/upload-scorm", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), uploadScorm.single("file"), course_controller_1.uploadScormPackage);
 // Pre-enrollment Verification Routes (usable during wizard creation)
 router.post("/verify-user", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), course_controller_1.verifyUser);
 router.post("/verify-bulk-file", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), course_controller_1.verifyBulkFile);

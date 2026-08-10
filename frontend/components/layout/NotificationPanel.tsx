@@ -22,6 +22,8 @@ import {
   CheckCircle,
   Clock,
   ShieldAlert,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import type { Notification } from "@/services/api/notification.service";
 
@@ -109,7 +111,12 @@ function NotificationCard({ notification }: { notification: Notification }) {
     }
     if (notification.link) {
       useNotificationStore.getState().closePanel();
-      router.push(notification.link);
+      const targetLink = notification.link.trim();
+      if (targetLink.startsWith("http://") || targetLink.startsWith("https://")) {
+        window.open(targetLink, "_blank", "noopener,noreferrer");
+      } else {
+        router.push(targetLink);
+      }
     }
   };
 
@@ -194,8 +201,11 @@ export default function NotificationPanel() {
     unreadCount,
     filter,
     categoryFilter,
+    soundEnabled,
     setFilter,
     setCategoryFilter,
+    toggleSound,
+    playSoundPreview,
     markAllRead,
     closePanel,
   } = useNotificationStore();
@@ -222,15 +232,30 @@ export default function NotificationPanel() {
               </span>
             )}
           </div>
-          {unreadCount > 0 && (
+          
+          <div className="flex items-center gap-3">
             <button
-              onClick={markAllRead}
+              onClick={toggleSound}
               className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              title={soundEnabled ? "Notification sound enabled (Click to mute)" : "Notification sound muted (Click to enable)"}
             >
-              <CheckCheck className="h-3.5 w-3.5" />
-              Mark all read
+              {soundEnabled ? (
+                <Volume2 className="h-3.5 w-3.5 text-emerald-500" />
+              ) : (
+                <VolumeX className="h-3.5 w-3.5 text-muted-foreground/60" />
+              )}
             </button>
-          )}
+
+            {unreadCount > 0 && (
+              <button
+                onClick={markAllRead}
+                className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+                Mark all read
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Read Status & Category Filter Tabs */}

@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
     "localhost",
     "127.0.0.1",
   ],
+  async rewrites() {
+    return [
+      {
+        source: "/storage/:path*",
+        destination: "http://localhost:5000/storage/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

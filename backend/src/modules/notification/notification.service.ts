@@ -147,12 +147,14 @@ const notificationService = {
   },
 
   /**
-   * Notify enrolled learners when a teacher updates course contents.
+   * Notify enrolled learners when an Admin, Super Admin, or Teacher updates course contents.
    */
   async notifyCourseUpdated(data: {
     courseId: bigint;
     courseTitle: string;
-    teacherName: string;
+    updaterName?: string;
+    updaterRole?: string;
+    teacherName?: string;
     addedOrUpdatedTitle: string;
     contentType?: string;
   }) {
@@ -161,6 +163,41 @@ const notificationService = {
         where: { id: data.courseId },
         select: { departmentId: true, creatorId: true },
       });
+
+      let name = data.updaterName || data.teacherName || "Instructor";
+      let rawRole = (data.updaterRole || "").toUpperCase();
+
+      // If updaterRole is missing or defaults to TEACHER, query actual role code from DB
+      if (!data.updaterRole && name) {
+        const emp = await prisma.employee.findFirst({
+          where: {
+            OR: [
+              { userAccount: { username: { equals: name } } },
+              { firstName: { equals: name } },
+            ],
+          },
+          select: {
+            assignedRoles: {
+              select: { role: { select: { roleCode: true } } },
+            },
+          },
+        });
+        if (emp) {
+          const roles = emp.assignedRoles.map((r) => r.role?.roleCode);
+          if (roles.includes("SUPER_ADMIN")) rawRole = "SUPER_ADMIN";
+          else if (roles.includes("ADMIN")) rawRole = "ADMIN";
+          else if (roles.includes("TEACHER")) rawRole = "TEACHER";
+        }
+      }
+
+      let roleLabel = "Instructor";
+      if (rawRole === "SUPER_ADMIN") {
+        roleLabel = "Super Admin";
+      } else if (rawRole === "ADMIN") {
+        roleLabel = "Admin";
+      } else if (rawRole === "TEACHER") {
+        roleLabel = "Teacher";
+      }
 
       // 1. Gather all Learner IDs: enrolled users + department employees
       const recipientLearnerIds = new Set<bigint>();
@@ -186,7 +223,7 @@ const notificationService = {
         userId: learnerId,
         type: "COURSE_UPDATED",
         title: "Course Content Updated",
-        message: `Your course '${data.courseTitle}' was updated by Teacher ${data.teacherName}. New content added: ${data.addedOrUpdatedTitle}${typeLabel}.`,
+        message: `Your course '${data.courseTitle}' was updated by ${roleLabel} ${name}. New content added: ${data.addedOrUpdatedTitle}${typeLabel}.`,
         link: `/courses/${data.courseId}/preview`,
         metadata: { courseId: Number(data.courseId) },
         roleTarget: "LEARNER",
@@ -201,9 +238,9 @@ const notificationService = {
       for (const adminId of adminEmployeeIds) {
         notifications.push({
           userId: adminId,
-          type: "TEACHER_COURSE_UPDATED",
-          title: "Teacher Updated Course Content",
-          message: `Teacher ${data.teacherName} added/updated content: "${data.addedOrUpdatedTitle}" in course '${data.courseTitle}'.`,
+          type: "COURSE_UPDATED_ADMIN",
+          title: `${roleLabel} Updated Course Content`,
+          message: `${roleLabel} ${name} added/updated content: "${data.addedOrUpdatedTitle}" in course '${data.courseTitle}'.`,
           link: `/courses/${data.courseId}/preview`,
           metadata: { courseId: Number(data.courseId) },
           roleTarget: "ADMIN",
@@ -252,15 +289,22 @@ const notificationService = {
     courseTitle: string;
     contentTitle: string;
     teacherName: string;
+    evaluatorRole?: string;
     status: string;
     grade?: string | null;
     score?: number | null;
     feedback?: string | null;
   }) {
     try {
+      const rawRole = (data.evaluatorRole || "").toUpperCase();
+      let roleLabel = "Teacher";
+      if (rawRole === "SUPER_ADMIN") roleLabel = "Super Admin";
+      else if (rawRole === "ADMIN") roleLabel = "Admin";
+      else if (rawRole === "TEACHER") roleLabel = "Teacher";
+
       const isRevision = data.status === "NEEDS_REVISION";
       const title = isRevision ? "Revision Required" : "Submission Evaluated";
-      const message = `Your submission for "${data.contentTitle}" in course '${data.courseTitle}' was evaluated by Teacher ${data.teacherName}. Status: ${data.status}.${data.grade ? ` Grade: ${data.grade}.` : ""}${data.feedback ? ` Feedback: ${data.feedback}` : ""}`;
+      const message = `Your submission for "${data.contentTitle}" in course '${data.courseTitle}' was evaluated by ${roleLabel} ${data.teacherName}. Status: ${data.status}.${data.grade ? ` Grade: ${data.grade}.` : ""}${data.feedback ? ` Feedback: ${data.feedback}` : ""}`;
 
       await notificationRepository.create({
         userId: data.userId,
@@ -688,14 +732,19 @@ const notificationService = {
   /**
    * Calendar Event Notifications: Audience matching logic.
    */
+  /**
+   * Calendar Event Notifications: Audience matching logic with direct URL link support.
+   */
   async notifyCalendarEvent(data: {
     eventId: bigint;
     title: string;
     eventDate: Date;
+    eventTime?: string | null;
+    url?: string | null;
     eventType: string; // site, course, department, user
     courseId?: bigint | null;
     departmentId?: bigint | null;
-    action: "CREATED" | "UPDATED" | "CANCELLED" | "RESCHEDULED";
+    action: "CREATED" | "UPDATED" | "CANCELLED" | "RESCHEDULED" | "STARTING_NOW";
     actorId?: bigint;
   }) {
     try {
@@ -727,21 +776,33 @@ const notificationService = {
         recipientIds = employees.map((e) => e.id);
       }
 
-      recipientIds = [...new Set(recipientIds)].filter((id) => id !== data.actorId);
+      recipientIds = [...new Set(recipientIds)].filter((id) => !data.actorId || id !== data.actorId);
       if (recipientIds.length === 0) return;
 
-      const actionText = data.action === "CREATED" ? "New Event Added" : `Calendar Event ${data.action}`;
+      const isLive = data.action === "STARTING_NOW";
+      const actionText = isLive
+        ? "Live Event Starting Now 🔴"
+        : data.action === "CREATED"
+        ? "New Event Scheduled"
+        : `Calendar Event ${data.action}`;
+
       const dateStr = data.eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      const timeStr = data.eventTime ? ` at ${data.eventTime}` : "";
+
+      const eventLink = data.url && data.url.trim().length > 0 ? data.url.trim() : "/events";
+      const message = isLive
+        ? `Event "${data.title}" is starting right now! ${data.url ? "Click to join live meeting." : "Click to view event."}`
+        : `Event "${data.title}" is scheduled for ${dateStr}${timeStr}. ${data.url ? "Click to join meeting link." : "Click to view details."}`;
 
       const notifications: CreateNotificationInput[] = recipientIds.map((rId) => ({
         userId: rId,
         actorId: data.actorId,
         type: `EVENT_${data.action}`,
         category: "EVENT",
-        priority: "NORMAL",
+        priority: isLive ? "HIGH" : "NORMAL",
         title: `${actionText}: ${data.title}`,
-        message: `Event "${data.title}" is scheduled for ${dateStr}. Click to view calendar.`,
-        link: "/events",
+        message,
+        link: eventLink,
         entityType: "EVENT",
         entityId: data.eventId,
       }));

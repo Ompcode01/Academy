@@ -269,3 +269,38 @@ export const gradeSubmission = async (
   const response = await api.post(`/courses/admin/grade-submission/${submissionId}`, data);
   return response.data;
 };
+
+export const uploadScormPackage = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await api.post("/courses/upload-scorm", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const uploadDocumentFile = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await api.post("/courses/upload-document", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const getStorageUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("/storage/")) {
+    if (typeof window !== "undefined") {
+      const hostname = window.location.hostname;
+      return `http://${hostname}:5000${url}`;
+    }
+    return `http://localhost:5000${url}`;
+  }
+  return url;
+};

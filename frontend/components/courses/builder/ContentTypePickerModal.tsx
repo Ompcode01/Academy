@@ -11,6 +11,7 @@ import {
   HelpCircle,
   Link as LinkIcon,
   MessageSquare,
+  Archive,
 } from "lucide-react";
 
 export type ContentTypeKey =
@@ -18,6 +19,7 @@ export type ContentTypeKey =
   | "UDEMY"
   | "PDF"
   | "PPT"
+  | "SCORM"
   | "ARTICLE"
   | "ASSIGNMENT"
   | "QUIZ"
@@ -38,6 +40,14 @@ const contentTypes: {
   bgColor: string;
   borderColor: string;
 }[] = [
+  {
+    key: "SCORM",
+    label: "SCORM Package",
+    icon: Archive,
+    color: "text-violet-500",
+    bgColor: "bg-violet-500/10",
+    borderColor: "border-violet-500/20",
+  },
   {
     key: "YOUTUBE",
     label: "YouTube Link",

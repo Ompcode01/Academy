@@ -10,6 +10,48 @@ import {
 
 type FilterMode = "all" | "unread";
 
+/**
+ * Web Audio API Notification Chime / Ringtone Generator
+ * Plays a pleasant crystal-clear 3-note chime (E5 -> B5 -> E6)
+ */
+export function playNotificationChime() {
+  if (typeof window === "undefined") return;
+
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    const ctx = new AudioContextClass();
+    if (ctx.state === "suspended") {
+      ctx.resume();
+    }
+
+    const now = ctx.currentTime;
+    const notes = [659.25, 987.77, 1318.51]; // E5, B5, E6 frequencies
+
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+      // Attack & decay envelope
+      gain.gain.setValueAtTime(0, now + idx * 0.08);
+      gain.gain.linearRampToValueAtTime(0.25, now + idx * 0.08 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.35);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 0.35);
+    });
+  } catch (err) {
+    console.debug("Notification chime audio playback skipped:", err);
+  }
+}
+
 interface NotificationStore {
   notifications: Notification[];
   unreadCount: number;
@@ -17,12 +59,15 @@ interface NotificationStore {
   isLoading: boolean;
   filter: FilterMode;
   categoryFilter: string;
+  soundEnabled: boolean;
 
   // Actions
   togglePanel: () => void;
   closePanel: () => void;
   setFilter: (filter: FilterMode) => void;
   setCategoryFilter: (category: string) => void;
+  toggleSound: () => void;
+  playSoundPreview: () => void;
   fetchNotifications: (limit?: number) => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
   markRead: (id: string) => Promise<void>;
@@ -32,16 +77,16 @@ interface NotificationStore {
 
 export const useNotificationStore = create<NotificationStore>((set, get) => ({
   notifications: [],
-  unreadCount: 0,
+  unreadCount: -1, // Initialized to -1 so first fetch doesn't trigger chime on page load
   isOpen: false,
   isLoading: false,
   filter: "all",
   categoryFilter: "ALL",
+  soundEnabled: true,
 
   togglePanel: () => {
     const wasOpen = get().isOpen;
     set({ isOpen: !wasOpen });
-    // Fetch fresh data when opening
     if (!wasOpen) {
       get().fetchNotifications();
     }
@@ -57,6 +102,18 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   setCategoryFilter: (categoryFilter: string) => {
     set({ categoryFilter });
     get().fetchNotifications();
+  },
+
+  toggleSound: () => {
+    const newSoundState = !get().soundEnabled;
+    set({ soundEnabled: newSoundState });
+    if (newSoundState) {
+      playNotificationChime();
+    }
+  },
+
+  playSoundPreview: () => {
+    playNotificationChime();
   },
 
   fetchNotifications: async (limit = 30) => {
@@ -79,7 +136,15 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
     try {
       const res = await getUnreadCount();
       if (res?.success && res.data) {
-        set({ unreadCount: res.data.count || 0 });
+        const newCount = res.data.count || 0;
+        const prevCount = get().unreadCount;
+
+        // If unread count increased while browsing, ring the notification chime!
+        if (prevCount >= 0 && newCount > prevCount && get().soundEnabled) {
+          playNotificationChime();
+        }
+
+        set({ unreadCount: newCount });
       }
     } catch {
       // Ignore background notification polling errors silently

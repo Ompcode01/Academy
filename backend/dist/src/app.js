@@ -27,15 +27,15 @@ const notification_routes_1 = __importDefault(require("./routes/notification.rou
 const reporting_routes_1 = __importDefault(require("./routes/reporting.routes"));
 const guestGrant_routes_1 = __importDefault(require("./routes/guestGrant.routes"));
 const path_1 = __importDefault(require("path"));
-const scorm_routes_1 = __importDefault(require("./routes/scorm.routes"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({
     extended: true,
 }));
-// Serve SCORM extracted packages as static files
-app.use("/storage/scorm", express_1.default.static(path_1.default.join(process.cwd(), "public", "storage", "scorm")));
+// Serve static storage directory for unzipped SCORM packages and uploads
+app.use("/storage", express_1.default.static(path_1.default.join(__dirname, "../public/storage")));
+app.use("/storage", express_1.default.static(path_1.default.join(process.cwd(), "public/storage")));
 app.get("/", (req, res) => {
     res.json({
         message: "LMS Backend Running"
@@ -61,6 +61,5 @@ app.use("/api/admin/audit-logs", audit_routes_1.default);
 app.use("/api/notifications", notification_routes_1.default);
 app.use("/api/reports", reporting_routes_1.default);
 app.use("/api/guest-grants", guestGrant_routes_1.default);
-app.use("/api/scorm", scorm_routes_1.default);
 app.use(error_middleware_1.default);
 exports.default = app;

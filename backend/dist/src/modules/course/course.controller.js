@@ -3,13 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyBulkFile = exports.verifyUser = exports.bulkEnrollUsers = exports.adminEnrollUser = exports.selfEnrollCourse = exports.createContent = exports.deleteSection = exports.updateSection = exports.createSection = exports.deleteCourse = exports.updateCourse = exports.createCourse = exports.getCourseById = exports.getCourses = void 0;
+exports.uploadScormPackage = exports.verifyBulkFile = exports.verifyUser = exports.bulkEnrollUsers = exports.adminEnrollUser = exports.selfEnrollCourse = exports.createContent = exports.deleteSection = exports.updateSection = exports.createSection = exports.deleteCourse = exports.updateCourse = exports.createCourse = exports.getCourseById = exports.getCourses = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const response_1 = require("../../utils/response");
 const course_service_1 = __importDefault(require("./course.service"));
 const prismaSerializer_1 = require("../../utils/prismaSerializer");
 const prisma_1 = __importDefault(require("../../config/prisma"));
 const notification_service_1 = __importDefault(require("../notification/notification.service"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const adm_zip_1 = __importDefault(require("adm-zip"));
 // GET /api/courses
 exports.getCourses = (0, asyncHandler_1.default)(async (req, res) => {
     const { search, categoryId, isPublished, status, departmentId, page, limit } = req.query;
@@ -258,4 +261,78 @@ exports.verifyBulkFile = (0, asyncHandler_1.default)(async (req, res) => {
     }
     const result = await course_service_1.default.verifyBulkFile(req.file.buffer);
     return (0, response_1.successResponse)(res, (0, prismaSerializer_1.serializeBigInt)(result), `Verification complete. ${result.successCount} valid employees found, ${result.failedCount} invalid.`);
+});
+// POST /api/courses/upload-scorm (Upload & Extract SCORM Zip Package up to 100MB)
+exports.uploadScormPackage = (0, asyncHandler_1.default)(async (req, res) => {
+    if (!req.file || !req.file.buffer) {
+        return (0, response_1.errorResponse)(res, "SCORM ZIP package file is required", "BAD_REQUEST", 400);
+    }
+    const originalName = req.file.originalname || "scorm-package.zip";
+    if (!originalName.toLowerCase().endsWith(".zip")) {
+        return (0, response_1.errorResponse)(res, "Only .zip SCORM package files are supported", "BAD_REQUEST", 400);
+    }
+    const folderId = `scorm-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    const storageBaseDir = path_1.default.join(process.cwd(), "public", "storage", "scorm", folderId);
+    if (!fs_1.default.existsSync(storageBaseDir)) {
+        fs_1.default.mkdirSync(storageBaseDir, { recursive: true });
+    }
+    const zip = new adm_zip_1.default(req.file.buffer);
+    zip.extractAllTo(storageBaseDir, true);
+    let launchFile = "index.html";
+    // 1. Try reading imsmanifest.xml if exists
+    const manifestPath = path_1.default.join(storageBaseDir, "imsmanifest.xml");
+    if (fs_1.default.existsSync(manifestPath)) {
+        try {
+            const manifestContent = fs_1.default.readFileSync(manifestPath, "utf-8");
+            const match = manifestContent.match(/<resource[^>]*href=["']([^"']+)["']/i) || manifestContent.match(/href=["']([^"']+\.html?)["']/i);
+            if (match && match[1]) {
+                launchFile = match[1];
+            }
+        }
+        catch (err) {
+            console.warn("Failed to parse imsmanifest.xml:", err);
+        }
+    }
+    // 2. If launchFile does not exist on disk, scan directory for candidates
+    if (!fs_1.default.existsSync(path_1.default.join(storageBaseDir, launchFile))) {
+        const candidates = ["index.html", "index_lms.html", "story.html", "launcher.html", "scorm.html"];
+        let found = false;
+        for (const cand of candidates) {
+            if (fs_1.default.existsSync(path_1.default.join(storageBaseDir, cand))) {
+                launchFile = cand;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            const findHtmlRecursive = (dir, baseDir) => {
+                const files = fs_1.default.readdirSync(dir);
+                for (const f of files) {
+                    const full = path_1.default.join(dir, f);
+                    const stat = fs_1.default.statSync(full);
+                    if (stat.isDirectory()) {
+                        const sub = findHtmlRecursive(full, baseDir);
+                        if (sub)
+                            return sub;
+                    }
+                    else if (f.toLowerCase().endsWith(".html") || f.toLowerCase().endsWith(".htm")) {
+                        return path_1.default.relative(baseDir, full).replace(/\\/g, "/");
+                    }
+                }
+                return null;
+            };
+            const firstHtml = findHtmlRecursive(storageBaseDir, storageBaseDir);
+            if (firstHtml) {
+                launchFile = firstHtml;
+            }
+        }
+    }
+    const sizeMb = (req.file.size / (1024 * 1024)).toFixed(1);
+    const relativeUrl = `/storage/scorm/${folderId}/${launchFile}`;
+    return (0, response_1.successResponse)(res, {
+        entryUrl: relativeUrl,
+        folderId,
+        fileName: originalName,
+        fileSize: `${sizeMb} MB`,
+    }, "SCORM ZIP package uploaded and extracted successfully");
 });
