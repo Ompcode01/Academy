@@ -36,6 +36,10 @@ export default function SecondaryNav({ isSidebarOpen, onToggleSidebar }: Seconda
       { label: "Reports", href: "/reports", icon: TrendingUp },
       { label: "Settings", href: "/settings", icon: Settings }
     );
+  } else if (userRole === ROLES.TEACHER) {
+    navItems.push(
+      { label: "Reports", href: "/reports", icon: TrendingUp }
+    );
   }
 
   const isActive = (href: string) => {

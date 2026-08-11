@@ -48,7 +48,7 @@ export function canManageCourses(role: string | undefined): boolean {
  * Helper to check reports viewing authorization
  */
 export function canViewReports(role: string | undefined): boolean {
-  return hasRole(role, ROLES.SUPER_ADMIN, ROLES.ADMIN);
+  return hasRole(role, ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.TEACHER);
 }
 
 /**

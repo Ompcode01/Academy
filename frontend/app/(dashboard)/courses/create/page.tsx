@@ -197,6 +197,10 @@ function CreateCourseContent() {
       case 3:
         return (
           <AssessmentsForm
+            sections={wizardState.sections}
+            onSectionsChange={(newSections) =>
+              setWizardState((prev) => ({ ...prev, sections: newSections }))
+            }
             onNext={handleNext}
             onBack={handleBack}
             onCancel={handleCancel}

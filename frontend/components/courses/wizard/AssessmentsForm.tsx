@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,12 +14,16 @@ import QuizBuilderModal from "../builder/QuizBuilderModal";
 import AssignmentBuilderModal from "../builder/AssignmentBuilderModal";
 
 interface AssessmentsFormProps {
+  sections?: any[];
+  onSectionsChange?: (sections: any[]) => void;
   onNext?: () => void;
   onBack?: () => void;
   onCancel?: () => void;
 }
 
 export default function AssessmentsForm({
+  sections = [],
+  onSectionsChange,
   onNext,
   onBack,
   onCancel,
@@ -30,20 +34,134 @@ export default function AssessmentsForm({
   const [quizModalOpen, setQuizModalOpen] = useState(false);
   const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (sections) {
+      const parsedQuizzes = sections.flatMap((sec) =>
+        (sec.contents || [])
+          .filter((c: any) => c.contentType === "QUIZ")
+          .map((c: any) => {
+            let config = {};
+            if (c.quizConfigJson) {
+              try {
+                config = typeof c.quizConfigJson === "string" ? JSON.parse(c.quizConfigJson) : c.quizConfigJson;
+              } catch (e) {
+                console.error("Error parsing quiz config:", e);
+              }
+            }
+            return {
+              id: c.id,
+              title: c.title,
+              questions: (config as any).questions || [],
+              totalMarks: c.maxMarks || (config as any).totalMarks || 100,
+              durationMinutes: c.duration || (config as any).durationMinutes || 15,
+              passingPercentage: (config as any).passingPercentage || 70,
+            };
+          })
+      );
+
+      const parsedAssignments = sections.flatMap((sec) =>
+        (sec.contents || [])
+          .filter((c: any) => c.contentType === "ASSIGNMENT")
+          .map((c: any) => {
+            let config = {};
+            if (c.assignmentConfigJson) {
+              try {
+                config = typeof c.assignmentConfigJson === "string" ? JSON.parse(c.assignmentConfigJson) : c.assignmentConfigJson;
+              } catch (e) {
+                console.error("Error parsing assignment config:", e);
+              }
+            }
+            return {
+              id: c.id,
+              title: c.title,
+              instructions: c.description || (config as any).instructions || "",
+              maxMarks: c.maxMarks || (config as any).maxMarks || 100,
+              deadline: (config as any).deadline || "",
+              maxAttempts: (config as any).maxAttempts || 2,
+            };
+          })
+      );
+
+      setQuizzes(parsedQuizzes);
+      setAssignments(parsedAssignments);
+    }
+  }, [sections]);
+
   const handleSaveQuiz = (newQuiz: any) => {
-    setQuizzes((prev) => [...prev, { ...newQuiz, id: Date.now() }]);
+    const newContentItem = {
+      id: Date.now(),
+      title: newQuiz.title,
+      contentType: "QUIZ" as const,
+      questionsCount: newQuiz.questions ? newQuiz.questions.length : 0,
+      maxMarks: newQuiz.totalMarks || 100,
+      duration: newQuiz.durationMinutes || 15,
+      quizConfigJson: JSON.stringify(newQuiz),
+      status: "Published" as const,
+    };
+
+    const updatedSections = [...sections];
+    if (updatedSections.length === 0) {
+      updatedSections.push({
+        id: Date.now(),
+        title: "Assessments",
+        description: "Course Assessments",
+        expanded: true,
+        contents: [newContentItem],
+      });
+    } else {
+      const lastSecIdx = updatedSections.length - 1;
+      updatedSections[lastSecIdx] = {
+        ...updatedSections[lastSecIdx],
+        contents: [...(updatedSections[lastSecIdx].contents || []), newContentItem],
+      };
+    }
+    onSectionsChange?.(updatedSections);
   };
 
   const handleSaveAssignment = (newAssignment: any) => {
-    setAssignments((prev) => [...prev, { ...newAssignment, id: Date.now() }]);
+    const newContentItem = {
+      id: Date.now(),
+      title: newAssignment.title,
+      contentType: "ASSIGNMENT" as const,
+      description: newAssignment.instructions || newAssignment.description,
+      maxMarks: newAssignment.maxMarks || 100,
+      assignmentConfigJson: JSON.stringify(newAssignment),
+      status: "Draft" as const,
+    };
+
+    const updatedSections = [...sections];
+    if (updatedSections.length === 0) {
+      updatedSections.push({
+        id: Date.now(),
+        title: "Assessments",
+        description: "Course Assessments",
+        expanded: true,
+        contents: [newContentItem],
+      });
+    } else {
+      const lastSecIdx = updatedSections.length - 1;
+      updatedSections[lastSecIdx] = {
+        ...updatedSections[lastSecIdx],
+        contents: [...(updatedSections[lastSecIdx].contents || []), newContentItem],
+      };
+    }
+    onSectionsChange?.(updatedSections);
   };
 
   const handleDeleteQuiz = (id: number) => {
-    setQuizzes((prev) => prev.filter((q) => q.id !== id));
+    const updatedSections = sections.map((sec) => ({
+      ...sec,
+      contents: (sec.contents || []).filter((c: any) => c.id !== id),
+    }));
+    onSectionsChange?.(updatedSections);
   };
 
   const handleDeleteAssignment = (id: number) => {
-    setAssignments((prev) => prev.filter((a) => a.id !== id));
+    const updatedSections = sections.map((sec) => ({
+      ...sec,
+      contents: (sec.contents || []).filter((c: any) => c.id !== id),
+    }));
+    onSectionsChange?.(updatedSections);
   };
 
   return (

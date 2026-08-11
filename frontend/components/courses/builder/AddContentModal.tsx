@@ -99,6 +99,7 @@ export default function AddContentModal({
 
     let finalContentUrl = url.trim() || undefined;
     let finalFileSize = isDocument || isScorm ? fileSize : undefined;
+    let finalDescription = description.trim() || undefined;
 
     if (isScorm) {
       if (!selectedFile) {
@@ -137,6 +138,9 @@ export default function AddContentModal({
           if (uploadRes?.success && uploadRes.data?.fileUrl) {
             finalContentUrl = uploadRes.data.fileUrl;
             finalFileSize = uploadRes.data.fileSize || fileSize;
+            if (type === "PPT" && uploadRes.data.slidesConfigJson) {
+              finalDescription = uploadRes.data.slidesConfigJson;
+            }
           }
         } catch (err: any) {
           console.error("Document upload error:", err);
@@ -156,7 +160,7 @@ export default function AddContentModal({
       title: title.trim(),
       contentType: type,
       contentUrl: finalContentUrl,
-      description: description.trim() || undefined,
+      description: finalDescription,
       fileSize: finalFileSize,
       duration: isLink ? 15 : isScorm ? 30 : undefined,
     });

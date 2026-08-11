@@ -19,7 +19,7 @@ const router = Router();
 
 // Protect all reporting endpoints with authentication and Admin/Super Admin role authorization
 router.use(authenticate);
-router.use(authorizeRoles("ADMIN", "SUPER_ADMIN"));
+router.use(authorizeRoles("ADMIN", "SUPER_ADMIN", "TEACHER"));
 
 router.get("/filter-options", getFilterOptions);
 router.get("/enrollments", getEnrollmentReport);

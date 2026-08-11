@@ -161,7 +161,7 @@ export default function ReportsPage() {
   };
 
   return (
-    <RoleGate allowed={[ROLES.ADMIN, ROLES.SUPER_ADMIN]}>
+    <RoleGate allowed={[ROLES.ADMIN, ROLES.SUPER_ADMIN, ROLES.TEACHER]}>
       <div className="p-6 space-y-5">
         {/* Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card border border-border/80 p-4 rounded-xl shadow-sm">
