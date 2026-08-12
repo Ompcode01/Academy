@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,15 @@ interface UploadedFileItem {
 interface AssignmentBuilderModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialData?: {
+    title?: string;
+    description?: string;
+    instructions?: string;
+    maxMarks?: number;
+    deadline?: string;
+    maxAttempts?: number;
+    allowedFileTypes?: string[];
+  } | null;
   onSaveAssignment: (assignmentData: {
     title: string;
     description: string;
@@ -45,6 +54,7 @@ interface AssignmentBuilderModalProps {
 export default function AssignmentBuilderModal({
   open,
   onOpenChange,
+  initialData,
   onSaveAssignment,
 }: AssignmentBuilderModalProps) {
   const [activeTab, setActiveTab] = useState<"DETAILS" | "SUBMISSION">("DETAILS");
@@ -74,6 +84,25 @@ export default function AssignmentBuilderModal({
   const [instructions, setInstructions] = useState("");
   const [allowResubmission, setAllowResubmission] = useState(true);
   const [plagiarismCheck, setPlagiarismCheck] = useState(true);
+
+  React.useEffect(() => {
+    if (open) {
+      if (initialData) {
+        setTitle(initialData.title || "");
+        setDescription(initialData.description || "");
+        setInstructions(initialData.instructions || initialData.description || "");
+        setMaxMarks(initialData.maxMarks || 50);
+        setMaxAttempts(initialData.maxAttempts || 2);
+        if (initialData.allowedFileTypes) setAllowedTypes(initialData.allowedFileTypes);
+      } else {
+        setTitle("");
+        setDescription("");
+        setInstructions("");
+        setMaxMarks(50);
+        setMaxAttempts(2);
+      }
+    }
+  }, [open, initialData]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

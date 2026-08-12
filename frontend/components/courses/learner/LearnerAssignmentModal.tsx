@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FileCode, CheckCircle2, Clock, Upload, Award, AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { FileCode, CheckCircle2, Clock, Upload, Award, AlertCircle, Paperclip, Download, Calendar, HardDrive } from "lucide-react";
 import { submitAssignment } from "@/services/api/course.service";
 
 interface LearnerAssignmentModalProps {
@@ -15,6 +16,7 @@ interface LearnerAssignmentModalProps {
   contentId?: number | null;
   assignmentTitle?: string;
   instructions?: string;
+  configJson?: string;
   existingSubmission?: any;
   onClose: () => void;
   onSuccess: () => void;
@@ -26,10 +28,43 @@ export default function LearnerAssignmentModal({
   contentId,
   assignmentTitle = "Practical Assignment",
   instructions = "Design a secure microservice API endpoint with JWT authentication and role-based access control.",
+  configJson,
   existingSubmission,
   onClose,
   onSuccess,
 }: LearnerAssignmentModalProps) {
+  let parsedConfig: any = {};
+  if (configJson) {
+    try {
+      parsedConfig = typeof configJson === "string" ? JSON.parse(configJson) : configJson;
+    } catch {}
+  }
+
+  const effectiveInstructions =
+    parsedConfig.instructions || parsedConfig.description || instructions;
+  const effectiveMaxMarks = parsedConfig.maxMarks || 50;
+  const rawDeadline = parsedConfig.deadline || parsedConfig.dueDate || parsedConfig.deadlineDate || parsedConfig.endDate;
+  const deadlineText = rawDeadline
+    ? new Date(rawDeadline).toString() !== "Invalid Date"
+      ? new Date(rawDeadline).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : String(rawDeadline)
+    : "No strict deadline";
+
+  const maxAttempts = parsedConfig.maxAttempts || 2;
+  const allowedFileTypes: string[] = parsedConfig.allowedFileTypes || ["PDF", "DOC", "DOCX", "ZIP"];
+  const maxFileSizeMb = parsedConfig.maxFileSizeMb || 50;
+
+  const submittedDateText = existingSubmission?.submittedAt
+    ? new Date(existingSubmission.submittedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+    : null;
+
+  const gradedDateText = existingSubmission?.gradedAt
+    ? new Date(existingSubmission.gradedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+    : null;
+
+  const referenceFiles: any[] =
+    parsedConfig.questionFiles || parsedConfig.attachments || parsedConfig.files || [];
+
   const [submissionText, setSubmissionText] = useState(existingSubmission?.submissionText || "");
   const [fileUrl, setFileUrl] = useState(existingSubmission?.fileUrl || "");
   const [submitting, setSubmitting] = useState(false);
@@ -59,27 +94,111 @@ export default function LearnerAssignmentModal({
   };
 
   const isGraded = existingSubmission?.status === "GRADED";
+  const isSubmitted = Boolean(existingSubmission) || Boolean(submittedMessage);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-            <FileCode className="h-6 w-6 text-purple-600" />
-            {assignmentTitle}
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+              <FileCode className="h-6 w-6 text-purple-600" />
+              {assignmentTitle}
+            </DialogTitle>
+            <span className="text-xs font-extrabold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20">
+              Max Marks: {effectiveMaxMarks}
+            </span>
+          </div>
         </DialogHeader>
 
         <div className="space-y-5 pt-2">
+          {/* Assignment Timeline Card */}
+          <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-3 text-xs">
+            <div className="flex items-center justify-between font-bold text-foreground border-b border-border pb-2">
+              <span className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                <Clock className="h-4 w-4" /> Assignment Lifecycle &amp; Timeline
+              </span>
+              <span className="text-[10px] text-purple-600 dark:text-purple-300 font-bold bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20">
+                Due: {deadlineText}
+              </span>
+            </div>
+
+            <div className="relative pl-6 space-y-3 border-l-2 border-purple-500/30 ml-2">
+              {/* Milestone 1: Assignment Assigned */}
+              <div className="relative">
+                <span className="absolute -left-[31px] top-0.5 h-4 w-4 rounded-full bg-purple-500/20 border-2 border-purple-500 flex items-center justify-center text-[9px] text-purple-600 dark:text-purple-400 font-bold">1</span>
+                <div className="space-y-0.5">
+                  <div className="font-semibold text-foreground">Assignment Released</div>
+                  <div className="text-[11px] text-muted-foreground">Task assigned to enrolled learners.</div>
+                </div>
+              </div>
+
+              {/* Milestone 2: Learner Submission */}
+              <div className="relative">
+                <span className={`absolute -left-[31px] top-0.5 h-4 w-4 rounded-full border-2 flex items-center justify-center text-[9px] font-bold ${isSubmitted ? "bg-emerald-500/20 border-emerald-500 text-emerald-600 dark:text-emerald-400" : "bg-muted border-border text-muted-foreground"}`}>2</span>
+                <div className="space-y-0.5">
+                  <div className="font-semibold text-foreground flex items-center gap-2">
+                    Learner Submission
+                    {isSubmitted && <Badge className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-[9px] px-1.5">Submitted</Badge>}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {submittedDateText ? `Submitted on ${submittedDateText}` : `Pending submission (Deadline: ${deadlineText})`}
+                  </div>
+                </div>
+              </div>
+
+              {/* Milestone 3: Faculty Evaluation */}
+              <div className="relative">
+                <span className={`absolute -left-[31px] top-0.5 h-4 w-4 rounded-full border-2 flex items-center justify-center text-[9px] font-bold ${isGraded ? "bg-emerald-500/20 border-emerald-500 text-emerald-600 dark:text-emerald-400" : "bg-muted border-border text-muted-foreground"}`}>3</span>
+                <div className="space-y-0.5">
+                  <div className="font-semibold text-foreground flex items-center gap-2">
+                    Faculty Review &amp; Grading
+                    {isGraded && <Badge className="bg-purple-500/20 text-purple-600 dark:text-purple-300 border-purple-500/30 text-[9px] px-1.5">Graded</Badge>}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {gradedDateText ? `Evaluated by ${existingSubmission?.gradedBy || "Faculty"} on ${gradedDateText}` : "Awaiting instructor review and grading"}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Instructions Box */}
           <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-2">
             <h4 className="text-xs font-bold text-purple-700 dark:text-purple-300 flex items-center gap-2">
               <Clock className="h-4 w-4" /> Assignment Instructions
             </h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {instructions}
+            <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+              {effectiveInstructions}
             </p>
           </div>
+
+          {/* Reference Files Provided by Teacher */}
+          {referenceFiles.length > 0 && (
+            <div className="p-4 rounded-xl bg-muted/30 border border-border space-y-2 text-xs">
+              <h4 className="font-bold text-foreground flex items-center gap-2">
+                <Paperclip className="h-4 w-4 text-purple-500" /> Instructor Reference Files &amp; Problem Attachments:
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {referenceFiles.map((fileItem: any, fIdx: number) => {
+                  const fileName = fileItem.name || fileItem.fileName || fileItem.title || `Attachment_${fIdx + 1}`;
+                  const fUrl = fileItem.url || fileItem.fileUrl || fileItem.path || "#";
+                  return (
+                    <a
+                      key={fIdx}
+                      href={fUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border text-purple-600 dark:text-purple-400 hover:underline text-xs font-semibold"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      <span>{fileName}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* If already graded by teacher */}
           {isGraded ? (

@@ -261,8 +261,20 @@ class CourseService {
     return this.getCourseById(course.id);
   }
 
-  async saveCourseSectionsAndContents(courseId: bigint, sections: any[]) {
+  async saveCourseSectionsAndContents(courseId: bigint, sections: any[], existingSections?: any[]) {
     if (!sections || !Array.isArray(sections) || sections.length === 0) return;
+
+    // Build lookup map of existing content item configs by title to preserve legacy data if needed
+    const existingContentMap = new Map<string, any>();
+    if (existingSections && Array.isArray(existingSections)) {
+      existingSections.forEach((sec: any) => {
+        (sec.contents || []).forEach((cnt: any) => {
+          if (cnt.title) {
+            existingContentMap.set(cnt.title.trim().toLowerCase(), cnt);
+          }
+        });
+      });
+    }
 
     for (let sIdx = 0; sIdx < sections.length; sIdx++) {
       const secData = sections[sIdx];
@@ -281,17 +293,48 @@ class CourseService {
       if (secData.contents && Array.isArray(secData.contents)) {
         for (let cIdx = 0; cIdx < secData.contents.length; cIdx++) {
           const cntData = secData.contents[cIdx];
-          const quizJson =
-            cntData.quizConfigJson || (cntData.questions ? JSON.stringify(cntData.questions) : null);
-          const assignmentJson =
-            cntData.assignmentConfigJson ||
-            (cntData.contentType === "ASSIGNMENT"
-              ? JSON.stringify({
-                  instructions: cntData.description || cntData.instructions || "Complete practical assignment.",
-                  maxScore: cntData.maxScore || 100,
-                  requiresGrading: true,
-                })
-              : null);
+          const cntTitleKey = (cntData.title || "").trim().toLowerCase();
+          const existingCnt = existingContentMap.get(cntTitleKey);
+
+          // 1. Resolve quizConfigJson
+          let quizJson: string | null = null;
+          if (typeof cntData.quizConfigJson === "object" && cntData.quizConfigJson !== null) {
+            quizJson = JSON.stringify(cntData.quizConfigJson);
+          } else if (typeof cntData.quizConfigJson === "string" && cntData.quizConfigJson.trim() !== "") {
+            quizJson = cntData.quizConfigJson.trim();
+          } else if (typeof cntData.quizConfig === "object" && cntData.quizConfig !== null) {
+            quizJson = JSON.stringify(cntData.quizConfig);
+          } else if (cntData.questions && Array.isArray(cntData.questions) && cntData.questions.length > 0) {
+            quizJson = JSON.stringify({
+              title: cntData.title || "Quiz Assessment",
+              questions: cntData.questions,
+              totalMarks: cntData.maxMarks || cntData.totalMarks || 100,
+              durationMinutes: cntData.duration || 15,
+              passingPercentage: cntData.passingPercentage || 70,
+            });
+          } else if (existingCnt && existingCnt.quizConfigJson) {
+            quizJson = typeof existingCnt.quizConfigJson === "string" ? existingCnt.quizConfigJson : JSON.stringify(existingCnt.quizConfigJson);
+          }
+
+          // 2. Resolve assignmentConfigJson
+          let assignmentJson: string | null = null;
+          if (typeof cntData.assignmentConfigJson === "object" && cntData.assignmentConfigJson !== null) {
+            assignmentJson = JSON.stringify(cntData.assignmentConfigJson);
+          } else if (typeof cntData.assignmentConfigJson === "string" && cntData.assignmentConfigJson.trim() !== "") {
+            assignmentJson = cntData.assignmentConfigJson.trim();
+          } else if (typeof cntData.assignmentConfig === "object" && cntData.assignmentConfig !== null) {
+            assignmentJson = JSON.stringify(cntData.assignmentConfig);
+          } else if (existingCnt && existingCnt.assignmentConfigJson) {
+            assignmentJson = typeof existingCnt.assignmentConfigJson === "string" ? existingCnt.assignmentConfigJson : JSON.stringify(existingCnt.assignmentConfigJson);
+          } else if (cntData.contentType === "ASSIGNMENT") {
+            assignmentJson = JSON.stringify({
+              title: cntData.title || "Practical Assignment",
+              instructions: cntData.description || cntData.instructions || "Complete practical assignment.",
+              maxMarks: cntData.maxMarks || cntData.maxScore || 100,
+              deadline: cntData.deadline || cntData.dueDate || "",
+              allowedFileTypes: cntData.allowedFileTypes || ["PDF", "DOC", "DOCX", "ZIP"],
+            });
+          }
 
           await prisma.learningContent.create({
             data: {
@@ -299,7 +342,7 @@ class CourseService {
               title: cntData.title || `Content ${cIdx + 1}`,
               contentType: cntData.contentType || "LESSON",
               contentUrl: cntData.contentUrl || cntData.videoUrl || null,
-              description: cntData.description || null,
+              description: cntData.description || cntData.instructions || null,
               duration: cntData.duration || 10,
               contentOrder: cntData.contentOrder || cIdx + 1,
               isMandatory: true,
@@ -334,6 +377,7 @@ class CourseService {
     userContext?: { role?: string; employeeId?: bigint; username?: string }
   ) {
     const existing = await this.getCourseById(id);
+    const existingSections = (existing as any)?.sections || [];
 
     // Rule 11: Teacher MUST NOT be able to modify department, audience, enrollment config, ownership, teacher assignment
     if (userContext?.role === "TEACHER") {
@@ -352,7 +396,7 @@ class CourseService {
         where: { courseId: id },
         data: { isActive: false },
       });
-      await this.saveCourseSectionsAndContents(id, sections);
+      await this.saveCourseSectionsAndContents(id, sections, existingSections);
     }
 
     if (teacherIds && userContext?.role !== "TEACHER") {

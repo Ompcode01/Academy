@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exportReport = exports.getEmployeeDrilldown = exports.getOrganizationOverviewReport = exports.getTeacherPerformanceReport = exports.getDepartmentPerformanceReport = exports.getEngagementReport = exports.getAssessmentReport = exports.getLearnerPerformanceReport = exports.getCourseCompletionReport = exports.getEnrollmentReport = exports.getFilterOptions = void 0;
+exports.evaluateAssignment = exports.getAssignmentSubmissionReport = exports.getQuizAssessmentReport = exports.getLearnerProgressReport = exports.exportReport = exports.getEmployeeDrilldown = exports.getOrganizationOverviewReport = exports.getTeacherPerformanceReport = exports.getDepartmentPerformanceReport = exports.getEngagementReport = exports.getAssessmentReport = exports.getLearnerPerformanceReport = exports.getCourseCompletionReport = exports.getEnrollmentReport = exports.getFilterOptions = void 0;
 const reporting_service_1 = require("../services/reporting.service");
 const getFilterOptions = async (req, res) => {
     try {
@@ -152,3 +152,52 @@ const exportReport = async (req, res) => {
     }
 };
 exports.exportReport = exportReport;
+const getLearnerProgressReport = async (req, res) => {
+    try {
+        const filters = req.query;
+        const report = await reporting_service_1.ReportingService.getLearnerProgressReport(filters, req.user);
+        res.json({ success: true, data: report });
+    }
+    catch (error) {
+        console.error("Error fetching learner progress report:", error);
+        res.status(500).json({ success: false, message: error.message || "Failed to fetch learner progress report" });
+    }
+};
+exports.getLearnerProgressReport = getLearnerProgressReport;
+const getQuizAssessmentReport = async (req, res) => {
+    try {
+        const filters = req.query;
+        const report = await reporting_service_1.ReportingService.getQuizAssessmentReport(filters, req.user);
+        res.json({ success: true, data: report });
+    }
+    catch (error) {
+        console.error("Error fetching quiz assessment report:", error);
+        res.status(500).json({ success: false, message: error.message || "Failed to fetch quiz assessment report" });
+    }
+};
+exports.getQuizAssessmentReport = getQuizAssessmentReport;
+const getAssignmentSubmissionReport = async (req, res) => {
+    try {
+        const filters = req.query;
+        const report = await reporting_service_1.ReportingService.getAssignmentSubmissionReport(filters, req.user);
+        res.json({ success: true, data: report });
+    }
+    catch (error) {
+        console.error("Error fetching assignment submission report:", error);
+        res.status(500).json({ success: false, message: error.message || "Failed to fetch assignment submission report" });
+    }
+};
+exports.getAssignmentSubmissionReport = getAssignmentSubmissionReport;
+const evaluateAssignment = async (req, res) => {
+    try {
+        const submissionId = req.params.id;
+        const { score, grade, feedback } = req.body;
+        const result = await reporting_service_1.ReportingService.evaluateAssignmentSubmission(submissionId, { score, grade, feedback }, req.user, req.ip);
+        res.json({ success: true, data: result, message: "Assignment submission evaluated successfully!" });
+    }
+    catch (error) {
+        console.error("Error evaluating assignment submission:", error);
+        res.status(500).json({ success: false, message: error.message || "Failed to evaluate assignment submission" });
+    }
+};
+exports.evaluateAssignment = evaluateAssignment;

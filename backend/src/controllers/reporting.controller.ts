@@ -141,3 +141,53 @@ export const exportReport = async (req: AuthRequest, res: Response): Promise<voi
     res.status(500).json({ success: false, message: error.message || "Failed to export report" });
   }
 };
+
+export const getLearnerProgressReport = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const filters: ReportFilterParams = req.query as any;
+    const report = await ReportingService.getLearnerProgressReport(filters, req.user);
+    res.json({ success: true, data: report });
+  } catch (error: any) {
+    console.error("Error fetching learner progress report:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to fetch learner progress report" });
+  }
+};
+
+export const getQuizAssessmentReport = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const filters: ReportFilterParams = req.query as any;
+    const report = await ReportingService.getQuizAssessmentReport(filters, req.user);
+    res.json({ success: true, data: report });
+  } catch (error: any) {
+    console.error("Error fetching quiz assessment report:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to fetch quiz assessment report" });
+  }
+};
+
+export const getAssignmentSubmissionReport = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const filters: ReportFilterParams = req.query as any;
+    const report = await ReportingService.getAssignmentSubmissionReport(filters, req.user);
+    res.json({ success: true, data: report });
+  } catch (error: any) {
+    console.error("Error fetching assignment submission report:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to fetch assignment submission report" });
+  }
+};
+
+export const evaluateAssignment = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const submissionId = req.params.id as string;
+    const { score, grade, feedback } = req.body;
+    const result = await ReportingService.evaluateAssignmentSubmission(
+      submissionId,
+      { score, grade, feedback },
+      req.user,
+      req.ip
+    );
+    res.json({ success: true, data: result, message: "Assignment submission evaluated successfully!" });
+  } catch (error: any) {
+    console.error("Error evaluating assignment submission:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to evaluate assignment submission" });
+  }
+};

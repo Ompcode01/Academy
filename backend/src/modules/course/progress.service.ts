@@ -436,12 +436,22 @@ export class ProgressService {
       courseIds = Array.from(new Set([...assigned.map((a) => a.courseId), ...created.map((c) => c.id)]));
     }
 
-    const submissions = await prisma.assessmentSubmission.findMany({
+    const allSubmissions = await prisma.assessmentSubmission.findMany({
       where: {
         ...(courseIds ? { courseId: { in: courseIds } } : {}),
       },
       orderBy: { submittedAt: "desc" },
     });
+
+    // Keep ONLY the latest attempt for each learner per content item so teachers evaluate current work
+    const latestSubmissionsMap = new Map<string, typeof allSubmissions[0]>();
+    for (const sub of allSubmissions) {
+      const key = `${sub.userId.toString()}_${sub.courseId.toString()}_${sub.contentId ? sub.contentId.toString() : sub.submissionType}`;
+      if (!latestSubmissionsMap.has(key)) {
+        latestSubmissionsMap.set(key, sub);
+      }
+    }
+    const submissions = Array.from(latestSubmissionsMap.values());
 
     const userIds = Array.from(new Set(submissions.map((s) => s.userId)));
     const cIds = Array.from(new Set(submissions.map((s) => s.courseId)));

@@ -35,6 +35,9 @@ import {
   getEngagementReport,
   getDepartmentPerformanceReport,
   getOrganizationOverviewReport,
+  getLearnerProgressReport,
+  getQuizAssessmentReport,
+  getAssignmentSubmissionReport,
   exportReportFile,
   ReportFilterParams,
 } from "@/services/api/reporting.service";
@@ -45,13 +48,18 @@ import { ReportTable, renderStatusBadge } from "@/components/reports/ReportTable
 import { ChartCard, StatusPieChart, SimpleBarChart, TrendAreaChart } from "@/components/reports/ReportCharts";
 import { ReportDrilldownModal } from "@/components/reports/ReportDrilldownModal";
 import TeacherPerformanceReport from "@/components/reports/TeacherPerformanceReport";
+import AssignmentEvaluationModal from "@/components/reports/AssignmentEvaluationModal";
 
 export default function ReportsPage() {
   const { user } = useAuthStore();
   const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN;
 
-  const [activeTab, setActiveTab] = useState<string>("enrollments");
+  const [activeTab, setActiveTab] = useState<string>("learner-progress");
   const [filterOptions, setFilterOptions] = useState<any>(null);
+
+  // Evaluation Modal State
+  const [evalModalOpen, setEvalModalOpen] = useState<boolean>(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
   const [filters, setFilters] = useState<ReportFilterParams & { search?: string }>({
     preset: "ALL",
     departmentId: "ALL",
@@ -90,6 +98,15 @@ export default function ReportsPage() {
     try {
       let data: any = null;
       switch (activeTab) {
+        case "learner-progress":
+          data = await getLearnerProgressReport(filters);
+          break;
+        case "quiz-assessment":
+          data = await getQuizAssessmentReport(filters);
+          break;
+        case "assignment-submission":
+          data = await getAssignmentSubmissionReport(filters);
+          break;
         case "enrollments":
           data = await getEnrollmentReport(filters);
           break;
@@ -114,7 +131,7 @@ export default function ReportsPage() {
           data = await getOrganizationOverviewReport(filters);
           break;
         default:
-          data = await getEnrollmentReport(filters);
+          data = await getLearnerProgressReport(filters);
       }
       setReportData(data);
     } catch (err: any) {
@@ -220,9 +237,36 @@ export default function ReportsPage() {
             </div>
 
             <TabsList
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 bg-transparent p-0 h-auto w-full"
+              className="flex flex-wrap gap-2 bg-transparent p-0 h-auto w-full"
             >
-              {/* Report 1 */}
+              {/* Core Role-Based Report 1 */}
+              <TabsTrigger
+                value="learner-progress"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3.5 rounded-xl border border-primary/30 bg-primary/10 text-primary font-bold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
+              >
+                <Users className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">Learner Progress</span>
+              </TabsTrigger>
+
+              {/* Core Role-Based Report 2 */}
+              <TabsTrigger
+                value="quiz-assessment"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold transition-all duration-150 data-[state=active]:bg-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-600 data-[state=active]:shadow-md cursor-pointer"
+              >
+                <Award className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">Quiz &amp; Assessment</span>
+              </TabsTrigger>
+
+              {/* Core Role-Based Report 3 */}
+              <TabsTrigger
+                value="assignment-submission"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3.5 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-600 dark:text-purple-300 font-bold transition-all duration-150 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:border-purple-600 data-[state=active]:shadow-md cursor-pointer"
+              >
+                <FileText className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">Assignment &amp; Submissions</span>
+              </TabsTrigger>
+
+              {/* Additional Reports */}
               <TabsTrigger
                 value="enrollments"
                 className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
@@ -231,7 +275,6 @@ export default function ReportsPage() {
                 <span className="truncate">Enrollments</span>
               </TabsTrigger>
 
-              {/* Report 2 */}
               <TabsTrigger
                 value="completions"
                 className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
@@ -240,7 +283,6 @@ export default function ReportsPage() {
                 <span className="truncate">Completions</span>
               </TabsTrigger>
 
-              {/* Report 3 */}
               <TabsTrigger
                 value="learner-performance"
                 className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
@@ -249,25 +291,6 @@ export default function ReportsPage() {
                 <span className="truncate">Learner Perf</span>
               </TabsTrigger>
 
-              {/* Report 4 */}
-              <TabsTrigger
-                value="assessments"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
-              >
-                <Award className="h-3.5 w-3.5 shrink-0 text-amber-500 data-[state=active]:text-primary-foreground" />
-                <span className="truncate">Assessments</span>
-              </TabsTrigger>
-
-              {/* Report 5 */}
-              <TabsTrigger
-                value="engagement"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
-              >
-                <Clock className="h-3.5 w-3.5 shrink-0 text-purple-500 data-[state=active]:text-primary-foreground" />
-                <span className="truncate">Engagement</span>
-              </TabsTrigger>
-
-              {/* Report 6: Teacher Supervision Analytics */}
               <TabsTrigger
                 value="teacher-supervision"
                 className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-purple-500/30 bg-purple-500/5 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 font-semibold transition-all duration-150 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:border-purple-600 data-[state=active]:shadow-md cursor-pointer"
@@ -276,10 +299,8 @@ export default function ReportsPage() {
                 <span className="truncate">Teacher Supervision</span>
               </TabsTrigger>
 
-              {/* Super Admin Only Reports (7 & 8) */}
               {isSuperAdmin && (
                 <>
-                  {/* Report 7 */}
                   <TabsTrigger
                     value="department-performance"
                     className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 hover:bg-amber-500/20 font-bold transition-all duration-150 data-[state=active]:bg-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-600 data-[state=active]:shadow-md cursor-pointer"
@@ -288,7 +309,6 @@ export default function ReportsPage() {
                     <span className="truncate">Dept Perf</span>
                   </TabsTrigger>
 
-                  {/* Report 8: Executive Organization Overview */}
                   <TabsTrigger
                     value="organization-overview"
                     className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-amber-500/60 bg-amber-500/20 text-amber-900 dark:text-amber-200 hover:bg-amber-500/30 font-black transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-amber-700 data-[state=active]:text-white data-[state=active]:border-amber-600 data-[state=active]:shadow-md cursor-pointer"
@@ -302,7 +322,143 @@ export default function ReportsPage() {
             </TabsList>
           </div>
 
-          {/* TAB 1: ENROLLMENT & LEARNING REPORT */}
+          {/* TAB 1: LEARNER PROGRESS REPORT */}
+          <TabsContent value="learner-progress" className="space-y-4 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <ReportKpiCard title="Total Learners Tracked" value={reportData?.table?.length || 0} icon={Users} variant="blue" loading={loading} />
+              <ReportKpiCard title="Course Completions" value={(reportData?.table || []).filter((r: any) => r.status === "COMPLETED").length} icon={CheckCircle2} variant="emerald" loading={loading} />
+              <ReportKpiCard title="In-Progress Learners" value={(reportData?.table || []).filter((r: any) => r.status === "IN_PROGRESS").length} icon={TrendingUp} variant="amber" loading={loading} />
+            </div>
+
+            <ReportTable
+              columns={[
+                {
+                  header: "Learner Name",
+                  cell: (r: any) => (
+                    <div>
+                      <strong className="text-foreground font-semibold block">{r.learnerName}</strong>
+                      <span className="text-[10px] text-muted-foreground block">{r.employeeCode}</span>
+                    </div>
+                  ),
+                },
+                { header: "Course Title", accessorKey: "courseTitle" },
+                { header: "Assigned Teacher", cell: (r: any) => <span className="font-semibold text-primary">{r.assignedTeacher}</span> },
+                { header: "Progress %", cell: (r: any) => <span className="font-bold text-primary">{r.progress}%</span> },
+                { header: "Completed Lessons", cell: (r: any) => <Badge variant="outline" className="text-[10px] font-bold">{r.completedLessonsCount}</Badge> },
+                { header: "Status", cell: (r: any) => renderStatusBadge(r.status) },
+                { header: "Time Spent", cell: (r: any) => <span className="font-semibold text-purple-600 dark:text-purple-400">{r.timeSpentFormatted}</span> },
+                { header: "Last Activity", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{r.lastActivity ? new Date(r.lastActivity).toLocaleString() : "N/A"}</span> },
+              ]}
+              data={reportData?.table || []}
+              loading={loading}
+              emptyMessage="No learner progress records found matching criteria."
+            />
+          </TabsContent>
+
+          {/* TAB 2: QUIZ & ASSESSMENT REPORT */}
+          <TabsContent value="quiz-assessment" className="space-y-4 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <ReportKpiCard title="Quiz Attempts Recorded" value={reportData?.table?.length || 0} icon={Award} variant="amber" loading={loading} />
+              <ReportKpiCard title="Passed Quizzes" value={(reportData?.table || []).filter((r: any) => r.passFailStatus === "PASSED").length} icon={CheckCircle2} variant="emerald" loading={loading} />
+              <ReportKpiCard title="Failed Attempts" value={(reportData?.table || []).filter((r: any) => r.passFailStatus === "FAILED").length} icon={AlertTriangle} variant="rose" loading={loading} />
+            </div>
+
+            <ReportTable
+              columns={[
+                {
+                  header: "Learner Name",
+                  cell: (r: any) => (
+                    <div>
+                      <strong className="text-foreground font-semibold block">{r.learnerName}</strong>
+                      <span className="text-[10px] text-muted-foreground block">{r.employeeCode}</span>
+                    </div>
+                  ),
+                },
+                { header: "Course Title", accessorKey: "courseTitle" },
+                { header: "Quiz Title", accessorKey: "quizTitle" },
+                { header: "Attempt", cell: (r: any) => <Badge variant="outline" className="text-[10px] font-bold">Attempt #{r.attemptNumber}</Badge> },
+                { header: "Score", cell: (r: any) => <span className="font-bold text-foreground">{r.score} / {r.maxScore} ({r.percentage}%)</span> },
+                {
+                  header: "Result Status",
+                  cell: (r: any) => (
+                    <Badge className={r.passFailStatus === "PASSED" ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold" : "bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30 font-bold"}>
+                      {r.passFailStatus}
+                    </Badge>
+                  ),
+                },
+                { header: "Completion Date", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ""}</span> },
+                {
+                  header: "Rule",
+                  cell: () => (
+                    <Badge variant="outline" className="text-[9px] bg-slate-500/10 text-slate-400 border-slate-500/20 font-bold uppercase">
+                      Auto-Calculated
+                    </Badge>
+                  ),
+                },
+              ]}
+              data={reportData?.table || []}
+              loading={loading}
+              emptyMessage="No quiz assessment records found matching criteria."
+            />
+          </TabsContent>
+
+          {/* TAB 3: ASSIGNMENT & SUBMISSIONS REPORT */}
+          <TabsContent value="assignment-submission" className="space-y-4 pt-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <ReportKpiCard title="Total Submissions" value={reportData?.table?.length || 0} icon={FileText} variant="purple" loading={loading} />
+              <ReportKpiCard title="Evaluated &amp; Graded" value={(reportData?.table || []).filter((r: any) => r.submissionStatus === "GRADED").length} icon={CheckCircle2} variant="emerald" loading={loading} />
+              <ReportKpiCard title="Pending Evaluation" value={(reportData?.table || []).filter((r: any) => r.submissionStatus !== "GRADED").length} icon={Clock} variant="amber" loading={loading} />
+            </div>
+
+            <ReportTable
+              columns={[
+                {
+                  header: "Learner Name",
+                  cell: (r: any) => (
+                    <div>
+                      <strong className="text-foreground font-semibold block">{r.learnerName}</strong>
+                      <span className="text-[10px] text-muted-foreground block">{r.employeeCode}</span>
+                    </div>
+                  ),
+                },
+                { header: "Course Title", accessorKey: "courseTitle" },
+                { header: "Assignment Task", accessorKey: "assignmentTitle" },
+                {
+                  header: "Status",
+                  cell: (r: any) => (
+                    <Badge className={r.submissionStatus === "GRADED" ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold" : "bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold"}>
+                      {r.submissionStatus}
+                    </Badge>
+                  ),
+                },
+                { header: "Submitted Date", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ""}</span> },
+                { header: "Marks Awarded", cell: (r: any) => <span className="font-bold text-foreground">{r.submissionStatus === "GRADED" ? `${r.score} / ${r.maxScore}` : "Pending"}</span> },
+                { header: "Grade", cell: (r: any) => <Badge variant="outline" className="font-bold">{r.grade}</Badge> },
+                { header: "Feedback Notes", cell: (r: any) => <span className="text-[11px] text-muted-foreground max-w-xs truncate block">{r.feedback || "No feedback yet"}</span> },
+                {
+                  header: "Actions",
+                  cell: (r: any) => (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSelectedSubmission(r);
+                        setEvalModalOpen(true);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] h-7 px-3 gap-1 shadow cursor-pointer"
+                    >
+                      <Award className="h-3 w-3" />
+                      {r.submissionStatus === "GRADED" ? "Edit Grade" : "Evaluate"}
+                    </Button>
+                  ),
+                },
+              ]}
+              data={reportData?.table || []}
+              loading={loading}
+              emptyMessage="No assignment submissions found matching criteria."
+            />
+          </TabsContent>
+
+          {/* TAB 4: ENROLLMENT & LEARNING REPORT */}
           <TabsContent value="enrollments" className="space-y-5 pt-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <ReportKpiCard title="Total Enrollments" value={reportData?.kpis?.totalEnrollments ?? 0} icon={Users} variant="blue" loading={loading} />
@@ -695,6 +851,14 @@ export default function ReportsPage() {
           onClose={() => setDrillModalOpen(false)}
           type="employee"
           targetId={drillTargetId}
+        />
+
+        {/* Assignment Evaluation Modal */}
+        <AssignmentEvaluationModal
+          open={evalModalOpen}
+          onClose={() => setEvalModalOpen(false)}
+          onSuccess={fetchReport}
+          submission={selectedSubmission}
         />
       </div>
     </RoleGate>

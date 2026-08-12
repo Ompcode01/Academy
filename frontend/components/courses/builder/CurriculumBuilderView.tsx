@@ -147,6 +147,20 @@ export default function CurriculumBuilderView({
     }
   };
 
+  const [editingItem, setEditingItem] = useState<{ secId: number; item: ContentItem } | null>(null);
+
+  const handleEditContent = (secId: number, item: ContentItem) => {
+    setActiveSectionId(secId);
+    setEditingItem({ secId, item });
+    if (item.contentType === "QUIZ") {
+      setQuizBuilderOpen(true);
+    } else if (item.contentType === "ASSIGNMENT") {
+      setAssignmentBuilderOpen(true);
+    } else {
+      setAddContentOpen(true);
+    }
+  };
+
   const handleSaveGeneralContent = (data: {
     title: string;
     contentType: string;
@@ -156,65 +170,143 @@ export default function CurriculumBuilderView({
     duration?: number;
   }) => {
     if (!activeSectionId) return;
-    const newItem: ContentItem = {
-      id: Date.now(),
-      title: data.title,
-      contentType: data.contentType as ContentTypeKey,
-      contentUrl: data.contentUrl,
-      description: data.description,
-      fileSize: data.fileSize,
-      duration: data.duration,
-      status: "Published",
-    };
-    updateSections((prev) =>
-      prev.map((s) =>
-        s.id === activeSectionId
-          ? { ...s, contents: [...s.contents, newItem] }
-          : s
-      )
-    );
+    if (editingItem) {
+      updateSections((prev) =>
+        prev.map((s) =>
+          s.id === activeSectionId
+            ? {
+                ...s,
+                contents: s.contents.map((c) =>
+                  c.id === editingItem.item.id
+                    ? {
+                        ...c,
+                        title: data.title,
+                        contentType: data.contentType as ContentTypeKey,
+                        contentUrl: data.contentUrl,
+                        description: data.description,
+                        fileSize: data.fileSize,
+                        duration: data.duration,
+                      }
+                    : c
+                ),
+              }
+            : s
+        )
+      );
+    } else {
+      const newItem: ContentItem = {
+        id: Date.now(),
+        title: data.title,
+        contentType: data.contentType as ContentTypeKey,
+        contentUrl: data.contentUrl,
+        description: data.description,
+        fileSize: data.fileSize,
+        duration: data.duration,
+        status: "Published",
+      };
+      updateSections((prev) =>
+        prev.map((s) =>
+          s.id === activeSectionId
+            ? { ...s, contents: [...s.contents, newItem] }
+            : s
+        )
+      );
+    }
+    setEditingItem(null);
   };
 
   const handleSaveQuiz = (quizData: any) => {
     if (!activeSectionId) return;
-    const newItem: ContentItem = {
-      id: Date.now(),
-      title: quizData.title,
-      contentType: "QUIZ",
-      questionsCount: quizData.questions ? quizData.questions.length : 0,
-      maxMarks: quizData.totalMarks || 100,
-      duration: quizData.durationMinutes || 15,
-      quizConfigJson: JSON.stringify(quizData),
-      status: "Published",
-    };
-    updateSections((prev) =>
-      prev.map((s) =>
-        s.id === activeSectionId
-          ? { ...s, contents: [...s.contents, newItem] }
-          : s
-      )
-    );
+    const quizConfigJson = JSON.stringify(quizData);
+    if (editingItem) {
+      updateSections((prev) =>
+        prev.map((s) =>
+          s.id === activeSectionId
+            ? {
+                ...s,
+                contents: s.contents.map((c) =>
+                  c.id === editingItem.item.id
+                    ? {
+                        ...c,
+                        title: quizData.title,
+                        questionsCount: quizData.questions ? quizData.questions.length : 0,
+                        maxMarks: quizData.totalMarks || 100,
+                        duration: quizData.durationMinutes || 15,
+                        quizConfigJson,
+                      }
+                    : c
+                ),
+              }
+            : s
+        )
+      );
+    } else {
+      const newItem: ContentItem = {
+        id: Date.now(),
+        title: quizData.title,
+        contentType: "QUIZ",
+        questionsCount: quizData.questions ? quizData.questions.length : 0,
+        maxMarks: quizData.totalMarks || 100,
+        duration: quizData.durationMinutes || 15,
+        quizConfigJson,
+        status: "Published",
+      };
+      updateSections((prev) =>
+        prev.map((s) =>
+          s.id === activeSectionId
+            ? { ...s, contents: [...s.contents, newItem] }
+            : s
+        )
+      );
+    }
+    setEditingItem(null);
   };
 
   const handleSaveAssignment = (assignmentData: any) => {
     if (!activeSectionId) return;
-    const newItem: ContentItem = {
-      id: Date.now(),
-      title: assignmentData.title,
-      contentType: "ASSIGNMENT",
-      description: assignmentData.instructions || assignmentData.description,
-      dueDate: assignmentData.deadline,
-      maxMarks: assignmentData.maxMarks || 100,
-      assignmentConfigJson: JSON.stringify(assignmentData),
-      status: "Draft",
-    };
-    updateSections((prev) =>
-      prev.map((s) =>
-        s.id === activeSectionId
-          ? { ...s, contents: [...s.contents, newItem] }
-          : s
-      )
-    );
+    const assignmentConfigJson = JSON.stringify(assignmentData);
+    if (editingItem) {
+      updateSections((prev) =>
+        prev.map((s) =>
+          s.id === activeSectionId
+            ? {
+                ...s,
+                contents: s.contents.map((c) =>
+                  c.id === editingItem.item.id
+                    ? {
+                        ...c,
+                        title: assignmentData.title,
+                        description: assignmentData.instructions || assignmentData.description,
+                        dueDate: assignmentData.deadline,
+                        maxMarks: assignmentData.maxMarks || 100,
+                        assignmentConfigJson,
+                      }
+                    : c
+                ),
+              }
+            : s
+        )
+      );
+    } else {
+      const newItem: ContentItem = {
+        id: Date.now(),
+        title: assignmentData.title,
+        contentType: "ASSIGNMENT",
+        description: assignmentData.instructions || assignmentData.description,
+        dueDate: assignmentData.deadline,
+        maxMarks: assignmentData.maxMarks || 100,
+        assignmentConfigJson,
+        status: "Draft",
+      };
+      updateSections((prev) =>
+        prev.map((s) =>
+          s.id === activeSectionId
+            ? { ...s, contents: [...s.contents, newItem] }
+            : s
+        )
+      );
+    }
+    setEditingItem(null);
   };
 
   const handleSaveFeedback = (feedbackData: any) => {
@@ -402,8 +494,14 @@ export default function CurriculumBuilderView({
                               </div>
                             </div>
                           </div>
-
                           <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              onClick={() => handleEditContent(section.id, item)}
+                              className="text-primary hover:text-primary/80 text-xs font-semibold px-1.5 py-0.5 rounded hover:bg-primary/10"
+                              title="Edit item details"
+                            >
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </button>
                             {item.contentType === "ASSIGNMENT" && (
                               <Button
                                 size="sm"
@@ -502,12 +600,14 @@ export default function CurriculumBuilderView({
       <QuizBuilderModal
         open={quizBuilderOpen}
         onOpenChange={setQuizBuilderOpen}
+        initialData={editingItem?.item?.quizConfigJson ? (typeof editingItem.item.quizConfigJson === "string" ? JSON.parse(editingItem.item.quizConfigJson) : editingItem.item.quizConfigJson) : editingItem?.item}
         onSaveQuiz={handleSaveQuiz}
       />
 
       <AssignmentBuilderModal
         open={assignmentBuilderOpen}
         onOpenChange={setAssignmentBuilderOpen}
+        initialData={editingItem?.item?.assignmentConfigJson ? (typeof editingItem.item.assignmentConfigJson === "string" ? JSON.parse(editingItem.item.assignmentConfigJson) : editingItem.item.assignmentConfigJson) : editingItem?.item}
         onSaveAssignment={handleSaveAssignment}
       />
 

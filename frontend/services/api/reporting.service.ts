@@ -86,3 +86,27 @@ export const exportReportFile = async (type: string, format: string, params: Rep
   link.click();
   link.remove();
 };
+
+// 3 Core Role-Based Reports & Assignment Evaluation API calls
+export const getLearnerProgressReport = async (params: ReportFilterParams) => {
+  const response = await api.get("/reports/learner-progress", { params });
+  return response.data.data;
+};
+
+export const getQuizAssessmentReport = async (params: ReportFilterParams) => {
+  const response = await api.get("/reports/quiz-assessments", { params });
+  return response.data.data;
+};
+
+export const getAssignmentSubmissionReport = async (params: ReportFilterParams) => {
+  const response = await api.get("/reports/assignment-submissions", { params });
+  return response.data.data;
+};
+
+export const evaluateAssignmentSubmission = async (
+  submissionId: number | string,
+  data: { score: number; grade: string; feedback: string }
+) => {
+  const response = await api.post(`/reports/evaluate-assignment/${submissionId}`, data);
+  return response.data;
+};

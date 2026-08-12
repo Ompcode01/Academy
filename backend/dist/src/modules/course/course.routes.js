@@ -17,6 +17,8 @@ const uploadScorm = (0, multer_1.default)({
 const router = (0, express_1.Router)();
 // SCORM Package Upload Route (100MB limit)
 router.post("/upload-scorm", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), uploadScorm.single("file"), course_controller_1.uploadScormPackage);
+// Document File Upload Route (PDF, PPT, DOC)
+router.post("/upload-document", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), course_controller_1.uploadDocumentFile);
 // Pre-enrollment Verification Routes (usable during wizard creation)
 router.post("/verify-user", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), course_controller_1.verifyUser);
 router.post("/verify-bulk-file", auth_middleware_1.authenticate, (0, role_middleware_1.authorizeRoles)("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), course_controller_1.verifyBulkFile);

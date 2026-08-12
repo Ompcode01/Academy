@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,18 @@ import {
 interface QuizBuilderModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialData?: {
+    title?: string;
+    description?: string;
+    durationMinutes?: number;
+    passingPercentage?: number;
+    maxAttempts?: number;
+    totalMarks?: number;
+    shuffleQuestions?: boolean;
+    showAnswersAfterSubmit?: boolean;
+    oneQuestionAtATime?: boolean;
+    questions?: QuestionData[];
+  } | null;
   onSaveQuiz: (quizData: {
     title: string;
     description: string;
@@ -30,6 +42,9 @@ interface QuizBuilderModalProps {
     passingPercentage: number;
     maxAttempts: number;
     totalMarks: number;
+    shuffleQuestions: boolean;
+    showAnswersAfterSubmit: boolean;
+    oneQuestionAtATime: boolean;
     questions: QuestionData[];
   }) => void;
 }
@@ -37,6 +52,7 @@ interface QuizBuilderModalProps {
 export default function QuizBuilderModal({
   open,
   onOpenChange,
+  initialData,
   onSaveQuiz,
 }: QuizBuilderModalProps) {
   const [activeStep, setActiveStep] = useState<"DETAILS" | "QUESTIONS">("DETAILS");
@@ -50,6 +66,32 @@ export default function QuizBuilderModal({
   const [oneQuestionAtTime, setOneQuestionAtTime] = useState(false);
 
   const [questions, setQuestions] = useState<QuestionData[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      if (initialData) {
+        setTitle(initialData.title || "");
+        setDescription(initialData.description || "");
+        setDurationMinutes(initialData.durationMinutes || 20);
+        setPassingPercentage(initialData.passingPercentage || 70);
+        setMaxAttempts(initialData.maxAttempts || 2);
+        setShuffleQuestions(initialData.shuffleQuestions !== undefined ? Boolean(initialData.shuffleQuestions) : true);
+        setShowAnswers(initialData.showAnswersAfterSubmit !== undefined ? Boolean(initialData.showAnswersAfterSubmit) : true);
+        setOneQuestionAtTime(initialData.oneQuestionAtATime !== undefined ? Boolean(initialData.oneQuestionAtATime) : false);
+        setQuestions(initialData.questions || []);
+      } else {
+        setTitle("");
+        setDescription("");
+        setDurationMinutes(20);
+        setPassingPercentage(70);
+        setMaxAttempts(2);
+        setShuffleQuestions(true);
+        setShowAnswers(true);
+        setOneQuestionAtTime(false);
+        setQuestions([]);
+      }
+    }
+  }, [open, initialData]);
 
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType | null>(null);
@@ -89,6 +131,9 @@ export default function QuizBuilderModal({
       passingPercentage,
       maxAttempts,
       totalMarks: totalMarks || 0,
+      shuffleQuestions,
+      showAnswersAfterSubmit: showAnswers,
+      oneQuestionAtATime: oneQuestionAtTime,
       questions,
     });
     onOpenChange(false);

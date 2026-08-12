@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadScormPackage = exports.verifyBulkFile = exports.verifyUser = exports.bulkEnrollUsers = exports.adminEnrollUser = exports.selfEnrollCourse = exports.createContent = exports.deleteSection = exports.updateSection = exports.createSection = exports.deleteCourse = exports.updateCourse = exports.createCourse = exports.getCourseById = exports.getCourses = void 0;
+exports.uploadDocumentFile = exports.uploadScormPackage = exports.verifyBulkFile = exports.verifyUser = exports.bulkEnrollUsers = exports.adminEnrollUser = exports.selfEnrollCourse = exports.createContent = exports.deleteSection = exports.updateSection = exports.createSection = exports.deleteCourse = exports.updateCourse = exports.createCourse = exports.getCourseById = exports.getCourses = void 0;
 const asyncHandler_1 = __importDefault(require("../../utils/asyncHandler"));
 const response_1 = require("../../utils/response");
 const course_service_1 = __importDefault(require("./course.service"));
@@ -335,4 +335,78 @@ exports.uploadScormPackage = (0, asyncHandler_1.default)(async (req, res) => {
         fileName: originalName,
         fileSize: `${sizeMb} MB`,
     }, "SCORM ZIP package uploaded and extracted successfully");
+});
+// POST /api/courses/upload-document
+exports.uploadDocumentFile = (0, asyncHandler_1.default)(async (req, res) => {
+    if (!req.file) {
+        throw new Error("No document file provided.");
+    }
+    const originalName = req.file.originalname;
+    const sanitizedName = originalName.replace(/[^a-zA-Z0-9.-]/g, "_");
+    const uniqueName = `doc-${Date.now()}-${sanitizedName}`;
+    const storageDir = path_1.default.join(process.cwd(), "public", "storage", "uploads");
+    if (!fs_1.default.existsSync(storageDir)) {
+        fs_1.default.mkdirSync(storageDir, { recursive: true });
+    }
+    const filePath = path_1.default.join(storageDir, uniqueName);
+    fs_1.default.writeFileSync(filePath, req.file.buffer);
+    const sizeMb = (req.file.size / (1024 * 1024)).toFixed(1);
+    const relativeUrl = `/storage/uploads/${uniqueName}`;
+    let extractedSlides = [];
+    if (originalName.toLowerCase().endsWith(".pptx")) {
+        try {
+            const zip = new adm_zip_1.default(req.file.buffer);
+            const zipEntries = zip.getEntries();
+            const slideEntries = zipEntries
+                .filter((e) => e.entryName.match(/ppt\/slides\/slide\d+\.xml/i))
+                .sort((a, b) => {
+                const numA = parseInt(a.entryName.match(/slide(\d+)\.xml/i)?.[1] || "0", 10);
+                const numB = parseInt(b.entryName.match(/slide(\d+)\.xml/i)?.[1] || "0", 10);
+                return numA - numB;
+            });
+            const colors = [
+                "from-amber-500/20 to-orange-500/10 border-amber-500/30",
+                "from-blue-500/20 to-indigo-500/10 border-blue-500/30",
+                "from-emerald-500/20 to-teal-500/10 border-emerald-500/30",
+                "from-purple-500/20 to-pink-500/10 border-purple-500/30",
+                "from-red-500/20 to-rose-500/10 border-red-500/30",
+                "from-amber-500/20 to-yellow-500/10 border-amber-500/30",
+            ];
+            slideEntries.forEach((entry, idx) => {
+                const xmlText = entry.getData().toString("utf8");
+                const textMatches = [];
+                const regex = /<a:t[^>]*>(.*?)<\/a:t>/gi;
+                let match;
+                while ((match = regex.exec(xmlText)) !== null) {
+                    const cleanText = match[1].replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").trim();
+                    if (cleanText) {
+                        textMatches.push(cleanText);
+                    }
+                }
+                if (textMatches.length > 0) {
+                    const heading = textMatches[0] || `Slide ${idx + 1}`;
+                    const subheading = textMatches.length > 1 ? textMatches[1] : `Key Concepts`;
+                    const bullets = textMatches.slice(2).filter((b) => b.length > 1);
+                    extractedSlides.push({
+                        slideNum: idx + 1,
+                        tag: `Slide ${idx + 1}`,
+                        heading,
+                        subheading,
+                        bullets: bullets.length > 0 ? bullets : [subheading],
+                        color: colors[idx % colors.length],
+                    });
+                }
+            });
+        }
+        catch (err) {
+            console.error("PPTX slide extraction error:", err);
+        }
+    }
+    return (0, response_1.successResponse)(res, {
+        fileUrl: relativeUrl,
+        fileName: originalName,
+        fileSize: `${sizeMb} MB`,
+        extractedSlides: extractedSlides.length > 0 ? extractedSlides : undefined,
+        slidesConfigJson: extractedSlides.length > 0 ? JSON.stringify(extractedSlides) : undefined,
+    }, "Document file uploaded and processed successfully");
 });

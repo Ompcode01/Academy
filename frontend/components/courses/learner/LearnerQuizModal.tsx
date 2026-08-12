@@ -18,6 +18,7 @@ interface LearnerQuizModalProps {
   courseId: number;
   contentId?: number | null;
   quizTitle?: string;
+  configJson?: string;
   passingScore?: number;
   onClose: () => void;
   onSuccess: (score: number, maxScore: number) => void;
@@ -28,41 +29,70 @@ export default function LearnerQuizModal({
   courseId,
   contentId,
   quizTitle = "Module Assessment & Knowledge Check",
+  configJson,
   passingScore = 70,
   onClose,
   onSuccess,
 }: LearnerQuizModalProps) {
-  // Mock questions for interactive evaluation
-  const [questions] = useState<QuizQuestion[]>([
-    {
-      id: 1,
-      questionText: "What is the primary architectural advantage of Microservices over Monolithic architecture?",
-      options: [
-        "Independent scalability and decoupled deployments",
-        "Smaller total codebase file size",
-        "No database required",
-        "Faster single-thread execution",
-      ],
-      correctAnswer: 0,
-    },
-    {
-      id: 2,
-      questionText: "Which HTTP method is idempotent and used to replace an entire resource in REST APIs?",
-      options: ["POST", "PUT", "PATCH", "CONNECT"],
-      correctAnswer: 1,
-    },
-    {
-      id: 3,
-      questionText: "In Docker containerization, what is the role of an Image?",
-      options: [
-        "A running container process instance",
-        "A read-only immutable template with application code and dependencies",
-        "A virtual machine hypervisor kernel",
-        "A persistent disk storage device driver",
-      ],
-      correctAnswer: 1,
-    },
-  ]);
+  // Parse questions from configJson or use fallback questions
+  let rawQuestions: any[] = [];
+  if (configJson) {
+    try {
+      const data = typeof configJson === "string" ? JSON.parse(configJson) : configJson;
+      if (Array.isArray(data.questions)) {
+        rawQuestions = data.questions;
+      } else if (Array.isArray(data)) {
+        rawQuestions = data;
+      }
+    } catch {}
+  }
+
+  let questions: QuizQuestion[] = [];
+  if (rawQuestions.length > 0) {
+    questions = rawQuestions.map((q, idx) => {
+      let opts: string[] = [];
+      if (Array.isArray(q.options)) {
+        opts = q.options.map((o: any) => typeof o === "string" ? o : (o?.text || String(o)));
+      } else if (q.type === "TRUE_FALSE" || q.questionType === "TRUE_FALSE") {
+        opts = ["True", "False"];
+      }
+
+      let correctIdx = 0;
+      if (typeof q.correctAnswer === "number") {
+        correctIdx = q.correctAnswer;
+      } else if (typeof q.correctAnswer === "string") {
+        const found = opts.findIndex((o) => o.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase());
+        if (found !== -1) correctIdx = found;
+      }
+
+      return {
+        id: q.id !== undefined && q.id !== null ? Number(q.id) : idx + 1,
+        questionText: q.questionText || q.title || `Question ${idx + 1}`,
+        options: opts,
+        correctAnswer: correctIdx,
+      };
+    });
+  } else {
+    questions = [
+      {
+        id: 1,
+        questionText: "What is the primary architectural advantage of Microservices over Monolithic architecture?",
+        options: [
+          "Independent scalability and decoupled deployments",
+          "Smaller total codebase file size",
+          "No database required",
+          "Faster single-thread execution",
+        ],
+        correctAnswer: 0,
+      },
+      {
+        id: 2,
+        questionText: "Which HTTP method is idempotent and used to replace an entire resource in REST APIs?",
+        options: ["POST", "PUT", "PATCH", "CONNECT"],
+        correctAnswer: 1,
+      },
+    ];
+  }
 
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -163,7 +193,7 @@ export default function LearnerQuizModal({
                   </h4>
 
                   <div className="space-y-2 pl-7">
-                    {q.options.map((opt, optIdx) => {
+                    {(q.options || []).map((opt, optIdx) => {
                       const isSelected = selectedAnswers[q.id] === optIdx;
                       return (
                         <button

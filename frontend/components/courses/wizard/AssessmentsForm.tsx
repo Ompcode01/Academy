@@ -34,6 +34,9 @@ export default function AssessmentsForm({
   const [quizModalOpen, setQuizModalOpen] = useState(false);
   const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
 
+  const [editingQuiz, setEditingQuiz] = useState<any | null>(null);
+  const [editingAssignment, setEditingAssignment] = useState<any | null>(null);
+
   useEffect(() => {
     if (sections) {
       const parsedQuizzes = sections.flatMap((sec) =>
@@ -51,10 +54,12 @@ export default function AssessmentsForm({
             return {
               id: c.id,
               title: c.title,
+              description: c.description || (config as any).description || "",
               questions: (config as any).questions || [],
               totalMarks: c.maxMarks || (config as any).totalMarks || 100,
               durationMinutes: c.duration || (config as any).durationMinutes || 15,
               passingPercentage: (config as any).passingPercentage || 70,
+              maxAttempts: (config as any).maxAttempts || 2,
             };
           })
       );
@@ -74,6 +79,7 @@ export default function AssessmentsForm({
             return {
               id: c.id,
               title: c.title,
+              description: c.description || (config as any).description || "",
               instructions: c.description || (config as any).instructions || "",
               maxMarks: c.maxMarks || (config as any).maxMarks || 100,
               deadline: (config as any).deadline || "",
@@ -87,9 +93,30 @@ export default function AssessmentsForm({
     }
   }, [sections]);
 
+  const handleOpenNewQuiz = () => {
+    setEditingQuiz(null);
+    setQuizModalOpen(true);
+  };
+
+  const handleOpenEditQuiz = (quiz: any) => {
+    setEditingQuiz(quiz);
+    setQuizModalOpen(true);
+  };
+
+  const handleOpenNewAssignment = () => {
+    setEditingAssignment(null);
+    setAssignmentModalOpen(true);
+  };
+
+  const handleOpenEditAssignment = (assignment: any) => {
+    setEditingAssignment(assignment);
+    setAssignmentModalOpen(true);
+  };
+
   const handleSaveQuiz = (newQuiz: any) => {
-    const newContentItem = {
-      id: Date.now(),
+    const updatedSections = [...sections];
+    const quizContentItem = {
+      id: editingQuiz?.id || Date.now(),
       title: newQuiz.title,
       contentType: "QUIZ" as const,
       questionsCount: newQuiz.questions ? newQuiz.questions.length : 0,
@@ -99,28 +126,40 @@ export default function AssessmentsForm({
       status: "Published" as const,
     };
 
-    const updatedSections = [...sections];
-    if (updatedSections.length === 0) {
-      updatedSections.push({
-        id: Date.now(),
-        title: "Assessments",
-        description: "Course Assessments",
-        expanded: true,
-        contents: [newContentItem],
-      });
+    if (editingQuiz) {
+      // Update existing item in place
+      const nextSections = updatedSections.map((sec) => ({
+        ...sec,
+        contents: (sec.contents || []).map((c: any) =>
+          c.id === editingQuiz.id ? { ...c, ...quizContentItem } : c
+        ),
+      }));
+      onSectionsChange?.(nextSections);
     } else {
-      const lastSecIdx = updatedSections.length - 1;
-      updatedSections[lastSecIdx] = {
-        ...updatedSections[lastSecIdx],
-        contents: [...(updatedSections[lastSecIdx].contents || []), newContentItem],
-      };
+      if (updatedSections.length === 0) {
+        updatedSections.push({
+          id: Date.now(),
+          title: "Assessments",
+          description: "Course Assessments",
+          expanded: true,
+          contents: [quizContentItem],
+        });
+      } else {
+        const lastSecIdx = updatedSections.length - 1;
+        updatedSections[lastSecIdx] = {
+          ...updatedSections[lastSecIdx],
+          contents: [...(updatedSections[lastSecIdx].contents || []), quizContentItem],
+        };
+      }
+      onSectionsChange?.(updatedSections);
     }
-    onSectionsChange?.(updatedSections);
+    setEditingQuiz(null);
   };
 
   const handleSaveAssignment = (newAssignment: any) => {
-    const newContentItem = {
-      id: Date.now(),
+    const updatedSections = [...sections];
+    const assignmentContentItem = {
+      id: editingAssignment?.id || Date.now(),
       title: newAssignment.title,
       contentType: "ASSIGNMENT" as const,
       description: newAssignment.instructions || newAssignment.description,
@@ -129,23 +168,34 @@ export default function AssessmentsForm({
       status: "Draft" as const,
     };
 
-    const updatedSections = [...sections];
-    if (updatedSections.length === 0) {
-      updatedSections.push({
-        id: Date.now(),
-        title: "Assessments",
-        description: "Course Assessments",
-        expanded: true,
-        contents: [newContentItem],
-      });
+    if (editingAssignment) {
+      // Update existing item in place
+      const nextSections = updatedSections.map((sec) => ({
+        ...sec,
+        contents: (sec.contents || []).map((c: any) =>
+          c.id === editingAssignment.id ? { ...c, ...assignmentContentItem } : c
+        ),
+      }));
+      onSectionsChange?.(nextSections);
     } else {
-      const lastSecIdx = updatedSections.length - 1;
-      updatedSections[lastSecIdx] = {
-        ...updatedSections[lastSecIdx],
-        contents: [...(updatedSections[lastSecIdx].contents || []), newContentItem],
-      };
+      if (updatedSections.length === 0) {
+        updatedSections.push({
+          id: Date.now(),
+          title: "Assessments",
+          description: "Course Assessments",
+          expanded: true,
+          contents: [assignmentContentItem],
+        });
+      } else {
+        const lastSecIdx = updatedSections.length - 1;
+        updatedSections[lastSecIdx] = {
+          ...updatedSections[lastSecIdx],
+          contents: [...(updatedSections[lastSecIdx].contents || []), assignmentContentItem],
+        };
+      }
+      onSectionsChange?.(updatedSections);
     }
-    onSectionsChange?.(updatedSections);
+    setEditingAssignment(null);
   };
 
   const handleDeleteQuiz = (id: number) => {
@@ -185,7 +235,7 @@ export default function AssessmentsForm({
           </h3>
           <Button
             size="sm"
-            onClick={() => setQuizModalOpen(true)}
+            onClick={handleOpenNewQuiz}
             className="gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
           >
             <Plus className="h-3.5 w-3.5" /> + Create / Attach Quiz
@@ -224,10 +274,18 @@ export default function AssessmentsForm({
                   <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-500">
                     Published
                   </Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleOpenEditQuiz(quiz)}
+                    className="h-8 px-2 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400"
+                  >
+                    Edit
+                  </Button>
                   <button
                     type="button"
                     onClick={() => handleDeleteQuiz(quiz.id)}
-                    className="text-red-500 hover:text-red-600 p-1"
+                    className="text-red-500 hover:text-red-600 p-1 cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -247,7 +305,7 @@ export default function AssessmentsForm({
           </h3>
           <Button
             size="sm"
-            onClick={() => setAssignmentModalOpen(true)}
+            onClick={handleOpenNewAssignment}
             className="gap-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold"
           >
             <Plus className="h-3.5 w-3.5" /> + Create / Attach Assignment
@@ -286,10 +344,18 @@ export default function AssessmentsForm({
                   <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-500">
                     Draft
                   </Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleOpenEditAssignment(ass)}
+                    className="h-8 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400"
+                  >
+                    Edit
+                  </Button>
                   <button
                     type="button"
                     onClick={() => handleDeleteAssignment(ass.id)}
-                    className="text-red-500 hover:text-red-600 p-1"
+                    className="text-red-500 hover:text-red-600 p-1 cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -319,6 +385,7 @@ export default function AssessmentsForm({
       <QuizBuilderModal
         open={quizModalOpen}
         onOpenChange={setQuizModalOpen}
+        initialData={editingQuiz}
         onSaveQuiz={handleSaveQuiz}
       />
 
@@ -326,6 +393,7 @@ export default function AssessmentsForm({
       <AssignmentBuilderModal
         open={assignmentModalOpen}
         onOpenChange={setAssignmentModalOpen}
+        initialData={editingAssignment}
         onSaveAssignment={handleSaveAssignment}
       />
     </div>

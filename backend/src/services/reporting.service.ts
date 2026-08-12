@@ -103,31 +103,46 @@ function calculatePercentage(part: number, total: number): number {
   return Number(((part / total) * 100).toFixed(1));
 }
 
+// Helper for safe BigInt conversion without crashing on invalid or string values
+export function toBigIntSafe(val: any): bigint | undefined {
+  if (val === null || val === undefined || val === "" || val === "ALL" || val === "undefined" || val === "null") {
+    return undefined;
+  }
+  try {
+    const str = String(val).trim();
+    if (str === "" || str === "ALL" || str === "undefined" || str === "null" || isNaN(Number(str))) {
+      return undefined;
+    }
+    return BigInt(str);
+  } catch {
+    return undefined;
+  }
+}
+
 // Enforce RBAC Department Filter
 function resolveDepartmentScope(filters: ReportFilterParams, user: UserContext): bigint | undefined {
   const isSuperAdmin = user.role === "SUPER_ADMIN";
   if (!isSuperAdmin) {
     // Admin is strictly restricted to their departmentId
     if (user.departmentId) {
-      return BigInt(user.departmentId);
+      const dId = toBigIntSafe(user.departmentId);
+      if (dId !== undefined) return dId;
     }
   }
-  if (filters.departmentId && filters.departmentId !== "ALL") {
-    return BigInt(filters.departmentId);
-  }
-  return undefined;
+  return toBigIntSafe(filters.departmentId);
 }
 
 // Build strict Employee filter clause (combines departmentId, employeeId, and search string)
 function buildEmployeeWhereClause(filters: ReportFilterParams, deptId?: bigint) {
   const empWhere: any = {};
-  if (deptId) empWhere.departmentId = deptId;
+  if (deptId !== undefined) empWhere.departmentId = deptId;
 
-  if (filters.employeeId && filters.employeeId !== "ALL") {
-    empWhere.id = BigInt(filters.employeeId);
+  const empId = toBigIntSafe(filters.employeeId);
+  if (empId !== undefined) {
+    empWhere.id = empId;
   }
 
-  if (filters.search && filters.search.trim() !== "") {
+  if (filters.search && typeof filters.search === "string" && filters.search.trim() !== "") {
     const q = filters.search.trim();
     empWhere.OR = [
       { firstName: { contains: q } },
@@ -1432,5 +1447,395 @@ export class ReportingService {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Report");
     return XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+  }
+
+  // -------------------------------------------------------------
+  // 3 ROLE-BASED REPORTS (Teacher, Admin, Super Admin)
+  // -------------------------------------------------------------
+
+  // 1. Learner Progress Report
+  static async getLearnerProgressReport(filters: ReportFilterParams, user: UserContext) {
+    const deptId = resolveDepartmentScope(filters, user);
+
+    let allowedCourseIds: bigint[] | undefined = undefined;
+    if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
+      const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+      if (tId !== undefined) {
+        const assigned = await prisma.courseTeacher.findMany({ where: { teacherId: tId }, select: { courseId: true } });
+        const created = await prisma.course.findMany({ where: { creatorId: tId }, select: { id: true } });
+        allowedCourseIds = Array.from(new Set([...assigned.map((a) => a.courseId), ...created.map((c) => c.id)]));
+      }
+    }
+
+    const where: any = {};
+    if (allowedCourseIds) {
+      where.courseId = { in: allowedCourseIds };
+    } else {
+      const cId = toBigIntSafe(filters.courseId);
+      if (cId !== undefined) where.courseId = cId;
+    }
+    if (filters.status && filters.status !== "ALL") where.status = filters.status;
+
+    const enrollments = await prisma.enrollment.findMany({
+      where,
+      orderBy: { enrolledAt: "desc" },
+    });
+
+    if (!enrollments || enrollments.length === 0) {
+      return sanitizeData({ table: [], totalCount: 0 });
+    }
+
+    const userIds = Array.from(new Set(enrollments.map((e) => e.userId)));
+    const cIds = Array.from(new Set(enrollments.map((e) => e.courseId)));
+
+    const [employees, courses, completedProgress] = await Promise.all([
+      prisma.employee.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, firstName: true, lastName: true, employeeCode: true, designation: true, departmentId: true },
+      }),
+      prisma.course.findMany({
+        where: { id: { in: cIds } },
+        select: {
+          id: true,
+          title: true,
+          creator: { select: { firstName: true, lastName: true } },
+          teachers: { select: { teacher: { select: { firstName: true, lastName: true } } } },
+          sections: { select: { contents: { select: { id: true } } } },
+        },
+      }),
+      prisma.userLessonProgress.findMany({
+        where: { userId: { in: userIds }, isCompleted: true },
+        select: { userId: true, courseId: true, contentId: true },
+      }),
+    ]);
+
+    const empMap = new Map(employees.map((e) => [e.id.toString(), e]));
+    const courseMap = new Map(courses.map((c) => [c.id.toString(), c]));
+
+    const searchStr = filters.search && typeof filters.search === "string" ? filters.search.trim().toLowerCase() : "";
+
+    const rows = enrollments
+      .filter((en) => {
+        const emp = empMap.get(en.userId.toString());
+        if (deptId !== undefined) {
+          if (emp?.departmentId?.toString() !== deptId.toString()) return false;
+        }
+        if (searchStr) {
+          const fullName = emp ? `${emp.firstName} ${emp.lastName}`.toLowerCase() : "";
+          const empCode = emp?.employeeCode ? emp.employeeCode.toLowerCase() : "";
+          if (!fullName.includes(searchStr) && !empCode.includes(searchStr)) return false;
+        }
+        return true;
+      })
+      .map((en) => {
+        const emp = empMap.get(en.userId.toString());
+        const crs = courseMap.get(en.courseId.toString());
+
+        const totalLessons = crs?.sections?.flatMap((s) => s.contents).length || 0;
+        const completedCount = completedProgress.filter(
+          (p) => p.userId.toString() === en.userId.toString() && p.courseId.toString() === en.courseId.toString()
+        ).length;
+
+        const teacherName =
+          crs?.teachers?.[0]?.teacher
+            ? `${crs.teachers[0].teacher.firstName} ${crs.teachers[0].teacher.lastName}`
+            : crs?.creator
+            ? `${crs.creator.firstName} ${crs.creator.lastName}`
+            : "Unassigned";
+
+        const totalSecs = en.timeSpentSeconds || 0;
+        const hrs = Math.floor(totalSecs / 3600);
+        const mins = Math.floor((totalSecs % 3600) / 60);
+        const timeSpentFormatted = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+
+        return {
+          id: en.id,
+          userId: en.userId,
+          learnerName: emp ? `${emp.firstName} ${emp.lastName}` : `User #${en.userId}`,
+          employeeCode: emp ? emp.employeeCode : "N/A",
+          courseId: en.courseId,
+          courseTitle: crs ? crs.title : `Course #${en.courseId}`,
+          assignedTeacher: teacherName,
+          progress: Number(en.progress),
+          completedLessonsCount: `${completedCount} / ${totalLessons}`,
+          status: en.status,
+          lastActivity: en.createdAt || en.enrolledAt,
+          timeSpentSeconds: en.timeSpentSeconds || 0,
+          timeSpentFormatted,
+        };
+      });
+
+    return sanitizeData({ table: rows, totalCount: rows.length });
+  }
+
+  // 2. Quiz & Assessment Report
+  static async getQuizAssessmentReport(filters: ReportFilterParams, user: UserContext) {
+    const deptId = resolveDepartmentScope(filters, user);
+
+    let allowedCourseIds: bigint[] | undefined = undefined;
+    if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
+      const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+      if (tId !== undefined) {
+        const assigned = await prisma.courseTeacher.findMany({ where: { teacherId: tId }, select: { courseId: true } });
+        const created = await prisma.course.findMany({ where: { creatorId: tId }, select: { id: true } });
+        allowedCourseIds = Array.from(new Set([...assigned.map((a) => a.courseId), ...created.map((c) => c.id)]));
+      }
+    }
+
+    const where: any = { submissionType: "QUIZ" };
+    if (allowedCourseIds) {
+      where.courseId = { in: allowedCourseIds };
+    } else {
+      const cId = toBigIntSafe(filters.courseId);
+      if (cId !== undefined) where.courseId = cId;
+    }
+
+    const submissions = await prisma.assessmentSubmission.findMany({
+      where,
+      orderBy: { submittedAt: "desc" },
+    });
+
+    if (!submissions || submissions.length === 0) {
+      return sanitizeData({ table: [], totalCount: 0 });
+    }
+
+    const userIds = Array.from(new Set(submissions.map((s) => s.userId)));
+    const cIds = Array.from(new Set(submissions.map((s) => s.courseId)));
+    const contentIds = Array.from(new Set(submissions.map((s) => s.contentId).filter(Boolean) as bigint[]));
+
+    const [employees, courses, contents] = await Promise.all([
+      prisma.employee.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, firstName: true, lastName: true, employeeCode: true, departmentId: true },
+      }),
+      prisma.course.findMany({
+        where: { id: { in: cIds } },
+        select: { id: true, title: true },
+      }),
+      prisma.learningContent.findMany({
+        where: { id: { in: contentIds } },
+        select: { id: true, title: true, quizConfigJson: true },
+      }),
+    ]);
+
+    const empMap = new Map(employees.map((e) => [e.id.toString(), e]));
+    const courseMap = new Map(courses.map((c) => [c.id.toString(), c]));
+    const contentMap = new Map(contents.map((c) => [c.id.toString(), c]));
+
+    const searchStr = filters.search && typeof filters.search === "string" ? filters.search.trim().toLowerCase() : "";
+
+    const rows = submissions
+      .filter((sub) => {
+        const emp = empMap.get(sub.userId.toString());
+        if (deptId !== undefined) {
+          if (emp?.departmentId?.toString() !== deptId.toString()) return false;
+        }
+        if (searchStr) {
+          const fullName = emp ? `${emp.firstName} ${emp.lastName}`.toLowerCase() : "";
+          const empCode = emp?.employeeCode ? emp.employeeCode.toLowerCase() : "";
+          if (!fullName.includes(searchStr) && !empCode.includes(searchStr)) return false;
+        }
+        return true;
+      })
+      .map((sub) => {
+        const emp = empMap.get(sub.userId.toString());
+        const crs = courseMap.get(sub.courseId.toString());
+        const cnt = sub.contentId ? contentMap.get(sub.contentId.toString()) : null;
+
+        let passingPct = 70;
+        if (cnt?.quizConfigJson) {
+          try {
+            const cfg = typeof cnt.quizConfigJson === "string" ? JSON.parse(cnt.quizConfigJson) : cnt.quizConfigJson;
+            if (cfg.passingPercentage) passingPct = Number(cfg.passingPercentage);
+          } catch {}
+        }
+
+        const passFailStatus = (sub.percentage || 0) >= passingPct ? "PASSED" : "FAILED";
+
+        return {
+          id: sub.id,
+          userId: sub.userId,
+          learnerName: emp ? `${emp.firstName} ${emp.lastName}` : `User #${sub.userId}`,
+          employeeCode: emp ? emp.employeeCode : "N/A",
+          courseId: sub.courseId,
+          courseTitle: crs ? crs.title : `Course #${sub.courseId}`,
+          quizTitle: cnt ? cnt.title : "Module Quiz Assessment",
+          attemptNumber: sub.attemptNumber || 1,
+          score: sub.score,
+          maxScore: sub.maxScore || 100,
+          percentage: sub.percentage || 0,
+          passFailStatus,
+          submittedAt: sub.submittedAt,
+          isReadOnly: true,
+        };
+      });
+
+    return sanitizeData({ table: rows, totalCount: rows.length });
+  }
+
+  // 3. Assignment & Submission Report
+  static async getAssignmentSubmissionReport(filters: ReportFilterParams, user: UserContext) {
+    const deptId = resolveDepartmentScope(filters, user);
+
+    let allowedCourseIds: bigint[] | undefined = undefined;
+    if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
+      const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+      if (tId !== undefined) {
+        const assigned = await prisma.courseTeacher.findMany({ where: { teacherId: tId }, select: { courseId: true } });
+        const created = await prisma.course.findMany({ where: { creatorId: tId }, select: { id: true } });
+        allowedCourseIds = Array.from(new Set([...assigned.map((a) => a.courseId), ...created.map((c) => c.id)]));
+      }
+    }
+
+    const where: any = { submissionType: "ASSIGNMENT" };
+    if (allowedCourseIds) {
+      where.courseId = { in: allowedCourseIds };
+    } else {
+      const cId = toBigIntSafe(filters.courseId);
+      if (cId !== undefined) where.courseId = cId;
+    }
+    if (filters.status && filters.status !== "ALL") where.status = filters.status;
+
+    // Filter to ONLY latest attempt per learner per content item
+    const allSubmissions = await prisma.assessmentSubmission.findMany({
+      where,
+      orderBy: { submittedAt: "desc" },
+    });
+
+    if (!allSubmissions || allSubmissions.length === 0) {
+      return sanitizeData({ table: [], totalCount: 0 });
+    }
+
+    const latestSubmissionsMap = new Map<string, typeof allSubmissions[0]>();
+    for (const sub of allSubmissions) {
+      const key = `${sub.userId.toString()}_${sub.courseId.toString()}_${sub.contentId ? sub.contentId.toString() : sub.submissionType}`;
+      if (!latestSubmissionsMap.has(key)) {
+        latestSubmissionsMap.set(key, sub);
+      }
+    }
+    const submissions = Array.from(latestSubmissionsMap.values());
+
+    const userIds = Array.from(new Set(submissions.map((s) => s.userId)));
+    const cIds = Array.from(new Set(submissions.map((s) => s.courseId)));
+    const contentIds = Array.from(new Set(submissions.map((s) => s.contentId).filter(Boolean) as bigint[]));
+
+    const [employees, courses, contents] = await Promise.all([
+      prisma.employee.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, firstName: true, lastName: true, employeeCode: true, officialEmail: true, departmentId: true },
+      }),
+      prisma.course.findMany({
+        where: { id: { in: cIds } },
+        select: { id: true, title: true },
+      }),
+      prisma.learningContent.findMany({
+        where: { id: { in: contentIds } },
+        select: { id: true, title: true, assignmentConfigJson: true },
+      }),
+    ]);
+
+    const empMap = new Map(employees.map((e) => [e.id.toString(), e]));
+    const courseMap = new Map(courses.map((c) => [c.id.toString(), c]));
+    const contentMap = new Map(contents.map((c) => [c.id.toString(), c]));
+
+    const searchStr = filters.search && typeof filters.search === "string" ? filters.search.trim().toLowerCase() : "";
+
+    const rows = submissions
+      .filter((sub) => {
+        const emp = empMap.get(sub.userId.toString());
+        if (deptId !== undefined) {
+          if (emp?.departmentId?.toString() !== deptId.toString()) return false;
+        }
+        if (searchStr) {
+          const fullName = emp ? `${emp.firstName} ${emp.lastName}`.toLowerCase() : "";
+          const empCode = emp?.employeeCode ? emp.employeeCode.toLowerCase() : "";
+          if (!fullName.includes(searchStr) && !empCode.includes(searchStr)) return false;
+        }
+        return true;
+      })
+      .map((sub) => {
+        const emp = empMap.get(sub.userId.toString());
+        const crs = courseMap.get(sub.courseId.toString());
+        const cnt = sub.contentId ? contentMap.get(sub.contentId.toString()) : null;
+
+        let maxMarks = sub.maxScore || 50;
+        if (cnt?.assignmentConfigJson) {
+          try {
+            const cfg = typeof cnt.assignmentConfigJson === "string" ? JSON.parse(cnt.assignmentConfigJson) : cnt.assignmentConfigJson;
+            if (cfg.maxMarks) maxMarks = Number(cfg.maxMarks);
+          } catch {}
+        }
+
+        return {
+          id: sub.id,
+          userId: sub.userId,
+          learnerName: emp ? `${emp.firstName} ${emp.lastName}` : `User #${sub.userId}`,
+          employeeCode: emp ? emp.employeeCode : "N/A",
+          officialEmail: emp ? emp.officialEmail : "",
+          courseId: sub.courseId,
+          courseTitle: crs ? crs.title : `Course #${sub.courseId}`,
+          assignmentTitle: cnt ? cnt.title : "Practical Assignment",
+          submissionStatus: sub.status,
+          submittedAt: sub.submittedAt,
+          submissionText: sub.submissionText || "",
+          fileUrl: sub.fileUrl || "",
+          score: sub.score,
+          maxScore: maxMarks,
+          percentage: sub.percentage || 0,
+          grade: sub.grade || "N/A",
+          feedback: sub.feedback || "",
+          gradedBy: sub.gradedBy || null,
+          gradedAt: sub.gradedAt || null,
+          attemptNumber: sub.attemptNumber || 1,
+        };
+      });
+
+    return sanitizeData({ table: rows, totalCount: rows.length });
+  }
+
+  // Evaluate Assignment Action
+  static async evaluateAssignmentSubmission(
+    submissionId: string | number,
+    data: { score: number; grade: string; feedback: string },
+    user: UserContext,
+    ipAddress?: string
+  ) {
+    const subId = toBigIntSafe(submissionId);
+    if (!subId) throw new Error("Invalid submission ID");
+
+    const sub = await prisma.assessmentSubmission.findUnique({ where: { id: subId } });
+    if (!sub) throw new Error("Submission not found");
+
+    const evaluatorId = toBigIntSafe(user.userId) || toBigIntSafe(user.employeeId);
+    const emp = evaluatorId ? await prisma.employee.findUnique({ where: { id: evaluatorId }, select: { firstName: true, lastName: true } }) : null;
+    const evaluatorName = emp ? `${emp.firstName} ${emp.lastName}` : "Faculty Evaluator";
+
+    const progressService = (await import("../modules/course/progress.service")).default;
+    const updated = await progressService.gradeAssessmentSubmission(
+      subId,
+      data.grade || "A",
+      Number(data.score),
+      data.feedback || "Evaluated by Faculty.",
+      evaluatorName,
+      "GRADED"
+    );
+
+    // Record Audit Log
+    try {
+      const auditService = (await import("../modules/audit/audit.service")).default;
+      await auditService.recordAuditLog({
+        actorName: evaluatorName,
+        action: "GRADE_ASSIGNMENT",
+        detail: `Evaluated Assignment Submission #${submissionId}. Awarded Score: ${data.score}, Grade: ${data.grade}. Feedback: "${data.feedback}"`,
+        type: "EVALUATION",
+        username: String(user.userId || user.employeeId || "Evaluator"),
+        actorId: evaluatorId || null,
+        ipAddress: ipAddress || "127.0.0.1",
+      });
+    } catch (err) {
+      console.error("Failed to record evaluation audit log:", err);
+    }
+
+    return sanitizeData(updated);
   }
 }

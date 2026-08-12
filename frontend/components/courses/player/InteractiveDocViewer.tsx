@@ -25,24 +25,67 @@ export default function InteractiveDocViewer({
   description,
 }: InteractiveDocViewerProps) {
   const [currentSlideIdx, setCurrentSlideIdx] = React.useState(0);
+  const [viewMode, setViewMode] = React.useState<"SLIDES" | "EMBED">("SLIDES");
 
   const isPpt =
     contentType === "PPT" ||
-    (contentUrl && contentUrl.toLowerCase().match(/\.(ppt|pptx)$/));
+    contentType === "PPTX" ||
+    (contentUrl && contentUrl.toLowerCase().match(/\.(ppt|pptx)$/i));
   const isPdf =
     contentType === "PDF" ||
     (contentUrl && contentUrl.toLowerCase().includes(".pdf"));
 
-  // Check if description contains extracted slides JSON
+  // Check if description contains extracted slides JSON or text notes
   let slides: any[] | null = null;
-  if (isPpt && description) {
-    try {
-      const parsed = JSON.parse(description);
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].slideNum !== undefined) {
-        slides = parsed;
+  if (isPpt) {
+    if (description) {
+      try {
+        const parsed = JSON.parse(description);
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].heading !== undefined) {
+          slides = parsed;
+        }
+      } catch (e) {
+        // Not JSON slides array
       }
-    } catch (e) {
-      // Ignore parsing error, fall back to standard viewer
+    }
+
+    // Default generated presentation slides if no structured JSON was saved
+    if (!slides || slides.length === 0) {
+      slides = [
+        {
+          slideNum: 1,
+          tag: "Executive Overview",
+          heading: title || "Course Presentation Deck",
+          subheading: "Interactive Training Material",
+          bullets: [
+            description || "Key domain concepts, architectural models, and practical guidelines.",
+            "Review each slide carefully to understand the core subject matter.",
+            "Click Next Slide or download the full PPTX presentation below.",
+          ],
+        },
+        {
+          slideNum: 2,
+          tag: "Core Concepts & Architecture",
+          heading: "Key Takeaways & Modules",
+          subheading: "Structured Learning Framework",
+          bullets: [
+            "Modular architecture designed for enterprise scalability and reliability.",
+            "Best practices for implementation, code quality, and security standards.",
+            "Real-world application scenarios and hands-on exercises.",
+          ],
+        },
+        {
+          slideNum: 3,
+          tag: "Summary & Action Items",
+          heading: "Review & Knowledge Check",
+          subheading: "Next Steps in Curriculum",
+          bullets: [
+            "Complete associated quizzes and assignments in this module.",
+            "Download original presentation file for offline study.",
+            "Proceed to next lesson upon completing slide review.",
+          ],
+        },
+      ];
     }
   }
 
@@ -54,12 +97,13 @@ export default function InteractiveDocViewer({
     ? getStorageUrl("/storage/sample_course_manual.pdf")
     : getStorageUrl("/storage/sample_presentation.pptx");
 
-  // Determine iframe source URL
+  // Determine iframe source URL for PDF vs PPT
+  const isLocalHost = resolvedTargetUrl.includes("localhost") || resolvedTargetUrl.includes("127.0.0.1");
   const iframeSrc = isPdf
     ? `${resolvedTargetUrl}#page=1`
-    : resolvedTargetUrl.startsWith("http://localhost") || resolvedTargetUrl.startsWith("http://127.0.0.1")
+    : isLocalHost
     ? resolvedTargetUrl
-    : `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(resolvedTargetUrl)}`;
+    : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(resolvedTargetUrl)}`;
 
   const handleDownload = () => {
     const a = document.createElement("a");
@@ -71,15 +115,15 @@ export default function InteractiveDocViewer({
     document.body.removeChild(a);
   };
 
-  if (slides && slides.length > 0) {
-    const slide = slides[currentSlideIdx];
+  if (isPpt && viewMode === "SLIDES" && slides && slides.length > 0) {
+    const slide = slides[currentSlideIdx] || slides[0];
     return (
       <div className="w-full space-y-3 select-none">
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-900/90 border border-slate-800 rounded-xl text-xs backdrop-blur-md shadow-md">
           <div className="flex items-center gap-2.5">
             <Badge className="bg-amber-500 text-slate-950 border border-amber-500/30 gap-1 font-extrabold text-[10px] uppercase">
-              <Presentation className="h-3.5 w-3.5" /> Interactive PPT Slideshow
+              <Presentation className="h-3.5 w-3.5" /> Interactive PPT Presentation
             </Badge>
             <span className="font-bold text-slate-200 truncate max-w-xs md:max-w-md">
               {title}
@@ -87,6 +131,15 @@ export default function InteractiveDocViewer({
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setViewMode(viewMode === "SLIDES" ? "EMBED" : "SLIDES")}
+              className="h-8 border-slate-700 text-slate-300 hover:bg-slate-800 text-xs gap-1.5 cursor-pointer"
+            >
+              <Maximize2 className="h-3.5 w-3.5" /> Toggle Embed View
+            </Button>
+
             <Button
               size="sm"
               onClick={handleDownload}
@@ -97,15 +150,15 @@ export default function InteractiveDocViewer({
           </div>
         </div>
 
-        {/* Carousel Slide Card */}
-        <div className="w-full min-h-[480px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative flex flex-col justify-between p-8 text-white bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+        {/* Presentation Slide Card */}
+        <div className="w-full min-h-[460px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative flex flex-col justify-between p-8 text-white bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
           {/* Top Info */}
           <div className="flex justify-between items-center text-xs">
-            <span className="px-2.5 py-1 rounded-md bg-white/10 font-bold tracking-wider text-slate-300">
-              {slide.tag || `Slide ${slide.slideNum}`}
+            <span className="px-3 py-1 rounded-md bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold tracking-wider">
+              {slide.tag || `Slide ${currentSlideIdx + 1}`}
             </span>
             <span className="font-semibold text-slate-400">
-              {currentSlideIdx + 1} / {slides.length}
+              Slide {currentSlideIdx + 1} of {slides.length}
             </span>
           </div>
 
@@ -137,7 +190,7 @@ export default function InteractiveDocViewer({
               disabled={currentSlideIdx === 0}
               onClick={() => setCurrentSlideIdx((prev) => prev - 1)}
               variant="outline"
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs h-9"
+              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs h-9 cursor-pointer"
             >
               &larr; Previous Slide
             </Button>
@@ -155,7 +208,7 @@ export default function InteractiveDocViewer({
             <Button
               disabled={currentSlideIdx === slides.length - 1}
               onClick={() => setCurrentSlideIdx((prev) => prev + 1)}
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs h-9"
+              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs h-9 cursor-pointer"
             >
               Next Slide &rarr;
             </Button>
@@ -185,8 +238,19 @@ export default function InteractiveDocViewer({
           </span>
         </div>
 
-        {/* Right: Voluntary Download & Fullscreen Actions */}
+        {/* Right: Voluntary Download & View Mode Actions */}
         <div className="flex items-center gap-2">
+          {isPpt && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setViewMode(viewMode === "SLIDES" ? "EMBED" : "SLIDES")}
+              className="h-8 border-slate-700 text-slate-300 hover:bg-slate-800 text-xs gap-1.5 cursor-pointer"
+            >
+              <Presentation className="h-3.5 w-3.5" /> Slides View
+            </Button>
+          )}
+
           <Button
             size="sm"
             onClick={handleDownload}
@@ -208,7 +272,7 @@ export default function InteractiveDocViewer({
         </div>
       </div>
 
-      {/* ── Main Viewport Container (Renders Document Directly) ────── */}
+      {/* ── Main Viewport Container ────── */}
       <div className="w-full space-y-3">
         <div className="w-full h-[620px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative">
           <iframe

@@ -74,6 +74,12 @@ export default function CoursePreviewModal({
     0
   );
 
+  const allLessonsFlat = sections.flatMap((s) => s.contents || []);
+  const currentIdx = selectedLesson
+    ? allLessonsFlat.findIndex((l) => (l.id && selectedLesson.id ? l.id === selectedLesson.id : l.title === selectedLesson.title))
+    : -1;
+  const nextLesson = currentIdx !== -1 && currentIdx < allLessonsFlat.length - 1 ? allLessonsFlat[currentIdx + 1] : null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-5xl w-[95vw] max-h-[85vh] h-[85vh] p-0 bg-background text-foreground border border-border shadow-2xl rounded-2xl flex flex-col overflow-hidden gap-0">
@@ -166,7 +172,7 @@ export default function CoursePreviewModal({
                         allowFullScreen
                       />
                     </div>
-                  ) : selectedLesson.contentType === "PDF" || selectedLesson.contentType === "PPT" || (selectedLesson.contentUrl && selectedLesson.contentUrl.toLowerCase().match(/\.(pdf|ppt|pptx)$/)) ? (
+                  ) : selectedLesson.contentType?.toUpperCase() === "PDF" || selectedLesson.contentType?.toUpperCase() === "PPT" || selectedLesson.contentType?.toUpperCase() === "PPTX" || (selectedLesson.contentUrl && selectedLesson.contentUrl.toLowerCase().match(/\.(pdf|ppt|pptx)$/i)) ? (
                     <InteractiveDocViewer
                       key={selectedLesson.id || selectedLesson.title}
                       title={selectedLesson.title}
@@ -174,18 +180,27 @@ export default function CoursePreviewModal({
                       contentUrl={selectedLesson.contentUrl}
                       description={selectedLesson.description}
                     />
-                  ) : selectedLesson.contentType === "QUIZ" ? (
+                  ) : selectedLesson.contentType?.toUpperCase() === "QUIZ" ? (
                     <InlineQuizPlayer
                       quizTitle={selectedLesson.title}
-                      configJson={(selectedLesson as any).quizConfigJson}
+                      configJson={(selectedLesson as any).quizConfigJson || (selectedLesson as any).configJson}
                       isPreview={true}
+                      onSkip={() => {
+                        if (nextLesson) setSelectedLesson(nextLesson);
+                      }}
+                      onNextLesson={() => {
+                        if (nextLesson) setSelectedLesson(nextLesson);
+                      }}
                     />
-                  ) : selectedLesson.contentType === "ASSIGNMENT" ? (
+                  ) : selectedLesson.contentType?.toUpperCase() === "ASSIGNMENT" ? (
                     <InlineAssignmentPlayer
                       assignmentTitle={selectedLesson.title}
                       description={selectedLesson.description}
-                      configJson={(selectedLesson as any).assignmentConfigJson}
+                      configJson={(selectedLesson as any).assignmentConfigJson || (selectedLesson as any).configJson}
                       isPreview={true}
+                      onNextLesson={() => {
+                        if (nextLesson) setSelectedLesson(nextLesson);
+                      }}
                     />
                   ) : selectedLesson.contentUrl && selectedLesson.contentUrl.trim() !== "" ? (
                     <div className="p-8 bg-card border border-border rounded-xl text-center space-y-4 my-auto shadow-sm">

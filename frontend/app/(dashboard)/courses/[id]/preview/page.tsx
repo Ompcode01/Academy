@@ -23,6 +23,8 @@ import {
   Building2,
   FileCheck2,
   ExternalLink,
+  Paperclip,
+  Download,
   Tv,
   Layers,
   User,
@@ -35,6 +37,8 @@ import { getCourseById, selfEnrollCourse, type Course, getStorageUrl } from "@/s
 import {
   getLearnerCourseProgress,
   updateLessonProgress,
+  recordQuizSubmission,
+  submitAssignment,
   LearnerProgressData,
 } from "@/services/api/progress.service";
 import { useAuthStore } from "@/store/auth.store";
@@ -299,14 +303,6 @@ export default function CoursePreviewPage() {
     }
 
     setSelectedLesson(lesson);
-
-    if (lesson.contentType === "QUIZ") {
-      setIsQuizModalOpen(true);
-    } else if (lesson.contentType === "ASSIGNMENT") {
-      setIsAssignmentModalOpen(true);
-    } else if (lesson.contentUrl && lesson.contentUrl.trim() !== "") {
-      window.open(lesson.contentUrl.trim(), "_blank", "noopener,noreferrer");
-    }
   };
 
   // Helper variables & computed metrics
@@ -815,20 +811,41 @@ export default function CoursePreviewPage() {
                 </div>
 
                 {/* Lesson Media / Viewport Handler */}
-                {selectedLesson.contentType === "QUIZ" ? (
+                {selectedLesson.contentType?.toUpperCase() === "QUIZ" ? (
                   <InlineQuizPlayer
                     quizTitle={selectedLesson.title}
-                    configJson={selectedLesson.quizConfigJson}
-                    onComplete={(score) => handleToggleLessonComplete(selectedLesson.id)}
+                    configJson={selectedLesson.quizConfigJson || (selectedLesson as any).configJson}
+                    attemptNumber={(progressData?.submissions || []).filter((s: any) => s.submissionType === "QUIZ").length + 1}
+                    onComplete={(score: number, maxScore: number, answersJson?: string) => {
+                      if (courseId) {
+                        recordQuizSubmission(courseId, selectedLesson.id, score, maxScore, answersJson).catch(console.error);
+                      }
+                      handleToggleLessonComplete(selectedLesson.id);
+                    }}
+                    onSkip={() => {
+                      if (nextLesson) handleOpenLessonContent(nextLesson);
+                    }}
+                    onNextLesson={() => {
+                      if (nextLesson) handleOpenLessonContent(nextLesson);
+                    }}
                   />
-                ) : selectedLesson.contentType === "ASSIGNMENT" ? (
+                ) : selectedLesson.contentType?.toUpperCase() === "ASSIGNMENT" ? (
                   <InlineAssignmentPlayer
                     assignmentTitle={selectedLesson.title}
                     description={selectedLesson.description}
-                    configJson={selectedLesson.assignmentConfigJson}
-                    onComplete={() => handleToggleLessonComplete(selectedLesson.id)}
+                    configJson={selectedLesson.assignmentConfigJson || (selectedLesson as any).configJson}
+                    existingSubmission={latestSubmission}
+                    onComplete={(submissionText: string, fileUrl?: string) => {
+                      if (courseId) {
+                        submitAssignment(courseId, { contentId: selectedLesson.id, submissionText, fileUrl }).catch(console.error);
+                      }
+                      handleToggleLessonComplete(selectedLesson.id);
+                    }}
+                    onNextLesson={() => {
+                      if (nextLesson) handleOpenLessonContent(nextLesson);
+                    }}
                   />
-                ) : selectedLesson.contentType === "SCORM" || selectedLesson.contentUrl?.includes("/storage/scorm/") ? (
+                ) : selectedLesson.contentType?.toUpperCase() === "SCORM" || selectedLesson.contentUrl?.includes("/storage/scorm/") ? (
                   <div className="w-full space-y-2">
                     <div className="flex items-center justify-between px-1 text-xs text-slate-400">
                       <span className="flex items-center gap-1.5 text-violet-400 font-semibold">
@@ -853,7 +870,7 @@ export default function CoursePreviewPage() {
                       />
                     </div>
                   </div>
-                ) : selectedLesson.contentType === "YOUTUBE" && selectedLesson.contentUrl ? (
+                ) : selectedLesson.contentType?.toUpperCase() === "YOUTUBE" && selectedLesson.contentUrl ? (
                   <div className="w-full space-y-2">
                     <div className="w-full h-[480px] bg-black rounded-xl overflow-hidden border border-slate-800 shadow-2xl">
                       <iframe
@@ -871,7 +888,7 @@ export default function CoursePreviewPage() {
                       />
                     </div>
                   </div>
-                ) : selectedLesson.contentType === "PDF" || selectedLesson.contentType === "PPT" || (selectedLesson.contentUrl && selectedLesson.contentUrl.toLowerCase().match(/\.(pdf|ppt|pptx)$/)) ? (
+                ) : selectedLesson.contentType?.toUpperCase() === "PDF" || selectedLesson.contentType?.toUpperCase() === "PPT" || selectedLesson.contentType?.toUpperCase() === "PPTX" || (selectedLesson.contentUrl && selectedLesson.contentUrl.toLowerCase().match(/\.(pdf|ppt|pptx)$/i)) ? (
                   <InteractiveDocViewer
                     key={selectedLesson.id || selectedLesson.title}
                     title={selectedLesson.title}
@@ -945,26 +962,165 @@ export default function CoursePreviewPage() {
               </div>
 
               {activeTab === "overview" ? (
-                <div className="text-xs text-slate-300 leading-relaxed">
-                  {selectedLesson?.description || "Review lesson contents and complete associated activities."}
+                <div className="space-y-5 text-xs text-slate-300">
+                  {/* 1. Selected Lesson Details & Instructions */}
+                  <div className="space-y-3 p-4.5 rounded-xl bg-slate-950/80 border border-slate-800 shadow-inner">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                      <h4 className="font-extrabold text-white text-sm flex items-center gap-2">
+                        <BookOpen className="h-4 w-4 text-primary" />
+                        {selectedLesson?.title || "Lesson Overview"}
+                      </h4>
+                      {selectedLesson?.contentType && (
+                        <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] uppercase font-bold px-2 py-0.5">
+                          {selectedLesson.contentType}
+                        </Badge>
+                      )}
+                    </div>
+
+                    {/* Lesson Instructions & Description */}
+                    <div className="space-y-1">
+                      <span className="text-slate-400 font-bold text-[11px] block">Lesson Description &amp; Instructions:</span>
+                      <p className="whitespace-pre-line text-slate-200 leading-relaxed text-xs">
+                        {selectedLesson?.description || "Review the lesson materials above and complete associated exercises or assessment tasks."}
+                      </p>
+                    </div>
+
+                    {/* Specific Quiz Config Breakdown */}
+                    {selectedLesson?.contentType?.toUpperCase() === "QUIZ" && (() => {
+                      let qConfig: any = {};
+                      try {
+                        const raw = selectedLesson.quizConfigJson || (selectedLesson as any).configJson;
+                        if (raw) qConfig = typeof raw === "string" ? JSON.parse(raw) : raw;
+                      } catch {}
+                      const qCount = Array.isArray(qConfig.questions) ? qConfig.questions.length : (Array.isArray(qConfig) ? qConfig.length : 0);
+                      return (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 border-t border-slate-800/80 text-[11px]">
+                          <div>Questions: <strong className="text-amber-400 font-bold">{qCount}</strong></div>
+                          <div>Passing Score: <strong className="text-emerald-400 font-bold">{qConfig.passingPercentage || 70}%</strong></div>
+                          <div>Max Attempts: <strong className="text-white font-bold">{qConfig.maxAttempts || 2}</strong></div>
+                          <div>Shuffle: <strong className="text-slate-300">{qConfig.shuffleQuestions ? "Enabled" : "Off"}</strong></div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Specific Assignment Config Breakdown & Reference Files */}
+                    {selectedLesson?.contentType?.toUpperCase() === "ASSIGNMENT" && (() => {
+                      let aConfig: any = {};
+                      try {
+                        const raw = selectedLesson.assignmentConfigJson || (selectedLesson as any).configJson;
+                        if (raw) aConfig = typeof raw === "string" ? JSON.parse(raw) : raw;
+                      } catch {}
+                      const refFiles: any[] = aConfig.questionFiles || aConfig.attachments || aConfig.files || [];
+                      return (
+                        <div className="space-y-3 pt-3 border-t border-slate-800/80 text-[11px]">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <div>Max Marks: <strong className="text-purple-300 font-bold">{aConfig.maxMarks || 50}</strong></div>
+                            <div>Max Attempts: <strong className="text-white font-bold">{aConfig.maxAttempts || 2}</strong></div>
+                            <div>Due Date: <strong className="text-amber-300 font-bold">{aConfig.deadline || "No strict deadline"}</strong></div>
+                            <div>Max Size: <strong className="text-slate-300">{aConfig.maxFileSizeMb || 50} MB</strong></div>
+                          </div>
+                          {refFiles.length > 0 && (
+                            <div className="space-y-1.5 pt-1">
+                              <span className="text-slate-400 font-bold block">Instructor Reference Files &amp; Problem Documents:</span>
+                              <div className="flex flex-wrap gap-2">
+                                {refFiles.map((fileItem: any, fIdx: number) => {
+                                  const fName = fileItem.name || fileItem.fileName || fileItem.title || `Attachment_${fIdx + 1}`;
+                                  const fUrl = fileItem.url || fileItem.fileUrl || fileItem.path || "#";
+                                  return (
+                                    <a
+                                      key={fIdx}
+                                      href={fUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-purple-300 hover:underline text-[11px] font-semibold"
+                                    >
+                                      <Paperclip className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                                      <span>{fName}</span>
+                                    </a>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* 2. Full Course Overview & Description (From SA / Admin / Teacher) */}
+                  <div className="space-y-3 p-4.5 rounded-xl bg-slate-950/40 border border-slate-800/80">
+                    <h4 className="font-extrabold text-white text-sm flex items-center gap-2 border-b border-slate-800 pb-2">
+                      <Sparkles className="h-4 w-4 text-amber-400" />
+                      About This Course &amp; Description
+                    </h4>
+                    
+                    <p className="whitespace-pre-line text-slate-300 leading-relaxed text-xs">
+                      {course?.description || "Comprehensive training course designed by organizational leaders and domain experts."}
+                    </p>
+
+                    {/* Course Metadata Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-800 text-[11px]">
+                      <div><span className="text-slate-400 block">Category:</span> <strong className="text-white font-bold">{categoryLabel}</strong></div>
+                      <div><span className="text-slate-400 block">Department:</span> <strong className="text-white font-bold">{departmentLabel}</strong></div>
+                      <div><span className="text-slate-400 block">Difficulty Level:</span> <strong className="text-amber-400 font-bold">{course?.level || "Beginner"}</strong></div>
+                      <div><span className="text-slate-400 block">Instructor / Author:</span> <strong className="text-primary font-bold">{instructorName}</strong></div>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-3 text-xs">
                   {(progressData?.submissions || []).length === 0 ? (
-                    <p className="text-slate-400">No submissions recorded for this course yet.</p>
+                    <div className="p-6 bg-slate-950/60 border border-slate-800 rounded-xl text-center space-y-1">
+                      <p className="text-slate-400 font-medium">No quiz or assignment submissions recorded for this course yet.</p>
+                      <p className="text-[11px] text-slate-500">Complete a quiz or submit an assignment above to view evaluation records here.</p>
+                    </div>
                   ) : (
                     (progressData?.submissions || []).map((sub: any, idx: number) => (
-                      <div key={idx} className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1">
-                        <div className="flex items-center justify-between font-bold">
-                          <span className="text-white">{sub.submissionType} Submission</span>
-                          <Badge className="text-[10px] uppercase font-bold">{sub.status}</Badge>
+                      <div key={idx} className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2 font-bold">
+                          <span className="text-white flex items-center gap-2">
+                            <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px]">
+                              {sub.submissionType}
+                            </Badge>
+                            <span>Attempt #{sub.attemptNumber || 1}</span>
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-slate-400 font-normal">
+                              {sub.submittedAt ? new Date(sub.submittedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : ""}
+                            </span>
+                            <Badge className={`text-[10px] uppercase font-bold ${
+                              sub.status === "GRADED" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                            }`}>
+                              {sub.status}
+                            </Badge>
+                          </div>
                         </div>
-                        {sub.score !== undefined && (
-                          <div className="text-slate-400">Score: <strong className="text-emerald-400">{sub.score} / {sub.maxScore || 100}</strong></div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-slate-300 text-[11px] pt-1">
+                          <div>Score: <strong className="text-emerald-400 font-bold">{sub.score} / {sub.maxScore || 100}</strong></div>
+                          <div>Percentage: <strong className="text-white font-bold">{sub.percentage || 0}%</strong></div>
+                          <div>Grade: <strong className="text-amber-400 font-bold">{sub.grade || "N/A"}</strong></div>
+                        </div>
+
+                        {sub.submissionText && (
+                          <div className="text-slate-300 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800 text-[11px]">
+                            <span className="text-slate-400 font-bold block mb-0.5">Submitted Solution / Response:</span>
+                            {sub.submissionText}
+                          </div>
                         )}
+
+                        {sub.fileUrl && (
+                          <div className="text-purple-300 text-[11px] flex items-center gap-1.5">
+                            <Paperclip className="h-3.5 w-3.5 text-purple-400" />
+                            <span>Attached Solution Artifact:</span>
+                            <a href={sub.fileUrl} target="_blank" rel="noreferrer" className="underline hover:text-purple-200 font-semibold">{sub.fileUrl}</a>
+                          </div>
+                        )}
+
                         {sub.feedback && (
-                          <div className="text-amber-300 pt-1 border-t border-slate-800">
-                            Teacher Feedback: "{sub.feedback}"
+                          <div className="text-amber-300 pt-2 border-t border-slate-800 text-[11px]">
+                            <strong className="text-amber-400 block font-bold">Teacher / Evaluator Feedback ({sub.gradedBy || "Instructor"}):</strong>
+                            <p className="mt-0.5 italic text-slate-200">"{sub.feedback}"</p>
                           </div>
                         )}
                       </div>
@@ -1085,6 +1241,7 @@ export default function CoursePreviewPage() {
           courseId={courseId}
           contentId={selectedLesson.id}
           quizTitle={selectedLesson.title}
+          configJson={selectedLesson.quizConfigJson || (selectedLesson as any).configJson}
           onSuccess={() => {
             handleToggleLessonComplete(selectedLesson.id);
             loadCourseAndProgress();
@@ -1099,6 +1256,8 @@ export default function CoursePreviewPage() {
           courseId={courseId}
           contentId={selectedLesson.id}
           assignmentTitle={selectedLesson.title}
+          instructions={selectedLesson.description}
+          configJson={selectedLesson.assignmentConfigJson || (selectedLesson as any).configJson}
           existingSubmission={latestSubmission}
           onSuccess={() => {
             handleToggleLessonComplete(selectedLesson.id);

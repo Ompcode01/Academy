@@ -5,9 +5,9 @@ const auth_middleware_1 = require("../middleware/auth.middleware");
 const role_middleware_1 = require("../middleware/role.middleware");
 const reporting_controller_1 = require("../controllers/reporting.controller");
 const router = (0, express_1.Router)();
-// Protect all reporting endpoints with authentication and Admin/Super Admin role authorization
+// Protect all reporting endpoints with authentication and Admin/Super Admin/Teacher role authorization
 router.use(auth_middleware_1.authenticate);
-router.use((0, role_middleware_1.authorizeRoles)("ADMIN", "SUPER_ADMIN"));
+router.use((0, role_middleware_1.authorizeRoles)("ADMIN", "SUPER_ADMIN", "TEACHER"));
 router.get("/filter-options", reporting_controller_1.getFilterOptions);
 router.get("/enrollments", reporting_controller_1.getEnrollmentReport);
 router.get("/completions", reporting_controller_1.getCourseCompletionReport);
@@ -15,6 +15,11 @@ router.get("/learner-performance", reporting_controller_1.getLearnerPerformanceR
 router.get("/assessments", reporting_controller_1.getAssessmentReport);
 router.get("/engagement", reporting_controller_1.getEngagementReport);
 router.get("/teacher-performance", reporting_controller_1.getTeacherPerformanceReport);
+// 3 Core Role-Based Reports & Evaluation
+router.get("/learner-progress", reporting_controller_1.getLearnerProgressReport);
+router.get("/quiz-assessments", reporting_controller_1.getQuizAssessmentReport);
+router.get("/assignment-submissions", reporting_controller_1.getAssignmentSubmissionReport);
+router.post("/evaluate-assignment/:id", reporting_controller_1.evaluateAssignment);
 // Super Admin Only Reports
 router.get("/department-performance", (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN"), reporting_controller_1.getDepartmentPerformanceReport);
 router.get("/organization-overview", (0, role_middleware_1.authorizeRoles)("SUPER_ADMIN"), reporting_controller_1.getOrganizationOverviewReport);

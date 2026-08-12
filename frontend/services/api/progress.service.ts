@@ -121,6 +121,14 @@ export async function recordQuizSubmission(
   return res.data;
 }
 
+export async function submitAssignment(
+  courseId: number,
+  payload: { contentId: number; submissionText?: string; fileUrl?: string }
+) {
+  const res = await api.post(`/courses/${courseId}/assignment/submit`, payload);
+  return res.data;
+}
+
 export async function getAdminLearnerProgressMatrix(): Promise<AdminLearnerMatrixItem[]> {
   try {
     const res = await api.get("/courses/admin/learner-matrix");
