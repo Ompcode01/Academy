@@ -443,6 +443,33 @@ export const uploadDocumentFile = asyncHandler(
       color: string;
     }> = [];
 
+    let extractedZipFiles: Array<{ name: string; url: string; sizeMb: string }> = [];
+
+    if (originalName.toLowerCase().endsWith(".zip")) {
+      try {
+        const zip = new AdmZip(req.file.buffer);
+        const folderName = `extracted_${Date.now()}`;
+        const extractDir = path.join(storageDir, folderName);
+        if (!fs.existsSync(extractDir)) {
+          fs.mkdirSync(extractDir, { recursive: true });
+        }
+        zip.extractAllTo(extractDir, true);
+
+        const zipEntries = zip.getEntries();
+        zipEntries.forEach((entry) => {
+          if (!entry.isDirectory) {
+            extractedZipFiles.push({
+              name: entry.entryName,
+              url: `/storage/uploads/${folderName}/${entry.entryName}`,
+              sizeMb: (entry.header.size / (1024 * 1024)).toFixed(2),
+            });
+          }
+        });
+      } catch (zipErr) {
+        console.error("ZIP archive extraction error:", zipErr);
+      }
+    }
+
     if (originalName.toLowerCase().endsWith(".pptx")) {
       try {
         const zip = new AdmZip(req.file.buffer);
@@ -502,6 +529,7 @@ export const uploadDocumentFile = asyncHandler(
         fileUrl: relativeUrl,
         fileName: originalName,
         fileSize: `${sizeMb} MB`,
+        extractedZipFiles: extractedZipFiles.length > 0 ? extractedZipFiles : undefined,
         extractedSlides: extractedSlides.length > 0 ? extractedSlides : undefined,
         slidesConfigJson: extractedSlides.length > 0 ? JSON.stringify(extractedSlides) : undefined,
       },

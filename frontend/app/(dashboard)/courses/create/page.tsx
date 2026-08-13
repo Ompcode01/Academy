@@ -8,6 +8,7 @@ import ModulesForm from "@/components/courses/wizard/ModulesForm";
 import AssessmentsForm from "@/components/courses/wizard/AssessmentsForm";
 import EnrollmentForm, { EnrollmentRuleData } from "@/components/courses/wizard/EnrollmentForm";
 import CertificateForm, { CertificateRuleData } from "@/components/courses/wizard/CertificateForm";
+import FeedbackStepForm, { FeedbackRuleData } from "@/components/courses/wizard/FeedbackStepForm";
 import ReviewPublishForm from "@/components/courses/wizard/ReviewPublishForm";
 import { getCourseById } from "@/services/api/course.service";
 import { useAuthStore } from "@/store/auth.store";
@@ -18,8 +19,9 @@ const wizardSteps = [
   { number: 2, label: "Curriculum & Content" },
   { number: 3, label: "Assessments" },
   { number: 4, label: "Enrollment" },
-  { number: 5, label: "Certificate" },
-  { number: 6, label: "Review & Publish" },
+  { number: 5, label: "Course Feedback" },
+  { number: 6, label: "Certificate" },
+  { number: 7, label: "Review & Publish" },
 ];
 
 function CreateCourseContent() {
@@ -34,6 +36,7 @@ function CreateCourseContent() {
     basicInfo: BasicInfoData;
     sections: any[];
     enrollment: EnrollmentRuleData;
+    feedback: FeedbackRuleData;
     certificate: CertificateRuleData;
   }>({
     basicInfo: {
@@ -54,6 +57,34 @@ function CreateCourseContent() {
       enrollmentType: "SELF",
       departmentAccess: "ALL",
       enrolledUsersList: [],
+    },
+    feedback: {
+      enableFeedback: true,
+      requireFeedbackForCertificate: true,
+      feedbackTitle: "End-of-Course Feedback & Evaluation Survey",
+      description: "Please share your review regarding course structure, content clarity, and instructor support.",
+      questions: [
+        {
+          id: 1,
+          questionText: "How satisfied are you with the course content and instructor explanations?",
+          questionType: "MCQ",
+          options: ["Excellent", "Good", "Average", "Needs Improvement"],
+          isMandatory: true,
+        },
+        {
+          id: 2,
+          questionText: "How well did the practical exercises help reinforce your learning?",
+          questionType: "MCQ",
+          options: ["Extremely Helpful", "Moderately Helpful", "Neutral", "Not Helpful"],
+          isMandatory: true,
+        },
+        {
+          id: 3,
+          questionText: "What suggestions do you have for improving this course module?",
+          questionType: "WRITTEN",
+          isMandatory: false,
+        },
+      ],
     },
     certificate: {
       enableCertificate: true,
@@ -125,6 +156,34 @@ function CreateCourseContent() {
           departmentAccess: "ALL",
           enrolledUsersList: [],
         },
+        feedback: {
+          enableFeedback: true,
+          requireFeedbackForCertificate: true,
+          feedbackTitle: "End-of-Course Feedback & Evaluation Survey",
+          description: "Please share your review regarding course structure, content clarity, and instructor support.",
+          questions: [
+            {
+              id: 1,
+              questionText: "How satisfied are you with the course content and instructor explanations?",
+              questionType: "MCQ",
+              options: ["Excellent", "Good", "Average", "Needs Improvement"],
+              isMandatory: true,
+            },
+            {
+              id: 2,
+              questionText: "How well did the practical exercises help reinforce your learning?",
+              questionType: "MCQ",
+              options: ["Extremely Helpful", "Moderately Helpful", "Neutral", "Not Helpful"],
+              isMandatory: true,
+            },
+            {
+              id: 3,
+              questionText: "What suggestions do you have for improving this course module?",
+              questionType: "WRITTEN",
+              isMandatory: false,
+            },
+          ],
+        },
         certificate: {
           enableCertificate: true,
           certificateTitle: "Certificate of Completion",
@@ -145,6 +204,13 @@ function CreateCourseContent() {
     setWizardState((prev) => ({
       ...prev,
       enrollment: { ...prev.enrollment, ...updated },
+    }));
+  };
+
+  const updateFeedback = (updated: Partial<FeedbackRuleData>) => {
+    setWizardState((prev) => ({
+      ...prev,
+      feedback: { ...prev.feedback, ...updated },
     }));
   };
 
@@ -219,6 +285,16 @@ function CreateCourseContent() {
         );
       case 5:
         return (
+          <FeedbackStepForm
+            data={wizardState.feedback}
+            onChange={updateFeedback}
+            onNext={handleNext}
+            onBack={handleBack}
+            onCancel={handleCancel}
+          />
+        );
+      case 6:
+        return (
           <CertificateForm
             data={wizardState.certificate}
             courseTitle={wizardState.basicInfo.title}
@@ -228,7 +304,7 @@ function CreateCourseContent() {
             onCancel={handleCancel}
           />
         );
-      case 6:
+      case 7:
         return (
           <ReviewPublishForm
             courseId={courseId}

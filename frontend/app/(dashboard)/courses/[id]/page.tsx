@@ -1,7 +1,7 @@
 "use client";
 
-import CoursePreviewPage from "./preview/page";
+import CoursePreviewView from "@/components/courses/CoursePreviewView";
 
 export default function CourseDetailPage() {
-  return <CoursePreviewPage />;
+  return <CoursePreviewView />;
 }

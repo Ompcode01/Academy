@@ -23,8 +23,8 @@ const notificationService = {
     return notificationRepository.findById(id);
   },
 
-  async markAsRead(id: bigint) {
-    return notificationRepository.markAsRead(id);
+  async markAsRead(id: bigint, userId: bigint) {
+    return notificationRepository.markAsRead(id, userId);
   },
 
   async markAllAsRead(userId: bigint) {

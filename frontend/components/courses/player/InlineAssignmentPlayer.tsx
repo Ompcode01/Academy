@@ -14,10 +14,12 @@ import {
   Clock,
   HardDrive,
   FileCode,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { uploadDocumentFile } from "@/services/api/course.service";
 
 interface InlineAssignmentPlayerProps {
   assignmentTitle: string;
@@ -79,19 +81,62 @@ export default function InlineAssignmentPlayer({
   const referenceFiles: any[] =
     parsedConfig.questionFiles || parsedConfig.attachments || parsedConfig.files || [];
 
+  const maxFiles = parsedConfig.maxFiles || 5;
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setSelectedFiles((prev) => {
+        const combined = [...prev, ...files];
+        if (combined.length > maxFiles) {
+          alert(`Maximum allowed files limit is ${maxFiles}. Attached first ${maxFiles} files.`);
+          return combined.slice(0, maxFiles);
+        }
+        return combined;
+      });
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!responseText.trim() && !selectedFile) return;
+    if (!responseText.trim() && selectedFiles.length === 0) return;
+
+    let uploadedFileUrls: string[] = [];
+    if (selectedFiles.length > 0) {
+      try {
+        setUploading(true);
+        const uploadPromises = selectedFiles.map(async (file) => {
+          try {
+            const res = await uploadDocumentFile(file);
+            return res?.data?.fileUrl || file.name;
+          } catch {
+            return file.name;
+          }
+        });
+        uploadedFileUrls = await Promise.all(uploadPromises);
+      } catch (err) {
+        console.error("Failed to upload assignment files:", err);
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    const finalFileUrl =
+      uploadedFileUrls.length === 1
+        ? uploadedFileUrls[0]
+        : uploadedFileUrls.length > 1
+        ? JSON.stringify(uploadedFileUrls)
+        : undefined;
+
     setIsSubmitted(true);
     if (onComplete) {
-      onComplete(responseText.trim(), selectedFile ? selectedFile.name : undefined);
+      onComplete(responseText.trim(), finalFileUrl);
     }
   };
 
@@ -214,9 +259,53 @@ export default function InlineAssignmentPlayer({
           )}
 
           {responseText && (
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-left text-xs space-y-1 max-w-lg mx-auto">
-              <span className="text-slate-400 font-bold block">Your Written Solution:</span>
-              <p className="text-slate-200 leading-relaxed whitespace-pre-line">{responseText}</p>
+            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-left text-xs space-y-2 max-w-lg mx-auto">
+              <span className="text-slate-400 font-bold block">
+                {responseText.trim().startsWith("{") && responseText.includes('"responses"')
+                  ? "Submitted Feedback Survey Responses:"
+                  : "Your Written Solution:"}
+              </span>
+              {responseText.trim().startsWith("{") && responseText.includes('"responses"') ? (
+                (() => {
+                  try {
+                    const fbData = JSON.parse(responseText);
+                    if (fbData?.responses) {
+                      return (
+                        <div className="space-y-2 pt-1">
+                          {Object.entries(fbData.responses).map(([qKey, ansVal], rIdx) => {
+                            const getPrompt = (kStr: string, idx: number) => {
+                              if (fbData?.questions && Array.isArray(fbData.questions)) {
+                                const f = fbData.questions.find((q: any) => String(q.id) === String(kStr));
+                                if (f?.questionText) return f.questionText;
+                                if (fbData.questions[idx]?.questionText) return fbData.questions[idx].questionText;
+                              }
+                              const defaults: Record<string, string> = {
+                                "1": "How satisfied are you with the course content and instructor explanations?",
+                                "2": "How well did the practical exercises help reinforce your learning?",
+                                "3": "What suggestions do you have for improving this course module?",
+                                "4": "Overall Course & Instructor Support Rating",
+                                "5": "Additional Instructor & Material Review Notes",
+                              };
+                              return defaults[kStr] || `Evaluation Prompt #${idx + 1}`;
+                            };
+                            return (
+                              <div key={rIdx} className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex flex-col gap-1">
+                                <span className="text-amber-400 font-bold text-[11px]">
+                                  Q#{rIdx + 1}: {getPrompt(qKey, rIdx)}
+                                </span>
+                                <span className="text-slate-200 font-semibold">{String(ansVal)}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    }
+                  } catch {}
+                  return <p className="text-slate-200 leading-relaxed whitespace-pre-line">{responseText}</p>;
+                })()
+              ) : (
+                <p className="text-slate-200 leading-relaxed whitespace-pre-line">{responseText}</p>
+              )}
             </div>
           )}
 
@@ -303,41 +392,82 @@ export default function InlineAssignmentPlayer({
           </div>
 
           {/* File Upload Dropzone */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-300 block">
-              Attach Work Artifacts (Optional):
-            </label>
-            <div className="p-6 border-2 border-dashed border-slate-800 hover:border-purple-500/50 rounded-xl bg-slate-950 text-center space-y-2 transition-colors">
-              <input
-                type="file"
-                id="assignment-file-input"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-              <label
-                htmlFor="assignment-file-input"
-                className="cursor-pointer flex flex-col items-center gap-2 text-xs text-slate-400 hover:text-white"
-              >
-                <Upload className="h-8 w-8 text-purple-400" />
-                <span>
-                  {selectedFile ? (
-                    <strong className="text-purple-300">{selectedFile.name}</strong>
-                  ) : (
-                    `Click to upload assignment file (${allowedFileTypes.join(", ")}) — Max ${maxFileSizeMb}MB`
-                  )}
-                </span>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between text-xs">
+              <label className="font-bold text-slate-300 block">
+                Attach Work Artifacts (Optional — Up to {maxFiles} files):
               </label>
+              {selectedFiles.length > 0 && (
+                <span className="text-[11px] font-semibold text-purple-400">
+                  {selectedFiles.length} of {maxFiles} files attached
+                </span>
+              )}
             </div>
+
+            {/* List of attached files */}
+            {selectedFiles.length > 0 && (
+              <div className="space-y-2">
+                {selectedFiles.map((file, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <Paperclip className="h-4 w-4 text-purple-400 shrink-0" />
+                      <span className="font-bold text-slate-200 truncate">{file.name}</span>
+                      <span className="text-[10px] text-slate-500 shrink-0">
+                        ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(idx)}
+                      className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-red-400 transition-colors"
+                      title="Remove file"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {selectedFiles.length < maxFiles && (
+              <div className="p-5 border-2 border-dashed border-slate-800 hover:border-purple-500/50 rounded-xl bg-slate-950 text-center space-y-2 transition-colors">
+                <input
+                  type="file"
+                  id="assignment-file-input"
+                  multiple
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="assignment-file-input"
+                  className="cursor-pointer flex flex-col items-center gap-2 text-xs text-slate-400 hover:text-white"
+                >
+                  <Upload className="h-7 w-7 text-purple-400" />
+                  <span>
+                    Click to attach file(s) ({allowedFileTypes.join(", ")}) — Max {maxFileSizeMb}MB each (Up to {maxFiles} files)
+                  </span>
+                </label>
+              </div>
+            )}
           </div>
 
           {/* Submit Action */}
           <div className="flex justify-end pt-2 border-t border-slate-800">
             <Button
               type="submit"
-              disabled={!responseText.trim() && !selectedFile}
+              disabled={uploading || (!responseText.trim() && selectedFiles.length === 0)}
               className="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
             >
-              <Send className="h-4 w-4" /> Submit Assignment Response
+              {uploading ? (
+                <span>Uploading Files...</span>
+              ) : (
+                <>
+                  <Send className="h-4 w-4" /> Submit Assignment Response
+                </>
+              )}
             </Button>
           </div>
         </form>

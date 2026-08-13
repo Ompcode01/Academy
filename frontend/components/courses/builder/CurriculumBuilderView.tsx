@@ -86,6 +86,7 @@ export default function CurriculumBuilderView({
 
   // Modal States
   const [addSectionOpen, setAddSectionOpen] = useState(false);
+  const [editingSection, setEditingSection] = useState<SectionItem | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState<number | null>(null);
   const [selectedContentType, setSelectedContentType] = useState<ContentTypeKey | null>(null);
@@ -114,15 +115,22 @@ export default function CurriculumBuilderView({
     );
   };
 
-  const handleAddSection = (title: string, description: string) => {
-    const newSec: SectionItem = {
-      id: Date.now(),
-      title: title.startsWith("Section") ? title : `Section ${sections.length + 1}: ${title}`,
-      description,
-      expanded: true,
-      contents: [],
-    };
-    updateSections((prev) => [...prev, newSec]);
+  const handleSaveSection = (title: string, description: string) => {
+    if (editingSection) {
+      updateSections((prev) =>
+        prev.map((s) => (s.id === editingSection.id ? { ...s, title, description } : s))
+      );
+      setEditingSection(null);
+    } else {
+      const newSec: SectionItem = {
+        id: Date.now(),
+        title: title.startsWith("Section") ? title : `Section ${sections.length + 1}: ${title}`,
+        description,
+        expanded: true,
+        contents: [],
+      };
+      updateSections((prev) => [...prev, newSec]);
+    }
   };
 
   const handleDeleteSection = (secId: number) => {
@@ -156,6 +164,8 @@ export default function CurriculumBuilderView({
       setQuizBuilderOpen(true);
     } else if (item.contentType === "ASSIGNMENT") {
       setAssignmentBuilderOpen(true);
+    } else if (item.contentType === "FEEDBACK") {
+      setFeedbackBuilderOpen(true);
     } else {
       setAddContentOpen(true);
     }
@@ -311,21 +321,47 @@ export default function CurriculumBuilderView({
 
   const handleSaveFeedback = (feedbackData: any) => {
     if (!activeSectionId) return;
-    const newItem: ContentItem = {
-      id: Date.now(),
-      title: feedbackData.title,
-      contentType: "FEEDBACK",
-      questionsCount: feedbackData.questions.length,
-      description: feedbackData.description,
-      status: "Published",
-    };
-    updateSections((prev) =>
-      prev.map((s) =>
-        s.id === activeSectionId
-          ? { ...s, contents: [...s.contents, newItem] }
-          : s
-      )
-    );
+    const feedbackConfigJson = JSON.stringify(feedbackData);
+    if (editingItem) {
+      updateSections((prev) =>
+        prev.map((s) =>
+          s.id === activeSectionId
+            ? {
+                ...s,
+                contents: s.contents.map((c) =>
+                  c.id === editingItem.item.id
+                    ? {
+                        ...c,
+                        title: feedbackData.title,
+                        description: feedbackData.description,
+                        questionsCount: feedbackData.questions ? feedbackData.questions.length : 0,
+                        quizConfigJson: feedbackConfigJson,
+                      }
+                    : c
+                ),
+              }
+            : s
+        )
+      );
+    } else {
+      const newItem: ContentItem = {
+        id: Date.now(),
+        title: feedbackData.title,
+        contentType: "FEEDBACK",
+        questionsCount: feedbackData.questions ? feedbackData.questions.length : 0,
+        description: feedbackData.description,
+        quizConfigJson: feedbackConfigJson,
+        status: "Published",
+      };
+      updateSections((prev) =>
+        prev.map((s) =>
+          s.id === activeSectionId
+            ? { ...s, contents: [...s.contents, newItem] }
+            : s
+        )
+      );
+    }
+    setEditingItem(null);
   };
 
   const handleDeleteContent = (secId: number, contentId: number) => {
@@ -392,17 +428,9 @@ export default function CurriculumBuilderView({
 
         <div className="flex items-center gap-2">
           <Button
-            onClick={() => setPreviewModalOpen(true)}
-            variant="outline"
-            size="sm"
-            className="gap-2 text-xs border-primary/30 text-primary hover:bg-primary/10 font-bold cursor-pointer"
-          >
-            <Eye className="h-4 w-4" /> Preview Course
-          </Button>
-          <Button
             onClick={() => setAddSectionOpen(true)}
             size="sm"
-            className="gap-2 bg-primary text-primary-foreground"
+            className="gap-2 bg-primary text-primary-foreground font-bold"
           >
             <Plus className="h-4 w-4" /> Add Section
           </Button>
@@ -449,8 +477,19 @@ export default function CurriculumBuilderView({
                     {section.contents.length} items
                   </span>
                   <button
+                    onClick={() => {
+                      setEditingSection(section);
+                      setAddSectionOpen(true);
+                    }}
+                    className="text-muted-foreground hover:text-primary p-1 rounded hover:bg-primary/10 transition-colors"
+                    title="Edit Section Title & Description"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </button>
+                  <button
                     onClick={() => handleDeleteSection(section.id)}
-                    className="text-red-500 hover:text-red-600 p-1 rounded hover:bg-red-500/10"
+                    className="text-red-500 hover:text-red-600 p-1 rounded hover:bg-red-500/10 transition-colors"
+                    title="Delete Section"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -580,8 +619,14 @@ export default function CurriculumBuilderView({
       {/* Modals */}
       <AddSectionModal
         open={addSectionOpen}
-        onOpenChange={setAddSectionOpen}
-        onAddSection={handleAddSection}
+        initialTitle={editingSection?.title}
+        initialDescription={editingSection?.description}
+        isEditing={Boolean(editingSection)}
+        onOpenChange={(op) => {
+          setAddSectionOpen(op);
+          if (!op) setEditingSection(null);
+        }}
+        onSaveSection={handleSaveSection}
       />
 
       <ContentTypePickerModal
@@ -614,6 +659,7 @@ export default function CurriculumBuilderView({
       <FeedbackBuilderModal
         open={feedbackBuilderOpen}
         onOpenChange={setFeedbackBuilderOpen}
+        initialData={editingItem?.item?.quizConfigJson ? (typeof editingItem.item.quizConfigJson === "string" ? JSON.parse(editingItem.item.quizConfigJson) : editingItem.item.quizConfigJson) : editingItem?.item}
         onSaveFeedback={handleSaveFeedback}
       />
 

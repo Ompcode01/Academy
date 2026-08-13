@@ -17,6 +17,7 @@ import {
   Rocket,
   Globe,
   Lock,
+  MessageSquare,
 } from "lucide-react";
 import CoursePreviewModal from "../builder/CoursePreviewModal";
 
@@ -77,6 +78,47 @@ export default function ReviewPublishForm({
           ? []
           : ((enrollment as any).enrolledUsersList || []).map((u: any) => String(u.userId));
 
+      // Prepare sections array ensuring feedback item incorporates Step 5 questions
+      let processedSections = JSON.parse(JSON.stringify(sections || []));
+      const fbData = (wizardData as any).feedback;
+      if (fbData && fbData.enableFeedback !== false) {
+        const feedbackConfigJson = JSON.stringify({
+          title: fbData.feedbackTitle || "End-of-Course Feedback & Evaluation Survey",
+          description: fbData.description || "",
+          questions: fbData.questions || [],
+        });
+
+        let foundFb = false;
+        for (const sec of processedSections) {
+          if (sec.contents && Array.isArray(sec.contents)) {
+            for (const cnt of sec.contents) {
+              if (cnt.contentType?.toUpperCase() === "FEEDBACK") {
+                cnt.title = fbData.feedbackTitle || cnt.title;
+                cnt.description = fbData.description || cnt.description;
+                cnt.quizConfigJson = feedbackConfigJson;
+                foundFb = true;
+              }
+            }
+          }
+        }
+
+        if (!foundFb) {
+          processedSections.push({
+            title: "Course Feedback & Evaluation",
+            description: "End-of-course survey evaluation.",
+            contents: [
+              {
+                title: fbData.feedbackTitle || "End-of-Course Feedback Survey",
+                contentType: "FEEDBACK",
+                description: fbData.description || "Please share your review regarding course structure, content clarity, and instructor support.",
+                quizConfigJson: feedbackConfigJson,
+                isMandatory: Boolean(fbData.requireFeedbackForCertificate),
+              },
+            ],
+          });
+        }
+      }
+
       const payload = {
         title: basicInfo.title || "Java Programming",
         shortDescription: basicInfo.shortDescription || "Core Java fundamentals and secure development practices.",
@@ -91,7 +133,7 @@ export default function ReviewPublishForm({
         enrollmentType: selectedType,
         enrolledUserIds: enrolledUserIdsPayload,
         teacherIds: (enrollment as any).teacherIds || ["4"],
-        sections: sections || [],
+        sections: processedSections,
       };
 
       let res;
@@ -252,6 +294,30 @@ export default function ReviewPublishForm({
             )}
           </div>
         </div>
+
+        {/* Card 5: Course Feedback & Evaluation */}
+        <div className="p-4 rounded-xl border border-border bg-card space-y-2 md:col-span-2">
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-amber-500" /> Course Feedback &amp; Evaluation Survey
+            </h3>
+            <Badge variant="outline" className="text-[10px]">
+              {(wizardData as any).feedback?.enableFeedback !== false ? "Enabled" : "Disabled"}
+            </Badge>
+          </div>
+          <div className="space-y-1 pt-1 text-xs">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" />
+              <span>Survey Status: <strong>{(wizardData as any).feedback?.enableFeedback !== false ? "Active & Configured" : "Disabled"}</strong></span>
+            </div>
+            {(wizardData as any).feedback?.enableFeedback !== false && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-muted-foreground">
+                <div>Title: <strong className="text-foreground">{(wizardData as any).feedback?.feedbackTitle || "End-of-Course Feedback Survey"}</strong></div>
+                <div>Questions: <strong className="text-foreground">{((wizardData as any).feedback?.questions || []).length || 3} Survey Items</strong></div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Lifecycle Status Selection */}
@@ -353,6 +419,7 @@ export default function ReviewPublishForm({
         sections={sections}
         enrollment={enrollment}
         certificate={certificate}
+        feedback={(wizardData as any).feedback}
       />
     </div>
   );

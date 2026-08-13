@@ -166,7 +166,15 @@ export default function AdminSubmissionsReview({
                     </td>
                     <td className="p-3 font-semibold text-foreground">{item.courseTitle}</td>
                     <td className="p-3 max-w-[200px] truncate">
-                      {item.submissionText && <div className="truncate text-muted-foreground">{item.submissionText}</div>}
+                      {item.submissionText && (
+                        item.submissionText.trim().startsWith("{") && item.submissionText.includes('"type":"FEEDBACK"') ? (
+                          <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                            Survey Feedback Submitted
+                          </span>
+                        ) : (
+                          <div className="truncate text-muted-foreground">{item.submissionText}</div>
+                        )
+                      )}
                       {item.fileUrl && (
                         <a
                           href={item.fileUrl}
@@ -243,10 +251,33 @@ export default function AdminSubmissionsReview({
 
               <div className="space-y-4 pt-2">
                 {gradingItem.submissionText && (
-                  <div className="p-3 rounded-xl bg-muted/40 text-xs text-muted-foreground space-y-1">
-                    <span className="font-bold text-foreground block">Student Answer:</span>
-                    <p className="italic">"{gradingItem.submissionText}"</p>
-                  </div>
+                  gradingItem.submissionText.trim().startsWith("{") && gradingItem.submissionText.includes('"type":"FEEDBACK"') ? (
+                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-2">
+                      <span className="font-bold text-amber-600 dark:text-amber-400 block">Feedback Survey Responses:</span>
+                      {(() => {
+                        try {
+                          const fb = JSON.parse(gradingItem.submissionText);
+                          return (
+                            <div className="space-y-1.5">
+                              {Object.entries(fb.responses || {}).map(([k, v], idx) => (
+                                <div key={idx} className="p-2 rounded bg-card border border-border flex flex-col gap-0.5 text-foreground">
+                                  <span className="text-[10px] text-amber-600 font-bold">Prompt #{k}:</span>
+                                  <span className="font-semibold text-xs">{String(v)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        } catch {
+                          return <p className="italic">"{gradingItem.submissionText}"</p>;
+                        }
+                      })()}
+                    </div>
+                  ) : (
+                    <div className="p-3 rounded-xl bg-muted/40 text-xs text-muted-foreground space-y-1">
+                      <span className="font-bold text-foreground block">Student Answer:</span>
+                      <p className="italic">"{gradingItem.submissionText}"</p>
+                    </div>
+                  )
                 )}
 
                 <div className="space-y-1.5">

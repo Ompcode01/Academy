@@ -37,6 +37,7 @@ app.use(express.urlencoded({
 // Serve static storage directory for unzipped SCORM packages and uploads
 app.use("/storage", express.static(path.join(__dirname, "../public/storage")));
 app.use("/storage", express.static(path.join(process.cwd(), "public/storage")));
+app.use("/storage", express.static(path.join(process.cwd(), "public/storage/uploads")));
 
 app.get("/", (req, res) => {
     res.json({

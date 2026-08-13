@@ -22,6 +22,7 @@ import {
   FileText,
   Crown,
   Lock,
+  MessageSquare,
 } from "lucide-react";
 import RoleGate from "@/components/auth/RoleGate";
 import { useAuthStore } from "@/store/auth.store";
@@ -177,6 +178,8 @@ export default function ReportsPage() {
     setDrillModalOpen(true);
   };
 
+  const isTeacher = user?.role === ROLES.TEACHER || (user?.role as string) === "INSTRUCTOR";
+
   return (
     <RoleGate allowed={[ROLES.ADMIN, ROLES.SUPER_ADMIN, ROLES.TEACHER]}>
       <div className="p-6 space-y-5">
@@ -190,7 +193,11 @@ export default function ReportsPage() {
               </h1>
               {isSuperAdmin ? (
                 <Badge className="bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 gap-1 text-[11px] py-0.5 px-2 font-bold">
-                  <Crown className="h-3.5 w-3.5" /> Super Admin Access (All 7 Reports)
+                  <Crown className="h-3.5 w-3.5" /> Super Admin Access (All 8 Reports)
+                </Badge>
+              ) : isTeacher ? (
+                <Badge variant="outline" className="text-xs py-0.5 px-2 text-primary border-primary/30 font-semibold">
+                  <ShieldCheck className="h-3 w-3 mr-1" /> Faculty Portal Scope: Assigned Courses
                 </Badge>
               ) : (
                 <Badge variant="outline" className="text-xs py-0.5 px-2 text-amber-600 dark:text-amber-400 border-amber-500/30 font-semibold">
@@ -223,11 +230,11 @@ export default function ReportsPage() {
         />
 
         {/* Interactive Responsive Pill-Button Navigation for Reports */}
-        <Tabs value={activeTab} onValueChange={(val) => { setActiveTab(val); setFilters((p) => ({ ...p, page: 1 })); }}>
+        <Tabs value={activeTab} onValueChange={(val) => { setActiveTab(val); setFilters((p) => ({ ...p, page: 1 })); }} className="space-y-4">
           <div className="bg-card/90 backdrop-blur-md border border-border/80 p-3 rounded-2xl shadow-sm">
             <div className="flex items-center justify-between mb-2.5 px-1">
               <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
-                Select Analytics Report ({isSuperAdmin ? "8 Enterprise Reports Available" : "6 Enterprise Reports Available"})
+                Select Analytics Report ({isTeacher ? "4 Course Reports Available" : isSuperAdmin ? "8 Enterprise Reports Available" : "6 Enterprise Reports Available"})
               </span>
               {filters.search && filters.search.trim() !== "" && (
                 <span className="text-xs font-semibold text-primary">
@@ -237,85 +244,89 @@ export default function ReportsPage() {
             </div>
 
             <TabsList
-              className="flex flex-wrap gap-2 bg-transparent p-0 h-auto w-full"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 bg-transparent p-0 h-auto group-data-horizontal/tabs:h-auto w-full"
             >
-              {/* Core Role-Based Report 1 */}
+              {/* Tab 1: Learner Progress */}
               <TabsTrigger
                 value="learner-progress"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3.5 rounded-xl border border-primary/30 bg-primary/10 text-primary font-bold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
               >
                 <Users className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">Learner Progress</span>
+                <span className="whitespace-nowrap">Learner Progress</span>
               </TabsTrigger>
 
-              {/* Core Role-Based Report 2 */}
+              {/* Tab 2: Quiz & Assessment */}
               <TabsTrigger
                 value="quiz-assessment"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold transition-all duration-150 data-[state=active]:bg-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-600 data-[state=active]:shadow-md cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
               >
                 <Award className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">Quiz &amp; Assessment</span>
+                <span className="whitespace-nowrap">Quiz &amp; Assessment</span>
               </TabsTrigger>
 
-              {/* Core Role-Based Report 3 */}
+              {/* Tab 3: Assignment & Submissions */}
               <TabsTrigger
                 value="assignment-submission"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3.5 rounded-xl border border-purple-500/30 bg-purple-500/10 text-purple-600 dark:text-purple-300 font-bold transition-all duration-150 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:border-purple-600 data-[state=active]:shadow-md cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
               >
                 <FileText className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">Assignment &amp; Submissions</span>
+                <span className="whitespace-nowrap">Assignment &amp; Submissions</span>
               </TabsTrigger>
 
-              {/* Additional Reports */}
-              <TabsTrigger
-                value="enrollments"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
-              >
-                <Users className="h-3.5 w-3.5 shrink-0 text-blue-500 data-[state=active]:text-primary-foreground" />
-                <span className="truncate">Enrollments</span>
-              </TabsTrigger>
-
+              {/* Tab 4: Completions */}
               <TabsTrigger
                 value="completions"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
               >
-                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500 data-[state=active]:text-primary-foreground" />
-                <span className="truncate">Completions</span>
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                <span className="whitespace-nowrap">Completions</span>
               </TabsTrigger>
 
-              <TabsTrigger
-                value="learner-performance"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border/70 bg-card text-foreground hover:bg-accent hover:border-primary/40 font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md cursor-pointer"
-              >
-                <BookOpen className="h-3.5 w-3.5 shrink-0 text-indigo-500 data-[state=active]:text-primary-foreground" />
-                <span className="truncate">Learner Perf</span>
-              </TabsTrigger>
+              {!isTeacher && (
+                <>
+                  <TabsTrigger
+                    value="enrollments"
+                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                  >
+                    <Users className="h-3.5 w-3.5 shrink-0" />
+                    <span className="whitespace-nowrap">Enrollments</span>
+                  </TabsTrigger>
 
-              <TabsTrigger
-                value="teacher-supervision"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-purple-500/30 bg-purple-500/5 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 font-semibold transition-all duration-150 data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:border-purple-600 data-[state=active]:shadow-md cursor-pointer"
-              >
-                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-purple-600 dark:text-purple-400 data-[state=active]:text-white" />
-                <span className="truncate">Teacher Supervision</span>
-              </TabsTrigger>
+                  <TabsTrigger
+                    value="learner-performance"
+                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                  >
+                    <BookOpen className="h-3.5 w-3.5 shrink-0" />
+                    <span className="whitespace-nowrap">Learner Performance</span>
+                  </TabsTrigger>
+
+                  <TabsTrigger
+                    value="teacher-supervision"
+                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                  >
+                    <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+                    <span className="whitespace-nowrap">Teacher Supervision</span>
+                  </TabsTrigger>
+                </>
+              )}
 
               {isSuperAdmin && (
                 <>
                   <TabsTrigger
                     value="department-performance"
-                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 hover:bg-amber-500/20 font-bold transition-all duration-150 data-[state=active]:bg-amber-600 data-[state=active]:text-white data-[state=active]:border-amber-600 data-[state=active]:shadow-md cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
                   >
-                    <Building2 className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400 data-[state=active]:text-white" />
-                    <span className="truncate">Dept Perf</span>
+                    <Building2 className="h-3.5 w-3.5 shrink-0" />
+                    <span className="whitespace-nowrap">Department Perf</span>
                   </TabsTrigger>
 
                   <TabsTrigger
                     value="organization-overview"
-                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-amber-500/60 bg-amber-500/20 text-amber-900 dark:text-amber-200 hover:bg-amber-500/30 font-black transition-all duration-150 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-amber-700 data-[state=active]:text-white data-[state=active]:border-amber-600 data-[state=active]:shadow-md cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
                   >
-                    <BarChart3 className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300 data-[state=active]:text-white" />
-                    <span className="truncate">Org Overview</span>
-                    <Crown className="h-3 w-3 text-amber-500 data-[state=active]:text-white shrink-0 ml-0.5" />
+                    <BarChart3 className="h-3.5 w-3.5 shrink-0" />
+                    <span className="whitespace-nowrap">Organization Overview</span>
+                    <Crown className="h-3 w-3 shrink-0 ml-0.5" />
                   </TabsTrigger>
                 </>
               )}
@@ -425,31 +436,55 @@ export default function ReportsPage() {
                 { header: "Assignment Task", accessorKey: "assignmentTitle" },
                 {
                   header: "Status",
-                  cell: (r: any) => (
-                    <Badge className={r.submissionStatus === "GRADED" ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold" : "bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold"}>
-                      {r.submissionStatus}
-                    </Badge>
-                  ),
+                  cell: (r: any) => {
+                    const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
+                    return (
+                      <Badge className={isFb ? "bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold" : r.submissionStatus === "GRADED" ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold" : "bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold"}>
+                        {isFb ? "SUBMITTED" : r.submissionStatus}
+                      </Badge>
+                    );
+                  },
                 },
                 { header: "Submitted Date", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ""}</span> },
-                { header: "Marks Awarded", cell: (r: any) => <span className="font-bold text-foreground">{r.submissionStatus === "GRADED" ? `${r.score} / ${r.maxScore}` : "Pending"}</span> },
-                { header: "Grade", cell: (r: any) => <Badge variant="outline" className="font-bold">{r.grade}</Badge> },
-                { header: "Feedback Notes", cell: (r: any) => <span className="text-[11px] text-muted-foreground max-w-xs truncate block">{r.feedback || "No feedback yet"}</span> },
+                {
+                  header: "Marks Awarded",
+                  cell: (r: any) => {
+                    const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
+                    return <span className="font-bold text-foreground">{isFb ? "Feedback Survey" : r.submissionStatus === "GRADED" ? `${r.score} / ${r.maxScore}` : "Pending"}</span>;
+                  },
+                },
+                {
+                  header: "Grade",
+                  cell: (r: any) => {
+                    const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
+                    return <Badge variant="outline" className="font-bold">{isFb ? "Evaluation" : r.grade}</Badge>;
+                  },
+                },
+                {
+                  header: "Feedback Notes",
+                  cell: (r: any) => {
+                    const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
+                    return <span className="text-[11px] text-muted-foreground max-w-xs truncate block">{isFb ? "Survey Completed" : r.feedback || "No feedback yet"}</span>;
+                  },
+                },
                 {
                   header: "Actions",
-                  cell: (r: any) => (
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSelectedSubmission(r);
-                        setEvalModalOpen(true);
-                      }}
-                      className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] h-7 px-3 gap-1 shadow cursor-pointer"
-                    >
-                      <Award className="h-3 w-3" />
-                      {r.submissionStatus === "GRADED" ? "Edit Grade" : "Evaluate"}
-                    </Button>
-                  ),
+                  cell: (r: any) => {
+                    const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
+                    return (
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setSelectedSubmission(r);
+                          setEvalModalOpen(true);
+                        }}
+                        className={isFb ? "bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] h-7 px-3 gap-1 shadow cursor-pointer" : "bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] h-7 px-3 gap-1 shadow cursor-pointer"}
+                      >
+                        {isFb ? <MessageSquare className="h-3 w-3" /> : <Award className="h-3 w-3" />}
+                        {isFb ? "View Response" : r.submissionStatus === "GRADED" ? "Edit Grade" : "Evaluate"}
+                      </Button>
+                    );
+                  },
                 },
               ]}
               data={reportData?.table || []}

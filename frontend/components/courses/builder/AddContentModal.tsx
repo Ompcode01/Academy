@@ -42,7 +42,8 @@ export default function AddContentModal({
   if (!type) return null;
 
   const isLink = ["YOUTUBE", "UDEMY", "EXTERNAL_LINK"].includes(type);
-  const isDocument = ["PDF", "PPT", "ARTICLE"].includes(type);
+  const isDocument = ["PDF", "PPT"].includes(type);
+  const isArticle = type === "ARTICLE";
   const isScorm = type === "SCORM";
 
   const getTypeTitle = () => {
@@ -58,7 +59,7 @@ export default function AddContentModal({
       case "PPT":
         return "Upload Presentation";
       case "ARTICLE":
-        return "Add Article Document";
+        return "Write Text Article";
       case "EXTERNAL_LINK":
         return "Add External Resource Link";
       default:
@@ -162,7 +163,7 @@ export default function AddContentModal({
       contentUrl: finalContentUrl,
       description: finalDescription,
       fileSize: finalFileSize,
-      duration: isLink ? 15 : isScorm ? 30 : undefined,
+      duration: isLink ? 15 : isArticle ? 10 : isScorm ? 30 : undefined,
     });
 
     setTitle("");
@@ -176,112 +177,128 @@ export default function AddContentModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-card border-border">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-3xl w-[92vw] max-h-[90vh] bg-card border-border shadow-2xl rounded-2xl flex flex-col overflow-hidden p-0 gap-0">
+        {/* Modal Header */}
+        <DialogHeader className="px-6 py-4 border-b border-border bg-muted/20 shrink-0">
           <DialogTitle className="text-lg font-bold text-foreground flex items-center gap-2">
             {isLink && <LinkIcon className="h-5 w-5 text-primary" />}
-            {isDocument && <FileText className="h-5 w-5 text-primary" />}
+            {(isDocument || isArticle) && <FileText className="h-5 w-5 text-primary" />}
             {isScorm && <Archive className="h-5 w-5 text-violet-500" />}
             {getTypeTitle()}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-          {/* Error Banner */}
-          {errorMessage && (
-            <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold">
-              {errorMessage}
-            </div>
-          )}
+        {/* Scrollable Form Body */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-5">
+            {/* Error Banner */}
+            {errorMessage && (
+              <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-semibold">
+                {errorMessage}
+              </div>
+            )}
 
-          {/* Title */}
-          <div className="space-y-1.5">
-            <Label htmlFor="contentTitle" className="text-xs font-semibold">
-              Title *
-            </Label>
-            <Input
-              id="contentTitle"
-              placeholder="Enter title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Link URL */}
-          {isLink && (
+            {/* Title */}
             <div className="space-y-1.5">
-              <Label htmlFor="contentUrl" className="text-xs font-semibold">
-                {type === "YOUTUBE" ? "YouTube URL *" : type === "UDEMY" ? "Udemy URL *" : "URL *"}
+              <Label htmlFor="contentTitle" className="text-xs font-semibold">
+                {isArticle ? "Article Title *" : "Title *"}
               </Label>
               <Input
-                id="contentUrl"
-                placeholder={
-                  type === "YOUTUBE"
-                    ? "https://www.youtube.com/watch?v=..."
-                    : "https://example.com/..."
-                }
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                id="contentTitle"
+                placeholder={isArticle ? "e.g. Key Architectural Guidelines & Best Practices" : "Enter title"}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required
+                className="h-10"
               />
             </div>
-          )}
 
-          {/* Description */}
-          <div className="space-y-1.5">
-            <Label htmlFor="contentDesc" className="text-xs font-semibold">
-              Description (Optional)
-            </Label>
-            <Textarea
-              id="contentDesc"
-              placeholder="Enter short description about this content"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="min-h-[70px] resize-none"
-            />
-          </div>
-
-          {/* Document Upload Drop Area */}
-          {(isDocument || isScorm) && (
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">
-                {isScorm ? "Upload SCORM Package (.zip)" : "Upload File"}
-              </Label>
-              <div className="relative border-2 border-dashed border-border rounded-xl p-6 flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors">
-                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                <p className="text-xs font-medium text-foreground text-center">
-                  {fileName ? (
-                    <span className="text-primary font-semibold">{fileName}</span>
-                  ) : (
-                    `Drag & drop your ${isScorm ? "ZIP package" : "file"} here or browse`
-                  )}
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  {isScorm
-                    ? "Supported format: .ZIP (Max size limit: 100MB)"
-                    : "Supported formats: PDF, PPT, DOC, TXT (Max size: 50MB)"}
-                </p>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  accept={
-                    isScorm
-                      ? ".zip"
-                      : type === "PDF"
-                      ? ".pdf"
-                      : type === "PPT"
-                      ? ".ppt,.pptx"
-                      : ".pdf,.doc,.docx,.txt"
+            {/* Link URL */}
+            {isLink && (
+              <div className="space-y-1.5">
+                <Label htmlFor="contentUrl" className="text-xs font-semibold">
+                  {type === "YOUTUBE" ? "YouTube URL *" : type === "UDEMY" ? "Udemy URL *" : "URL *"}
+                </Label>
+                <Input
+                  id="contentUrl"
+                  placeholder={
+                    type === "YOUTUBE"
+                      ? "https://www.youtube.com/watch?v=..."
+                      : "https://example.com/..."
                   }
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  required
+                  className="h-10"
                 />
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Action Footer */}
-          <div className="flex items-center justify-end gap-3 pt-3">
+            {/* Description / Article Body */}
+            <div className="space-y-1.5">
+              <Label htmlFor="contentDesc" className="text-xs font-semibold flex items-center justify-between">
+                <span>{isArticle ? "Article Body Text Content *" : "Description (Optional)"}</span>
+                {isArticle && (
+                  <span className="text-[11px] text-muted-foreground font-normal">
+                    Supports multi-line formatting &amp; full article body text
+                  </span>
+                )}
+              </Label>
+              <Textarea
+                id="contentDesc"
+                placeholder={
+                  isArticle
+                    ? "Write full article text, instructions, and training documentation here..."
+                    : "Enter short description about this content"
+                }
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required={isArticle}
+                className={isArticle ? "min-h-[260px] text-sm leading-relaxed" : "min-h-[90px] resize-none text-xs"}
+              />
+            </div>
+
+            {/* Document Upload Drop Area */}
+            {(isDocument || isScorm) && (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">
+                  {isScorm ? "Upload SCORM Package (.zip)" : "Upload File"}
+                </Label>
+                <div className="relative border-2 border-dashed border-border rounded-xl p-6 flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors">
+                  <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                  <p className="text-xs font-medium text-foreground text-center">
+                    {fileName ? (
+                      <span className="text-primary font-semibold">{fileName}</span>
+                    ) : (
+                      `Drag & drop your ${isScorm ? "ZIP package" : "file"} here or browse`
+                    )}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    {isScorm
+                      ? "Supported format: .ZIP (Max size limit: 100MB)"
+                      : "Supported formats: PDF, PPT, DOC, TXT (Max size: 50MB)"}
+                  </p>
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    accept={
+                      isScorm
+                        ? ".zip"
+                        : type === "PDF"
+                        ? ".pdf"
+                        : type === "PPT"
+                        ? ".ppt,.pptx"
+                        : ".pdf,.doc,.docx,.txt"
+                    }
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Action Pinned Bottom Footer */}
+          <div className="px-6 py-4 border-t border-border bg-muted/20 flex items-center justify-end gap-3 shrink-0">
             <Button
               type="button"
               variant="outline"
@@ -293,7 +310,7 @@ export default function AddContentModal({
             <Button
               type="submit"
               disabled={uploading}
-              className="bg-primary text-primary-foreground font-bold"
+              className="bg-primary text-primary-foreground font-bold px-6"
             >
               {uploading ? (
                 <span className="flex items-center gap-2">
@@ -304,7 +321,7 @@ export default function AddContentModal({
               ) : isDocument ? (
                 "Upload & Add"
               ) : (
-                "Add Content"
+                "Save & Add Content"
               )}
             </Button>
           </div>

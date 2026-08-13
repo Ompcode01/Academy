@@ -32,24 +32,35 @@ export default function LearnerFeedbackModal({
   contentId,
   feedbackTitle = "Course Evaluation & Feedback Form",
   description = "Please share your review regarding course structure, content clarity, and instructor support.",
-  questions = [
-    {
-      id: 1,
-      questionText: "How satisfied are you with the course content and instructor explanations?",
-      questionType: "MCQ",
-      options: ["Excellent", "Good", "Average", "Needs Improvement"],
-      isMandatory: true,
-    },
-    {
-      id: 2,
-      questionText: "What suggestions do you have for improving this course module?",
-      questionType: "WRITTEN",
-      isMandatory: false,
-    },
-  ],
+  questions,
   onClose,
   onSuccess,
 }: LearnerFeedbackModalProps) {
+  const activeQuestions: FeedbackFormQuestion[] =
+    questions && questions.length > 0
+      ? questions
+      : [
+          {
+            id: 1,
+            questionText: "How satisfied are you with the course content and instructor explanations?",
+            questionType: "MCQ",
+            options: ["Excellent", "Good", "Average", "Needs Improvement"],
+            isMandatory: true,
+          },
+          {
+            id: 2,
+            questionText: "How well did the practical exercises help reinforce your learning?",
+            questionType: "MCQ",
+            options: ["Extremely Helpful", "Moderately Helpful", "Neutral", "Not Helpful"],
+            isMandatory: true,
+          },
+          {
+            id: 3,
+            questionText: "What suggestions do you have for improving this course module?",
+            questionType: "WRITTEN",
+            isMandatory: false,
+          },
+        ];
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -64,7 +75,7 @@ export default function LearnerFeedbackModal({
 
   const handleSubmit = async () => {
     // Validate mandatory questions
-    for (const q of questions) {
+    for (const q of activeQuestions) {
       if (q.isMandatory && (!answers[q.id] || !answers[q.id].trim())) {
         alert(`Please complete mandatory question: "${q.questionText}"`);
         return;
@@ -79,6 +90,7 @@ export default function LearnerFeedbackModal({
           type: "FEEDBACK",
           title: feedbackTitle,
           responses: answers,
+          questions: activeQuestions.map((q) => ({ id: q.id, questionText: q.questionText })),
         }),
       });
 
@@ -121,7 +133,7 @@ export default function LearnerFeedbackModal({
             </p>
 
             <div className="space-y-5">
-              {questions.map((q, idx) => (
+              {activeQuestions.map((q, idx) => (
                 <div key={q.id} className="p-4 rounded-xl border border-border bg-muted/20 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-xs font-bold text-foreground">

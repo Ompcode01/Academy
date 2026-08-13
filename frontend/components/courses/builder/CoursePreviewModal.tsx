@@ -16,12 +16,15 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { SectionItem, ContentItem } from "./CurriculumBuilderView";
 import { getStorageUrl } from "@/services/api/course.service";
 import InteractiveDocViewer from "@/components/courses/player/InteractiveDocViewer";
 import InlineQuizPlayer from "@/components/courses/player/InlineQuizPlayer";
 import InlineAssignmentPlayer from "@/components/courses/player/InlineAssignmentPlayer";
+import LearnerFeedbackModal from "@/components/courses/learner/LearnerFeedbackModal";
+import { MessageSquare } from "lucide-react";
 
 interface CoursePreviewModalProps {
   open: boolean;
@@ -35,6 +38,7 @@ interface CoursePreviewModalProps {
   sections?: SectionItem[];
   enrollment?: any;
   certificate?: any;
+  feedback?: any;
 }
 
 export default function CoursePreviewModal({
@@ -44,16 +48,61 @@ export default function CoursePreviewModal({
   level = "Beginner",
   durationHours = 0,
   sections = [],
+  feedback,
 }: CoursePreviewModalProps) {
   const [selectedLesson, setSelectedLesson] = useState<ContentItem | null>(null);
   const [expandedSections, setExpandedSections] = useState<number[]>([]);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+
+  const displaySections = useMemo(() => {
+    const rawSections = sections || [];
+    const fbQuestions = feedback?.questions || [];
+    const feedbackConfigJson = JSON.stringify({
+      title: feedback?.feedbackTitle || "End-of-Course Feedback & Evaluation Survey",
+      description: feedback?.description || "",
+      questions: fbQuestions,
+    });
+
+    const hasFeedback = rawSections.some((s) => (s.contents || []).some((c) => c.contentType === "FEEDBACK"));
+    if (hasFeedback) {
+      return rawSections.map((sec) => ({
+        ...sec,
+        contents: (sec.contents || []).map((cnt) => {
+          if (cnt.contentType === "FEEDBACK" && fbQuestions.length > 0) {
+            return {
+              ...cnt,
+              quizConfigJson: cnt.quizConfigJson || feedbackConfigJson,
+            };
+          }
+          return cnt;
+        }),
+      }));
+    }
+
+    const feedbackSec: SectionItem = {
+      id: 999999,
+      title: "Course Feedback & Evaluation",
+      description: "Evaluation survey configured by instructor.",
+      contents: [
+        {
+          id: 999999,
+          title: feedback?.feedbackTitle || "End-of-Course Feedback Survey",
+          contentType: "FEEDBACK",
+          description: feedback?.description || "Please share your review regarding course structure, content clarity, and instructor support.",
+          quizConfigJson: feedbackConfigJson,
+          status: "Published",
+        },
+      ],
+    };
+    return [...rawSections, feedbackSec];
+  }, [sections, feedback]);
 
   useEffect(() => {
-    if (sections && sections.length > 0) {
-      const allSecIds = sections.map((s) => s.id);
+    if (displaySections && displaySections.length > 0) {
+      const allSecIds = displaySections.map((s) => s.id);
       setExpandedSections(allSecIds);
-      if (sections[0]?.contents && sections[0].contents.length > 0) {
-        setSelectedLesson(sections[0].contents[0]);
+      if (displaySections[0]?.contents && displaySections[0].contents.length > 0) {
+        setSelectedLesson(displaySections[0].contents[0]);
       } else {
         setSelectedLesson(null);
       }
@@ -61,7 +110,7 @@ export default function CoursePreviewModal({
       setSelectedLesson(null);
       setExpandedSections([]);
     }
-  }, [sections, open]);
+  }, [displaySections, open]);
 
   const toggleSection = (secId: number) => {
     setExpandedSections((prev) =>
@@ -69,41 +118,50 @@ export default function CoursePreviewModal({
     );
   };
 
-  const totalContentCount = sections.reduce(
+  const totalContentCount = displaySections.reduce(
     (acc, s) => acc + (s.contents?.length || 0),
     0
   );
 
-  const allLessonsFlat = sections.flatMap((s) => s.contents || []);
+  const allLessonsFlat = displaySections.flatMap((s) => s.contents || []);
   const currentIdx = selectedLesson
     ? allLessonsFlat.findIndex((l) => (l.id && selectedLesson.id ? l.id === selectedLesson.id : l.title === selectedLesson.title))
     : -1;
   const nextLesson = currentIdx !== -1 && currentIdx < allLessonsFlat.length - 1 ? allLessonsFlat[currentIdx + 1] : null;
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-5xl w-[95vw] max-h-[85vh] h-[85vh] p-0 bg-background text-foreground border border-border shadow-2xl rounded-2xl flex flex-col overflow-hidden gap-0">
-        
-        {/* Modal Header */}
-        <DialogHeader className="px-6 py-4 border-b border-border bg-muted/20 flex flex-row items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
-              <Eye className="h-5 w-5" />
-            </div>
-            <div>
-              <DialogTitle className="text-lg font-bold text-foreground">
-                Course Preview: {courseTitle}
-              </DialogTitle>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {sections.length} Sections • {totalContentCount} Lectures • {level} Level
-                {durationHours > 0 ? ` • ${durationHours} Hours` : ""}
-              </p>
-            </div>
-          </div>
-        </DialogHeader>
+  if (!open) return null;
 
-        {/* Main Layout Grid */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden bg-background">
+  return (
+    <div className="fixed inset-0 top-0 left-0 w-screen h-screen z-[9999] bg-background text-foreground flex flex-col overflow-hidden select-none">
+      {/* Modal Header */}
+      <header className="h-14 px-6 border-b border-border bg-card/90 backdrop-blur-md flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
+            <Eye className="h-4 w-4" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-foreground">
+              Course Preview Mode: {courseTitle}
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
+              {sections.length} Sections • {totalContentCount} Lectures • {level} Level
+              {durationHours > 0 ? ` • ${durationHours} Hours` : ""}
+            </p>
+          </div>
+        </div>
+
+        <Button
+          onClick={() => onOpenChange(false)}
+          variant="outline"
+          size="sm"
+          className="gap-2 text-xs font-bold border-border text-foreground hover:bg-muted cursor-pointer"
+        >
+          <X className="h-4 w-4" /> Close Preview
+        </Button>
+      </header>
+
+      {/* Main Layout Grid */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden bg-background">
           
           {/* Left Column: Player & Viewport (7 Cols) */}
           <div className="lg:col-span-7 flex flex-col p-5 overflow-y-auto bg-muted/10 border-b lg:border-b-0 lg:border-r border-border">
@@ -202,6 +260,24 @@ export default function CoursePreviewModal({
                         if (nextLesson) setSelectedLesson(nextLesson);
                       }}
                     />
+                  ) : selectedLesson.contentType?.toUpperCase() === "FEEDBACK" ? (
+                    <div className="p-8 bg-card border border-amber-500/30 rounded-2xl text-center space-y-4 my-auto shadow-md">
+                      <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center mx-auto">
+                        <MessageSquare className="h-8 w-8" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold text-foreground">{selectedLesson.title}</h3>
+                        <p className="text-xs text-muted-foreground max-w-md mx-auto mt-1 leading-relaxed">
+                          {selectedLesson.description || "Please share your review regarding course structure, content clarity, and instructor support."}
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => setIsFeedbackModalOpen(true)}
+                        className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
+                      >
+                        <MessageSquare className="h-4 w-4" /> Launch Interactive Survey Preview
+                      </Button>
+                    </div>
                   ) : selectedLesson.contentUrl && selectedLesson.contentUrl.trim() !== "" ? (
                     <div className="p-8 bg-card border border-border rounded-xl text-center space-y-4 my-auto shadow-sm">
                       <ExternalLink className="h-10 w-10 text-primary mx-auto" />
@@ -243,22 +319,22 @@ export default function CoursePreviewModal({
 
           {/* Right Column: Curriculum Navigation (5 Cols) */}
           <div className="lg:col-span-5 flex flex-col p-4 bg-muted/20 overflow-y-auto shrink-0">
-            <div className="flex items-center justify-between border-b border-border pb-3 mb-3">
+            <div className="flex items-center justify-between border-b border-border pb-2">
               <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                 <Layers className="h-4 w-4 text-primary" /> Course Curriculum
               </h3>
               <span className="text-xs text-muted-foreground font-semibold">
-                {sections.length} Sections
+                {displaySections.length} Sections
               </span>
             </div>
 
-            {sections.length === 0 ? (
+            {displaySections.length === 0 ? (
               <div className="p-6 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl">
                 No sections added yet. Add sections in the curriculum step to preview.
               </div>
             ) : (
               <div className="space-y-2 overflow-y-auto pr-1">
-                {sections.map((section, sIdx) => (
+                {displaySections.map((section, sIdx) => (
                   <div
                     key={section.id}
                     className="border border-border rounded-xl overflow-hidden bg-card shadow-sm"
@@ -338,18 +414,42 @@ export default function CoursePreviewModal({
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="px-6 py-3 border-t border-border bg-muted/20 flex items-center justify-end shrink-0">
-          <Button
-            onClick={() => onOpenChange(false)}
-            variant="outline"
-            size="sm"
-            className="text-xs font-semibold cursor-pointer"
-          >
-            Close Preview
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      {/* Modal Footer */}
+      <div className="px-6 py-3 border-t border-border bg-card flex items-center justify-end shrink-0">
+        <Button
+          onClick={() => onOpenChange(false)}
+          variant="outline"
+          size="sm"
+          className="text-xs font-semibold cursor-pointer"
+        >
+          Close Preview
+        </Button>
+      </div>
+
+      {/* Interactive Feedback Survey Preview Modal */}
+      {selectedLesson?.contentType?.toUpperCase() === "FEEDBACK" && isFeedbackModalOpen && (
+        <LearnerFeedbackModal
+          open={isFeedbackModalOpen}
+          onClose={() => setIsFeedbackModalOpen(false)}
+          courseId={1}
+          contentId={selectedLesson.id}
+          feedbackTitle={selectedLesson.title}
+          description={selectedLesson.description}
+          questions={(() => {
+            try {
+              const raw = (selectedLesson as any).quizConfigJson || (selectedLesson as any).configJson;
+              if (raw) {
+                const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+                if (Array.isArray(parsed.questions) && parsed.questions.length > 0) return parsed.questions;
+              }
+            } catch {}
+            return undefined;
+          })()}
+          onSuccess={() => {
+            setIsFeedbackModalOpen(false);
+          }}
+        />
+      )}
+    </div>
   );
 }

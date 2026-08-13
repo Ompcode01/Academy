@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ export interface FeedbackQuestion {
 
 interface FeedbackBuilderModalProps {
   open: boolean;
+  initialData?: any;
   onOpenChange: (open: boolean) => void;
   onSaveFeedback: (feedbackData: {
     title: string;
@@ -28,6 +29,7 @@ interface FeedbackBuilderModalProps {
 
 export default function FeedbackBuilderModal({
   open,
+  initialData,
   onOpenChange,
   onSaveFeedback,
 }: FeedbackBuilderModalProps) {
@@ -51,6 +53,16 @@ export default function FeedbackBuilderModal({
       isMandatory: false,
     },
   ]);
+
+  useEffect(() => {
+    if (open && initialData) {
+      if (initialData.title) setTitle(initialData.title);
+      if (initialData.description) setDescription(initialData.description);
+      if (Array.isArray(initialData.questions) && initialData.questions.length > 0) {
+        setQuestions(initialData.questions);
+      }
+    }
+  }, [open, initialData]);
 
   // Question editing form state
   const [newQuestionText, setNewQuestionText] = useState("");

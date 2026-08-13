@@ -34,6 +34,35 @@ export default function InteractiveDocViewer({
   const isPdf =
     contentType === "PDF" ||
     (contentUrl && contentUrl.toLowerCase().includes(".pdf"));
+  const isArticle = contentType === "ARTICLE" || (!contentUrl && Boolean(description && !isPpt && !isPdf));
+
+  if (isArticle) {
+    return (
+      <div className="w-full space-y-4">
+        {/* Article Toolbar */}
+        <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border border-border rounded-xl text-xs">
+          <div className="flex items-center gap-2">
+            <Badge className="bg-primary/10 text-primary border border-primary/20 font-bold text-[10px] uppercase">
+              <FileText className="h-3.5 w-3.5 mr-1 inline" /> Text Article
+            </Badge>
+            <span className="font-semibold text-muted-foreground">Reading Material</span>
+          </div>
+          <span className="text-[11px] font-semibold text-muted-foreground">Estimated Read: 5-10 mins</span>
+        </div>
+
+        {/* Article Content Card */}
+        <div className="p-8 bg-card border border-border rounded-2xl shadow-sm space-y-6">
+          <div className="border-b border-border pb-4">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">{title}</h1>
+          </div>
+
+          <div className="prose dark:prose-invert max-w-none text-sm leading-relaxed text-foreground whitespace-pre-line space-y-4">
+            {description || "No additional text content provided for this article."}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Check if description contains extracted slides JSON or text notes
   let slides: any[] | null = null;

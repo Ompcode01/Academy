@@ -294,13 +294,16 @@ export const uploadDocumentFile = async (file: File) => {
 
 export const getStorageUrl = (url?: string) => {
   if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  if (url.startsWith("/storage/")) {
-    if (typeof window !== "undefined") {
-      const hostname = window.location.hostname;
-      return `http://${hostname}:5000${url}`;
-    }
-    return `http://localhost:5000${url}`;
+  const trimmed = url.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+
+  const cleanPath = trimmed.startsWith("/storage/")
+    ? trimmed
+    : `/storage/${trimmed.replace(/^\/+/, "")}`;
+
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    return `http://${hostname}:5000${cleanPath}`;
   }
-  return url;
+  return `http://localhost:5000${cleanPath}`;
 };

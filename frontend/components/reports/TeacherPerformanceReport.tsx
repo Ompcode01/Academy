@@ -117,21 +117,21 @@ export default function TeacherPerformanceReport() {
     : auditTrail;
 
   return (
-    <div className="space-y-6">
-      {/* Header & Refresh */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-extrabold text-foreground tracking-tight flex items-center gap-2">
-            <UserCheck className="h-6 w-6 text-purple-600" />
-            Teacher Supervision &amp; Learner Evaluation Analytics
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Admin and SA oversight dashboard monitoring teacher workload, supervised distinct learners, pending reviews, and feedback comments.
-          </p>
+    <div className="space-y-5 pt-1">
+      {/* Header Bar */}
+      <div className="flex items-center justify-between bg-card/60 p-3.5 rounded-xl border border-border">
+        <div className="flex items-center gap-2">
+          <div className="p-2 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+            <UserCheck className="h-4 w-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-foreground">Teacher Supervision &amp; Workload Summary</h3>
+            <p className="text-[11px] text-muted-foreground">Oversight monitoring instructor workload, supervised learners, and pending evaluations.</p>
+          </div>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchReport} disabled={loading} className="gap-2 font-bold text-xs">
+        <Button variant="outline" size="sm" onClick={fetchReport} disabled={loading} className="gap-2 font-bold text-xs cursor-pointer">
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-          Refresh Report
+          Refresh Metrics
         </Button>
       </div>
 
