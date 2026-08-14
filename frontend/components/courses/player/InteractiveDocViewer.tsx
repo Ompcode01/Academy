@@ -24,8 +24,9 @@ export default function InteractiveDocViewer({
   contentUrl,
   description,
 }: InteractiveDocViewerProps) {
+  const hasCustomUrl = Boolean(contentUrl && contentUrl.trim() !== "");
   const [currentSlideIdx, setCurrentSlideIdx] = React.useState(0);
-  const [viewMode, setViewMode] = React.useState<"SLIDES" | "EMBED">("SLIDES");
+  const [viewMode, setViewMode] = React.useState<"EMBED">("EMBED");
 
   const isPpt =
     contentType === "PPT" ||
@@ -51,7 +52,7 @@ export default function InteractiveDocViewer({
         </div>
 
         {/* Article Content Card */}
-        <div className="p-8 bg-card border border-border rounded-2xl shadow-sm space-y-6">
+        <div className="p-8 bg-card border border-border rounded-2xl shadow-sm space-y-6 max-h-[500px] overflow-y-auto scrollbar-thin">
           <div className="border-b border-border pb-4">
             <h1 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">{title}</h1>
           </div>
@@ -78,40 +79,17 @@ export default function InteractiveDocViewer({
       }
     }
 
-    // Default generated presentation slides if no structured JSON was saved
+    // Build presentation slides strictly using Admin uploaded title and description
     if (!slides || slides.length === 0) {
       slides = [
         {
           slideNum: 1,
-          tag: "Executive Overview",
-          heading: title || "Course Presentation Deck",
-          subheading: "Interactive Training Material",
+          tag: "Admin Presentation Deck",
+          heading: title || "Uploaded Presentation",
+          subheading: contentUrl ? `Source File: ${contentUrl.split("/").pop()}` : "Course Learning Material",
           bullets: [
-            description || "Key domain concepts, architectural models, and practical guidelines.",
-            "Review each slide carefully to understand the core subject matter.",
-            "Click Next Slide or download the full PPTX presentation below.",
-          ],
-        },
-        {
-          slideNum: 2,
-          tag: "Core Concepts & Architecture",
-          heading: "Key Takeaways & Modules",
-          subheading: "Structured Learning Framework",
-          bullets: [
-            "Modular architecture designed for enterprise scalability and reliability.",
-            "Best practices for implementation, code quality, and security standards.",
-            "Real-world application scenarios and hands-on exercises.",
-          ],
-        },
-        {
-          slideNum: 3,
-          tag: "Summary & Action Items",
-          heading: "Review & Knowledge Check",
-          subheading: "Next Steps in Curriculum",
-          bullets: [
-            "Complete associated quizzes and assignments in this module.",
-            "Download original presentation file for offline study.",
-            "Proceed to next lesson upon completing slide review.",
+            description || "Uploaded PowerPoint presentation module.",
+            "Use the View/Download button below to open the complete original PPTX file.",
           ],
         },
       ];
@@ -119,7 +97,6 @@ export default function InteractiveDocViewer({
   }
 
   // Resolved URL (fallback to local sample file if empty)
-  const hasCustomUrl = Boolean(contentUrl && contentUrl.trim() !== "");
   const resolvedTargetUrl = hasCustomUrl
     ? getStorageUrl(contentUrl)
     : isPdf
@@ -130,9 +107,7 @@ export default function InteractiveDocViewer({
   const isLocalHost = resolvedTargetUrl.includes("localhost") || resolvedTargetUrl.includes("127.0.0.1");
   const iframeSrc = isPdf
     ? `${resolvedTargetUrl}#page=1`
-    : isLocalHost
-    ? resolvedTargetUrl
-    : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(resolvedTargetUrl)}`;
+    : `https://docs.google.com/gview?url=${encodeURIComponent(resolvedTargetUrl)}&embedded=true`;
 
   const handleDownload = () => {
     const a = document.createElement("a");
@@ -143,109 +118,6 @@ export default function InteractiveDocViewer({
     a.click();
     document.body.removeChild(a);
   };
-
-  if (isPpt && viewMode === "SLIDES" && slides && slides.length > 0) {
-    const slide = slides[currentSlideIdx] || slides[0];
-    return (
-      <div className="w-full space-y-3 select-none">
-        {/* Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-900/90 border border-slate-800 rounded-xl text-xs backdrop-blur-md shadow-md">
-          <div className="flex items-center gap-2.5">
-            <Badge className="bg-amber-500 text-slate-950 border border-amber-500/30 gap-1 font-extrabold text-[10px] uppercase">
-              <Presentation className="h-3.5 w-3.5" /> Interactive PPT Presentation
-            </Badge>
-            <span className="font-bold text-slate-200 truncate max-w-xs md:max-w-md">
-              {title}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setViewMode(viewMode === "SLIDES" ? "EMBED" : "SLIDES")}
-              className="h-8 border-slate-700 text-slate-300 hover:bg-slate-800 text-xs gap-1.5 cursor-pointer"
-            >
-              <Maximize2 className="h-3.5 w-3.5" /> Toggle Embed View
-            </Button>
-
-            <Button
-              size="sm"
-              onClick={handleDownload}
-              className="h-8 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-1.5 cursor-pointer shadow-md"
-            >
-              <Download className="h-3.5 w-3.5" /> Download PPTX
-            </Button>
-          </div>
-        </div>
-
-        {/* Presentation Slide Card */}
-        <div className="w-full min-h-[460px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative flex flex-col justify-between p-8 text-white bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
-          {/* Top Info */}
-          <div className="flex justify-between items-center text-xs">
-            <span className="px-3 py-1 rounded-md bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold tracking-wider">
-              {slide.tag || `Slide ${currentSlideIdx + 1}`}
-            </span>
-            <span className="font-semibold text-slate-400">
-              Slide {currentSlideIdx + 1} of {slides.length}
-            </span>
-          </div>
-
-          {/* Slide Content Body */}
-          <div className="flex-1 flex flex-col justify-center my-6 space-y-4">
-            <h2 className="text-xl md:text-2xl font-extrabold tracking-tight text-white leading-tight">
-              {slide.heading}
-            </h2>
-            {slide.subheading && (
-              <h3 className="text-sm md:text-base font-semibold text-amber-400">
-                {slide.subheading}
-              </h3>
-            )}
-            <div className="pt-2 space-y-2">
-              {slide.bullets && slide.bullets.length > 0 ? (
-                slide.bullets.map((bullet: string, bIdx: number) => (
-                  <div key={bIdx} className="flex items-start gap-2.5 text-xs md:text-sm text-slate-300">
-                    <span className="text-amber-500 font-extrabold mt-1">•</span>
-                    <p className="leading-relaxed">{bullet}</p>
-                  </div>
-                ))
-              ) : null}
-            </div>
-          </div>
-
-          {/* Footer Controls */}
-          <div className="flex justify-between items-center border-t border-slate-800/60 pt-4 gap-2 flex-wrap">
-            <Button
-              disabled={currentSlideIdx === 0}
-              onClick={() => setCurrentSlideIdx((prev) => prev - 1)}
-              variant="outline"
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs h-9 cursor-pointer"
-            >
-              &larr; Previous Slide
-            </Button>
-            <div className="flex gap-1.5 overflow-x-auto py-1 max-w-[200px] sm:max-w-xs md:max-w-md">
-              {slides.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentSlideIdx(idx)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    idx === currentSlideIdx ? "w-6 bg-amber-500" : "w-2 bg-slate-700 hover:bg-slate-500"
-                  }`}
-                />
-              ))}
-            </div>
-            <Button
-              disabled={currentSlideIdx === slides.length - 1}
-              onClick={() => setCurrentSlideIdx((prev) => prev + 1)}
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs h-9 cursor-pointer"
-            >
-              Next Slide &rarr;
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full space-y-3 select-none">
@@ -269,16 +141,7 @@ export default function InteractiveDocViewer({
 
         {/* Right: Voluntary Download & View Mode Actions */}
         <div className="flex items-center gap-2">
-          {isPpt && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setViewMode(viewMode === "SLIDES" ? "EMBED" : "SLIDES")}
-              className="h-8 border-slate-700 text-slate-300 hover:bg-slate-800 text-xs gap-1.5 cursor-pointer"
-            >
-              <Presentation className="h-3.5 w-3.5" /> Slides View
-            </Button>
-          )}
+
 
           <Button
             size="sm"
@@ -303,13 +166,51 @@ export default function InteractiveDocViewer({
 
       {/* ── Main Viewport Container ────── */}
       <div className="w-full space-y-3">
-        <div className="w-full h-[620px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative">
-          <iframe
-            src={iframeSrc}
-            className="w-full h-full border-0 bg-white"
-            title={title}
-          />
-        </div>
+        {isPpt && isLocalHost ? (
+          <div className="w-full h-[620px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative flex flex-col items-center justify-center p-8 text-center text-white space-y-5 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              <Presentation className="h-12 w-12" />
+            </div>
+
+            <div className="space-y-2 max-w-lg">
+              <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase font-extrabold px-3 py-1">
+                Admin Uploaded PowerPoint File ({contentUrl ? contentUrl.split("/").pop() : "sample3.ppt"})
+              </Badge>
+              <h2 className="text-2xl font-extrabold text-white tracking-tight">{title}</h2>
+              {description && (
+                <p className="text-xs text-slate-300 leading-relaxed bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+                  {description}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
+              <Button
+                onClick={() => window.open(resolvedTargetUrl, "_blank")}
+                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-2 px-7 h-11 shadow-lg cursor-pointer"
+              >
+                <Maximize2 className="h-4 w-4" /> Open Actual Uploaded File ({contentUrl ? contentUrl.split("/").pop() : "sample3.ppt"})
+              </Button>
+
+              <Button
+                onClick={handleDownload}
+                variant="outline"
+                className="border-slate-700 text-slate-200 hover:bg-slate-800 font-semibold text-xs gap-2 px-5 h-11 cursor-pointer"
+              >
+                <Download className="h-4 w-4 text-amber-400" /> Download Presentation File
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full h-[620px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative">
+            <iframe
+              src={iframeSrc}
+              className="w-full h-full border-0 bg-white"
+              title={title}
+            />
+          </div>
+        )}
+
         {description && (
           <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 space-y-1">
             <strong className="text-white block font-bold">Admin Lesson Notes:</strong>

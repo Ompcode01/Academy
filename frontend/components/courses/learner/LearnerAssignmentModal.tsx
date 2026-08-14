@@ -50,7 +50,9 @@ export default function LearnerAssignmentModal({
       : String(rawDeadline)
     : "No strict deadline";
 
-  const maxAttempts = parsedConfig.maxAttempts || 2;
+  const rawMaxAttempts = parsedConfig.maxAttempts ?? parsedConfig.attemptsAllowed ?? parsedConfig.attempts;
+  const maxAttempts = rawMaxAttempts !== undefined && rawMaxAttempts !== null && rawMaxAttempts !== "" ? Number(rawMaxAttempts) : 1;
+  const isUnlimitedAttempts = maxAttempts === 0 || maxAttempts >= 999;
   const allowedFileTypes: string[] = parsedConfig.allowedFileTypes || ["PDF", "DOC", "DOCX", "ZIP"];
   const maxFileSizeMb = parsedConfig.maxFileSizeMb || 50;
 

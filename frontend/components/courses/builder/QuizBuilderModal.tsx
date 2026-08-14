@@ -60,7 +60,7 @@ export default function QuizBuilderModal({
   const [description, setDescription] = useState("");
   const [durationMinutes, setDurationMinutes] = useState(20);
   const [passingPercentage, setPassingPercentage] = useState(70);
-  const [maxAttempts, setMaxAttempts] = useState(2);
+  const [maxAttempts, setMaxAttempts] = useState<number>(1);
   const [shuffleQuestions, setShuffleQuestions] = useState(true);
   const [showAnswers, setShowAnswers] = useState(true);
   const [oneQuestionAtTime, setOneQuestionAtTime] = useState(false);
@@ -74,7 +74,7 @@ export default function QuizBuilderModal({
         setDescription(initialData.description || "");
         setDurationMinutes(initialData.durationMinutes || 20);
         setPassingPercentage(initialData.passingPercentage || 70);
-        setMaxAttempts(initialData.maxAttempts || 2);
+        setMaxAttempts(initialData.maxAttempts !== undefined && initialData.maxAttempts !== null ? Number(initialData.maxAttempts) : 1);
         setShuffleQuestions(initialData.shuffleQuestions !== undefined ? Boolean(initialData.shuffleQuestions) : true);
         setShowAnswers(initialData.showAnswersAfterSubmit !== undefined ? Boolean(initialData.showAnswersAfterSubmit) : true);
         setOneQuestionAtTime(initialData.oneQuestionAtATime !== undefined ? Boolean(initialData.oneQuestionAtATime) : false);
@@ -84,7 +84,7 @@ export default function QuizBuilderModal({
         setDescription("");
         setDurationMinutes(20);
         setPassingPercentage(70);
-        setMaxAttempts(2);
+        setMaxAttempts(1);
         setShuffleQuestions(true);
         setShowAnswers(true);
         setOneQuestionAtTime(false);
@@ -220,10 +220,14 @@ export default function QuizBuilderModal({
                   <Label className="text-xs font-semibold">Maximum Attempts</Label>
                   <Input
                     type="number"
-                    value={maxAttempts || ""}
-                    placeholder="Optional (e.g. Unlimited)"
-                    onChange={(e) => setMaxAttempts(e.target.value ? Number(e.target.value) : 0)}
+                    min={0}
+                    value={maxAttempts !== undefined && maxAttempts !== null ? maxAttempts : 1}
+                    placeholder="Enter attempts (e.g. 1, 3, 5, or 0 for Unlimited)"
+                    onChange={(e) => setMaxAttempts(e.target.value !== "" ? Number(e.target.value) : 1)}
                   />
+                  <span className="text-[10px] text-muted-foreground block">
+                    {maxAttempts === 0 ? "0 = Unlimited attempts allowed for learners" : `Learners get ${maxAttempts} attempt(s)`}
+                  </span>
                 </div>
               </div>
 

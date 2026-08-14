@@ -63,7 +63,11 @@ export default function InlineQuizPlayer({
 
   const shuffleQuestionsSetting = Boolean(parsedConfig.shuffleQuestions);
   const showAnswersAfterSubmitSetting = parsedConfig.showAnswersAfterSubmit !== undefined ? Boolean(parsedConfig.showAnswersAfterSubmit) : true;
-  const maxAttempts = parsedConfig.maxAttempts || 2;
+  
+  // Read exact maxAttempts entered by author (Admin, SA, Teacher), or 1 if not specified
+  const rawMaxAttempts = parsedConfig.maxAttempts ?? parsedConfig.attemptsAllowed ?? parsedConfig.attempts;
+  const maxAttempts = rawMaxAttempts !== undefined && rawMaxAttempts !== null && rawMaxAttempts !== "" ? Number(rawMaxAttempts) : 1;
+  const isUnlimitedAttempts = maxAttempts === 0 || maxAttempts >= 999;
   const durationMinutes = parsedConfig.durationMinutes || 15;
 
   // Normalize questions to guarantee safety
@@ -88,6 +92,11 @@ export default function InlineQuizPlayer({
     };
   });
 
+  const [currentAttempt, setCurrentAttempt] = useState(attemptNumber);
+  React.useEffect(() => {
+    setCurrentAttempt(attemptNumber);
+  }, [attemptNumber]);
+
   const [hasStartedQuiz, setHasStartedQuiz] = useState(false);
   const [activeQuestions, setActiveQuestions] = useState<QuestionItem[]>(baseQuestions);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
@@ -95,9 +104,18 @@ export default function InlineQuizPlayer({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
-  const isAttemptsExhausted = attemptNumber > maxAttempts;
-  const isFinalAttempt = attemptNumber >= maxAttempts || maxAttempts === 1;
-  const shouldShowAnswers = showAnswersAfterSubmitSetting && isFinalAttempt;
+  const isAttemptsExhausted = !isUnlimitedAttempts && currentAttempt > maxAttempts;
+  const isFinalAttempt = isUnlimitedAttempts ? false : (currentAttempt >= maxAttempts || maxAttempts === 1);
+  const shouldShowAnswers = showAnswersAfterSubmitSetting && (isFinalAttempt || isUnlimitedAttempts);
+
+  const handleReset = () => {
+    setCurrentAttempt((prev) => prev + 1);
+    setIsSubmitted(false);
+    setScore(0);
+    setSelectedAnswers({});
+    setCurrentQuestionIdx(0);
+    setHasStartedQuiz(true);
+  };
 
   const handleStartQuiz = () => {
     if (isAttemptsExhausted) return;
@@ -179,13 +197,6 @@ export default function InlineQuizPlayer({
     }
   };
 
-  const handleReset = () => {
-    setSelectedAnswers({});
-    setIsSubmitted(false);
-    setCurrentQuestionIdx(0);
-    setScore(0);
-  };
-
   return (
     <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6 select-none">
       {/* Quiz Header Bar */}
@@ -246,7 +257,7 @@ export default function InlineQuizPlayer({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-md mx-auto p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300">
-            <div>Attempt: <strong className={isAttemptsExhausted ? "text-red-400" : "text-amber-400"}>#{attemptNumber} of {maxAttempts}</strong></div>
+            <div>Attempt: <strong className={isAttemptsExhausted ? "text-red-400" : "text-amber-400"}>#{attemptNumber} of {isUnlimitedAttempts ? "Unlimited" : maxAttempts}</strong></div>
             <div>Questions: <strong className="text-white">{baseQuestions.length}</strong></div>
             <div className="col-span-2 sm:col-span-1">Shuffle: <strong className="text-slate-200">{shuffleQuestionsSetting ? "Enabled" : "Off"}</strong></div>
           </div>
@@ -340,13 +351,13 @@ export default function InlineQuizPlayer({
           )}
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            {attemptNumber < maxAttempts && !isAttemptsExhausted && (
+            {(currentAttempt < maxAttempts || isUnlimitedAttempts) && (
               <Button
                 onClick={handleReset}
                 variant="outline"
                 className="border-slate-700 text-slate-300 hover:bg-slate-800 font-extrabold text-xs gap-2 px-5 h-10 shadow cursor-pointer"
               >
-                <RotateCcw className="h-4 w-4" /> Retake Assessment (Attempt #{attemptNumber + 1})
+                <RotateCcw className="h-4 w-4" /> Retake Assessment (Attempt #{currentAttempt + 1} of {isUnlimitedAttempts ? "Unlimited" : maxAttempts})
               </Button>
             )}
 

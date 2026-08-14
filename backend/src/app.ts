@@ -23,6 +23,7 @@ import reportingRoutes from "./routes/reporting.routes";
 import guestGrantRoutes from "./routes/guestGrant.routes";
 
 import path from "path";
+import fs from "fs";
 
 const app = express();
 
@@ -34,10 +35,65 @@ app.use(express.urlencoded({
     extended: true,
 }));
 
-// Serve static storage directory for unzipped SCORM packages and uploads
-app.use("/storage", express.static(path.join(__dirname, "../public/storage")));
-app.use("/storage", express.static(path.join(process.cwd(), "public/storage")));
+// Serve static storage directory for unzipped SCORM packages, documents, and uploads
+app.use("/storage/uploads", express.static(path.join(process.cwd(), "public/storage/uploads")));
+app.use("/storage/documents", express.static(path.join(process.cwd(), "public/storage/uploads")));
+app.use("/storage/documents", express.static(path.join(process.cwd(), "public/storage")));
 app.use("/storage", express.static(path.join(process.cwd(), "public/storage/uploads")));
+app.use("/storage", express.static(path.join(process.cwd(), "public/storage")));
+app.use("/storage", express.static(path.join(__dirname, "../public/storage")));
+
+// Smart wildcard fallback handler for all static storage files (PDF, DOCX, ZIP, PPTX)
+app.use("/storage", (req, res, next) => {
+  if (req.method !== "GET" && req.method !== "HEAD") return next();
+  const reqPath = decodeURIComponent(req.path).replace(/^\/+/, "");
+  if (!reqPath || reqPath.includes("scorm")) return next();
+  const fileName = path.basename(reqPath);
+  const storageUploadsDir = path.join(process.cwd(), "public/storage/uploads");
+  const storageDir = path.join(process.cwd(), "public/storage");
+
+  // 1. Direct path check
+  const possiblePaths = [
+    path.join(storageUploadsDir, reqPath),
+    path.join(storageDir, reqPath),
+    path.join(storageUploadsDir, fileName),
+    path.join(storageDir, fileName),
+  ];
+
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p) && fs.statSync(p).isFile()) {
+      return res.sendFile(p);
+    }
+  }
+
+  // 2. Fuzzy / Prefix matching across storage upload directories
+  try {
+    const searchDirs = [storageUploadsDir, storageDir];
+    const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const normTarget = normalize(fileName);
+
+    if (normTarget.length > 2) {
+      for (const dir of searchDirs) {
+        if (!fs.existsSync(dir)) continue;
+        const files = fs.readdirSync(dir);
+        const match = files.find((f) => {
+          const normF = normalize(f);
+          return normF.includes(normTarget) || normTarget.includes(normF);
+        });
+        if (match) {
+          const fullMatchPath = path.join(dir, match);
+          if (fs.existsSync(fullMatchPath) && fs.statSync(fullMatchPath).isFile()) {
+            return res.sendFile(fullMatchPath);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Storage fallback match error:", err);
+  }
+
+  next();
+});
 
 app.get("/", (req, res) => {
     res.json({

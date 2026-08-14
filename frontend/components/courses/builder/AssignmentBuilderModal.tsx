@@ -63,7 +63,7 @@ export default function AssignmentBuilderModal({
   const [deadlineDate, setDeadlineDate] = useState("");
   const [deadlineTime, setDeadlineTime] = useState("23:59");
   const [description, setDescription] = useState("");
-  const [maxAttempts, setMaxAttempts] = useState(2);
+  const [maxAttempts, setMaxAttempts] = useState<number>(1);
   const [lateSubmission, setLateSubmission] = useState("ALLOWED");
   const [latePenaltyPercent, setLatePenaltyPercent] = useState(10);
 
@@ -92,14 +92,14 @@ export default function AssignmentBuilderModal({
         setDescription(initialData.description || "");
         setInstructions(initialData.instructions || initialData.description || "");
         setMaxMarks(initialData.maxMarks || 50);
-        setMaxAttempts(initialData.maxAttempts || 2);
+        setMaxAttempts(initialData.maxAttempts !== undefined && initialData.maxAttempts !== null ? Number(initialData.maxAttempts) : 1);
         if (initialData.allowedFileTypes) setAllowedTypes(initialData.allowedFileTypes);
       } else {
         setTitle("");
         setDescription("");
         setInstructions("");
         setMaxMarks(50);
-        setMaxAttempts(2);
+        setMaxAttempts(1);
       }
     }
   }, [open, initialData]);
@@ -231,10 +231,14 @@ export default function AssignmentBuilderModal({
                   <Label className="text-xs font-semibold">Maximum Attempts</Label>
                   <Input
                     type="number"
-                    value={maxAttempts || ""}
-                    placeholder="Optional (e.g. Unlimited)"
-                    onChange={(e) => setMaxAttempts(e.target.value ? Number(e.target.value) : 0)}
+                    min={0}
+                    value={maxAttempts !== undefined && maxAttempts !== null ? maxAttempts : 1}
+                    placeholder="Enter attempts (e.g. 1, 3, 5, or 0 for Unlimited)"
+                    onChange={(e) => setMaxAttempts(e.target.value !== "" ? Number(e.target.value) : 1)}
                   />
+                  <span className="text-[10px] text-muted-foreground block">
+                    {maxAttempts === 0 ? "0 = Unlimited attempts allowed for learners" : `Learners get ${maxAttempts} attempt(s)`}
+                  </span>
                 </div>
               </div>
 

@@ -154,13 +154,15 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
     }
   };
 
-  // Filter events based on selected date or show all sorted by date
+  // Today string YYYY-MM-DD
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  // Filter events: if a date is selected, show that date's events; otherwise show upcoming & today's events
   const displayedEvents = selectedDateStr
     ? events.filter((evt) => evt.date === selectedDateStr)
-    : [...events].sort((a, b) => (a.date > b.date ? 1 : -1));
-
-  // Today string
-  const todayStr = new Date().toISOString().split("T")[0];
+    : events
+        .filter((evt) => evt.date >= todayStr)
+        .sort((a, b) => (a.date > b.date ? 1 : -1));
 
   return (
     <div className="space-y-6 select-none">
@@ -314,7 +316,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-[#E0E6ED] pb-2">
               <h3 className="text-sm font-bold text-[#212529]">
-                {selectedDateStr ? `Events on ${selectedDateStr}` : "Scheduled Event List"} ({displayedEvents.length})
+                {selectedDateStr ? `Events on ${selectedDateStr}` : "Upcoming Scheduled Events"} ({displayedEvents.length})
               </h3>
               {selectedDateStr && isAdmin && (
                 <button

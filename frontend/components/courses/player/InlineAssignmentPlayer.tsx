@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { uploadDocumentFile } from "@/services/api/course.service";
+import { uploadDocumentFile, getStorageUrl } from "@/services/api/course.service";
 
 interface InlineAssignmentPlayerProps {
   assignmentTitle: string;
@@ -64,7 +64,9 @@ export default function InlineAssignmentPlayer({
       : String(rawDeadline)
     : "No strict deadline";
 
-  const maxAttempts = parsedConfig.maxAttempts || 2;
+  const rawMaxAttempts = parsedConfig.maxAttempts ?? parsedConfig.attemptsAllowed ?? parsedConfig.attempts;
+  const maxAttempts = rawMaxAttempts !== undefined && rawMaxAttempts !== null && rawMaxAttempts !== "" ? Number(rawMaxAttempts) : 1;
+  const isUnlimitedAttempts = maxAttempts === 0 || maxAttempts >= 999;
   const allowedFileTypes: string[] = parsedConfig.allowedFileTypes || ["PDF", "DOC", "DOCX", "ZIP"];
   const maxFileSizeMb = parsedConfig.maxFileSizeMb || 50;
 
@@ -357,20 +359,24 @@ export default function InlineAssignmentPlayer({
               <div className="flex flex-wrap gap-2.5">
                 {referenceFiles.map((fileItem: any, fIdx: number) => {
                   const fileName = fileItem.name || fileItem.fileName || fileItem.title || `Attachment_${fIdx + 1}`;
-                  const fileUrl = fileItem.url || fileItem.fileUrl || fileItem.path || "#";
+                  let rawUrl = fileItem.url || fileItem.fileUrl || fileItem.path || fileItem.link;
+                  if (!rawUrl || rawUrl === "#") {
+                    rawUrl = `/storage/uploads/${fileName}`;
+                  }
+                  const targetUrl = getStorageUrl(rawUrl);
+
                   return (
-                    <a
+                    <button
                       key={fIdx}
-                      href={fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-purple-300 hover:text-white hover:border-purple-500/50 text-xs font-semibold transition-all group"
+                      type="button"
+                      onClick={() => window.open(targetUrl, "_blank", "noopener,noreferrer")}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-purple-300 hover:text-white hover:border-purple-500/50 text-xs font-semibold transition-all group cursor-pointer"
                     >
                       <FileText className="h-4 w-4 text-purple-400 group-hover:scale-110 transition-transform" />
                       <span className="truncate max-w-[200px]">{fileName}</span>
                       {fileItem.size && <span className="text-[10px] text-slate-500">({fileItem.size})</span>}
                       <Download className="h-3.5 w-3.5 text-slate-400 group-hover:text-purple-300 shrink-0" />
-                    </a>
+                    </button>
                   );
                 })}
               </div>

@@ -325,7 +325,7 @@ export default function CoursePreviewView() {
     }
     if (!isCourseFullyCompleted) {
       alert(
-        `Certificate Locked (${progressPercent}% Completed) — Please complete 100% of all course sections and lessons to unlock your official certificate.`
+        `Certificate Locked (${computedProgressPercent}% Completed) — Please complete 100% of all course sections and lessons to unlock your official certificate.`
       );
       return;
     }
@@ -344,6 +344,11 @@ export default function CoursePreviewView() {
     }
 
     setSelectedLesson(lesson);
+
+    // Auto-mark lesson as completed upon viewing/watching content
+    if (!completedLessonIds.includes(lesson.id)) {
+      handleToggleLessonComplete(lesson.id);
+    }
   };
 
   // Helper variables & computed metrics
@@ -400,7 +405,10 @@ export default function CoursePreviewView() {
   const nextLesson = currentLessonIndex < allLessonsFlat.length - 1 ? allLessonsFlat[currentLessonIndex + 1] : null;
 
   const isSelectedLessonCompleted = selectedLesson ? completedLessonIds.includes(selectedLesson.id) : false;
-  const isCourseFullyCompleted = progressPercent >= 100 || Boolean(progressData?.certificate);
+  const computedProgressPercent = totalContentsCount > 0
+    ? Math.min(100, Math.round((completedLessonIds.length / totalContentsCount) * 100))
+    : progressPercent;
+  const isCourseFullyCompleted = computedProgressPercent >= 100 || Boolean(progressData?.certificate);
 
   if (loading) {
     return (
@@ -463,6 +471,9 @@ export default function CoursePreviewView() {
             {/* Left 2 Columns: Course Hero Details */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
+                <Badge className="bg-[#C82333] text-white font-bold text-[10px] uppercase tracking-wider">
+                  Code: {course.code || `CO${course.id}`}
+                </Badge>
                 <Badge className="bg-primary text-primary-foreground font-bold text-[10px] uppercase tracking-wider">
                   {categoryLabel}
                 </Badge>
@@ -558,9 +569,9 @@ export default function CoursePreviewView() {
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-xs font-semibold">
                         <span className="text-muted-foreground">Your Progress</span>
-                        <span className="text-primary font-bold">{progressPercent}%</span>
+                        <span className="text-primary font-bold">{computedProgressPercent}%</span>
                       </div>
-                      <Progress value={progressPercent} className="h-2 bg-muted" />
+                      <Progress value={computedProgressPercent} className="h-2 bg-muted" />
                     </div>
                   </div>
                 ) : requiresSelfEnrollment ? (
@@ -628,14 +639,72 @@ export default function CoursePreviewView() {
           {/* Left 2 Columns: Tabs & Curriculum Breakdown */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Learning Outcomes / Description */}
-            <div className="bg-background rounded-2xl border border-border p-6 shadow-sm space-y-4">
-              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" /> About This Course
+            {/* 1. Course Identity & Classification Card */}
+            <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
+                  <Layers className="h-5 w-5 text-primary" />
+                  1. Course Identity &amp; Classification
+                </h3>
+                <Badge className="bg-[#C82333] text-white font-bold text-xs">
+                  Code: {course.code || `CO${course.id}`}
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                <div className="p-3 bg-muted/20 rounded-xl border border-border space-y-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase block">Course Name</span>
+                  <span className="font-extrabold text-foreground block truncate">{course.title}</span>
+                </div>
+                <div className="p-3 bg-muted/20 rounded-xl border border-border space-y-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase block">Course Code</span>
+                  <span className="font-extrabold text-primary block">{course.code || `CO${course.id}`}</span>
+                </div>
+                <div className="p-3 bg-muted/20 rounded-xl border border-border space-y-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase block">Department</span>
+                  <span className="font-extrabold text-foreground block">{departmentLabel}</span>
+                </div>
+                <div className="p-3 bg-muted/20 rounded-xl border border-border space-y-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase block">Category</span>
+                  <span className="font-extrabold text-foreground block">{categoryLabel}</span>
+                </div>
+                <div className="p-3 bg-muted/20 rounded-xl border border-border space-y-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase block">Difficulty Level</span>
+                  <span className="font-extrabold text-amber-500 block">{course.level || "Beginner"}</span>
+                </div>
+                <div className="p-3 bg-muted/20 rounded-xl border border-border space-y-1">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase block">Estimated Duration</span>
+                  <span className="font-extrabold text-emerald-600 dark:text-emerald-400 block">{displayDurationHours} Hours</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Course Summary & Learning Objectives Card */}
+            <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
+              <h3 className="text-base font-extrabold text-foreground flex items-center gap-2 border-b border-border pb-3">
+                <FileText className="h-5 w-5 text-primary" />
+                2. Course Summary &amp; Learning Objectives
               </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
-                {course.description || course.shortDescription || "This course provides comprehensive modular instruction configured by organization experts to ensure practical skill mastery and compliance."}
-              </p>
+
+              {/* Short Description */}
+              <div className="space-y-1.5 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-950 dark:text-blue-200">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-700 dark:text-blue-400 block">
+                  Short Description
+                </span>
+                <p className="text-xs leading-relaxed font-medium">
+                  {course.shortDescription || "No short description provided for this course."}
+                </p>
+              </div>
+
+              {/* Detailed Description / Learning Objectives */}
+              <div className="space-y-1.5 p-4 rounded-xl bg-muted/30 border border-border text-foreground">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground block">
+                  Detailed Description / Learning Objectives
+                </span>
+                <p className="text-xs leading-relaxed whitespace-pre-line text-muted-foreground">
+                  {course.description || "No detailed description provided for this course."}
+                </p>
+              </div>
             </div>
 
             {/* Curriculum Structure (Section Accordions) */}
@@ -686,10 +755,22 @@ export default function CoursePreviewView() {
                               <div className="flex items-center gap-2.5">
                                 {!isEnrolled ? (
                                   <Lock className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
-                                ) : completedLessonIds.includes(lesson.id) ? (
-                                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                                 ) : (
-                                  <Circle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleLessonComplete(lesson.id);
+                                    }}
+                                    className="p-0.5 rounded-full hover:bg-muted/80 transition-transform cursor-pointer shrink-0"
+                                    title={completedLessonIds.includes(lesson.id) ? "Click to mark as uncompleted" : "Click to mark as completed"}
+                                  >
+                                    {completedLessonIds.includes(lesson.id) ? (
+                                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 hover:scale-110 transition-transform" />
+                                    ) : (
+                                      <Circle className="h-3.5 w-3.5 text-muted-foreground hover:text-emerald-500 hover:scale-110 transition-transform" />
+                                    )}
+                                  </button>
                                 )}
                                 <span className="font-medium text-foreground">{lesson.title}</span>
                                 {lesson.contentType === "QUIZ" && (
@@ -786,10 +867,10 @@ export default function CoursePreviewView() {
           <div className="flex items-center gap-3">
             <div className="text-right hidden md:block">
               <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Overall Progress</div>
-              <div className="text-xs font-extrabold text-foreground">{progressPercent}% Completed</div>
+              <div className="text-xs font-extrabold text-foreground">{computedProgressPercent}% Completed</div>
             </div>
             <div className="w-24 bg-muted h-2 rounded-full overflow-hidden border border-border">
-              <div className="bg-emerald-500 h-full transition-all duration-300" style={{ width: `${progressPercent}%` }} />
+              <div className="bg-emerald-500 h-full transition-all duration-300" style={{ width: `${computedProgressPercent}%` }} />
             </div>
           </div>
 
@@ -896,23 +977,164 @@ export default function CoursePreviewView() {
                       />
                     );
                   })()
-                ) : selectedLesson.contentType?.toUpperCase() === "FEEDBACK" ? (
-                  <div className="p-8 bg-card border border-border rounded-xl text-center space-y-4 shadow-sm">
-                    <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center mx-auto">
-                      <MessageSquare className="h-7 w-7" />
+                ) : selectedLesson.contentType?.toUpperCase() === "FEEDBACK" || selectedLesson.contentType?.toUpperCase() === "FEEDBACK_SURVEY" || selectedLesson.contentType?.toUpperCase() === "SURVEY" ? (
+                  <div className="p-6 bg-card border border-amber-500/30 rounded-2xl space-y-5 shadow-md">
+                    <div className="flex items-center gap-3 border-b border-border pb-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center font-bold">
+                        <MessageSquare className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold text-foreground">{selectedLesson.title}</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {selectedLesson.description || "Please share your evaluation regarding course content, practical exercises, and instructor support."}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-base font-bold text-foreground">{selectedLesson.title}</h3>
-                      <p className="text-xs text-muted-foreground max-w-md mx-auto mt-1 leading-relaxed">
-                        {selectedLesson.description || "Please share your review regarding course structure, content clarity, and instructor support."}
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => setIsFeedbackModalOpen(true)}
-                      className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
-                    >
-                      <MessageSquare className="h-4 w-4" /> Launch Feedback Survey
-                    </Button>
+
+                    {/* Interactive Inline Survey Form */}
+                    {(() => {
+                      let authorQuestions: any[] | null = null;
+                      try {
+                        const raw = selectedLesson.quizConfigJson || (selectedLesson as any).configJson;
+                        if (raw) {
+                          const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+                          if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+                            authorQuestions = parsed.questions;
+                          }
+                        }
+                      } catch {}
+
+                      const questionsToRender = authorQuestions || [
+                        {
+                          id: 1,
+                          questionText: "How satisfied are you with the overall course content and lesson structure?",
+                          questionType: "MCQ",
+                          options: ["5 - Excellent", "4 - Very Good", "3 - Satisfactory", "2 - Needs Improvement", "1 - Poor"],
+                          isMandatory: true,
+                        },
+                        {
+                          id: 2,
+                          questionText: "How effective were the practical exercises, quizzes, and learning materials?",
+                          questionType: "MCQ",
+                          options: ["Extremely Helpful", "Moderately Helpful", "Neutral", "Not Helpful"],
+                          isMandatory: true,
+                        },
+                        {
+                          id: 3,
+                          questionText: "How clear and helpful were the instructor's explanations?",
+                          questionType: "MCQ",
+                          options: ["Very Clear", "Somewhat Clear", "Unclear"],
+                          isMandatory: true,
+                        },
+                        {
+                          id: 4,
+                          questionText: "What key improvements or additional topics would you suggest for this course?",
+                          questionType: "WRITTEN",
+                          isMandatory: false,
+                        },
+                      ];
+
+                      return (
+                        <div className="space-y-4">
+                          {questionsToRender.map((q: any, qIdx: number) => {
+                            const ansKey = `_fb_ans_${q.id || qIdx}`;
+                            const currentAns = (selectedLesson as any)[ansKey] || "";
+                            const opts: string[] = q.options && Array.isArray(q.options) && q.options.length > 0
+                              ? q.options
+                              : q.questionType === "MCQ"
+                              ? ["Excellent", "Good", "Average", "Needs Improvement"]
+                              : [];
+
+                            return (
+                              <div key={q.id || qIdx} className="p-3.5 rounded-xl bg-muted/20 border border-border space-y-2">
+                                <label className="text-xs font-bold text-foreground block">
+                                  {qIdx + 1}. {q.questionText} {q.isMandatory && <span className="text-rose-500">*</span>}
+                                </label>
+
+                                {q.questionType === "WRITTEN" || opts.length === 0 ? (
+                                  <textarea
+                                    rows={3}
+                                    placeholder="Share your detailed feedback response..."
+                                    value={currentAns}
+                                    onChange={(e) => {
+                                      (selectedLesson as any)[ansKey] = e.target.value;
+                                      setCourse((prev) => (prev ? { ...prev } : prev));
+                                    }}
+                                    className="w-full p-2.5 rounded-lg border border-border bg-background text-xs text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+                                  />
+                                ) : (
+                                  <div className="flex flex-wrap gap-2 text-xs">
+                                    {opts.map((opt: string) => (
+                                      <button
+                                        key={opt}
+                                        type="button"
+                                        onClick={() => {
+                                          (selectedLesson as any)[ansKey] = opt;
+                                          setCourse((prev) => (prev ? { ...prev } : prev));
+                                        }}
+                                        className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+                                          currentAns === opt
+                                            ? "bg-amber-500 text-slate-950 border-amber-500 font-extrabold shadow-sm"
+                                            : "bg-background border-border text-foreground hover:bg-muted"
+                                        }`}
+                                      >
+                                        {opt}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+
+                          {/* Submit Feedback Button */}
+                          <div className="pt-2 flex items-center justify-between">
+                            <Button
+                              type="button"
+                              onClick={async () => {
+                                const responseMap: Record<string, string> = {};
+                                for (let i = 0; i < questionsToRender.length; i++) {
+                                  const q = questionsToRender[i];
+                                  const ansKey = `_fb_ans_${q.id || i}`;
+                                  const val = (selectedLesson as any)[ansKey] || "";
+                                  if (q.isMandatory && !val.trim()) {
+                                    alert(`Please answer mandatory question #${i + 1}: "${q.questionText}"`);
+                                    return;
+                                  }
+                                  responseMap[String(q.id || i + 1)] = val;
+                                }
+
+                                if (courseId) {
+                                  await submitAssignment(courseId, {
+                                    contentId: selectedLesson.id,
+                                    submissionText: JSON.stringify({
+                                      type: "FEEDBACK",
+                                      title: selectedLesson.title,
+                                      responses: responseMap,
+                                      questions: questionsToRender.map((q: any) => ({ id: q.id, questionText: q.questionText })),
+                                    }),
+                                  }).catch(console.error);
+                                }
+                                handleToggleLessonComplete(selectedLesson.id);
+                                alert("Thank you! Your feedback survey response has been saved.");
+                              }}
+                              className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
+                            >
+                              <MessageSquare className="h-4 w-4" /> Submit Course Feedback Survey
+                            </Button>
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setIsFeedbackModalOpen(true)}
+                              className="text-xs text-muted-foreground hover:text-foreground border-border"
+                            >
+                              Open Fullscreen Form
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 ) : selectedLesson.contentType?.toUpperCase() === "SCORM" || selectedLesson.contentUrl?.includes("/storage/scorm/") ? (
                   <div className="w-full space-y-2">
@@ -1049,7 +1271,7 @@ export default function CoursePreviewView() {
                     {/* Lesson Instructions & Description */}
                     <div className="space-y-1">
                       <span className="text-muted-foreground font-bold text-[11px] block">Lesson Description &amp; Instructions:</span>
-                      <p className="whitespace-pre-line text-foreground leading-relaxed text-xs">
+                      <p className="whitespace-pre-line text-foreground leading-relaxed text-xs line-clamp-3">
                         {selectedLesson?.description || "Review the lesson materials above and complete associated exercises or assessment tasks."}
                       </p>
                     </div>
@@ -1066,7 +1288,7 @@ export default function CoursePreviewView() {
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 border-t border-border text-[11px]">
                           <div>Questions: <strong className="text-amber-500 font-bold">{qCount}</strong></div>
                           <div>Passing Score: <strong className="text-emerald-500 font-bold">{qConfig.passingPercentage || 70}%</strong></div>
-                          <div>Max Attempts: <strong className="text-foreground font-bold">{qConfig.maxAttempts || 2}</strong></div>
+                          <div>Max Attempts: <strong className="text-foreground font-bold">{qConfig.maxAttempts === 0 ? "Unlimited" : (qConfig.maxAttempts ?? qConfig.attemptsAllowed ?? 1)}</strong></div>
                           <div>Shuffle: <strong className="text-muted-foreground">{qConfig.shuffleQuestions ? "Enabled" : "Off"}</strong></div>
                         </div>
                       );
@@ -1084,7 +1306,7 @@ export default function CoursePreviewView() {
                         <div className="space-y-3 pt-3 border-t border-border text-[11px]">
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             <div>Max Marks: <strong className="text-purple-600 dark:text-purple-400 font-bold">{aConfig.maxMarks || 50}</strong></div>
-                            <div>Max Attempts: <strong className="text-foreground font-bold">{aConfig.maxAttempts || 2}</strong></div>
+                            <div>Max Attempts: <strong className="text-foreground font-bold">{aConfig.maxAttempts === 0 ? "Unlimited" : (aConfig.maxAttempts ?? aConfig.attemptsAllowed ?? 1)}</strong></div>
                             <div>Due Date: <strong className="text-amber-500 font-bold">{aConfig.deadline || "No strict deadline"}</strong></div>
                             <div>Max Size: <strong className="text-muted-foreground">{aConfig.maxFileSizeMb || 50} MB</strong></div>
                           </div>
@@ -1094,18 +1316,22 @@ export default function CoursePreviewView() {
                               <div className="flex flex-wrap gap-2">
                                 {refFiles.map((fileItem: any, fIdx: number) => {
                                   const fName = fileItem.name || fileItem.fileName || fileItem.title || `Attachment_${fIdx + 1}`;
-                                  const fUrl = fileItem.url || fileItem.fileUrl || fileItem.path || "#";
+                                  let rawUrl = fileItem.url || fileItem.fileUrl || fileItem.path || fileItem.link;
+                                  if (!rawUrl || rawUrl === "#") {
+                                    rawUrl = `/storage/uploads/${fName}`;
+                                  }
+                                  const targetUrl = getStorageUrl(rawUrl);
+
                                   return (
-                                    <a
+                                    <button
                                       key={fIdx}
-                                      href={fUrl}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card border border-border text-purple-600 dark:text-purple-400 hover:underline text-[11px] font-semibold"
+                                      type="button"
+                                      onClick={() => window.open(targetUrl, "_blank", "noopener,noreferrer")}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card border border-border text-purple-600 dark:text-purple-400 hover:underline text-[11px] font-semibold cursor-pointer"
                                     >
                                       <Paperclip className="h-3.5 w-3.5 text-purple-500 shrink-0" />
                                       <span>{fName}</span>
-                                    </a>
+                                    </button>
                                   );
                                 })}
                               </div>
@@ -1116,23 +1342,67 @@ export default function CoursePreviewView() {
                     })()}
                   </div>
 
-                  {/* 2. Full Course Overview & Description */}
-                  <div className="space-y-3 p-4.5 rounded-xl bg-muted/10 border border-border">
-                    <h4 className="font-extrabold text-foreground text-sm flex items-center gap-2 border-b border-border pb-2">
-                      <Sparkles className="h-4 w-4 text-amber-500" />
-                      About This Course &amp; Description
-                    </h4>
-                    
-                    <p className="whitespace-pre-line text-muted-foreground leading-relaxed text-xs">
-                      {course?.description || "Comprehensive training course designed by organizational leaders and domain experts."}
-                    </p>
+                  {/* 2. Full Course Overview, Identity & Learning Objectives */}
+                  <div className="space-y-4 p-4.5 rounded-xl bg-card border border-border shadow-sm">
+                    {/* Course Identity & Classification */}
+                    <div className="space-y-2 border-b border-border pb-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-extrabold text-foreground text-sm flex items-center gap-2">
+                          <Layers className="h-4 w-4 text-primary" />
+                          1. Course Identity &amp; Classification
+                        </h4>
+                        <Badge className="bg-[#C82333] text-white font-bold text-[10px]">
+                          Code: {course?.code || `CO${course?.id}`}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
+                        <div className="p-2 bg-muted/20 rounded-lg border border-border">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase block">Course Name</span>
+                          <span className="font-bold text-foreground truncate block">{course?.title}</span>
+                        </div>
+                        <div className="p-2 bg-muted/20 rounded-lg border border-border">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase block">Course Code</span>
+                          <span className="font-bold text-primary block">{course?.code || `CO${course?.id}`}</span>
+                        </div>
+                        <div className="p-2 bg-muted/20 rounded-lg border border-border">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase block">Department</span>
+                          <span className="font-bold text-foreground block">{departmentLabel}</span>
+                        </div>
+                        <div className="p-2 bg-muted/20 rounded-lg border border-border">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase block">Category</span>
+                          <span className="font-bold text-foreground block">{categoryLabel}</span>
+                        </div>
+                        <div className="p-2 bg-muted/20 rounded-lg border border-border">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase block">Difficulty Level</span>
+                          <span className="font-bold text-amber-500 block">{course?.level || "Beginner"}</span>
+                        </div>
+                        <div className="p-2 bg-muted/20 rounded-lg border border-border">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase block">Estimated Duration</span>
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400 block">{displayDurationHours} Hours</span>
+                        </div>
+                      </div>
+                    </div>
 
-                    {/* Course Metadata Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-border text-[11px]">
-                      <div><span className="text-muted-foreground block">Category:</span> <strong className="text-foreground font-bold">{categoryLabel}</strong></div>
-                      <div><span className="text-muted-foreground block">Department:</span> <strong className="text-foreground font-bold">{departmentLabel}</strong></div>
-                      <div><span className="text-muted-foreground block">Difficulty Level:</span> <strong className="text-amber-500 font-bold">{course?.level || "Beginner"}</strong></div>
-                      <div><span className="text-muted-foreground block">Instructor / Author:</span> <strong className="text-primary font-bold">{instructorName}</strong></div>
+                    {/* Course Summary & Learning Objectives */}
+                    <div className="space-y-3">
+                      <h4 className="font-extrabold text-foreground text-xs flex items-center gap-1.5 uppercase tracking-wider">
+                        <FileText className="h-3.5 w-3.5 text-primary" />
+                        2. Course Summary &amp; Learning Objectives
+                      </h4>
+
+                      {course?.shortDescription && (
+                        <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-950 dark:text-blue-200 text-[11px] space-y-0.5">
+                          <span className="font-extrabold uppercase text-[9px] text-blue-700 dark:text-blue-400 block">Short Description</span>
+                          <p className="leading-relaxed font-medium">{course.shortDescription}</p>
+                        </div>
+                      )}
+
+                      {course?.description && (
+                        <div className="p-3 rounded-lg bg-muted/20 border border-border text-[11px] space-y-0.5">
+                          <span className="font-extrabold uppercase text-[9px] text-muted-foreground block">Detailed Description / Learning Objectives</span>
+                          <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{course.description}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1324,17 +1594,21 @@ export default function CoursePreviewView() {
                           }
                         >
                           <div className="flex items-center gap-2.5">
-                            {isCompleted ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                            ) : les.contentType === "QUIZ" ? (
-                              <HelpCircle className="h-4 w-4 text-amber-500 shrink-0" />
-                            ) : les.contentType === "ASSIGNMENT" ? (
-                              <FileCheck2 className="h-4 w-4 text-purple-500 shrink-0" />
-                            ) : les.contentType === "FEEDBACK" ? (
-                              <MessageSquare className="h-4 w-4 text-amber-500 shrink-0" />
-                            ) : (
-                              <Play className="h-4 w-4 text-muted-foreground shrink-0" />
-                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleLessonComplete(les.id);
+                              }}
+                              className="p-0.5 rounded-full hover:bg-muted/80 transition-transform cursor-pointer shrink-0"
+                              title={isCompleted ? "Click to mark as uncompleted" : "Click to mark as completed"}
+                            >
+                              {isCompleted ? (
+                                <CheckCircle2 className="h-4 w-4 text-emerald-500 hover:scale-110 transition-transform" />
+                              ) : (
+                                <Circle className="h-4 w-4 text-muted-foreground hover:text-emerald-500 hover:scale-110 transition-transform" />
+                              )}
+                            </button>
                             <span className={isSelected ? "font-bold text-primary" : "text-foreground font-medium"}>
                               {les.title}
                             </span>
@@ -1383,15 +1657,16 @@ export default function CoursePreviewView() {
         />
       )}
 
-      {selectedLesson?.contentType?.toUpperCase() === "FEEDBACK" && isFeedbackModalOpen && courseId && (
+      {isFeedbackModalOpen && courseId && (
         <LearnerFeedbackModal
           open={isFeedbackModalOpen}
           onClose={() => setIsFeedbackModalOpen(false)}
           courseId={courseId}
-          contentId={selectedLesson.id}
-          feedbackTitle={selectedLesson.title}
-          description={selectedLesson.description}
+          contentId={selectedLesson?.id || null}
+          feedbackTitle={selectedLesson?.title || "Course Evaluation & Feedback Form"}
+          description={selectedLesson?.description || "Please share your review regarding course structure, content clarity, and instructor support."}
           questions={(() => {
+            if (!selectedLesson) return undefined;
             try {
               const raw = selectedLesson.quizConfigJson || (selectedLesson as any).configJson;
               if (raw) {
@@ -1402,7 +1677,7 @@ export default function CoursePreviewView() {
             return undefined;
           })()}
           onSuccess={() => {
-            handleToggleLessonComplete(selectedLesson.id);
+            if (selectedLesson?.id) handleToggleLessonComplete(selectedLesson.id);
             loadCourseAndProgress();
             setIsFeedbackModalOpen(false);
           }}
@@ -1431,6 +1706,8 @@ export default function CoursePreviewView() {
           isOpen={isCertModalOpen}
           onClose={() => setIsCertModalOpen(false)}
           certificate={(progressData?.certificate as any) || null}
+          fallbackCourseTitle={course?.title || "Course Completion Certificate"}
+          fallbackRecipientName={user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username : "Enrolled Learner"}
         />
       )}
 

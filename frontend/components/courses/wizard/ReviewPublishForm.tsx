@@ -95,7 +95,24 @@ export default function ReviewPublishForm({
               if (cnt.contentType?.toUpperCase() === "FEEDBACK") {
                 cnt.title = fbData.feedbackTitle || cnt.title;
                 cnt.description = fbData.description || cnt.description;
-                cnt.quizConfigJson = feedbackConfigJson;
+                
+                let effectiveQuestions: any[] = fbData.questions || [];
+                if (cnt.quizConfigJson) {
+                  try {
+                    const parsedCntConfig = typeof cnt.quizConfigJson === "string" ? JSON.parse(cnt.quizConfigJson) : cnt.quizConfigJson;
+                    if (Array.isArray(parsedCntConfig.questions) && parsedCntConfig.questions.length > 0) {
+                      if (effectiveQuestions.length === 0) {
+                        effectiveQuestions = parsedCntConfig.questions;
+                      }
+                    }
+                  } catch (e) {}
+                }
+
+                cnt.quizConfigJson = JSON.stringify({
+                  title: fbData.feedbackTitle || cnt.title || "End-of-Course Feedback & Evaluation Survey",
+                  description: fbData.description || cnt.description || "",
+                  questions: effectiveQuestions,
+                });
                 foundFb = true;
               }
             }
@@ -412,6 +429,9 @@ export default function ReviewPublishForm({
         open={previewModalOpen}
         onOpenChange={setPreviewModalOpen}
         courseTitle={basicInfo.title}
+        courseCode={basicInfo.courseCode || basicInfo.code || "CO12"}
+        department={basicInfo.department || "Global"}
+        category={basicInfo.category || "General"}
         shortDescription={basicInfo.shortDescription}
         description={basicInfo.description}
         level={basicInfo.level}

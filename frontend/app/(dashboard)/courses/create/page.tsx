@@ -109,6 +109,34 @@ function CreateCourseContent() {
         .then((res) => {
           if (res?.success && res.data) {
             const c = res.data;
+            
+            // Extract feedback questions from sections if present
+            let extractedFbQuestions: any[] = [];
+            let extractedFbTitle = "End-of-Course Feedback & Evaluation Survey";
+            let extractedFbDesc = "Please share your review regarding course structure, content clarity, and instructor support.";
+
+            if (c.sections && Array.isArray(c.sections)) {
+              for (const sec of c.sections) {
+                if (sec.contents && Array.isArray(sec.contents)) {
+                  for (const cnt of sec.contents) {
+                    if (cnt.contentType?.toUpperCase() === "FEEDBACK") {
+                      extractedFbTitle = cnt.title || extractedFbTitle;
+                      extractedFbDesc = cnt.description || extractedFbDesc;
+                      const raw = cnt.quizConfigJson || (cnt as any).configJson;
+                      if (raw) {
+                        try {
+                          const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+                          if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+                            extractedFbQuestions = parsed.questions;
+                          }
+                        } catch (e) {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
             setWizardState((prev) => ({
               ...prev,
               basicInfo: {
@@ -129,6 +157,13 @@ function CreateCourseContent() {
                 enrollmentType: (c.enrollmentType as any) || "SELF",
                 departmentAccess: "ALL",
                 enrolledUsersList: [],
+              },
+              feedback: {
+                enableFeedback: true,
+                requireFeedbackForCertificate: true,
+                feedbackTitle: extractedFbTitle,
+                description: extractedFbDesc,
+                questions: extractedFbQuestions.length > 0 ? extractedFbQuestions : prev.feedback.questions,
               },
             }));
           }

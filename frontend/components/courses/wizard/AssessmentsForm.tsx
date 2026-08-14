@@ -59,7 +59,7 @@ export default function AssessmentsForm({
               totalMarks: c.maxMarks || (config as any).totalMarks || 100,
               durationMinutes: c.duration || (config as any).durationMinutes || 15,
               passingPercentage: (config as any).passingPercentage || 70,
-              maxAttempts: (config as any).maxAttempts || 2,
+              maxAttempts: (config as any).maxAttempts !== undefined && (config as any).maxAttempts !== null ? Number((config as any).maxAttempts) : 1,
             };
           })
       );
@@ -83,7 +83,7 @@ export default function AssessmentsForm({
               instructions: c.description || (config as any).instructions || "",
               maxMarks: c.maxMarks || (config as any).maxMarks || 100,
               deadline: (config as any).deadline || "",
-              maxAttempts: (config as any).maxAttempts || 2,
+              maxAttempts: (config as any).maxAttempts !== undefined && (config as any).maxAttempts !== null ? Number((config as any).maxAttempts) : 1,
             };
           })
       );
@@ -335,7 +335,7 @@ export default function AssessmentsForm({
                       {ass.title}
                     </span>
                     <p className="text-muted-foreground text-[11px] mt-0.5">
-                      Max Marks: {ass.maxMarks || 50} • Deadline: {ass.deadline || "N/A"} • Max Attempts: {ass.maxAttempts || 2}
+                      Max Marks: {ass.maxMarks || 50} • Deadline: {ass.deadline || "N/A"} • Max Attempts: {ass.maxAttempts === 0 ? "Unlimited" : (ass.maxAttempts || 1)}
                     </p>
                   </div>
                 </div>

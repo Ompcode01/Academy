@@ -7,6 +7,7 @@ export interface Course {
   departmentId?: number | null;
   creatorId: number;
   title: string;
+  code?: string;
   shortDescription?: string;
   description?: string;
   thumbnail?: string;

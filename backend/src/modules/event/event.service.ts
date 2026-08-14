@@ -4,35 +4,59 @@ import guestGrantService from "../../services/guestGrant.service";
 
 export class EventService {
   async getAllEvents(userContext?: { role?: string; employeeId?: bigint | null; departmentId?: bigint | null }) {
-    let whereClause: any = {};
+    // Auto-delete expired past events (eventDate before start of current day)
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    try {
+      await prisma.event.deleteMany({
+        where: {
+          eventDate: {
+            lt: startOfToday,
+          },
+        },
+      });
+    } catch (err) {
+      console.error("[EventService] Error purging expired past events:", err);
+    }
+
+    let whereClause: any = {
+      eventDate: {
+        gte: startOfToday,
+      },
+    };
 
     if (userContext?.role === "GUEST") {
       const empId = userContext.employeeId ? BigInt(userContext.employeeId) : undefined;
       const { isGlobal, departmentIds } = await guestGrantService.getGuestPermittedDepartmentIds(empId);
 
       if (isGlobal) {
-        whereClause = {};
+        // keep eventDate filter
       } else if (departmentIds.length > 0) {
-        whereClause = {
-          OR: [
-            { departmentId: null },
-            { departmentId: { in: departmentIds } },
-          ],
-        };
+        whereClause.AND = [
+          {
+            OR: [
+              { departmentId: null },
+              { departmentId: { in: departmentIds } },
+            ],
+          },
+        ];
       } else {
-        whereClause = { departmentId: null };
+        whereClause.departmentId = null;
       }
     } else if (!userContext || userContext.role !== "SUPER_ADMIN") {
       const deptId = userContext?.departmentId;
       const empId = userContext?.employeeId;
 
-      whereClause = {
-        OR: [
-          { departmentId: null },
-          ...(deptId ? [{ departmentId: deptId }] : []),
-          ...(empId ? [{ creatorId: empId }] : []),
-        ],
-      };
+      whereClause.AND = [
+        {
+          OR: [
+            { departmentId: null },
+            ...(deptId ? [{ departmentId: deptId }] : []),
+            ...(empId ? [{ creatorId: empId }] : []),
+          ],
+        },
+      ];
     }
 
     const events = await prisma.event.findMany({

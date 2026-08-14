@@ -30,6 +30,8 @@ interface CoursePreviewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   courseTitle?: string;
+  courseCode?: string;
+  department?: string;
   shortDescription?: string;
   description?: string;
   level?: string;
@@ -45,7 +47,12 @@ export default function CoursePreviewModal({
   open,
   onOpenChange,
   courseTitle = "Untitled Course",
+  courseCode = "CO12",
+  department = "Global",
+  shortDescription = "",
+  description = "",
   level = "Beginner",
+  category = "General",
   durationHours = 0,
   sections = [],
   feedback,
@@ -261,23 +268,58 @@ export default function CoursePreviewModal({
                         if (nextLesson) setSelectedLesson(nextLesson);
                       }}
                     />
-                  ) : selectedLesson.contentType?.toUpperCase() === "FEEDBACK" ? (
-                    <div className="p-8 bg-card border border-amber-500/30 rounded-2xl text-center space-y-4 my-auto shadow-md">
-                      <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center mx-auto">
-                        <MessageSquare className="h-8 w-8" />
+                  ) : selectedLesson.contentType?.toUpperCase() === "FEEDBACK" || selectedLesson.contentType?.toUpperCase() === "FEEDBACK_SURVEY" || selectedLesson.contentType?.toUpperCase() === "SURVEY" ? (
+                    <div className="p-6 bg-card border border-amber-500/30 rounded-2xl space-y-5 shadow-md my-auto">
+                      <div className="flex items-center gap-3 border-b border-border pb-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center font-bold">
+                          <MessageSquare className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-bold text-foreground">{selectedLesson.title}</h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {selectedLesson.description || "Please share your evaluation regarding course content, practical exercises, and instructor support."}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-base font-bold text-foreground">{selectedLesson.title}</h3>
-                        <p className="text-xs text-muted-foreground max-w-md mx-auto mt-1 leading-relaxed">
-                          {selectedLesson.description || "Please share your review regarding course structure, content clarity, and instructor support."}
-                        </p>
+
+                      {/* Interactive Inline Survey Form Preview */}
+                      <div className="space-y-3.5 text-xs text-left">
+                        <div className="p-3 rounded-xl bg-muted/20 border border-border space-y-1.5">
+                          <span className="font-bold text-foreground block">
+                            1. How satisfied are you with overall course content? <span className="text-rose-500">*</span>
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {["5 - Excellent", "4 - Very Good", "3 - Satisfactory", "2 - Needs Improvement"].map((opt, i) => (
+                              <span key={i} className="px-2.5 py-1 rounded bg-background border border-border text-[11px] font-medium text-foreground">
+                                {opt}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-muted/20 border border-border space-y-1.5">
+                          <span className="font-bold text-foreground block">
+                            2. How effective were practical exercises &amp; quizzes? <span className="text-rose-500">*</span>
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {["Extremely Helpful", "Moderately Helpful", "Neutral"].map((opt, i) => (
+                              <span key={i} className="px-2.5 py-1 rounded bg-background border border-border text-[11px] font-medium text-foreground">
+                                {opt}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="pt-2 flex items-center justify-between">
+                          <Button
+                            type="button"
+                            onClick={() => setIsFeedbackModalOpen(true)}
+                            className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs gap-2 px-5 h-9 shadow cursor-pointer"
+                          >
+                            <MessageSquare className="h-4 w-4" /> Open Full Interactive Survey Preview
+                          </Button>
+                        </div>
                       </div>
-                      <Button
-                        onClick={() => setIsFeedbackModalOpen(true)}
-                        className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
-                      >
-                        <MessageSquare className="h-4 w-4" /> Launch Interactive Survey Preview
-                      </Button>
                     </div>
                   ) : selectedLesson.contentUrl && selectedLesson.contentUrl.trim() !== "" ? (
                     <div className="p-8 bg-card border border-border rounded-xl text-center space-y-4 my-auto shadow-sm">
@@ -300,19 +342,130 @@ export default function CoursePreviewModal({
                 {/* Lesson Description */}
                 {selectedLesson.description && (
                   <div className="pt-3 border-t border-border text-xs text-muted-foreground">
-                    <strong className="text-foreground block mb-1">Description:</strong>
+                    <strong className="text-foreground block mb-1">Lesson Instructions:</strong>
                     {selectedLesson.description}
                   </div>
                 )}
+
+                {/* Course Identity & Learning Objectives Card */}
+                <div className="pt-4 border-t border-border space-y-4">
+                  {/* 1. Course Identity & Classification */}
+                  <div className="bg-card rounded-xl border border-border p-4 shadow-sm space-y-3">
+                    <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border pb-2">
+                      <Layers className="h-3.5 w-3.5 text-primary" />
+                      1. Course Identity &amp; Classification
+                    </h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-[11px]">
+                      <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase block">Course Name</span>
+                        <span className="font-extrabold text-foreground truncate block">{courseTitle}</span>
+                      </div>
+                      <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase block">Course Code</span>
+                        <span className="font-extrabold text-primary block">{courseCode}</span>
+                      </div>
+                      <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase block">Department</span>
+                        <span className="font-extrabold text-foreground block">{department}</span>
+                      </div>
+                      <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase block">Category</span>
+                        <span className="font-extrabold text-foreground block">{category}</span>
+                      </div>
+                      <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase block">Difficulty Level</span>
+                        <span className="font-extrabold text-amber-500 block">{level}</span>
+                      </div>
+                      <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase block">Estimated Duration</span>
+                        <span className="font-extrabold text-emerald-600 dark:text-emerald-400 block">{durationHours} Hours</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Course Summary & Learning Objectives */}
+                  <div className="bg-card rounded-xl border border-border p-4 shadow-sm space-y-3">
+                    <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border pb-2">
+                      <BookOpen className="h-3.5 w-3.5 text-primary" />
+                      2. Course Summary &amp; Learning Objectives
+                    </h4>
+                    {shortDescription && (
+                      <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-950 dark:text-blue-200 text-[11px] space-y-0.5">
+                        <span className="font-extrabold uppercase text-[9px] text-blue-700 dark:text-blue-400 block">Short Description</span>
+                        <p className="leading-relaxed font-medium">{shortDescription}</p>
+                      </div>
+                    )}
+                    {description && (
+                      <div className="p-3 rounded-lg bg-muted/20 border border-border text-[11px] space-y-0.5">
+                        <span className="font-extrabold uppercase text-[9px] text-muted-foreground block">Detailed Description / Learning Objectives</span>
+                        <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{description}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-muted-foreground space-y-3">
-                <BookOpen className="h-12 w-12 text-muted-foreground/40" />
-                <div>
-                  <h4 className="text-sm font-bold text-foreground">No Lesson Selected</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Select a section or lecture from the right curriculum menu to preview.
+              <div className="flex-1 flex flex-col p-6 space-y-6 overflow-y-auto">
+                <div className="text-center text-muted-foreground space-y-2 py-4 border-b border-border">
+                  <BookOpen className="h-10 w-10 text-muted-foreground/40 mx-auto" />
+                  <h4 className="text-sm font-bold text-foreground">Course Identity &amp; Overview</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Select a section or lecture from the right curriculum menu to preview specific content.
                   </p>
+                </div>
+
+                {/* 1. Course Identity & Classification */}
+                <div className="bg-card rounded-xl border border-border p-4 shadow-sm space-y-3">
+                  <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border pb-2">
+                    <Layers className="h-3.5 w-3.5 text-primary" />
+                    1. Course Identity &amp; Classification
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-[11px]">
+                    <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase block">Course Name</span>
+                      <span className="font-extrabold text-foreground truncate block">{courseTitle}</span>
+                    </div>
+                    <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase block">Course Code</span>
+                      <span className="font-extrabold text-primary block">{courseCode}</span>
+                    </div>
+                    <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase block">Department</span>
+                      <span className="font-extrabold text-foreground block">{department}</span>
+                    </div>
+                    <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase block">Category</span>
+                      <span className="font-extrabold text-foreground block">{category}</span>
+                    </div>
+                    <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase block">Difficulty Level</span>
+                      <span className="font-extrabold text-amber-500 block">{level}</span>
+                    </div>
+                    <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase block">Estimated Duration</span>
+                      <span className="font-extrabold text-emerald-600 dark:text-emerald-400 block">{durationHours} Hours</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Course Summary & Learning Objectives */}
+                <div className="bg-card rounded-xl border border-border p-4 shadow-sm space-y-3">
+                  <h4 className="text-xs font-extrabold text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border pb-2">
+                    <BookOpen className="h-3.5 w-3.5 text-primary" />
+                    2. Course Summary &amp; Learning Objectives
+                  </h4>
+                  {shortDescription && (
+                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-950 dark:text-blue-200 text-[11px] space-y-0.5">
+                      <span className="font-extrabold uppercase text-[9px] text-blue-700 dark:text-blue-400 block">Short Description</span>
+                      <p className="leading-relaxed font-medium">{shortDescription}</p>
+                    </div>
+                  )}
+                  {description && (
+                    <div className="p-3 rounded-lg bg-muted/20 border border-border text-[11px] space-y-0.5">
+                      <span className="font-extrabold uppercase text-[9px] text-muted-foreground block">Detailed Description / Learning Objectives</span>
+                      <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{description}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -428,15 +581,16 @@ export default function CoursePreviewModal({
       </div>
 
       {/* Interactive Feedback Survey Preview Modal */}
-      {selectedLesson?.contentType?.toUpperCase() === "FEEDBACK" && isFeedbackModalOpen && (
+      {isFeedbackModalOpen && (
         <LearnerFeedbackModal
           open={isFeedbackModalOpen}
           onClose={() => setIsFeedbackModalOpen(false)}
           courseId={1}
-          contentId={selectedLesson.id}
-          feedbackTitle={selectedLesson.title}
-          description={selectedLesson.description}
+          contentId={selectedLesson?.id || null}
+          feedbackTitle={selectedLesson?.title || "Course Evaluation & Feedback Form"}
+          description={selectedLesson?.description || "Please share your review regarding course structure, content clarity, and instructor support."}
           questions={(() => {
+            if (!selectedLesson) return undefined;
             try {
               const raw = (selectedLesson as any).quizConfigJson || (selectedLesson as any).configJson;
               if (raw) {

@@ -302,6 +302,12 @@ class CourseService {
             quizJson = JSON.stringify(cntData.quizConfigJson);
           } else if (typeof cntData.quizConfigJson === "string" && cntData.quizConfigJson.trim() !== "") {
             quizJson = cntData.quizConfigJson.trim();
+          } else if (typeof cntData.feedbackConfigJson === "object" && cntData.feedbackConfigJson !== null) {
+            quizJson = JSON.stringify(cntData.feedbackConfigJson);
+          } else if (typeof cntData.feedbackConfigJson === "string" && cntData.feedbackConfigJson.trim() !== "") {
+            quizJson = cntData.feedbackConfigJson.trim();
+          } else if (typeof cntData.feedbackConfig === "object" && cntData.feedbackConfig !== null) {
+            quizJson = JSON.stringify(cntData.feedbackConfig);
           } else if (typeof cntData.quizConfig === "object" && cntData.quizConfig !== null) {
             quizJson = JSON.stringify(cntData.quizConfig);
           } else if (cntData.questions && Array.isArray(cntData.questions) && cntData.questions.length > 0) {

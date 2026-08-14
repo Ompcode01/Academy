@@ -53,7 +53,6 @@ export default function SuperAdminAuditLogsPage() {
     filterOptions: { usernames: [], departmentNames: [], types: [] },
   });
 
-  const [autoRefresh, setAutoRefresh] = useState<boolean>(true);
   const [selectedLog, setSelectedLog] = useState<AuditLogData | null>(null);
 
   const fetchLogs = useCallback(async () => {
@@ -81,15 +80,6 @@ export default function SuperAdminAuditLogsPage() {
   useEffect(() => {
     fetchLogs();
   }, [fetchLogs]);
-
-  // Auto Refresh Interval (Every 10 Seconds)
-  useEffect(() => {
-    if (!autoRefresh) return;
-    const interval = setInterval(() => {
-      fetchLogs();
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [autoRefresh, fetchLogs]);
 
   const handleFilterChange = (updated: Partial<AuditFilterQueryParams>) => {
     setFilters((prev) => ({ ...prev, ...updated, page: 1 }));
@@ -154,22 +144,10 @@ export default function SuperAdminAuditLogsPage() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setAutoRefresh(!autoRefresh)}
-              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
-                autoRefresh
-                  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30"
-                  : "bg-muted text-muted-foreground border-border"
-              }`}
-            >
-              <span className={`h-2 w-2 rounded-full ${autoRefresh ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"}`} />
-              <span>{autoRefresh ? "Live Auto-Refresh ON" : "Live Auto-Refresh OFF"}</span>
-            </button>
-
             <Button
               size="sm"
               onClick={fetchLogs}
-              className="bg-primary text-primary-foreground font-bold text-xs gap-1.5 shadow h-8"
+              className="bg-primary text-primary-foreground font-bold text-xs gap-1.5 shadow h-8 cursor-pointer"
             >
               <RefreshCw className="h-3.5 w-3.5" /> Refresh Log Feed
             </Button>

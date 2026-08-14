@@ -121,6 +121,31 @@ export default function Dashboard() {
     }
   };
 
+  // Computed Learner-Specific Progress and Enrollment Stats
+  const enrolledCount = userEnrollments.length;
+  const completedCount = userEnrollments.filter(
+    (e) => e.status === "COMPLETED" || Number(e.progress) === 100
+  ).length;
+  const learnerAvgProgress =
+    enrolledCount > 0
+      ? Math.round(
+          (userEnrollments.reduce((sum, e) => sum + (Number(e.progress) || 0), 0) /
+            enrolledCount) *
+            10
+        ) / 10
+      : 0;
+
+  // Title by Role
+  const dashboardTitleMap: Record<string, string> = {
+    [ROLES.SUPER_ADMIN]: `${fullName} — Executive Admin Dashboard`,
+    [ROLES.ADMIN]: `${fullName} — Department Admin Dashboard`,
+    [ROLES.TEACHER]: `${fullName} — Educator Dashboard`,
+    [ROLES.LEARNER]: `${fullName} — Learner Dashboard`,
+    [ROLES.GUEST]: `${fullName} — Guest Catalog Preview`,
+  };
+
+  const dashboardTitle = dashboardTitleMap[userRole] || `${fullName} — Dashboard Overview`;
+
   return (
     <div className="p-6 space-y-6 select-none">
       {/* Top Banner & Stats Overview */}
@@ -128,7 +153,7 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-extrabold text-[#212529]">
-              {fullName} — Dashboard Overview
+              {dashboardTitle}
             </h1>
             <p className="text-xs text-[#6C757D] font-medium mt-0.5">
               Scoped Role: <strong className="text-[#C82333]">{userRole}</strong> • Department: <strong className="text-[#212529]">{{ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)", 4: "Sales", 5: "Marketing" }[user?.departmentId || 1] || `Dept #${user?.departmentId}`}</strong>
@@ -155,23 +180,161 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Global Key Metrics */}
-        {stats && (
-          <div className="grid grid-cols-3 gap-4 pt-3 border-t border-[#E0E6ED] text-center">
-            <div>
-              <span className="text-[10px] font-bold uppercase text-[#6C757D] block">Learners</span>
-              <span className="text-lg font-extrabold text-[#212529]">{(stats as any).activeLearners || (stats as any).totalEmployees || 20}</span>
-            </div>
-            <div>
-              <span className="text-[10px] font-bold uppercase text-[#6C757D] block">Courses</span>
-              <span className="text-lg font-extrabold text-[#212529]">{(stats as any).publishedCoursesCount || (stats as any).totalCourses || 8}</span>
-            </div>
-            <div>
-              <span className="text-[10px] font-bold uppercase text-[#6C757D] block">Avg Progress</span>
-              <span className="text-lg font-extrabold text-[#C82333]">{stats.completionRate}%</span>
-            </div>
-          </div>
-        )}
+        {/* Role-tailored Key Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-3 border-t border-[#E0E6ED] text-center">
+          {userRole === ROLES.LEARNER && (
+            <>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Enrolled Courses
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {enrolledCount}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Completed Courses
+                </span>
+                <span className="text-lg font-extrabold text-emerald-600">
+                  {completedCount}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  My Avg Progress
+                </span>
+                <span className="text-lg font-extrabold text-[#C82333]">
+                  {learnerAvgProgress}%
+                </span>
+              </div>
+            </>
+          )}
+
+          {userRole === ROLES.TEACHER && (
+            <>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Active Courses
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.publishedCoursesCount || courses.length || 0}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Enrolled Learners
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.activeEnrollments || stats?.employeesCount || 0}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Learner Avg Progress
+                </span>
+                <span className="text-lg font-extrabold text-[#C82333]">
+                  {stats?.completionRate ?? 0}%
+                </span>
+              </div>
+            </>
+          )}
+
+          {userRole === ROLES.ADMIN && (
+            <>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Dept Learners
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.employeesCount ?? 0}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Published Courses
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.publishedCoursesCount ?? courses.length ?? 0}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Dept Avg Progress
+                </span>
+                <span className="text-lg font-extrabold text-[#C82333]">
+                  {stats?.completionRate ?? 0}%
+                </span>
+              </div>
+            </>
+          )}
+
+          {userRole === ROLES.SUPER_ADMIN && (
+            <>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Total Learners
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.employeesCount ?? 0}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Total Courses
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.coursesCount ?? courses.length ?? 0}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Active Departments
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.departmentsCount ?? 5}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Global Completion Rate
+                </span>
+                <span className="text-lg font-extrabold text-[#C82333]">
+                  {stats?.completionRate ?? 0}%
+                </span>
+              </div>
+            </>
+          )}
+
+          {userRole === ROLES.GUEST && (
+            <>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Catalog Courses
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.publishedCoursesCount || courses.length || 0}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Departments
+                </span>
+                <span className="text-lg font-extrabold text-[#212529]">
+                  {stats?.departmentsCount ?? 5}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+                  Access Level
+                </span>
+                <span className="text-lg font-extrabold text-[#C82333]">
+                  Preview Only
+                </span>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* 1. Recently Accessed Programs Section (DYNAMIC & User Specific) */}
@@ -274,7 +437,15 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <List className="h-4 w-4 text-[#C82333]" />
             <h3 className="text-sm font-bold tracking-wide text-[#212529]">
-              {userRole === ROLES.LEARNER ? "My Department Courses" : "Recently Added Programs"}
+              {userRole === ROLES.LEARNER
+                ? "My Department Courses"
+                : userRole === ROLES.TEACHER
+                ? "Assigned & Department Programs"
+                : userRole === ROLES.ADMIN
+                ? "Department Program Catalog"
+                : userRole === ROLES.SUPER_ADMIN
+                ? "All Platform Programs"
+                : "Featured Catalog Programs"}
             </h3>
           </div>
           {user?.departmentId && (
