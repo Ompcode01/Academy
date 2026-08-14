@@ -36,6 +36,7 @@ app.use(express_1.default.urlencoded({
 // Serve static storage directory for unzipped SCORM packages and uploads
 app.use("/storage", express_1.default.static(path_1.default.join(__dirname, "../public/storage")));
 app.use("/storage", express_1.default.static(path_1.default.join(process.cwd(), "public/storage")));
+app.use("/storage", express_1.default.static(path_1.default.join(process.cwd(), "public/storage/uploads")));
 app.get("/", (req, res) => {
     res.json({
         message: "LMS Backend Running"

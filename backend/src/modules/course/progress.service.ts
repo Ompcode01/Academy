@@ -180,7 +180,7 @@ export class ProgressService {
         maxScore,
         percentage,
         grade,
-        attemptNumber: attemptCount + 1,
+        attemptNumber: 1,
       },
     });
 

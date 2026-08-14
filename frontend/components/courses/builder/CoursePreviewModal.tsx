@@ -83,6 +83,7 @@ export default function CoursePreviewModal({
       id: 999999,
       title: "Course Feedback & Evaluation",
       description: "Evaluation survey configured by instructor.",
+      expanded: true,
       contents: [
         {
           id: 999999,

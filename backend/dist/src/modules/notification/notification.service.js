@@ -17,8 +17,8 @@ const notificationService = {
     async findById(id) {
         return notification_repository_1.default.findById(id);
     },
-    async markAsRead(id) {
-        return notification_repository_1.default.markAsRead(id);
+    async markAsRead(id, userId) {
+        return notification_repository_1.default.markAsRead(id, userId);
     },
     async markAllAsRead(userId) {
         return notification_repository_1.default.markAllAsRead(userId);

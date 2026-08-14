@@ -80,17 +80,27 @@ const notificationRepository = {
             return 0;
         }
     },
-    async markAsRead(id) {
-        return prisma.notification.update({
-            where: { id },
-            data: { isRead: true },
-        });
+    async markAsRead(id, userId) {
+        try {
+            return await prisma.notification.deleteMany({
+                where: { id, userId },
+            });
+        }
+        catch (err) {
+            console.error("Failed to clear notification for user:", err);
+            return null;
+        }
     },
     async markAllAsRead(userId) {
-        return prisma.notification.updateMany({
-            where: { userId, isRead: false },
-            data: { isRead: true },
-        });
+        try {
+            return await prisma.notification.deleteMany({
+                where: { userId },
+            });
+        }
+        catch (err) {
+            console.error("Failed to clear all notifications for user:", err);
+            return null;
+        }
     },
     async deleteOne(id) {
         return prisma.notification.delete({

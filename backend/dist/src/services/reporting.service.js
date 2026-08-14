@@ -143,15 +143,6 @@ function toBigIntSafe(val) {
 }
 // Enforce RBAC Department Filter
 function resolveDepartmentScope(filters, user) {
-    const isSuperAdmin = user.role === "SUPER_ADMIN";
-    if (!isSuperAdmin) {
-        // Admin is strictly restricted to their departmentId
-        if (user.departmentId) {
-            const dId = toBigIntSafe(user.departmentId);
-            if (dId !== undefined)
-                return dId;
-        }
-    }
     return toBigIntSafe(filters.departmentId);
 }
 // Build strict Employee filter clause (combines departmentId, employeeId, and search string)
@@ -191,8 +182,18 @@ class ReportingService {
             select: { id: true, name: true },
             orderBy: { name: "asc" },
         });
+        const teacherId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+        const courseWhere = { isActive: true };
+        if (deptScope)
+            courseWhere.departmentId = deptScope;
+        if ((user.role === "TEACHER" || user.role === "INSTRUCTOR") && teacherId !== undefined) {
+            courseWhere.OR = [
+                { creatorId: teacherId },
+                { teachers: { some: { teacherId } } },
+            ];
+        }
         const courses = await prisma_1.default.course.findMany({
-            where: deptScope ? { departmentId: deptScope } : { isActive: true },
+            where: courseWhere,
             select: { id: true, title: true, categoryId: true, departmentId: true },
             orderBy: { title: "asc" },
         });
@@ -215,16 +216,27 @@ class ReportingService {
     static async getEnrollmentReport(filters, user) {
         const deptId = resolveDepartmentScope(filters, user);
         const { start, end } = parseDateRange(filters.preset, filters.dateFrom, filters.dateTo);
-        const where = {};
+        const where = {
+            course: { isActive: true },
+        };
         const empUserWhere = buildEmployeeWhereClause(filters, deptId);
         if (empUserWhere) {
             where.user = empUserWhere;
+        }
+        if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
+            const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+            if (tId !== undefined) {
+                where.course.OR = [
+                    { creatorId: tId },
+                    { teachers: { some: { teacherId: tId } } },
+                ];
+            }
         }
         if (filters.courseId && filters.courseId !== "ALL") {
             where.courseId = BigInt(filters.courseId);
         }
         if (filters.categoryId && filters.categoryId !== "ALL") {
-            where.course = { categoryId: BigInt(filters.categoryId) };
+            where.course = { ...where.course, categoryId: BigInt(filters.categoryId) };
         }
         if (filters.mandatory === "MANDATORY") {
             where.isMandatory = true;
@@ -391,6 +403,15 @@ class ReportingService {
         const courseWhere = { isActive: true };
         if (deptId)
             courseWhere.departmentId = deptId;
+        if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
+            const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+            if (tId !== undefined) {
+                courseWhere.OR = [
+                    { creatorId: tId },
+                    { teachers: { some: { teacherId: tId } } },
+                ];
+            }
+        }
         if (filters.courseId && filters.courseId !== "ALL")
             courseWhere.id = BigInt(filters.courseId);
         if (filters.categoryId && filters.categoryId !== "ALL")
@@ -1343,7 +1364,9 @@ class ReportingService {
                 allowedCourseIds = Array.from(new Set([...assigned.map((a) => a.courseId), ...created.map((c) => c.id)]));
             }
         }
-        const where = {};
+        const where = {
+            course: { isActive: true },
+        };
         if (allowedCourseIds) {
             where.courseId = { in: allowedCourseIds };
         }
@@ -1445,22 +1468,35 @@ class ReportingService {
                 allowedCourseIds = Array.from(new Set([...assigned.map((a) => a.courseId), ...created.map((c) => c.id)]));
             }
         }
-        const where = { submissionType: "QUIZ" };
-        if (allowedCourseIds) {
-            where.courseId = { in: allowedCourseIds };
-        }
-        else {
-            const cId = toBigIntSafe(filters.courseId);
-            if (cId !== undefined)
-                where.courseId = cId;
-        }
-        const submissions = await prisma_1.default.assessmentSubmission.findMany({
+        const activeCourses = await prisma_1.default.course.findMany({
+            where: {
+                isActive: true,
+                ...(allowedCourseIds ? { id: { in: allowedCourseIds } } : {}),
+                ...(filters.courseId && filters.courseId !== "ALL" ? { id: BigInt(filters.courseId) } : {}),
+            },
+            select: { id: true },
+        });
+        const activeCourseIds = activeCourses.map((c) => c.id);
+        const where = {
+            submissionType: "QUIZ",
+            courseId: { in: activeCourseIds },
+        };
+        const allSubmissions = await prisma_1.default.assessmentSubmission.findMany({
             where,
             orderBy: { submittedAt: "desc" },
         });
-        if (!submissions || submissions.length === 0) {
+        if (!allSubmissions || allSubmissions.length === 0) {
             return sanitizeData({ table: [], totalCount: 0 });
         }
+        // Keep ONLY the most recent attempt per learner per quiz item
+        const latestSubmissionsMap = new Map();
+        for (const sub of allSubmissions) {
+            const key = `${sub.userId.toString()}_${sub.courseId.toString()}_${sub.contentId ? sub.contentId.toString() : sub.submissionType}`;
+            if (!latestSubmissionsMap.has(key)) {
+                latestSubmissionsMap.set(key, sub);
+            }
+        }
+        const submissions = Array.from(latestSubmissionsMap.values());
         const userIds = Array.from(new Set(submissions.map((s) => s.userId)));
         const cIds = Array.from(new Set(submissions.map((s) => s.courseId)));
         const contentIds = Array.from(new Set(submissions.map((s) => s.contentId).filter(Boolean)));
@@ -1542,15 +1578,19 @@ class ReportingService {
                 allowedCourseIds = Array.from(new Set([...assigned.map((a) => a.courseId), ...created.map((c) => c.id)]));
             }
         }
-        const where = { submissionType: "ASSIGNMENT" };
-        if (allowedCourseIds) {
-            where.courseId = { in: allowedCourseIds };
-        }
-        else {
-            const cId = toBigIntSafe(filters.courseId);
-            if (cId !== undefined)
-                where.courseId = cId;
-        }
+        const activeCourses = await prisma_1.default.course.findMany({
+            where: {
+                isActive: true,
+                ...(allowedCourseIds ? { id: { in: allowedCourseIds } } : {}),
+                ...(filters.courseId && filters.courseId !== "ALL" ? { id: BigInt(filters.courseId) } : {}),
+            },
+            select: { id: true },
+        });
+        const activeCourseIds = activeCourses.map((c) => c.id);
+        const where = {
+            submissionType: { in: ["ASSIGNMENT", "FEEDBACK"] },
+            courseId: { in: activeCourseIds },
+        };
         if (filters.status && filters.status !== "ALL")
             where.status = filters.status;
         // Filter to ONLY latest attempt per learner per content item
@@ -1626,7 +1666,9 @@ class ReportingService {
                 officialEmail: emp ? emp.officialEmail : "",
                 courseId: sub.courseId,
                 courseTitle: crs ? crs.title : `Course #${sub.courseId}`,
-                assignmentTitle: cnt ? cnt.title : "Practical Assignment",
+                assignmentTitle: sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"')
+                    ? (cnt ? `${cnt.title} (Feedback)` : "Course Evaluation & Feedback")
+                    : (cnt ? cnt.title : "Practical Assignment"),
                 submissionStatus: sub.status,
                 submittedAt: sub.submittedAt,
                 submissionText: sub.submissionText || "",

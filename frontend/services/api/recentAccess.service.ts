@@ -1,3 +1,5 @@
+import { getMyEnrollments } from "./progress.service";
+
 export interface RecentCourseItem {
   id: number;
   title: string;
@@ -26,9 +28,7 @@ export function recordRecentCourseAccess(
   if (typeof window === "undefined" || !course || !course.id) return;
   try {
     const existing = getRecentlyAccessedCourses(userKey);
-    // Filter out duplicate
     const filtered = existing.filter((c) => c.id !== course.id);
-    // Add new item at the top
     const newItem: RecentCourseItem = {
       id: course.id,
       title: course.title,
@@ -38,7 +38,7 @@ export function recordRecentCourseAccess(
       accessedAt: new Date().toISOString(),
     };
 
-    const updated = [newItem, ...filtered].slice(0, 6); // Max 6 items
+    const updated = [newItem, ...filtered].slice(0, 6);
     localStorage.setItem(`lms_recent_accessed_${userKey}`, JSON.stringify(updated));
   } catch (err) {
     console.error("Failed to record recent course access:", err);
@@ -55,5 +55,38 @@ export function purgeDeletedRecentCourses(userKey: string = "guest", validCourse
   } catch (err) {
     console.error("Failed to purge deleted recent courses:", err);
     return [];
+  }
+}
+
+/**
+ * Synchronize recently accessed courses with backend MySQL database user enrollments
+ */
+export async function syncRecentlyAccessedWithBackend(userKey: string, allCourses: any[]): Promise<RecentCourseItem[]> {
+  try {
+    const enrollments = await getMyEnrollments();
+    if (!Array.isArray(enrollments) || enrollments.length === 0) {
+      return getRecentlyAccessedCourses(userKey);
+    }
+
+    const enrolledCourseIds = new Set(enrollments.map((e) => e.courseId));
+    const matchedCourses = allCourses.filter((c) => enrolledCourseIds.has(c.id));
+
+    const syncItems: RecentCourseItem[] = matchedCourses.slice(0, 6).map((c) => ({
+      id: c.id,
+      title: c.title,
+      category: c.category?.name || "General",
+      thumbnail: c.thumbnail,
+      level: c.level || "Beginner",
+      accessedAt: new Date().toISOString(),
+    }));
+
+    if (typeof window !== "undefined" && syncItems.length > 0) {
+      localStorage.setItem(`lms_recent_accessed_${userKey}`, JSON.stringify(syncItems));
+    }
+
+    return syncItems;
+  } catch (err) {
+    console.error("Failed to sync recent courses with backend database:", err);
+    return getRecentlyAccessedCourses(userKey);
   }
 }

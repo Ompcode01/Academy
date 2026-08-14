@@ -131,10 +131,17 @@ class ProgressService {
     async recordQuizSubmission(userId, courseId, contentId, score, maxScore, answersJson) {
         const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
         const grade = percentage >= 90 ? "A+" : percentage >= 80 ? "A" : percentage >= 70 ? "B" : percentage >= 60 ? "C" : "F";
-        // Get attempt count
-        const attemptCount = await prisma_1.default.assessmentSubmission.count({
-            where: { userId, courseId, contentId: contentId ?? undefined },
-        });
+        // Remove previous older attempts for this learner and quiz item so only recent attempt is saved
+        if (contentId) {
+            try {
+                await prisma_1.default.assessmentSubmission.deleteMany({
+                    where: { userId, courseId, contentId, submissionType: "QUIZ" },
+                });
+            }
+            catch (delErr) {
+                console.error("Failed to cleanup previous quiz attempts:", delErr);
+            }
+        }
         const submission = await prisma_1.default.assessmentSubmission.create({
             data: {
                 userId,
@@ -146,7 +153,7 @@ class ProgressService {
                 maxScore,
                 percentage,
                 grade,
-                attemptNumber: attemptCount + 1,
+                attemptNumber: 1,
             },
         });
         // Check certificate issuance

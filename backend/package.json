@@ -11,7 +11,9 @@
     "seed": "ts-node prisma/seed.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "db:export": "ts-node scripts/export_db.ts",
+    "db:import": "ts-node scripts/import_db.ts"
   },
   "keywords": [
     "lms",

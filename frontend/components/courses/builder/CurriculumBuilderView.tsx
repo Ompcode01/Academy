@@ -37,7 +37,7 @@ export interface SectionItem {
   id: number;
   title: string;
   description?: string;
-  expanded: boolean;
+  expanded?: boolean;
   contents: ContentItem[];
 }
 

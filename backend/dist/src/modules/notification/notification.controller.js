@@ -82,8 +82,8 @@ const markAsRead = async (req, res) => {
         if (notification.userId !== userId) {
             return res.status(403).json({ success: false, message: "Access denied: you can only manage your own notifications" });
         }
-        await notification_service_1.default.markAsRead(id);
-        res.json({ success: true, message: "Notification marked as read" });
+        await notification_service_1.default.markAsRead(id, userId);
+        res.json({ success: true, message: "Notification marked as read & cleared for user" });
     }
     catch (error) {
         res.status(500).json({ success: false, message: error.message });
