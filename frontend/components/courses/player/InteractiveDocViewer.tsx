@@ -6,8 +6,8 @@ import {
   Download,
   Maximize2,
   Presentation,
-  ChevronLeft,
-  ChevronRight,
+  AlertCircle,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,32 @@ interface InteractiveDocViewerProps {
   description?: string;
 }
 
+/**
+ * Returns a same-origin path for embedding files in iframes.
+ * Uses Next.js rewrite proxy: /storage/* → http://localhost:5000/storage/*
+ * This avoids cross-origin iframe issues that break PDF/document viewing.
+ */
+function getSameOriginPath(url?: string): string {
+  if (!url) return "";
+  const trimmed = url.trim();
+
+  // If it's already a relative path starting with /storage/, use it directly
+  if (trimmed.startsWith("/storage/")) return trimmed;
+
+  // If it's a full backend URL like http://localhost:5000/storage/..., extract the path
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.pathname.startsWith("/storage/")) {
+      return parsed.pathname;
+    }
+  } catch {
+    // Not a valid URL
+  }
+
+  // Prepend /storage/ if it's just a filename or relative path
+  return `/storage/${trimmed.replace(/^\/+/, "")}`;
+}
+
 export default function InteractiveDocViewer({
   title,
   contentType,
@@ -27,7 +53,7 @@ export default function InteractiveDocViewer({
   description,
 }: InteractiveDocViewerProps) {
   const hasCustomUrl = Boolean(contentUrl && contentUrl.trim() !== "");
-  const [currentSlideIdx, setCurrentSlideIdx] = React.useState(0);
+  const [pdfCheckState, setPdfCheckState] = React.useState<"loading" | "found" | "notfound">("loading");
 
   const isPpt =
     contentType === "PPT" ||
@@ -37,6 +63,92 @@ export default function InteractiveDocViewer({
     contentType === "PDF" ||
     (contentUrl && contentUrl.toLowerCase().includes(".pdf"));
   const isArticle = contentType === "ARTICLE" || (!contentUrl && Boolean(description && !isPpt && !isPdf));
+
+  // Determine if the description is JSON slide data (so we don't display it as text)
+  let descriptionIsSlideJson = false;
+  if (isPpt && description) {
+    try {
+      const parsed = JSON.parse(description);
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].heading !== undefined) {
+        descriptionIsSlideJson = true;
+      }
+    } catch {
+      // Not JSON
+    }
+  }
+  const plainDescription = descriptionIsSlideJson ? null : description;
+
+  // Build the converted PDF path for PPTX files
+  // Backend saves converted PDFs as: original-name.converted.pdf
+  const convertedPdfPath = React.useMemo(() => {
+    if (!isPpt || !contentUrl) return null;
+    const trimmed = contentUrl.trim();
+    // Replace .pptx/.ppt extension with .converted.pdf
+    const pdfPath = trimmed.replace(/\.(pptx?|PPTX?)$/i, ".converted.pdf");
+    return getSameOriginPath(pdfPath);
+  }, [isPpt, contentUrl]);
+
+  // Check if the converted PDF exists
+  React.useEffect(() => {
+    if (!isPpt || !convertedPdfPath) {
+      setPdfCheckState("notfound");
+      return;
+    }
+
+    const checkPdf = async () => {
+      try {
+        const resp = await fetch(convertedPdfPath, { method: "HEAD" });
+        setPdfCheckState(resp.ok ? "found" : "notfound");
+      } catch {
+        setPdfCheckState("notfound");
+      }
+    };
+    checkPdf();
+  }, [isPpt, convertedPdfPath]);
+
+  // Same-origin path for iframe embedding (uses Next.js rewrite proxy)
+  const sameOriginPath = hasCustomUrl
+    ? getSameOriginPath(contentUrl)
+    : isPdf
+    ? "/storage/sample_course_manual.pdf"
+    : "/storage/sample_presentation.pptx";
+
+  // Full backend URL for downloads (direct access)
+  const downloadUrl = hasCustomUrl
+    ? getStorageUrl(contentUrl)
+    : isPdf
+    ? getStorageUrl("/storage/sample_course_manual.pdf")
+    : getStorageUrl("/storage/sample_presentation.pptx");
+
+  // Determine the iframe source
+  const iframeSrc = React.useMemo(() => {
+    if (isPdf) {
+      // PDF: embed directly via same-origin path (browser renders natively)
+      return `${sameOriginPath}#page=1`;
+    }
+    if (isPpt) {
+      // PPT: use the converted PDF if available
+      if (pdfCheckState === "found" && convertedPdfPath) {
+        return `${convertedPdfPath}#page=1`;
+      }
+      // Fallback: try Google Docs viewer for remote URLs
+      if (!sameOriginPath.includes("localhost") && !sameOriginPath.includes("127.0.0.1")) {
+        return `https://docs.google.com/gview?url=${encodeURIComponent(getStorageUrl(contentUrl))}&embedded=true`;
+      }
+      return null; // No viewable source available
+    }
+    return `${sameOriginPath}#page=1`;
+  }, [isPdf, isPpt, pdfCheckState, convertedPdfPath, sameOriginPath, contentUrl]);
+
+  const handleDownload = () => {
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = `${title.replace(/\s+/g, "_")}${isPpt ? ".pptx" : ".pdf"}`;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   if (isArticle) {
     return (
@@ -66,92 +178,6 @@ export default function InteractiveDocViewer({
     );
   }
 
-  // Check if description contains extracted slides JSON or text notes
-  let slides: any[] | null = null;
-  let descriptionIsSlideJson = false;
-  if (isPpt) {
-    if (description) {
-      try {
-        const parsed = JSON.parse(description);
-        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].heading !== undefined) {
-          slides = parsed;
-          descriptionIsSlideJson = true;
-        }
-      } catch (e) {
-        // Not JSON slides array
-      }
-    }
-
-    // Build presentation slides strictly using Admin uploaded title and description
-    if (!slides || slides.length === 0) {
-      slides = [
-        {
-          slideNum: 1,
-          tag: "Admin Presentation Deck",
-          heading: title || "Uploaded Presentation",
-          subheading: contentUrl ? `Source File: ${contentUrl.split("/").pop()}` : "Course Learning Material",
-          bullets: [
-            description || "Uploaded PowerPoint presentation module.",
-            "Use the View/Download button below to open the complete original PPTX file.",
-          ],
-        },
-      ];
-    }
-  }
-
-  // Resolved URL (fallback to local sample file if empty)
-  const resolvedTargetUrl = hasCustomUrl
-    ? getStorageUrl(contentUrl)
-    : isPdf
-    ? getStorageUrl("/storage/sample_course_manual.pdf")
-    : getStorageUrl("/storage/sample_presentation.pptx");
-
-  // Determine iframe source URL for PDF vs PPT
-  const isLocalHost = resolvedTargetUrl.includes("localhost") || resolvedTargetUrl.includes("127.0.0.1");
-  const iframeSrc = isPdf
-    ? `${resolvedTargetUrl}#page=1`
-    : `https://docs.google.com/gview?url=${encodeURIComponent(resolvedTargetUrl)}&embedded=true`;
-
-  const handleDownload = () => {
-    const a = document.createElement("a");
-    a.href = resolvedTargetUrl;
-    a.download = `${title.replace(/\s+/g, "_")}${isPpt ? ".pptx" : ".pdf"}`;
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
-  // The plain-text description to show in notes (hide if it's the raw JSON slides data)
-  const plainDescription = descriptionIsSlideJson ? null : description;
-
-  // Current slide for PPT slide viewer
-  const currentSlide = slides && slides.length > 0 ? slides[currentSlideIdx] : null;
-  const totalSlides = slides ? slides.length : 0;
-
-  // Gradient color palettes for slides
-  const slideGradients = [
-    "from-indigo-950 via-slate-900 to-purple-950",
-    "from-slate-900 via-blue-950 to-cyan-950",
-    "from-emerald-950 via-slate-900 to-teal-950",
-    "from-rose-950 via-slate-900 to-pink-950",
-    "from-amber-950 via-slate-900 to-orange-950",
-    "from-violet-950 via-slate-900 to-fuchsia-950",
-    "from-sky-950 via-slate-900 to-blue-950",
-    "from-lime-950 via-slate-900 to-green-950",
-  ];
-
-  const slideAccentColors = [
-    { tag: "text-indigo-400 bg-indigo-500/15 border-indigo-500/30", heading: "text-white", sub: "text-indigo-300", bullet: "bg-indigo-500", bulletText: "text-slate-200" },
-    { tag: "text-cyan-400 bg-cyan-500/15 border-cyan-500/30", heading: "text-white", sub: "text-cyan-300", bullet: "bg-cyan-500", bulletText: "text-slate-200" },
-    { tag: "text-emerald-400 bg-emerald-500/15 border-emerald-500/30", heading: "text-white", sub: "text-emerald-300", bullet: "bg-emerald-500", bulletText: "text-slate-200" },
-    { tag: "text-rose-400 bg-rose-500/15 border-rose-500/30", heading: "text-white", sub: "text-rose-300", bullet: "bg-rose-500", bulletText: "text-slate-200" },
-    { tag: "text-amber-400 bg-amber-500/15 border-amber-500/30", heading: "text-white", sub: "text-amber-300", bullet: "bg-amber-500", bulletText: "text-slate-200" },
-    { tag: "text-violet-400 bg-violet-500/15 border-violet-500/30", heading: "text-white", sub: "text-violet-300", bullet: "bg-violet-500", bulletText: "text-slate-200" },
-    { tag: "text-sky-400 bg-sky-500/15 border-sky-500/30", heading: "text-white", sub: "text-sky-300", bullet: "bg-sky-500", bulletText: "text-slate-200" },
-    { tag: "text-lime-400 bg-lime-500/15 border-lime-500/30", heading: "text-white", sub: "text-lime-300", bullet: "bg-lime-500", bulletText: "text-slate-200" },
-  ];
-
   return (
     <div className="w-full space-y-3 select-none">
       {/* ── Top Header Toolbar ───────────────────────────────────────── */}
@@ -172,21 +198,21 @@ export default function InteractiveDocViewer({
           </span>
         </div>
 
-        {/* Right: Voluntary Download & View Mode Actions */}
+        {/* Right: Download & Fullscreen Actions */}
         <div className="flex items-center gap-2">
           <Button
             size="sm"
             onClick={handleDownload}
             className="h-8 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-1.5 cursor-pointer shadow-md"
-            title="Download Admin uploaded file"
+            title="Download original file"
           >
-            <Download className="h-3.5 w-3.5" /> Download Document
+            <Download className="h-3.5 w-3.5" /> Download {isPpt ? "PPT" : "PDF"}
           </Button>
 
           <Button
             size="sm"
             variant="outline"
-            onClick={() => window.open(resolvedTargetUrl, "_blank")}
+            onClick={() => window.open(downloadUrl, "_blank")}
             className="h-8 border-slate-700 text-slate-300 hover:bg-slate-800 text-xs gap-1.5 cursor-pointer"
             title="Open file in new tab"
           >
@@ -197,102 +223,16 @@ export default function InteractiveDocViewer({
 
       {/* ── Main Viewport Container ────── */}
       <div className="w-full space-y-3">
-        {isPpt && slides && slides.length > 0 && (isLocalHost || descriptionIsSlideJson) ? (
-          /* ── PPT Slide Viewer ── */
-          <div className="w-full">
-            {/* Slide Display Area */}
-            <div
-              className={`w-full min-h-[520px] bg-gradient-to-br ${slideGradients[currentSlideIdx % slideGradients.length]} border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative flex flex-col`}
-            >
-              {/* Slide Content */}
-              {currentSlide && (
-                <div className="flex-1 flex flex-col justify-center px-8 md:px-16 py-10 space-y-6">
-                  {/* Tag */}
-                  {currentSlide.tag && (
-                    <Badge className={`${slideAccentColors[currentSlideIdx % slideAccentColors.length].tag} border text-[10px] uppercase font-extrabold px-3 py-1 w-fit`}>
-                      {currentSlide.tag}
-                    </Badge>
-                  )}
-
-                  {/* Heading */}
-                  <h2 className={`text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight ${slideAccentColors[currentSlideIdx % slideAccentColors.length].heading}`}>
-                    {currentSlide.heading}
-                  </h2>
-
-                  {/* Subheading */}
-                  {currentSlide.subheading && (
-                    <p className={`text-base md:text-lg font-medium leading-relaxed max-w-2xl ${slideAccentColors[currentSlideIdx % slideAccentColors.length].sub}`}>
-                      {currentSlide.subheading}
-                    </p>
-                  )}
-
-                  {/* Bullets */}
-                  {currentSlide.bullets && currentSlide.bullets.length > 0 && (
-                    <ul className="space-y-2.5 mt-2 max-w-2xl">
-                      {currentSlide.bullets.map((bullet: string, bIdx: number) => (
-                        <li key={bIdx} className="flex items-start gap-3 text-sm">
-                          <span className={`mt-1.5 h-2 w-2 rounded-full ${slideAccentColors[currentSlideIdx % slideAccentColors.length].bullet} shrink-0`} />
-                          <span className={`leading-relaxed ${slideAccentColors[currentSlideIdx % slideAccentColors.length].bulletText}`}>
-                            {bullet}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
-
-              {/* Slide Number Watermark */}
-              <div className="absolute bottom-4 right-6 text-slate-600 text-[10px] font-bold uppercase tracking-widest">
-                {currentSlide?.tag || title}
-              </div>
+        {isPpt && pdfCheckState === "loading" ? (
+          /* Loading state while checking for converted PDF */
+          <div className="w-full h-[620px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4 text-slate-400">
+              <div className="h-10 w-10 border-3 border-amber-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm font-medium">Loading presentation...</p>
             </div>
-
-            {/* Navigation Controls */}
-            {totalSlides > 1 && (
-              <div className="flex items-center justify-between mt-3 px-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setCurrentSlideIdx(Math.max(0, currentSlideIdx - 1))}
-                  disabled={currentSlideIdx === 0}
-                  className="h-9 border-slate-700 text-slate-300 hover:bg-slate-800 text-xs gap-1.5 cursor-pointer disabled:opacity-40"
-                >
-                  <ChevronLeft className="h-4 w-4" /> Previous
-                </Button>
-
-                <div className="flex items-center gap-2">
-                  {slides.map((_: any, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentSlideIdx(idx)}
-                      className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                        idx === currentSlideIdx
-                          ? "w-8 bg-amber-500"
-                          : "w-2.5 bg-slate-700 hover:bg-slate-600"
-                      }`}
-                      title={`Slide ${idx + 1}`}
-                    />
-                  ))}
-                  <span className="ml-3 text-xs font-bold text-slate-400">
-                    {currentSlideIdx + 1} / {totalSlides}
-                  </span>
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setCurrentSlideIdx(Math.min(totalSlides - 1, currentSlideIdx + 1))}
-                  disabled={currentSlideIdx === totalSlides - 1}
-                  className="h-9 border-slate-700 text-slate-300 hover:bg-slate-800 text-xs gap-1.5 cursor-pointer disabled:opacity-40"
-                >
-                  Next <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
           </div>
-        ) : isPpt && !isLocalHost ? (
-          /* ── PPT via Google Docs Viewer (remote URL) ── */
+        ) : iframeSrc ? (
+          /* PDF or converted PPT → PDF embedded in iframe */
           <div className="w-full h-[620px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative">
             <iframe
               src={iframeSrc}
@@ -301,13 +241,39 @@ export default function InteractiveDocViewer({
             />
           </div>
         ) : (
-          /* ── PDF / Other Embedded Viewer ── */
-          <div className="w-full h-[620px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative">
-            <iframe
-              src={iframeSrc}
-              className="w-full h-full border-0 bg-white"
-              title={title}
-            />
+          /* PPT fallback when no converted PDF is available */
+          <div className="w-full h-[620px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative flex flex-col items-center justify-center p-8 text-center text-white space-y-5 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              <Presentation className="h-12 w-12" />
+            </div>
+
+            <div className="space-y-3 max-w-lg">
+              <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase font-extrabold px-3 py-1">
+                PowerPoint Presentation
+              </Badge>
+              <h2 className="text-2xl font-extrabold text-white tracking-tight">{title}</h2>
+              <p className="text-xs text-slate-400 leading-relaxed flex items-center justify-center gap-2">
+                <AlertCircle className="h-3.5 w-3.5 text-amber-400" />
+                Preview not available — please download or open the file to view the full presentation.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
+              <Button
+                onClick={() => window.open(downloadUrl, "_blank")}
+                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-2 px-7 h-11 shadow-lg cursor-pointer"
+              >
+                <ExternalLink className="h-4 w-4" /> Open Presentation
+              </Button>
+
+              <Button
+                onClick={handleDownload}
+                variant="outline"
+                className="border-slate-700 text-slate-200 hover:bg-slate-800 font-semibold text-xs gap-2 px-5 h-11 cursor-pointer"
+              >
+                <Download className="h-4 w-4 text-amber-400" /> Download File
+              </Button>
+            </div>
           </div>
         )}
 

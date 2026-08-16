@@ -9,6 +9,7 @@ import notificationService from "../notification/notification.service";
 import fs from "fs";
 import path from "path";
 import AdmZip from "adm-zip";
+const { convert: convertPptxToPdf } = require("pptx-to-pdf");
 
 // GET /api/courses
 export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -434,6 +435,21 @@ export const uploadDocumentFile = asyncHandler(
     const sizeMb = (req.file.size / (1024 * 1024)).toFixed(1);
     const relativeUrl = `/storage/uploads/${uniqueName}`;
 
+    // Convert PPTX to PDF for inline viewing (saved alongside original)
+    let convertedPdfUrl: string | undefined;
+    if (originalName.toLowerCase().endsWith(".pptx")) {
+      try {
+        const pdfBuffer = await convertPptxToPdf(req.file.buffer);
+        const pdfName = uniqueName.replace(/\.pptx$/i, ".converted.pdf");
+        const pdfPath = path.join(storageDir, pdfName);
+        fs.writeFileSync(pdfPath, pdfBuffer);
+        convertedPdfUrl = `/storage/uploads/${pdfName}`;
+        console.log(`PPTX converted to PDF: ${pdfName}`);
+      } catch (pdfErr) {
+        console.error("PPTX to PDF conversion error:", pdfErr);
+      }
+    }
+
     let extractedSlides: Array<{
       slideNum: number;
       tag: string;
@@ -529,6 +545,7 @@ export const uploadDocumentFile = asyncHandler(
         fileUrl: relativeUrl,
         fileName: originalName,
         fileSize: `${sizeMb} MB`,
+        convertedPdfUrl,
         extractedZipFiles: extractedZipFiles.length > 0 ? extractedZipFiles : undefined,
         extractedSlides: extractedSlides.length > 0 ? extractedSlides : undefined,
         slidesConfigJson: extractedSlides.length > 0 ? JSON.stringify(extractedSlides) : undefined,
