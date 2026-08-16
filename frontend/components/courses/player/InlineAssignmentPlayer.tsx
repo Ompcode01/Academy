@@ -70,6 +70,27 @@ export default function InlineAssignmentPlayer({
   const allowedFileTypes: string[] = parsedConfig.allowedFileTypes || ["PDF", "DOC", "DOCX", "ZIP"];
   const maxFileSizeMb = parsedConfig.maxFileSizeMb || 50;
 
+  const acceptAttribute = React.useMemo(() => {
+    const mappings: Record<string, string> = {
+      PDF: ".pdf,application/pdf",
+      DOC: ".doc,application/msword",
+      DOCX: ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      PPT: ".ppt,application/vnd.ms-powerpoint",
+      PPTX: ".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      ZIP: ".zip,application/zip,application/x-zip-compressed",
+      "Images (JPG, PNG)": "image/jpeg,image/png,.jpg,.jpeg,.png",
+    };
+    
+    if (allowedFileTypes.includes("Others")) {
+      return undefined;
+    }
+    
+    return allowedFileTypes
+      .map((t) => mappings[t])
+      .filter(Boolean)
+      .join(",");
+  }, [allowedFileTypes]);
+
   // Formatting dates for submission & evaluation timeline
   const submittedDateText = existingSubmission?.submittedAt
     ? new Date(existingSubmission.submittedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -90,6 +111,33 @@ export default function InlineAssignmentPlayer({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
+      // Validate file extensions based on allowedFileTypes
+      const invalidFiles = files.filter((file) => {
+        const ext = file.name.split(".").pop()?.toUpperCase() || "";
+        if (allowedFileTypes.includes(ext)) return false;
+        
+        // Handle images
+        if (allowedFileTypes.includes("Images (JPG, PNG)") && ["JPG", "JPEG", "PNG"].includes(ext)) {
+          return false;
+        }
+
+        // Handle generic fallback/Others
+        if (allowedFileTypes.includes("Others")) {
+          return false;
+        }
+        
+        return true;
+      });
+
+      if (invalidFiles.length > 0) {
+        alert(
+          `Only files with the following formats are allowed: ${allowedFileTypes.join(", ")}.\nInvalid files: ${invalidFiles
+            .map((f) => f.name)
+            .join(", ")}`
+        );
+        return;
+      }
+
       setSelectedFiles((prev) => {
         const combined = [...prev, ...files];
         if (combined.length > maxFiles) {
@@ -444,6 +492,7 @@ export default function InlineAssignmentPlayer({
                   type="file"
                   id="assignment-file-input"
                   multiple
+                  accept={acceptAttribute}
                   onChange={handleFileChange}
                   className="hidden"
                 />
