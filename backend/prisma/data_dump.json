@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-17T11:19:42.803Z",
+  "exportedAt": "2026-08-17T11:59:18.321Z",
   "departments": [
     {
       "id": "1",
@@ -450,13 +450,13 @@
       "employeeId": "1",
       "username": "priyanka",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-17T10:30:28.162Z",
+      "lastLogin": "2026-08-17T11:36:51.853Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.459Z",
-      "updatedAt": "2026-08-17T10:30:28.164Z"
+      "updatedAt": "2026-08-17T11:36:51.855Z"
     },
     {
       "id": "2",
@@ -515,13 +515,13 @@
       "employeeId": "6",
       "username": "employee6",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-17T11:05:30.974Z",
+      "lastLogin": "2026-08-17T11:46:30.166Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.675Z",
-      "updatedAt": "2026-08-17T11:05:30.976Z"
+      "updatedAt": "2026-08-17T11:46:30.168Z"
     },
     {
       "id": "7",
@@ -1445,28 +1445,6 @@
       "isActive": true,
       "createdAt": "2026-08-17T10:07:41.083Z",
       "updatedAt": "2026-08-17T10:07:41.083Z"
-    },
-    {
-      "id": "16",
-      "courseId": "9",
-      "title": "Module 1: Foundations of Agentic Systems",
-      "description": "Core principles of autonomous AI agents, tool calling, and execution loops.",
-      "sectionOrder": 1,
-      "isPublished": true,
-      "isActive": true,
-      "createdAt": "2026-08-17T11:06:05.857Z",
-      "updatedAt": "2026-08-17T11:06:05.857Z"
-    },
-    {
-      "id": "17",
-      "courseId": "9",
-      "title": "Module 2: Practical Projects & Feedback",
-      "description": "Hands-on project evaluation and end-of-course survey.",
-      "sectionOrder": 2,
-      "isPublished": true,
-      "isActive": true,
-      "createdAt": "2026-08-17T11:06:05.899Z",
-      "updatedAt": "2026-08-17T11:06:05.899Z"
     }
   ],
   "learningContents": [
@@ -1808,7 +1786,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:35:15.436Z",
-      "updatedAt": "2026-08-17T09:35:15.436Z"
+      "updatedAt": "2026-08-17T11:42:38.515Z"
     },
     {
       "id": "21",
@@ -1927,7 +1905,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:48:48.443Z",
-      "updatedAt": "2026-08-17T09:48:48.443Z"
+      "updatedAt": "2026-08-17T11:42:38.515Z"
     },
     {
       "id": "28",
@@ -2046,75 +2024,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T10:07:41.101Z",
-      "updatedAt": "2026-08-17T10:07:41.101Z"
-    },
-    {
-      "id": "35",
-      "sectionId": "16",
-      "title": "1.1 Introduction to Agentic AI Architecture",
-      "contentType": "LESSON",
-      "contentUrl": null,
-      "description": "Overview of agentic loops, prompt chaining, tool invocation, and memory components.",
-      "duration": 20,
-      "contentOrder": 1,
-      "isMandatory": true,
-      "isPublished": true,
-      "isActive": true,
-      "quizConfigJson": null,
-      "assignmentConfigJson": null,
-      "createdAt": "2026-08-17T11:06:05.879Z",
-      "updatedAt": "2026-08-17T11:06:05.879Z"
-    },
-    {
-      "id": "36",
-      "sectionId": "16",
-      "title": "1.2 Video Lesson: Multi-Agent Collaboration",
-      "contentType": "VIDEO",
-      "contentUrl": "https://www.youtube.com/watch?v=lsMQRaeHwkY",
-      "description": "In-depth walkthrough of agent communication and delegation techniques.",
-      "duration": 25,
-      "contentOrder": 2,
-      "isMandatory": true,
-      "isPublished": true,
-      "isActive": true,
-      "quizConfigJson": null,
-      "assignmentConfigJson": null,
-      "createdAt": "2026-08-17T11:06:05.879Z",
-      "updatedAt": "2026-08-17T11:06:05.879Z"
-    },
-    {
-      "id": "37",
-      "sectionId": "17",
-      "title": "MiniProject",
-      "contentType": "ASSIGNMENT",
-      "contentUrl": null,
-      "description": "Practical agentic AI mini-project assignment for course completion.",
-      "duration": 60,
-      "contentOrder": 1,
-      "isMandatory": true,
-      "isPublished": true,
-      "isActive": true,
-      "quizConfigJson": null,
-      "assignmentConfigJson": "{\"instructions\":\"Build an autonomous AI agent workflow that integrates tool calling and multi-step reasoning. Submit your zip package or repository URL.\",\"maxScore\":50,\"requiresGrading\":true}",
-      "createdAt": "2026-08-17T11:06:05.917Z",
-      "updatedAt": "2026-08-17T11:06:05.917Z"
-    },
-    {
-      "id": "38",
-      "sectionId": "17",
-      "title": "End-of-Course Feedback & Evaluation Survey (Feedback)",
-      "contentType": "ASSIGNMENT",
-      "contentUrl": null,
-      "description": "Feedback questionnaire for course evaluation.",
-      "duration": 15,
-      "contentOrder": 2,
-      "isMandatory": true,
-      "isPublished": true,
-      "isActive": true,
-      "quizConfigJson": null,
-      "assignmentConfigJson": "{\"surveyQuestions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\"},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\"},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\"}],\"isFeedback\":true}",
-      "createdAt": "2026-08-17T11:06:05.939Z",
-      "updatedAt": "2026-08-17T11:06:05.939Z"
+      "updatedAt": "2026-08-17T11:42:38.515Z"
     }
   ],
   "enrollments": [
@@ -2268,12 +2178,12 @@
       "courseId": "9",
       "enrolledAt": "2026-08-17T09:35:44.196Z",
       "startDate": null,
-      "completedAt": null,
+      "completedAt": "2026-08-17T11:39:20.634Z",
       "dueDate": null,
       "lastActivityAt": null,
-      "status": "IN_PROGRESS",
-      "progress": "86",
-      "timeSpentSeconds": 3035,
+      "status": "COMPLETED",
+      "progress": "100",
+      "timeSpentSeconds": 3335,
       "sessionsCount": 1,
       "isMandatory": false,
       "createdAt": "2026-08-17T09:35:44.196Z"
@@ -2457,14 +2367,6 @@
       "completedAt": "2026-08-17T10:10:14.261Z"
     },
     {
-      "id": "42",
-      "userId": "6",
-      "courseId": "9",
-      "contentId": "28",
-      "isCompleted": true,
-      "completedAt": "2026-08-17T10:51:55.882Z"
-    },
-    {
       "id": "43",
       "userId": "6",
       "courseId": "7",
@@ -2489,12 +2391,20 @@
       "completedAt": "2026-08-17T10:57:01.466Z"
     },
     {
-      "id": "47",
+      "id": "49",
       "userId": "6",
       "courseId": "9",
-      "contentId": "32",
+      "contentId": "36",
       "isCompleted": true,
-      "completedAt": "2026-08-17T11:05:32.104Z"
+      "completedAt": "2026-08-17T11:39:11.764Z"
+    },
+    {
+      "id": "51",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "33",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T11:39:16.214Z"
     }
   ],
   "assessmentSubmissions": [
@@ -3301,6 +3211,30 @@
     {
       "id": "51",
       "timestamp": "2026-08-17T11:05:31.019Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "52",
+      "timestamp": "2026-08-17T11:36:51.902Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "53",
+      "timestamp": "2026-08-17T11:46:30.226Z",
       "actorId": "6",
       "actorName": "Employee6 User (LEARNER)",
       "username": null,
@@ -7536,6 +7470,44 @@
       },
       "roleTarget": "ADMIN",
       "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "263",
+      "userId": "3",
+      "actorId": null,
+      "type": "SKILL_SUBMITTED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Skill Approval Required",
+      "message": "Employee6 User submitted skill \"Agentic AI\" for approval.",
+      "link": "/skill-cloud",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "userSkillId": 4
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-17T11:39:21.158Z"
+    },
+    {
+      "id": "264",
+      "userId": "1",
+      "actorId": null,
+      "type": "SKILL_SUBMITTED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Skill Approval Required",
+      "message": "Employee6 User submitted skill \"Agentic AI\" for approval.",
+      "link": "/skill-cloud",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "userSkillId": 4
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-17T11:39:21.158Z"
     }
   ]
 }

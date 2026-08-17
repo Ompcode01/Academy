@@ -457,7 +457,7 @@ export default function ReportsPage() {
                   header: "Grade",
                   cell: (r: any) => {
                     const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
-                    return <Badge variant="outline" className="font-bold">{isFb ? "Evaluation" : r.grade}</Badge>;
+                    return <Badge variant="outline" className="font-bold">{isFb ? "COMPLETED" : r.grade}</Badge>;
                   },
                 },
                 {

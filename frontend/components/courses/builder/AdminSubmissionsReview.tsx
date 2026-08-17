@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Download, CheckCircle2, Award, ExternalLink } from "lucide-react";
+import { Search, Download, CheckCircle2, Award, ExternalLink, Eye, MessageSquare } from "lucide-react";
 import { getTeacherSubmissions, gradeSubmission } from "@/services/api/course.service";
 
 export interface SubmissionItem {
@@ -14,6 +14,7 @@ export interface SubmissionItem {
   studentCode: string;
   studentEmail: string;
   courseTitle: string;
+  contentTitle?: string;
   submissionType: string;
   submissionText?: string;
   fileUrl?: string;
@@ -75,6 +76,7 @@ export default function AdminSubmissionsReview({
     (s) =>
       s.studentName.toLowerCase().includes(search.toLowerCase()) ||
       s.courseTitle.toLowerCase().includes(search.toLowerCase()) ||
+      (s.contentTitle && s.contentTitle.toLowerCase().includes(search.toLowerCase())) ||
       s.studentCode.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -136,7 +138,7 @@ export default function AdminSubmissionsReview({
             <thead className="bg-muted/40 text-muted-foreground uppercase font-semibold border-b border-border">
               <tr>
                 <th className="p-3">Learner &amp; Code</th>
-                <th className="p-3">Course Title</th>
+                <th className="p-3">Course &amp; Task Title</th>
                 <th className="p-3">Submission / Link</th>
                 <th className="p-3">Submitted On</th>
                 <th className="p-3">Status</th>
@@ -158,195 +160,255 @@ export default function AdminSubmissionsReview({
                   </td>
                 </tr>
               ) : (
-                filteredSubmissions.map((item) => (
-                  <tr key={item.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="p-3 font-semibold text-foreground">
-                      <div>{item.studentName}</div>
-                      <div className="text-[10px] text-muted-foreground font-mono">{item.studentCode}</div>
-                    </td>
-                    <td className="p-3 font-semibold text-foreground">{item.courseTitle}</td>
-                    <td className="p-3 max-w-[200px] truncate">
-                      {item.submissionText && (
-                        item.submissionText.trim().startsWith("{") && item.submissionText.includes('"type":"FEEDBACK"') ? (
-                          <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                            Survey Feedback Submitted
+                filteredSubmissions.map((item) => {
+                  const isFb =
+                    item.submissionType === "FEEDBACK" ||
+                    item.contentTitle?.includes("(Feedback)") ||
+                    (typeof item.submissionText === "string" && item.submissionText.includes('"type":"FEEDBACK"'));
+
+                  return (
+                    <tr key={item.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="p-3 font-semibold text-foreground">
+                        <div>{item.studentName}</div>
+                        <div className="text-[10px] text-muted-foreground font-mono">{item.studentCode}</div>
+                      </td>
+
+                      <td className="p-3 font-semibold text-foreground">
+                        <div>{item.courseTitle}</div>
+                        <div className={`text-[11px] font-bold ${isFb ? "text-amber-600 dark:text-amber-400" : "text-purple-600 dark:text-purple-400"}`}>
+                          Task: {item.contentTitle || (isFb ? "End-of-Course Feedback Survey" : "Assignment Task")}
+                        </div>
+                      </td>
+
+                      <td className="p-3 max-w-[220px] truncate">
+                        {isFb ? (
+                          <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/15 px-2.5 py-1 rounded-md border border-amber-500/30 inline-flex items-center gap-1">
+                            <MessageSquare className="h-3 w-3" /> Survey Response Submitted
+                          </span>
+                        ) : item.fileUrl ? (
+                          <a
+                            href={item.fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary font-bold text-[11px] inline-flex items-center gap-1 hover:underline"
+                          >
+                            <ExternalLink className="h-3 w-3" /> Link / Solution File
+                          </a>
+                        ) : item.submissionText ? (
+                          <div className="truncate text-muted-foreground text-[11px] italic">"{item.submissionText}"</div>
+                        ) : (
+                          <span className="text-muted-foreground italic text-[11px]">Written solution attached</span>
+                        )}
+                      </td>
+
+                      <td className="p-3 text-muted-foreground">
+                        {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "Recently"}
+                      </td>
+
+                      <td className="p-3">
+                        {isFb ? (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-600 border border-amber-500/30">
+                            Completed
+                          </span>
+                        ) : item.status === "SUBMITTED" ? (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                            Pending Review
+                          </span>
+                        ) : item.status === "NEEDS_REVISION" ? (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-600 border border-purple-500/20">
+                            Needs Revision
                           </span>
                         ) : (
-                          <div className="truncate text-muted-foreground">{item.submissionText}</div>
-                        )
-                      )}
-                      {item.fileUrl && (
-                        <a
-                          href={item.fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-primary font-bold text-[11px] inline-flex items-center gap-1 hover:underline"
-                        >
-                          <ExternalLink className="h-3 w-3" /> Link / Code
-                        </a>
-                      )}
-                    </td>
-                    <td className="p-3 text-muted-foreground">
-                      {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : "Recently"}
-                    </td>
-                    <td className="p-3">
-                      {item.status === "SUBMITTED" ? (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
-                          Pending Review
-                        </span>
-                      ) : item.status === "NEEDS_REVISION" ? (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-600 border border-purple-500/20">
-                          Needs Revision
-                        </span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                          Graded
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3 font-bold">
-                      {item.status === "GRADED" ? (
-                        <span>{item.score}/{item.maxScore} ({item.grade || "Passed"})</span>
-                      ) : item.status === "NEEDS_REVISION" ? (
-                        <span className="text-purple-600 text-[11px]">Revision Requested</span>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </td>
-                    <td className="p-3 text-right">
-                      <Button
-                        size="sm"
-                        variant={item.status === "SUBMITTED" ? "default" : "outline"}
-                        onClick={() => {
-                          setGradingItem(item);
-                          setGivenMarks(item.score || 85);
-                          setLetterGrade(item.grade || "A");
-                          setFeedbackText(item.feedback || "Well structured submission.");
-                          setEvaluationStatus(item.status === "NEEDS_REVISION" ? "NEEDS_REVISION" : "GRADED");
-                        }}
-                        className={`h-7 gap-1 text-xs font-bold ${
-                          item.status === "SUBMITTED" ? "bg-purple-600 hover:bg-purple-700 text-white" : ""
-                        }`}
-                      >
-                        <Award className="h-3.5 w-3.5" />
-                        {item.status === "SUBMITTED" ? "Evaluate Now" : "Edit Grade"}
-                      </Button>
-                    </td>
-                  </tr>
-                ))
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                            Graded
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="p-3 font-bold">
+                        {isFb ? (
+                          <span className="text-amber-600 dark:text-amber-400 font-extrabold text-[11px]">Survey Completed</span>
+                        ) : item.status === "GRADED" ? (
+                          <span>{item.score}/{item.maxScore} ({item.grade || "Passed"})</span>
+                        ) : item.status === "NEEDS_REVISION" ? (
+                          <span className="text-purple-600 text-[11px]">Revision Requested</span>
+                        ) : (
+                          <span className="text-amber-600 text-[11px] font-extrabold">Pending Evaluation</span>
+                        )}
+                      </td>
+
+                      <td className="p-3 text-right">
+                        {isFb ? (
+                          <Button
+                            size="sm"
+                            onClick={() => setGradingItem(item)}
+                            className="h-7 gap-1 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-sm cursor-pointer"
+                          >
+                            <Eye className="h-3.5 w-3.5" /> View Response
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant={item.status === "SUBMITTED" ? "default" : "outline"}
+                            onClick={() => {
+                              setGradingItem(item);
+                              setGivenMarks(item.score || 85);
+                              setLetterGrade(item.grade || "A");
+                              setFeedbackText(item.feedback || "Well structured submission.");
+                              setEvaluationStatus(item.status === "NEEDS_REVISION" ? "NEEDS_REVISION" : "GRADED");
+                            }}
+                            className={`h-7 gap-1 text-xs font-bold ${
+                              item.status === "SUBMITTED" ? "bg-purple-600 hover:bg-purple-700 text-white" : ""
+                            }`}
+                          >
+                            <Award className="h-3.5 w-3.5" />
+                            {item.status === "SUBMITTED" ? "Evaluate Now" : "Edit Grade"}
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
 
-        {/* Grading Dialog */}
-        {gradingItem && (
-          <Dialog open={!!gradingItem} onOpenChange={() => setGradingItem(null)}>
-            <DialogContent className="sm:max-w-md bg-card border-border">
-              <DialogHeader>
-                <DialogTitle className="text-base font-bold text-foreground">
-                  Evaluate Submission: {gradingItem.studentName}
-                </DialogTitle>
-              </DialogHeader>
+        {/* View / Evaluation Dialog */}
+        {gradingItem && (() => {
+          const isFb =
+            gradingItem.submissionType === "FEEDBACK" ||
+            gradingItem.contentTitle?.includes("(Feedback)") ||
+            (typeof gradingItem.submissionText === "string" && gradingItem.submissionText.includes('"type":"FEEDBACK"'));
 
-              <div className="space-y-4 pt-2">
-                {gradingItem.submissionText && (
-                  gradingItem.submissionText.trim().startsWith("{") && gradingItem.submissionText.includes('"type":"FEEDBACK"') ? (
-                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-2">
-                      <span className="font-bold text-amber-600 dark:text-amber-400 block">Feedback Survey Responses:</span>
-                      {(() => {
-                        try {
-                          const fb = JSON.parse(gradingItem.submissionText);
-                          return (
-                            <div className="space-y-1.5">
-                              {Object.entries(fb.responses || {}).map(([k, v], idx) => (
-                                <div key={idx} className="p-2 rounded bg-card border border-border flex flex-col gap-0.5 text-foreground">
-                                  <span className="text-[10px] text-amber-600 font-bold">Prompt #{k}:</span>
-                                  <span className="font-semibold text-xs">{String(v)}</span>
-                                </div>
-                              ))}
-                            </div>
-                          );
-                        } catch {
-                          return <p className="italic">"{gradingItem.submissionText}"</p>;
-                        }
-                      })()}
-                    </div>
+          return (
+            <Dialog open={!!gradingItem} onOpenChange={() => setGradingItem(null)}>
+              <DialogContent className="sm:max-w-lg bg-card border-border">
+                <DialogHeader>
+                  <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
+                    {isFb ? (
+                      <>
+                        <MessageSquare className="h-5 w-5 text-amber-500" />
+                        View Learner Feedback: {gradingItem.studentName}
+                      </>
+                    ) : (
+                      <>
+                        <Award className="h-5 w-5 text-purple-600" />
+                        Evaluate Submission: {gradingItem.studentName}
+                      </>
+                    )}
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-4 pt-2">
+                  {gradingItem.submissionText && (
+                    isFb ? (
+                      <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-2 max-h-[60vh] overflow-y-auto">
+                        <span className="font-bold text-amber-600 dark:text-amber-400 block">Feedback Survey Responses:</span>
+                        {(() => {
+                          try {
+                            const fb = JSON.parse(gradingItem.submissionText);
+                            return (
+                              <div className="space-y-2">
+                                {Object.entries(fb.responses || {}).map(([k, v], idx) => (
+                                  <div key={idx} className="p-2.5 rounded-lg bg-card border border-border flex flex-col gap-1 text-foreground shadow-xs">
+                                    <span className="text-[10px] text-amber-600 font-extrabold uppercase">Question #{idx + 1}</span>
+                                    <span className="font-semibold text-xs leading-relaxed">{String(v)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          } catch {
+                            return <p className="italic">{gradingItem.submissionText}</p>;
+                          }
+                        })()}
+                      </div>
+                    ) : (
+                      <div className="p-3.5 rounded-xl bg-muted/40 text-xs text-foreground space-y-1">
+                        <span className="font-bold text-foreground block">Student Answer / Notes:</span>
+                        <p className="italic leading-relaxed">{gradingItem.submissionText}</p>
+                      </div>
+                    )
+                  )}
+
+                  {!isFb ? (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold">Evaluation Status</label>
+                        <select
+                          value={evaluationStatus}
+                          onChange={(e) => setEvaluationStatus(e.target.value)}
+                          className="w-full h-9 rounded-lg border border-input bg-background px-3 text-xs text-foreground font-bold"
+                        >
+                          <option value="GRADED">Mark as Evaluated &amp; Graded</option>
+                          <option value="NEEDS_REVISION">Request Revision / Resubmission</option>
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-semibold">Score (Max {gradingItem.maxScore || 100})</label>
+                          <Input
+                            type="number"
+                            value={givenMarks}
+                            onChange={(e) => setGivenMarks(Number(e.target.value))}
+                            max={gradingItem.maxScore || 100}
+                            min={0}
+                            className="text-xs bg-background"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-semibold">Letter Grade</label>
+                          <select
+                            value={letterGrade}
+                            onChange={(e) => setLetterGrade(e.target.value)}
+                            className="w-full h-9 rounded-lg border border-input bg-background px-3 text-xs text-foreground"
+                          >
+                            <option value="A+">A+ (Outstanding)</option>
+                            <option value="A">A (Excellent)</option>
+                            <option value="B">B (Good)</option>
+                            <option value="C">C (Satisfactory)</option>
+                            <option value="F">F (Fail)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold">Teacher Feedback &amp; Review Notes</label>
+                        <Textarea
+                          placeholder="Enter detailed feedback for the student..."
+                          value={feedbackText}
+                          onChange={(e) => setFeedbackText(e.target.value)}
+                          className="min-h-[80px] text-xs bg-background"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+                        <Button variant="outline" onClick={() => setGradingItem(null)}>
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleGradeSubmit}
+                          disabled={submittingGrade}
+                          className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs"
+                        >
+                          {submittingGrade ? "Saving Grade..." : "Submit Grade & Notify Learner"}
+                        </Button>
+                      </div>
+                    </>
                   ) : (
-                    <div className="p-3 rounded-xl bg-muted/40 text-xs text-muted-foreground space-y-1">
-                      <span className="font-bold text-foreground block">Student Answer:</span>
-                      <p className="italic">"{gradingItem.submissionText}"</p>
+                    <div className="flex items-center justify-end pt-3 border-t border-border">
+                      <Button onClick={() => setGradingItem(null)} className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-5">
+                        Close Feedback
+                      </Button>
                     </div>
-                  )
-                )}
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold">Evaluation Status</label>
-                  <select
-                    value={evaluationStatus}
-                    onChange={(e) => setEvaluationStatus(e.target.value)}
-                    className="w-full h-9 rounded-lg border border-input bg-background px-3 text-xs text-foreground font-bold"
-                  >
-                    <option value="GRADED">Mark as Evaluated &amp; Graded</option>
-                    <option value="NEEDS_REVISION">Request Revision / Resubmission</option>
-                  </select>
+                  )}
                 </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold">Score (Max {gradingItem.maxScore || 100})</label>
-                    <Input
-                      type="number"
-                      value={givenMarks}
-                      onChange={(e) => setGivenMarks(Number(e.target.value))}
-                      max={gradingItem.maxScore || 100}
-                      min={0}
-                      className="text-xs bg-background"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold">Letter Grade</label>
-                    <select
-                      value={letterGrade}
-                      onChange={(e) => setLetterGrade(e.target.value)}
-                      className="w-full h-9 rounded-lg border border-input bg-background px-3 text-xs text-foreground"
-                    >
-                      <option value="A+">A+ (Outstanding)</option>
-                      <option value="A">A (Excellent)</option>
-                      <option value="B">B (Good)</option>
-                      <option value="C">C (Satisfactory)</option>
-                      <option value="F">F (Fail)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold">Teacher Feedback &amp; Review Notes</label>
-                  <Textarea
-                    placeholder="Enter detailed feedback for the student..."
-                    value={feedbackText}
-                    onChange={(e) => setFeedbackText(e.target.value)}
-                    className="min-h-[80px] text-xs bg-background"
-                  />
-                </div>
-
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
-                  <Button variant="outline" onClick={() => setGradingItem(null)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleGradeSubmit}
-                    disabled={submittingGrade}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
-                  >
-                    {submittingGrade ? "Saving Grade..." : "Submit Grade & Notify Learner"}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+              </DialogContent>
+            </Dialog>
+          );
+        })()}
       </DialogContent>
     </Dialog>
   );

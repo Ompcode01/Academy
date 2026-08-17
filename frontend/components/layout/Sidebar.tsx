@@ -66,48 +66,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       </button>
 
       <div className="p-5 space-y-6">
-        {/* Section: Events Key (Only on /events page) */}
-        {pathname === "/events" && (
-          <>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C757D]">
-                <span>≡</span>
-                <span>Events key</span>
-              </div>
-              <div className="space-y-1.5 pl-1">
-                {[
-                  { type: "site", label: "site events", colorClass: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
-                  { type: "category", label: "category events", colorClass: "bg-purple-500/10 text-purple-600 border-purple-500/20" },
-                  { type: "course", label: "course events", colorClass: "bg-pink-500/10 text-pink-600 border-pink-500/20" },
-                  { type: "group", label: "group events", colorClass: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
-                  { type: "user", label: "user events", colorClass: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
-                  { type: "other", label: "other events", colorClass: "bg-slate-500/10 text-slate-600 border-slate-500/20" },
-                ].map((item) => {
-                  const isHidden = hiddenTypes.has(item.type);
-                  return (
-                    <button
-                      key={item.type}
-                      onClick={() => toggleTypeVisibility(item.type)}
-                      className={`flex w-full items-center gap-2.5 rounded px-2 py-1 text-xs font-semibold hover:bg-slate-200/80 transition-all text-left cursor-pointer ${
-                        isHidden ? "opacity-50 line-through" : ""
-                      }`}
-                    >
-                      <span className={`rounded-sm p-1 border ${item.colorClass} shrink-0`}>
-                        {isHidden ? (
-                          <EyeOff className="h-3 w-3" />
-                        ) : (
-                          <Eye className="h-3 w-3" />
-                        )}
-                      </span>
-                      <span>{isHidden ? `Show ${item.label}` : `Hide ${item.label}`}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <hr className="border-[#E0E6ED]" />
-          </>
-        )}
 
         {/* Section 1: Skill Cloud & Certificates */}
         <div className="space-y-2">

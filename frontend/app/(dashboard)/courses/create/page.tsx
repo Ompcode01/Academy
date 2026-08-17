@@ -94,14 +94,26 @@ function CreateCourseContent() {
   });
 
   const { user } = useAuthStore();
-  const isTeacher = user?.role === ROLES.TEACHER;
+  const userRole = user?.role || ROLES.LEARNER;
+  const isLearnerOrGuest = userRole === ROLES.LEARNER || userRole === ROLES.GUEST;
+  const isTeacher = userRole === ROLES.TEACHER;
 
   useEffect(() => {
-    if (isTeacher && !courseId) {
-      alert("Teachers cannot create new courses. You can edit your assigned courses multiple times.");
-      router.push("/courses");
+    if (isLearnerOrGuest) {
+      router.replace("/courses");
+    } else if (isTeacher && !courseId) {
+      alert("Teachers cannot create new courses. You can edit your assigned courses.");
+      router.replace("/courses");
     }
-  }, [isTeacher, courseId, router]);
+  }, [isLearnerOrGuest, isTeacher, courseId, router]);
+
+  if (isLearnerOrGuest || (isTeacher && !courseId)) {
+    return (
+      <div className="p-12 text-center text-[#6C757D] font-bold text-sm">
+        Access Denied. Redirecting to course catalog...
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (courseId) {
