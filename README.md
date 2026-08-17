@@ -56,29 +56,30 @@ docker compose down
    ```bash
    cp .env.example .env
    ```
-3. Open the newly created `.env` file and configure your database URL if it differs. The default configuration connects to the Docker database on port `3307`:
-   ```env
-   PORT=5000
-   NODE_ENV=development
-   DATABASE_URL="mysql://root:rootpassword@localhost:3307/academy_lms"
-   JWT_SECRET="supersecretjwtkey"
-   JWT_EXPIRES_IN="1d"
-   LOG_LEVEL="debug"
-   ```
-4. Install the backend dependencies:
+3. Open the newly created `.env` file and configure your local MySQL database connection credentials:
+   - For standard local MySQL / XAMPP (port **3306**):
+     ```env
+     DATABASE_URL="mysql://root:rootpassword@localhost:3306/academy_lms"
+     ```
+   - For Docker / custom MySQL (port **3307**):
+     ```env
+     DATABASE_URL="mysql://root:rootpassword@localhost:3307/academy_lms"
+     ```
+   *(Note: Ensure your MySQL service is started before running database commands).*
+
+4. Install backend dependencies & sync schema:
    ```bash
    npm install
-   ```
-5. Generate the Prisma client and push the schema to the database:
-   ```bash
    npx prisma generate
    npx prisma db push
    ```
-6. (Optional) If you have a seeding script, seed the database:
+
+5. Import complete database snapshot (including Agentic AI course, sections & content):
    ```bash
-   npm run seed
+   npm run db:import
    ```
-7. Start the backend development server:
+
+6. Start the backend development server:
    ```bash
    npm run dev
    ```
