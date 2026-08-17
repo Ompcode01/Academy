@@ -278,6 +278,15 @@ class CourseService {
                     else if (typeof cntData.quizConfigJson === "string" && cntData.quizConfigJson.trim() !== "") {
                         quizJson = cntData.quizConfigJson.trim();
                     }
+                    else if (typeof cntData.feedbackConfigJson === "object" && cntData.feedbackConfigJson !== null) {
+                        quizJson = JSON.stringify(cntData.feedbackConfigJson);
+                    }
+                    else if (typeof cntData.feedbackConfigJson === "string" && cntData.feedbackConfigJson.trim() !== "") {
+                        quizJson = cntData.feedbackConfigJson.trim();
+                    }
+                    else if (typeof cntData.feedbackConfig === "object" && cntData.feedbackConfig !== null) {
+                        quizJson = JSON.stringify(cntData.feedbackConfig);
+                    }
                     else if (typeof cntData.quizConfig === "object" && cntData.quizConfig !== null) {
                         quizJson = JSON.stringify(cntData.quizConfig);
                     }
@@ -553,8 +562,22 @@ class CourseService {
         };
     }
     async deleteCourse(id) {
-        await this.getCourseById(id);
-        return course_repository_1.default.softDelete(id);
+        const existing = await prisma_1.default.course.findUnique({ where: { id } });
+        if (!existing) {
+            throw new Error("Course not found or already deleted");
+        }
+        // Cascading deletion of all course data across all tables and all users
+        await prisma_1.default.$transaction([
+            prisma_1.default.enrollment.deleteMany({ where: { courseId: id } }),
+            prisma_1.default.userLessonProgress.deleteMany({ where: { courseId: id } }),
+            prisma_1.default.assessmentSubmission.deleteMany({ where: { courseId: id } }),
+            prisma_1.default.issuedCertificate.deleteMany({ where: { courseId: id } }),
+            prisma_1.default.courseTeacher.deleteMany({ where: { courseId: id } }),
+            prisma_1.default.certificateTemplate.deleteMany({ where: { courseId: id } }),
+            prisma_1.default.courseSection.updateMany({ where: { courseId: id }, data: { isActive: false } }),
+            prisma_1.default.course.update({ where: { id }, data: { isActive: false } }),
+        ]);
+        return { id: id.toString(), deleted: true };
     }
     // Enrollment Operations
     async selfEnrollCourse(userId, courseId) {

@@ -57,7 +57,7 @@ const getDashboardStats = async (userContext) => {
             courseWhere.status = "PUBLISHED";
     }
     // Build enrollment filter based on role
-    let enrollmentWhere = {};
+    let enrollmentWhere = { course: { isActive: true } };
     if (role === "LEARNER") {
         enrollmentWhere.userId = empId;
     }

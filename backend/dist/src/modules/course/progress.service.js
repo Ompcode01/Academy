@@ -8,7 +8,77 @@ const prisma_1 = __importDefault(require("../../config/prisma"));
 const serializer_1 = require("../../utils/serializer");
 const notification_service_1 = __importDefault(require("../notification/notification.service"));
 class ProgressService {
+    async syncLearnerSubmissionsProgress(userId) {
+        try {
+            const submissions = await prisma_1.default.assessmentSubmission.findMany({
+                where: { userId, contentId: { not: null } },
+            });
+            for (const sub of submissions) {
+                if (!sub.contentId)
+                    continue;
+                try {
+                    await prisma_1.default.userLessonProgress.upsert({
+                        where: {
+                            userId_contentId: {
+                                userId,
+                                contentId: sub.contentId,
+                            },
+                        },
+                        update: { isCompleted: true },
+                        create: {
+                            userId,
+                            courseId: sub.courseId,
+                            contentId: sub.contentId,
+                            isCompleted: true,
+                        },
+                    });
+                }
+                catch { }
+            }
+            // Recalculate progress for all enrollments of this user
+            const enrollments = await prisma_1.default.enrollment.findMany({
+                where: { userId },
+            });
+            for (const en of enrollments) {
+                const sections = await prisma_1.default.courseSection.findMany({
+                    where: { courseId: en.courseId, isActive: true },
+                    include: { contents: { where: { isActive: true } } },
+                });
+                const activeContentIds = sections.flatMap((sec) => sec.contents.map((c) => c.id));
+                const totalLessons = activeContentIds.length;
+                if (totalLessons === 0)
+                    continue;
+                const completedCount = await prisma_1.default.userLessonProgress.count({
+                    where: {
+                        userId,
+                        courseId: en.courseId,
+                        isCompleted: true,
+                        contentId: { in: activeContentIds },
+                    },
+                });
+                const calculatedProgress = Math.min(100, Math.round((completedCount / totalLessons) * 100));
+                const isNowCompleted = calculatedProgress >= 100;
+                const newStatus = isNowCompleted ? "COMPLETED" : (en.status === "COMPLETED" ? "COMPLETED" : en.status);
+                const finalProgress = isNowCompleted ? 100 : Math.max(Number(en.progress || 0), calculatedProgress);
+                if (finalProgress !== Number(en.progress) || newStatus !== en.status) {
+                    await prisma_1.default.enrollment.update({
+                        where: { id: en.id },
+                        data: {
+                            progress: finalProgress,
+                            status: newStatus,
+                            completedAt: isNowCompleted ? (en.completedAt || new Date()) : en.completedAt,
+                        },
+                    });
+                }
+            }
+        }
+        catch (err) {
+            console.error("Failed to sync learner submissions progress:", err);
+        }
+    }
     async getLearnerCourseProgress(userId, courseId) {
+        // 0. Auto-sync any quiz, assignment, or feedback submissions to UserLessonProgress
+        await this.syncLearnerSubmissionsProgress(userId);
         // 1. Get existing enrollment (Do NOT auto-create)
         const enrollment = await prisma_1.default.enrollment.findUnique({
             where: { userId_courseId: { userId, courseId } },
@@ -36,14 +106,21 @@ class ProgressService {
         });
     }
     async getMyEnrollments(userId) {
+        // Auto-sync any quiz, assignment, or feedback submissions to UserLessonProgress
+        await this.syncLearnerSubmissionsProgress(userId);
         const enrollments = await prisma_1.default.enrollment.findMany({
-            where: { userId },
-            select: {
-                courseId: true,
-                progress: true,
-                status: true,
-                completedAt: true,
-                timeSpentSeconds: true,
+            where: {
+                userId,
+                course: {
+                    isActive: true,
+                },
+            },
+            include: {
+                course: {
+                    include: {
+                        category: true,
+                    },
+                },
             },
         });
         return (0, serializer_1.serialize)(enrollments);
@@ -156,9 +233,19 @@ class ProgressService {
                 attemptNumber: 1,
             },
         });
+        // Mark lesson progress as completed for this quiz content item
+        let progressResult = null;
+        if (contentId) {
+            try {
+                progressResult = await this.updateLessonProgress(userId, courseId, contentId, true, 0);
+            }
+            catch (pErr) {
+                console.error("Failed to update lesson progress on quiz submission:", pErr);
+            }
+        }
         // Check certificate issuance
         const cert = await this.checkAndIssueCertificate(userId, courseId);
-        return (0, serializer_1.serialize)({ submission, cert });
+        return (0, serializer_1.serialize)({ submission, progressResult, cert });
     }
     async checkAndIssueCertificate(userId, courseId) {
         // Check template
@@ -272,6 +359,11 @@ class ProgressService {
     // Admin Progress Reports & Analytics
     async getAdminLearnerProgressMatrix() {
         const enrollments = await prisma_1.default.enrollment.findMany({
+            where: {
+                course: {
+                    isActive: true,
+                },
+            },
             orderBy: { createdAt: "desc" },
         });
         const userIds = Array.from(new Set(enrollments.map((e) => e.userId)));
@@ -327,44 +419,60 @@ class ProgressService {
         return (0, serializer_1.serialize)(matrix);
     }
     async recordAssignmentSubmission(userId, courseId, contentId, submissionText, fileUrl) {
+        const isFeedback = submissionText?.includes('"type":"FEEDBACK"');
+        const submissionType = isFeedback ? "FEEDBACK" : "ASSIGNMENT";
         const attemptCount = await prisma_1.default.assessmentSubmission.count({
-            where: { userId, courseId, contentId: contentId ?? undefined, submissionType: "ASSIGNMENT" },
+            where: { userId, courseId, contentId: contentId ?? undefined, submissionType },
         });
         const submission = await prisma_1.default.assessmentSubmission.create({
             data: {
                 userId,
                 courseId,
                 contentId: contentId ?? null,
-                submissionType: "ASSIGNMENT",
+                submissionType,
                 submissionText,
                 fileUrl: fileUrl || null,
-                status: "SUBMITTED",
-                score: 0,
+                status: isFeedback ? "GRADED" : "SUBMITTED",
+                score: isFeedback ? 100 : 0,
                 maxScore: 100,
+                percentage: isFeedback ? 100 : 0,
+                grade: isFeedback ? "COMPLETED" : null,
+                feedback: isFeedback ? "Feedback Survey Received" : null,
                 attemptNumber: attemptCount + 1,
             },
         });
-        // Notify assigned teachers of new assignment submission
-        try {
-            const emp = await prisma_1.default.employee.findUnique({ where: { id: userId }, select: { firstName: true, lastName: true } });
-            const course = await prisma_1.default.course.findUnique({ where: { id: courseId }, select: { title: true } });
-            let contentTitle = "Assignment Task";
-            if (contentId) {
-                const cnt = await prisma_1.default.learningContent.findUnique({ where: { id: contentId }, select: { title: true } });
-                if (cnt)
-                    contentTitle = cnt.title;
+        // Notify assigned teachers of new assignment submission if it requires grading
+        if (!isFeedback) {
+            try {
+                const emp = await prisma_1.default.employee.findUnique({ where: { id: userId }, select: { firstName: true, lastName: true } });
+                const course = await prisma_1.default.course.findUnique({ where: { id: courseId }, select: { title: true } });
+                let contentTitle = "Assignment Task";
+                if (contentId) {
+                    const cnt = await prisma_1.default.learningContent.findUnique({ where: { id: contentId }, select: { title: true } });
+                    if (cnt)
+                        contentTitle = cnt.title;
+                }
+                await notification_service_1.default.notifySubmissionCreated({
+                    learnerId: userId,
+                    learnerName: emp ? `${emp.firstName} ${emp.lastName}` : "Learner",
+                    courseId,
+                    courseTitle: course?.title || "Course",
+                    contentTitle,
+                    submissionType: "ASSIGNMENT",
+                });
             }
-            await notification_service_1.default.notifySubmissionCreated({
-                learnerId: userId,
-                learnerName: emp ? `${emp.firstName} ${emp.lastName}` : "Learner",
-                courseId,
-                courseTitle: course?.title || "Course",
-                contentTitle,
-                submissionType: "ASSIGNMENT",
-            });
+            catch (err) {
+                console.error("Failed to trigger assignment submission notification:", err);
+            }
         }
-        catch (err) {
-            console.error("Failed to trigger assignment submission notification:", err);
+        // Mark lesson progress as completed for this assignment / feedback content item
+        if (contentId) {
+            try {
+                await this.updateLessonProgress(userId, courseId, contentId, true, 0);
+            }
+            catch (pErr) {
+                console.error("Failed to update lesson progress on assignment submission:", pErr);
+            }
         }
         return (0, serializer_1.serialize)(submission);
     }
@@ -420,8 +528,15 @@ class ProgressService {
             const emp = empMap.get(sub.userId.toString());
             const course = courseMap.get(sub.courseId.toString());
             const cnt = sub.contentId ? contentMap.get(sub.contentId.toString()) : null;
+            const isFb = sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"');
             return {
                 ...sub,
+                status: isFb ? "GRADED" : sub.status,
+                score: isFb ? (sub.maxScore || 100) : sub.score,
+                percentage: isFb ? 100 : sub.percentage,
+                grade: isFb ? "COMPLETED" : sub.grade,
+                feedback: isFb ? "Survey Completed" : sub.feedback,
+                gradedByRole: sub.gradedBy?.includes("[SUPER_ADMIN]") ? "SUPER_ADMIN" : sub.gradedBy?.includes("[ADMIN]") ? "ADMIN" : sub.gradedBy?.includes("[TEACHER]") ? "TEACHER" : null,
                 studentName: emp ? `${emp.firstName} ${emp.lastName}` : `User #${sub.userId}`,
                 studentCode: emp ? emp.employeeCode : "EMP-NA",
                 studentEmail: emp ? emp.officialEmail : "",
@@ -431,14 +546,19 @@ class ProgressService {
         });
         return (0, serializer_1.serialize)(result);
     }
-    async gradeAssessmentSubmission(submissionId, grade, score, feedback, graderName, status = "GRADED") {
+    async gradeAssessmentSubmission(submissionId, grade, score, feedback, graderName, status = "GRADED", userRole) {
         const sub = await prisma_1.default.assessmentSubmission.findUnique({
             where: { id: submissionId },
         });
         if (!sub)
             throw new Error("Assessment submission not found");
+        // Permission Enforcement: If previously graded by SUPER_ADMIN, non-SUPER_ADMIN cannot modify
+        if (sub.gradedBy?.includes("[SUPER_ADMIN]") && userRole !== "SUPER_ADMIN") {
+            throw new Error("Permission Denied: Only Super Admin can modify grades assigned by Super Admin.");
+        }
         const maxScore = sub.maxScore || 100;
         const percentage = Math.round((score / maxScore) * 100);
+        const formattedGraderName = userRole ? `${graderName} [${userRole}]` : graderName;
         const updated = await prisma_1.default.assessmentSubmission.update({
             where: { id: submissionId },
             data: {
@@ -447,10 +567,19 @@ class ProgressService {
                 score,
                 percentage,
                 feedback: feedback || null,
-                gradedBy: graderName,
+                gradedBy: formattedGraderName,
                 gradedAt: new Date(),
             },
         });
+        // Auto-update lesson progress & course completion if graded
+        if ((status === "GRADED" || percentage >= 50) && sub.contentId) {
+            try {
+                await this.updateLessonProgress(sub.userId, sub.courseId, sub.contentId, true, 0);
+            }
+            catch (pErr) {
+                console.error("Failed to auto-update lesson progress on evaluation:", pErr);
+            }
+        }
         // Notify learner of evaluation outcome
         const course = await prisma_1.default.course.findUnique({ where: { id: sub.courseId } });
         let contentTitle = "Assessment";

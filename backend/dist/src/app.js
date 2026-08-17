@@ -27,16 +27,79 @@ const notification_routes_1 = __importDefault(require("./routes/notification.rou
 const reporting_routes_1 = __importDefault(require("./routes/reporting.routes"));
 const guestGrant_routes_1 = __importDefault(require("./routes/guestGrant.routes"));
 const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({
     extended: true,
 }));
-// Serve static storage directory for unzipped SCORM packages and uploads
-app.use("/storage", express_1.default.static(path_1.default.join(__dirname, "../public/storage")));
-app.use("/storage", express_1.default.static(path_1.default.join(process.cwd(), "public/storage")));
+// Universal Static File Resolver Middleware for /storage & /storage/uploads (ZIP, DOCX, PPTX, PDF)
+app.use("/storage", (req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD")
+        return next();
+    const rawPath = decodeURIComponent(req.path || "").replace(/^\/+/, "");
+    if (!rawPath || rawPath.includes("scorm")) {
+        return next();
+    }
+    const fileName = path_1.default.basename(rawPath);
+    const uploadsDir = path_1.default.join(process.cwd(), "public/storage/uploads");
+    const storageDir = path_1.default.join(process.cwd(), "public/storage");
+    const cleanSubPath = rawPath.replace(/^uploads[\/\\]/i, "");
+    // Candidate paths for direct file lookup
+    const candidatePaths = [
+        path_1.default.join(uploadsDir, cleanSubPath),
+        path_1.default.join(storageDir, cleanSubPath),
+        path_1.default.join(uploadsDir, rawPath),
+        path_1.default.join(storageDir, rawPath),
+        path_1.default.join(uploadsDir, fileName),
+        path_1.default.join(storageDir, fileName),
+    ];
+    for (const p of candidatePaths) {
+        if (fs_1.default.existsSync(p) && fs_1.default.statSync(p).isFile()) {
+            return res.sendFile(p);
+        }
+    }
+    // Recursive search inside storage directories for timestamped files (e.g. doc-178...-TalentSense_AI.zip)
+    function searchRecursive(dir, targetName) {
+        if (!fs_1.default.existsSync(dir))
+            return null;
+        try {
+            const entries = fs_1.default.readdirSync(dir, { withFileTypes: true });
+            const normTarget = targetName.toLowerCase().replace(/[^a-z0-9]/g, "");
+            for (const entry of entries) {
+                const fullPath = path_1.default.join(dir, entry.name);
+                if (entry.isDirectory()) {
+                    const found = searchRecursive(fullPath, targetName);
+                    if (found)
+                        return found;
+                }
+                else if (entry.isFile()) {
+                    const normEntry = entry.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+                    if (entry.name === targetName ||
+                        normEntry === normTarget ||
+                        normEntry.includes(normTarget) ||
+                        (normTarget.length > 3 && normTarget.includes(normEntry))) {
+                        return fullPath;
+                    }
+                }
+            }
+        }
+        catch (err) {
+            console.error("Static file recursive search error:", err);
+        }
+        return null;
+    }
+    const foundFile = searchRecursive(uploadsDir, fileName) || searchRecursive(storageDir, fileName);
+    if (foundFile) {
+        return res.sendFile(foundFile);
+    }
+    next();
+});
+// Standard static express middleware for relative assets
+app.use("/storage/uploads", express_1.default.static(path_1.default.join(process.cwd(), "public/storage/uploads")));
 app.use("/storage", express_1.default.static(path_1.default.join(process.cwd(), "public/storage/uploads")));
+app.use("/storage", express_1.default.static(path_1.default.join(process.cwd(), "public/storage")));
 app.get("/", (req, res) => {
     res.json({
         message: "LMS Backend Running"

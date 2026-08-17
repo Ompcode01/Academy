@@ -126,7 +126,9 @@ class CertificateService {
 
   async getUserCertificates(userId: bigint) {
     const certificates = await prisma.issuedCertificate.findMany({
-      where: { userId },
+      where: {
+        userId,
+      },
       orderBy: { issuedAt: "desc" },
     });
     return serializeBigInt(certificates);
@@ -143,11 +145,10 @@ class CertificateService {
 
     if (role === "SUPER_ADMIN" || role === "ADMIN") {
       // Admin and Super Admin show all learner certificates
-      whereClause = {};
     } else {
       // Learner and Teacher show only their own certificates
       if (!employeeId) return [];
-      whereClause = { userId: employeeId };
+      whereClause.userId = employeeId;
     }
 
     const rawCerts = await prisma.issuedCertificate.findMany({

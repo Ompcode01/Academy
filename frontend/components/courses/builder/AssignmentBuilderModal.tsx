@@ -15,10 +15,13 @@ import {
   ShieldCheck,
   FileCode,
 } from "lucide-react";
+import { uploadDocumentFile } from "@/services/api/course.service";
 
 interface UploadedFileItem {
   name: string;
   size: string;
+  url?: string;
+  extractedZipFiles?: Array<{ name: string; url: string; sizeMb: string }>;
 }
 
 interface AssignmentBuilderModalProps {
@@ -32,6 +35,8 @@ interface AssignmentBuilderModalProps {
     deadline?: string;
     maxAttempts?: number;
     allowedFileTypes?: string[];
+    questionFiles?: UploadedFileItem[];
+    attachments?: UploadedFileItem[];
   } | null;
   onSaveAssignment: (assignmentData: {
     title: string;
@@ -66,6 +71,7 @@ export default function AssignmentBuilderModal({
   const [maxAttempts, setMaxAttempts] = useState<number>(1);
   const [lateSubmission, setLateSubmission] = useState("ALLOWED");
   const [latePenaltyPercent, setLatePenaltyPercent] = useState(10);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   // Question / Scenario files
   const [questionFiles, setQuestionFiles] = useState<UploadedFileItem[]>([]);
@@ -94,24 +100,51 @@ export default function AssignmentBuilderModal({
         setMaxMarks(initialData.maxMarks || 50);
         setMaxAttempts(initialData.maxAttempts !== undefined && initialData.maxAttempts !== null ? Number(initialData.maxAttempts) : 1);
         if (initialData.allowedFileTypes) setAllowedTypes(initialData.allowedFileTypes);
+        const existingFiles = initialData.questionFiles || initialData.attachments || (initialData as any).files || [];
+        setQuestionFiles(Array.isArray(existingFiles) ? existingFiles : []);
       } else {
         setTitle("");
         setDescription("");
         setInstructions("");
         setMaxMarks(50);
         setMaxAttempts(1);
+        setQuestionFiles([]);
       }
     }
   }, [open, initialData]);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-      setQuestionFiles((prev) => [
-        ...prev,
-        { name: file.name, size: `${sizeMb} MB` },
-      ]);
+      try {
+        setUploadingFile(true);
+        const uploadRes = await uploadDocumentFile(file);
+        if (uploadRes?.success && uploadRes.data?.fileUrl) {
+          setQuestionFiles((prev) => [
+            ...prev,
+            {
+              name: file.name,
+              size: `${sizeMb} MB`,
+              url: uploadRes.data.fileUrl,
+              extractedZipFiles: uploadRes.data.extractedZipFiles,
+            },
+          ]);
+        } else {
+          setQuestionFiles((prev) => [
+            ...prev,
+            { name: file.name, size: `${sizeMb} MB`, url: `/storage/uploads/${file.name}` },
+          ]);
+        }
+      } catch (err) {
+        console.error("Upload scenario file error:", err);
+        setQuestionFiles((prev) => [
+          ...prev,
+          { name: file.name, size: `${sizeMb} MB`, url: `/storage/uploads/${file.name}` },
+        ]);
+      } finally {
+        setUploadingFile(false);
+      }
     }
   };
 

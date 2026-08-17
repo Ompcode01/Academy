@@ -121,7 +121,7 @@ const gradeAssessmentSubmission = async (req, res) => {
         const submissionId = BigInt(String(req.params.submissionId));
         const { grade, score, feedback, status } = req.body;
         const graderName = req.user ? `${req.user.username}` : "Instructor Admin";
-        const data = await progress_service_1.default.gradeAssessmentSubmission(submissionId, grade || "Passed", Number(score) || 0, feedback || "", graderName, status || "GRADED");
+        const data = await progress_service_1.default.gradeAssessmentSubmission(submissionId, grade || "Passed", Number(score) || 0, feedback || "", graderName, status || "GRADED", req.user?.role);
         res.json({ success: true, message: `Assessment ${status === 'NEEDS_REVISION' ? 'marked for revision' : 'graded'} successfully`, data });
     }
     catch (error) {

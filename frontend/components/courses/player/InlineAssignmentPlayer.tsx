@@ -14,15 +14,32 @@ import {
   Clock,
   HardDrive,
   FileCode,
+  Folder,
+  Presentation,
+  ExternalLink,
+  Eye,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { uploadDocumentFile, getStorageUrl } from "@/services/api/course.service";
+import InteractivePptViewer from "./InteractivePptViewer";
+
+function getSameOriginPath(url?: string): string {
+  if (!url) return "";
+  const trimmed = url.trim();
+  if (trimmed.startsWith("/storage/")) return trimmed;
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.pathname.startsWith("/storage/")) return parsed.pathname;
+  } catch {}
+  return `/storage/${trimmed.replace(/^\/+/, "")}`;
+}
 
 interface InlineAssignmentPlayerProps {
   assignmentTitle: string;
+  contentUrl?: string;
   description?: string;
   configJson?: string;
   isPreview?: boolean;
@@ -33,6 +50,7 @@ interface InlineAssignmentPlayerProps {
 
 export default function InlineAssignmentPlayer({
   assignmentTitle,
+  contentUrl,
   description,
   configJson,
   isPreview = false,
@@ -53,6 +71,17 @@ export default function InlineAssignmentPlayer({
   const [responseText, setResponseText] = useState(existingSubmission?.submissionText || "");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(Boolean(existingSubmission));
+  const [activeRefDoc, setActiveRefDoc] = useState<any | null>(null);
+
+  const triggerDirectDownload = (fileUrl: string, fileName: string) => {
+    const a = document.createElement("a");
+    a.href = getStorageUrl(fileUrl);
+    a.download = fileName.replace(/\s+/g, "_");
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   const effectiveMaxMarks = parsedConfig.maxMarks || 50;
   const effectiveInstructions =
@@ -191,6 +220,18 @@ export default function InlineAssignmentPlayer({
   };
 
   const isGraded = existingSubmission?.status === "GRADED";
+
+  // Primary attachment URL from lesson contentUrl or parsedConfig
+  const mainAttachmentUrl = contentUrl || parsedConfig.fileUrl || parsedConfig.documentUrl || parsedConfig.attachmentUrl;
+  const mainAttachmentLower = (mainAttachmentUrl || "").toLowerCase();
+
+  const mainAttachmentIsPdf = mainAttachmentLower.includes(".pdf");
+  const mainAttachmentIsPpt = Boolean(mainAttachmentLower.match(/\.(pptx?)$/i));
+  const mainAttachmentIsDoc = Boolean(mainAttachmentLower.match(/\.(docx?)$/i));
+  const mainAttachmentIsZip = mainAttachmentLower.includes(".zip");
+
+  const zipFilesList: any[] =
+    parsedConfig.extractedZipFiles || parsedConfig.zipFiles || [];
 
   return (
     <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6 select-none">
@@ -335,7 +376,7 @@ export default function InlineAssignmentPlayer({
                                 "3": "What suggestions do you have for improving this course module?",
                                 "4": "Overall Course & Instructor Support Rating",
                                 "5": "Additional Instructor & Material Review Notes",
-                              };
+                               };
                               return defaults[kStr] || `Evaluation Prompt #${idx + 1}`;
                             };
                             return (
@@ -398,36 +439,251 @@ export default function InlineAssignmentPlayer({
             </p>
           </div>
 
-          {/* Instructor Uploaded Attachments / Reference Files */}
-          {referenceFiles.length > 0 && (
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2.5">
-              <h4 className="font-bold text-white flex items-center gap-2">
-                <Paperclip className="h-4 w-4 text-purple-400" /> Instructor Reference Files &amp; Problem Documents:
-              </h4>
-              <div className="flex flex-wrap gap-2.5">
-                {referenceFiles.map((fileItem: any, fIdx: number) => {
-                  const fileName = fileItem.name || fileItem.fileName || fileItem.title || `Attachment_${fIdx + 1}`;
-                  let rawUrl = fileItem.url || fileItem.fileUrl || fileItem.path || fileItem.link;
-                  if (!rawUrl || rawUrl === "#") {
-                    rawUrl = `/storage/uploads/${fileName}`;
-                  }
-                  const targetUrl = getStorageUrl(rawUrl);
-
-                  return (
-                    <button
-                      key={fIdx}
-                      type="button"
-                      onClick={() => window.open(targetUrl, "_blank", "noopener,noreferrer")}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-purple-300 hover:text-white hover:border-purple-500/50 text-xs font-semibold transition-all group cursor-pointer"
-                    >
-                      <FileText className="h-4 w-4 text-purple-400 group-hover:scale-110 transition-transform" />
-                      <span className="truncate max-w-[200px]">{fileName}</span>
-                      {fileItem.size && <span className="text-[10px] text-slate-500">({fileItem.size})</span>}
-                      <Download className="h-3.5 w-3.5 text-slate-400 group-hover:text-purple-300 shrink-0" />
-                    </button>
-                  );
-                })}
+          {/* Primary Assignment Attachment & Reference Documents (PDF, PPT, DOC, DOCX, ZIP) */}
+          {(mainAttachmentUrl || referenceFiles.length > 0 || zipFilesList.length > 0) && (
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <h4 className="font-bold text-white text-xs flex items-center gap-2">
+                  <Paperclip className="h-4 w-4 text-purple-400" /> MiniProject Reference Materials &amp; Problem Documents:
+                </h4>
+                <span className="text-[10px] text-purple-300 font-semibold bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                  {zipFilesList.length > 0 ? "ZIP Package & Extracted Folder" : "Project Documents"}
+                </span>
               </div>
+
+              {/* Inline PDF Preview Frame */}
+              {mainAttachmentIsPdf && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-slate-300">
+                    <span className="font-semibold flex items-center gap-1.5 text-red-400">
+                      <FileText className="h-4 w-4" /> PDF Document Preview:
+                    </span>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => window.open(getStorageUrl(mainAttachmentUrl), "_blank")}
+                      className="h-7 px-2.5 text-xs text-purple-300 hover:text-white font-bold gap-1"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" /> Open in New Tab
+                    </Button>
+                  </div>
+                  <div className="w-full h-[420px] bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+                    <iframe
+                      src={`${getSameOriginPath(mainAttachmentUrl)}#page=1`}
+                      className="w-full h-full border-0 bg-white"
+                      title={assignmentTitle}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Word Document (.doc / .docx) Card */}
+              {mainAttachmentIsDoc && (
+                <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                      <FileText className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-white text-sm block">Word Document (.docx)</span>
+                      <span className="text-[11px] text-slate-400">Instructional Word Document reference file for this project.</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => {
+                        const a = document.createElement("a");
+                        a.href = getStorageUrl(mainAttachmentUrl);
+                        a.download = `${assignmentTitle.replace(/\s+/g, "_")}.docx`;
+                        a.target = "_blank";
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                      }}
+                      className="h-8 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs gap-1.5 cursor-pointer shadow"
+                    >
+                      <Download className="h-3.5 w-3.5" /> Download .docx Document
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Presentation Document (.ppt / .pptx) Card */}
+              {mainAttachmentIsPpt && (
+                <div className="space-y-2">
+                  <InteractivePptViewer
+                    title={assignmentTitle}
+                    contentUrl={mainAttachmentUrl}
+                    description={description}
+                  />
+                </div>
+              )}
+
+              {/* Extracted Project ZIP Folder Explorer */}
+              {zipFilesList.length > 0 && (
+                <div className="space-y-2.5 pt-1">
+                  <div className="flex items-center justify-between text-xs text-amber-400 font-bold">
+                    <span className="flex items-center gap-1.5">
+                      <Folder className="h-4 w-4 text-amber-400" /> Extracted Project Files Folder ({zipFilesList.length} Files):
+                    </span>
+                    {mainAttachmentIsZip && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const a = document.createElement("a");
+                          a.href = getStorageUrl(mainAttachmentUrl);
+                          a.download = `${assignmentTitle.replace(/\s+/g, "_")}.zip`;
+                          a.target = "_blank";
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                        }}
+                        className="h-7 px-2.5 text-[11px] border-slate-700 text-amber-400 hover:bg-slate-800 font-bold gap-1 cursor-pointer"
+                      >
+                        <Download className="h-3 w-3" /> Download Full ZIP Package
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto scrollbar-thin p-1">
+                    {zipFilesList.map((zFile: any, zIdx: number) => {
+                      const fileName = zFile.name || zFile.fileName || `File_${zIdx + 1}`;
+                      const ext = fileName.split(".").pop()?.toLowerCase() || "";
+                      const isPdfExt = ext === "pdf";
+                      const isPptExt = ["ppt", "pptx"].includes(ext);
+                      const isDocExt = ["doc", "docx"].includes(ext);
+                      const isCodeExt = ["js", "ts", "html", "css", "json", "py", "java", "sql", "txt"].includes(ext);
+                      const rawFileUrl = zFile.url || zFile.fileUrl || `/storage/uploads/${fileName}`;
+                      const targetFileUrl = getStorageUrl(rawFileUrl);
+
+                      return (
+                        <div
+                          key={zIdx}
+                          className="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-xs transition-all group"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                            {isPdfExt ? (
+                              <FileText className="h-4 w-4 text-red-400 shrink-0" />
+                            ) : isPptExt ? (
+                              <Presentation className="h-4 w-4 text-amber-400 shrink-0" />
+                            ) : isDocExt ? (
+                              <FileText className="h-4 w-4 text-blue-400 shrink-0" />
+                            ) : isCodeExt ? (
+                              <FileCode className="h-4 w-4 text-emerald-400 shrink-0" />
+                            ) : (
+                              <FileText className="h-4 w-4 text-purple-400 shrink-0" />
+                            )}
+                            <div className="truncate">
+                              <p className="font-semibold text-slate-200 truncate group-hover:text-amber-400 transition-colors">
+                                {fileName}
+                              </p>
+                              {zFile.sizeMb && <p className="text-[10px] text-slate-500">{zFile.sizeMb} MB</p>}
+                            </div>
+                          </div>
+
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => window.open(targetFileUrl, "_blank", "noopener,noreferrer")}
+                            className="h-7 px-2 text-[11px] text-amber-400 hover:text-amber-300 hover:bg-slate-800 font-bold gap-1 shrink-0"
+                            title="View / Download File"
+                          >
+                            <Download className="h-3 w-3" /> View
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Reference Files List */}
+              {referenceFiles.length > 0 && (
+                <div className="space-y-3 pt-2 border-t border-slate-800/80">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-300">
+                      Instructor Reference Documents ({referenceFiles.length}):
+                    </span>
+                    <span className="text-[10px] text-purple-400 font-semibold">
+                      Click any document to view or download
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2.5">
+                    {referenceFiles.map((fileItem: any, fIdx: number) => {
+                      const fileName = fileItem.name || fileItem.fileName || fileItem.title || `Attachment_${fIdx + 1}`;
+                      const isSelected = activeRefDoc?.name === fileName || activeRefDoc?.url === fileItem.url;
+
+                      return (
+                        <button
+                          key={fIdx}
+                          type="button"
+                          onClick={() => setActiveRefDoc(isSelected ? null : fileItem)}
+                          className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                            isSelected
+                              ? "bg-purple-500/20 border-purple-500 text-purple-200 ring-2 ring-purple-500/40 shadow-lg scale-105"
+                              : "bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:border-purple-500/50"
+                          }`}
+                        >
+                          <FileText className={`h-4 w-4 ${isSelected ? "text-purple-300" : "text-purple-400"}`} />
+                          <span className="truncate max-w-[220px]">{fileName}</span>
+                          {fileItem.size && <span className="text-[10px] text-slate-500">({fileItem.size})</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Selected Reference Document Action Card */}
+                  {activeRefDoc && (
+                    <div className="p-4 rounded-xl bg-slate-900 border border-purple-500/40 shadow-xl space-y-3 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                            <FileText className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <span className="font-bold text-white text-sm block">
+                              {activeRefDoc.name || activeRefDoc.fileName || "Selected Document"}
+                            </span>
+                            <span className="text-[10px] text-purple-300 font-semibold">
+                              {activeRefDoc.size || "Document File"} • Select an action below
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setActiveRefDoc(null)}
+                          className="text-slate-400 hover:text-white p-1 cursor-pointer"
+                          title="Close action box"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-1">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            const docName = activeRefDoc.name || activeRefDoc.fileName || "Document";
+                            const docUrl = activeRefDoc.url || activeRefDoc.fileUrl || `/storage/uploads/${docName}`;
+                            triggerDirectDownload(docUrl, docName);
+                          }}
+                          className="h-9 bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs gap-2 px-6 cursor-pointer shadow-md"
+                        >
+                          <Download className="h-4 w-4" /> Download Document
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

@@ -61,7 +61,7 @@ export const getDashboardStats = async (userContext: UserContext) => {
   }
 
   // Build enrollment filter based on role
-  let enrollmentWhere: any = {};
+  let enrollmentWhere: any = { course: { isActive: true } };
   if (role === "LEARNER") {
     enrollmentWhere.userId = empId;
   } else if (role === "TEACHER" || role === "ADMIN") {

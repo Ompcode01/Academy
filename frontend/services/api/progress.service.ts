@@ -59,11 +59,22 @@ export interface AdminLearnerMatrixItem {
 }
 
 export interface UserEnrollmentItem {
+  id?: number;
   courseId: number;
   progress: number;
   status: string;
   completedAt?: string | null;
   timeSpentSeconds: number;
+  course?: {
+    id: number;
+    title: string;
+    code?: string;
+    thumbnail?: string;
+    level?: string;
+    shortDescription?: string;
+    description?: string;
+    category?: { id: number; name: string };
+  };
 }
 
 export async function getMyEnrollments(): Promise<UserEnrollmentItem[]> {

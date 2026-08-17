@@ -309,17 +309,12 @@ export default function CertificateForm({
             <div className="transform transition-transform">
               <CertificatePreview
                 logoUrl={data.logoUrl}
-                headerTitle={data.certificateTitle || "CERTIFICATE"}
-                headerSubtitle={data.headerSubtitle || "OF ACHIEVEMENT"}
-                certifyText={data.certifyText || "This is to certify that"}
-                recipientName="Mr. John Doe"
-                completionText={data.completionText || "has successfully completed and passed the course"}
-                courseTitle={courseTitle || "Learn Python: The Complete Python Programming Course"}
-                signatoryName={data.signatoryName || "Richard Wilson"}
-                signatoryTitle={data.signatoryTitle || "Authorized Director"}
-                signatureUrl={data.signatureUrl}
+                headerTitle={data.certificateTitle || "CERTIFICATE OF COMPLETION"}
+                certifyText={data.certifyText || "This is to certify that Ms./Mr."}
+                recipientName="Training Administrator"
+                completionText={data.completionText || "has successfully completed"}
+                courseTitle={courseTitle || "Elevate... Go Beyond"}
                 customDate={data.customDate}
-                primaryColor={data.primaryColor || "#d97706"}
                 certificateCode="HARB-2026-X892A"
               />
             </div>

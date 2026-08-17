@@ -104,7 +104,7 @@ export default function AdminSubmissionsReview({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border">
+      <DialogContent className="sm:max-w-6xl w-[95vw] h-[90vh] overflow-y-auto bg-card border-border shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold text-foreground flex items-center justify-between">
             <span>Teacher &amp; Admin Review: {assignmentTitle}</span>

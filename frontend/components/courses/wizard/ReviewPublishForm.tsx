@@ -429,9 +429,9 @@ export default function ReviewPublishForm({
         open={previewModalOpen}
         onOpenChange={setPreviewModalOpen}
         courseTitle={basicInfo.title}
-        courseCode={basicInfo.courseCode || basicInfo.code || "CO12"}
-        department={basicInfo.department || "Global"}
-        category={basicInfo.category || "General"}
+        courseCode={basicInfo.courseCode || (basicInfo as any).code || "CO12"}
+        department={(basicInfo as any).department || "Global"}
+        category={(basicInfo as any).category || "General"}
         shortDescription={basicInfo.shortDescription}
         description={basicInfo.description}
         level={basicInfo.level}

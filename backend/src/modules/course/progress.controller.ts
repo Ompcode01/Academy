@@ -146,7 +146,8 @@ export const gradeAssessmentSubmission = async (req: AuthRequest, res: Response)
       Number(score) || 0,
       feedback || "",
       graderName,
-      status || "GRADED"
+      status || "GRADED",
+      req.user?.role
     );
 
     res.json({ success: true, message: `Assessment ${status === 'NEEDS_REVISION' ? 'marked for revision' : 'graded'} successfully`, data });

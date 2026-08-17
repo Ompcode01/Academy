@@ -449,7 +449,163 @@ async function main() {
     },
   });
 
-  console.log("Database seeded successfully with 5 dummy learners and sample dynamic course!");
+  // 6. Create Agentic AI Course
+  let agenticCourse = await prisma.course.findFirst({
+    where: { title: "Agentic AI" },
+  });
+
+  if (!agenticCourse) {
+    agenticCourse = await prisma.course.create({
+      data: {
+        title: "Agentic AI",
+        shortDescription: "Master Autonomous AI Agents, LLM Orchestration, Multi-Agent Workflows, and Tool Integrations.",
+        description: "Comprehensive enterprise course covering LLM agentic design patterns, function calling, prompt engineering, multi-agent collaboration, stateful reasoning loops, and real-world deployment.",
+        categoryId: categories["Technical"].id,
+        departmentId: eng.id,
+        creatorId: superadminEmp.id,
+        level: "Beginner",
+        language: "English",
+        duration: 40,
+        status: CourseStatus.PUBLISHED,
+        enrollmentType: "SELF",
+      },
+    });
+  }
+
+  // Assign Teacher Sneha to Agentic AI
+  await prisma.courseTeacher.upsert({
+    where: {
+      courseId_teacherId: {
+        courseId: agenticCourse.id,
+        teacherId: teacherEmp.id,
+      },
+    },
+    update: {},
+    create: {
+      courseId: agenticCourse.id,
+      teacherId: teacherEmp.id,
+    },
+  });
+
+  // Create Sections & Contents for Agentic AI
+  let agenticSec1 = await prisma.courseSection.findFirst({
+    where: { courseId: agenticCourse.id, title: "Module 1: Foundations of Agentic Systems" },
+  });
+
+  if (!agenticSec1) {
+    agenticSec1 = await prisma.courseSection.create({
+      data: {
+        courseId: agenticCourse.id,
+        title: "Module 1: Foundations of Agentic Systems",
+        description: "Core principles of autonomous AI agents, tool calling, and execution loops.",
+        sectionOrder: 1,
+        isPublished: true,
+      },
+    });
+
+    await prisma.learningContent.createMany({
+      data: [
+        {
+          sectionId: agenticSec1.id,
+          title: "1.1 Introduction to Agentic AI Architecture",
+          contentType: "LESSON",
+          description: "Overview of agentic loops, prompt chaining, tool invocation, and memory components.",
+          duration: 20,
+          contentOrder: 1,
+          isMandatory: true,
+          isPublished: true,
+        },
+        {
+          sectionId: agenticSec1.id,
+          title: "1.2 Video Lesson: Multi-Agent Collaboration",
+          contentType: "VIDEO",
+          contentUrl: "https://www.youtube.com/watch?v=lsMQRaeHwkY",
+          description: "In-depth walkthrough of agent communication and delegation techniques.",
+          duration: 25,
+          contentOrder: 2,
+          isMandatory: true,
+          isPublished: true,
+        },
+      ],
+    });
+  }
+
+  let agenticSec2 = await prisma.courseSection.findFirst({
+    where: { courseId: agenticCourse.id, title: "Module 2: Practical Projects & Feedback" },
+  });
+
+  if (!agenticSec2) {
+    agenticSec2 = await prisma.courseSection.create({
+      data: {
+        courseId: agenticCourse.id,
+        title: "Module 2: Practical Projects & Feedback",
+        description: "Hands-on project evaluation and end-of-course survey.",
+        sectionOrder: 2,
+        isPublished: true,
+      },
+    });
+
+    const agenticAssignmentConfig = {
+      instructions: "Build an autonomous AI agent workflow that integrates tool calling and multi-step reasoning. Submit your zip package or repository URL.",
+      maxScore: 50,
+      requiresGrading: true,
+    };
+
+    await prisma.learningContent.create({
+      data: {
+        sectionId: agenticSec2.id,
+        title: "MiniProject",
+        contentType: "ASSIGNMENT",
+        description: "Practical agentic AI mini-project assignment for course completion.",
+        duration: 60,
+        contentOrder: 1,
+        isMandatory: true,
+        isPublished: true,
+        assignmentConfigJson: JSON.stringify(agenticAssignmentConfig),
+      },
+    });
+
+    const surveyQuestions = [
+      { id: 1, questionText: "How satisfied are you with the course content and instructor explanations?" },
+      { id: 2, questionText: "How well did the practical exercises help reinforce your learning?" },
+      { id: 3, questionText: "What suggestions do you have for improving this course module?" },
+    ];
+
+    await prisma.learningContent.create({
+      data: {
+        sectionId: agenticSec2.id,
+        title: "End-of-Course Feedback & Evaluation Survey (Feedback)",
+        contentType: "ASSIGNMENT",
+        description: "Feedback questionnaire for course evaluation.",
+        duration: 15,
+        contentOrder: 2,
+        isMandatory: true,
+        isPublished: true,
+        assignmentConfigJson: JSON.stringify({ surveyQuestions, isFeedback: true }),
+      },
+    });
+  }
+
+  // Enroll learners in Agentic AI
+  for (const learner of createdLearners) {
+    await prisma.enrollment.upsert({
+      where: {
+        userId_courseId: {
+          userId: learner.id,
+          courseId: agenticCourse.id,
+        },
+      },
+      update: {},
+      create: {
+        userId: learner.id,
+        courseId: agenticCourse.id,
+        status: "IN_PROGRESS",
+        progress: 0,
+      },
+    });
+  }
+
+  console.log("Database seeded successfully with Agentic AI course and learner enrollments!");
 }
 
 main().finally(() => prisma.$disconnect());

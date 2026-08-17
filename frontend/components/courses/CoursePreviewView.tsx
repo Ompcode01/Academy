@@ -50,6 +50,7 @@ import InteractiveDocViewer from "@/components/courses/player/InteractiveDocView
 import InlineQuizPlayer from "@/components/courses/player/InlineQuizPlayer";
 import InlineAssignmentPlayer from "@/components/courses/player/InlineAssignmentPlayer";
 import LearnerFeedbackModal from "@/components/courses/learner/LearnerFeedbackModal";
+import ScormPlayer from "@/components/courses/player/ScormPlayer";
 import { MessageSquare } from "lucide-react";
 
 interface LessonItem {
@@ -934,23 +935,35 @@ export default function CoursePreviewView() {
 
                 {/* Lesson Media / Viewport Handler */}
                 {selectedLesson.contentType?.toUpperCase() === "QUIZ" ? (
-                  <InlineQuizPlayer
-                    quizTitle={selectedLesson.title}
-                    configJson={selectedLesson.quizConfigJson || (selectedLesson as any).configJson}
-                    attemptNumber={(progressData?.submissions || []).filter((s: any) => s.submissionType === "QUIZ").length + 1}
-                    onComplete={(score: number, maxScore: number, answersJson?: string) => {
-                      if (courseId) {
-                        recordQuizSubmission(courseId, selectedLesson.id, score, maxScore, answersJson).catch(console.error);
-                      }
-                      handleToggleLessonComplete(selectedLesson.id);
-                    }}
-                    onSkip={() => {
-                      if (nextLesson) handleOpenLessonContent(nextLesson);
-                    }}
-                    onNextLesson={() => {
-                      if (nextLesson) handleOpenLessonContent(nextLesson);
-                    }}
-                  />
+                  (() => {
+                    const quizSubmissions = (progressData?.submissions || []).filter(
+                      (s: any) =>
+                        (s.submissionType === "QUIZ" || s.type === "QUIZ") &&
+                        (!s.contentId || !selectedLesson.id || String(s.contentId) === String(selectedLesson.id) || String(s.contentItem?.id) === String(selectedLesson.id))
+                    );
+                    const lastQuizSubmission = quizSubmissions.length > 0 ? quizSubmissions[quizSubmissions.length - 1] : null;
+
+                    return (
+                      <InlineQuizPlayer
+                        quizTitle={selectedLesson.title}
+                        configJson={selectedLesson.quizConfigJson || (selectedLesson as any).configJson}
+                        attemptNumber={quizSubmissions.length > 0 ? quizSubmissions.length : 1}
+                        existingSubmission={lastQuizSubmission}
+                        onComplete={(score: number, maxScore: number, answersJson?: string) => {
+                          if (courseId) {
+                            recordQuizSubmission(courseId, selectedLesson.id, score, maxScore, answersJson).catch(console.error);
+                          }
+                          handleToggleLessonComplete(selectedLesson.id);
+                        }}
+                        onSkip={() => {
+                          if (nextLesson) handleOpenLessonContent(nextLesson);
+                        }}
+                        onNextLesson={() => {
+                          if (nextLesson) handleOpenLessonContent(nextLesson);
+                        }}
+                      />
+                    );
+                  })()
                 ) : selectedLesson.contentType?.toUpperCase() === "ASSIGNMENT" ? (
                   (() => {
                     const lessonAssignmentSubmission = (progressData?.submissions || []).find(
@@ -962,6 +975,7 @@ export default function CoursePreviewView() {
                     return (
                       <InlineAssignmentPlayer
                         assignmentTitle={selectedLesson.title}
+                        contentUrl={selectedLesson.contentUrl}
                         description={selectedLesson.description}
                         configJson={selectedLesson.assignmentConfigJson || (selectedLesson as any).configJson}
                         existingSubmission={lessonAssignmentSubmission}
@@ -1137,30 +1151,12 @@ export default function CoursePreviewView() {
                     })()}
                   </div>
                 ) : selectedLesson.contentType?.toUpperCase() === "SCORM" || selectedLesson.contentUrl?.includes("/storage/scorm/") ? (
-                  <div className="w-full space-y-2">
-                    <div className="flex items-center justify-between px-1 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1.5 text-violet-500 font-semibold">
-                        <Archive className="h-4 w-4 text-violet-500" /> Interactive SCORM Package Player
-                      </span>
-                      {selectedLesson.contentUrl && (
-                        <button
-                          onClick={() => window.open(getStorageUrl(selectedLesson.contentUrl?.trim()), "_blank")}
-                          className="hover:text-primary flex items-center gap-1 text-[11px] text-muted-foreground transition-colors"
-                        >
-                          <ExternalLink className="h-3 w-3" /> Open in New Tab
-                        </button>
-                      )}
-                    </div>
-                    <div className="w-full h-[650px] bg-card rounded-xl overflow-hidden border border-border shadow-md relative">
-                      <iframe
-                        src={getStorageUrl(selectedLesson.contentUrl)}
-                        className="w-full h-full border-0"
-                        title={selectedLesson.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  </div>
+                  <ScormPlayer
+                    key={selectedLesson.id || selectedLesson.title}
+                    title={selectedLesson.title}
+                    contentUrl={selectedLesson.contentUrl}
+                    onComplete={() => handleToggleLessonComplete(selectedLesson.id)}
+                  />
                 ) : selectedLesson.contentType?.toUpperCase() === "YOUTUBE" && selectedLesson.contentUrl ? (
                   <div className="w-full space-y-2">
                     <div className="w-full h-[480px] bg-black rounded-xl overflow-hidden border border-border shadow-md">
@@ -1707,7 +1703,7 @@ export default function CoursePreviewView() {
           onClose={() => setIsCertModalOpen(false)}
           certificate={(progressData?.certificate as any) || null}
           fallbackCourseTitle={course?.title || "Course Completion Certificate"}
-          fallbackRecipientName={user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username : "Enrolled Learner"}
+          fallbackRecipientName={user ? `${(user as any).firstName || ""} ${(user as any).lastName || ""}`.trim() || user.username : "Enrolled Learner"}
         />
       )}
 

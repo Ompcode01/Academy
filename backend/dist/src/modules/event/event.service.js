@@ -42,35 +42,58 @@ const serializer_1 = require("../../utils/serializer");
 const guestGrant_service_1 = __importDefault(require("../../services/guestGrant.service"));
 class EventService {
     async getAllEvents(userContext) {
-        let whereClause = {};
+        // Auto-delete expired past events (eventDate before start of current day)
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        try {
+            await prisma_1.default.event.deleteMany({
+                where: {
+                    eventDate: {
+                        lt: startOfToday,
+                    },
+                },
+            });
+        }
+        catch (err) {
+            console.error("[EventService] Error purging expired past events:", err);
+        }
+        let whereClause = {
+            eventDate: {
+                gte: startOfToday,
+            },
+        };
         if (userContext?.role === "GUEST") {
             const empId = userContext.employeeId ? BigInt(userContext.employeeId) : undefined;
             const { isGlobal, departmentIds } = await guestGrant_service_1.default.getGuestPermittedDepartmentIds(empId);
             if (isGlobal) {
-                whereClause = {};
+                // keep eventDate filter
             }
             else if (departmentIds.length > 0) {
-                whereClause = {
-                    OR: [
-                        { departmentId: null },
-                        { departmentId: { in: departmentIds } },
-                    ],
-                };
+                whereClause.AND = [
+                    {
+                        OR: [
+                            { departmentId: null },
+                            { departmentId: { in: departmentIds } },
+                        ],
+                    },
+                ];
             }
             else {
-                whereClause = { departmentId: null };
+                whereClause.departmentId = null;
             }
         }
         else if (!userContext || userContext.role !== "SUPER_ADMIN") {
             const deptId = userContext?.departmentId;
             const empId = userContext?.employeeId;
-            whereClause = {
-                OR: [
-                    { departmentId: null },
-                    ...(deptId ? [{ departmentId: deptId }] : []),
-                    ...(empId ? [{ creatorId: empId }] : []),
-                ],
-            };
+            whereClause.AND = [
+                {
+                    OR: [
+                        { departmentId: null },
+                        ...(deptId ? [{ departmentId: deptId }] : []),
+                        ...(empId ? [{ creatorId: empId }] : []),
+                    ],
+                },
+            ];
         }
         const events = await prisma_1.default.event.findMany({
             where: whereClause,

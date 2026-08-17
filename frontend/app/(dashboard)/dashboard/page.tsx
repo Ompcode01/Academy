@@ -431,6 +431,102 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* 1.5. Dedicated My Enrolled Courses Section for Learners */}
+      {userRole === ROLES.LEARNER && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between border-b border-[#E0E6ED] pb-1.5">
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-[#C82333]" />
+              <h3 className="text-sm font-bold tracking-wide text-[#212529]">
+                My Enrolled Courses &amp; Learning Progress
+              </h3>
+            </div>
+            <span className="text-[10px] font-bold text-[#6C757D]">
+              {userEnrollments.length} Enrolled Courses
+            </span>
+          </div>
+
+          {userEnrollments.length === 0 ? (
+            <div className="bg-white rounded-xl border border-dashed border-[#E0E6ED] p-6 text-center flex flex-col items-center justify-center space-y-1.5 shadow-sm">
+              <BookOpen className="h-7 w-7 text-[#6C757D]/30" />
+              <p className="text-xs font-bold text-[#212529]">You are not enrolled in any courses yet.</p>
+              <p className="text-[11px] text-[#6C757D]">
+                Browse the catalog below or ask your department administrator for course assignments.
+              </p>
+            </div>
+          ) : (
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin">
+              {userEnrollments.map((enr) => {
+                const matchedCourse = courses.find((c) => Number(c.id) === Number(enr.courseId));
+                const courseTitle = enr.course?.title || matchedCourse?.title || `Course #${enr.courseId}`;
+                const thumbnail =
+                  enr.course?.thumbnail ||
+                  (matchedCourse as any)?.thumbnail ||
+                  "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80";
+                const level = enr.course?.level || matchedCourse?.level || "Beginner";
+                const categoryName = enr.course?.category?.name || matchedCourse?.category?.name || "General";
+                const isDone = enr.status === "COMPLETED" || Number(enr.progress) >= 100;
+
+                return (
+                  <div
+                    key={enr.courseId}
+                    onClick={() => handleCourseClick(Number(enr.courseId))}
+                    className="w-56 shrink-0 bg-white rounded-xl border border-[#E0E6ED] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 flex flex-col overflow-hidden group cursor-pointer"
+                  >
+                    {/* Thumbnail Cover Image */}
+                    <div className="h-28 w-full relative bg-slate-100 overflow-hidden">
+                      <img
+                        src={thumbnail}
+                        alt={courseTitle}
+                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded">
+                        {level}
+                      </span>
+
+                      {/* Progress Badge overlay */}
+                      <span className={
+                        isDone
+                          ? "absolute bottom-2 left-2 bg-emerald-600/90 text-white text-[9px] font-extrabold px-2 py-0.5 rounded flex items-center gap-1 shadow"
+                          : "absolute bottom-2 left-2 bg-amber-500/90 text-slate-950 text-[9px] font-extrabold px-2 py-0.5 rounded shadow"
+                      }>
+                        {isDone ? "✓ 100% Completed" : `${enr.progress}% Completed`}
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
+                      <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug">
+                        {courseTitle}
+                      </h4>
+
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-[10px] font-semibold text-slate-500">
+                          <span>Progress</span>
+                          <span className="font-extrabold text-[#C82333]">{enr.progress}%</span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200">
+                          <div
+                            className="bg-emerald-500 h-full transition-all"
+                            style={{ width: `${enr.progress}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-[10px] text-[#6C757D] font-semibold pt-1 border-t border-slate-100">
+                        <span>{categoryName}</span>
+                        <span className="text-[#C82333] font-bold">
+                          {isDone ? "Review →" : "Continue →"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* 2. Recently Added Programs & Department Mapped Courses */}
       <div className="space-y-3">
         <div className="flex items-center justify-between border-b border-[#E0E6ED] pb-1.5">

@@ -37,14 +37,25 @@ export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) =
 // GET /api/courses/:id
 export const getCourseById = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const id = BigInt(req.params.id as string);
-    const userContext = {
-      role: req.user?.role || "GUEST",
-      employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
-      departmentId: req.user?.departmentId ? BigInt(req.user.departmentId) : undefined,
-    };
-    const course = await courseService.getCourseById(id, userContext);
-    return successResponse(res, serializeBigInt(course), "Course fetched successfully");
+    try {
+      const id = BigInt(req.params.id as string);
+      const userContext = {
+        role: req.user?.role || "GUEST",
+        employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
+        departmentId: req.user?.departmentId ? BigInt(req.user.departmentId) : undefined,
+      };
+      const course = await courseService.getCourseById(id, userContext);
+      return successResponse(res, serializeBigInt(course), "Course fetched successfully");
+    } catch (err: any) {
+      const isNotFound = err.message?.toLowerCase().includes("not found");
+      const statusCode = isNotFound ? 404 : 500;
+      return errorResponse(
+        res,
+        err.message || "Failed to fetch course",
+        isNotFound ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+        statusCode
+      );
+    }
   }
 );
 

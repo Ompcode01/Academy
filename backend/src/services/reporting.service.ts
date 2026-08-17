@@ -1302,7 +1302,9 @@ export class ReportingService {
           orderBy: { submittedAt: "desc" },
         });
 
-        const pendingEvaluations = submissions.filter((s) => s.status === "SUBMITTED").length;
+        const pendingEvaluations = submissions.filter(
+          (s) => s.status === "SUBMITTED" && s.submissionType !== "FEEDBACK" && !s.submissionText?.includes('"type":"FEEDBACK"')
+        ).length;
         const evaluatedCount = submissions.filter((s) => s.status === "GRADED").length;
         const needsRevisionCount = submissions.filter((s) => s.status === "NEEDS_REVISION").length;
 
@@ -1815,6 +1817,8 @@ export class ReportingService {
           } catch {}
         }
 
+        const isFb = sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"');
+
         return {
           id: sub.id,
           userId: sub.userId,
@@ -1823,19 +1827,20 @@ export class ReportingService {
           officialEmail: emp ? emp.officialEmail : "",
           courseId: sub.courseId,
           courseTitle: crs ? crs.title : `Course #${sub.courseId}`,
-          assignmentTitle: sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"')
-            ? (cnt ? `${cnt.title} (Feedback)` : "Course Evaluation & Feedback")
+          assignmentTitle: isFb
+            ? (cnt ? `${cnt.title} (Feedback)` : "End-of-Course Feedback & Evaluation Survey (Feedback)")
             : (cnt ? cnt.title : "Practical Assignment"),
-          submissionStatus: sub.status,
+          submissionStatus: isFb ? "GRADED" : sub.status,
           submittedAt: sub.submittedAt,
           submissionText: sub.submissionText || "",
           fileUrl: sub.fileUrl || "",
-          score: sub.score,
+          score: isFb ? maxMarks : sub.score,
           maxScore: maxMarks,
-          percentage: sub.percentage || 0,
-          grade: sub.grade || "N/A",
-          feedback: sub.feedback || "",
+          percentage: isFb ? 100 : (sub.percentage || 0),
+          grade: isFb ? "COMPLETED" : (sub.grade || "N/A"),
+          feedback: isFb ? "Survey Completed" : (sub.feedback || ""),
           gradedBy: sub.gradedBy || null,
+          gradedByRole: sub.gradedBy?.includes("[SUPER_ADMIN]") ? "SUPER_ADMIN" : sub.gradedBy?.includes("[ADMIN]") ? "ADMIN" : sub.gradedBy?.includes("[TEACHER]") ? "TEACHER" : null,
           gradedAt: sub.gradedAt || null,
           attemptNumber: sub.attemptNumber || 1,
         };

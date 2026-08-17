@@ -13,6 +13,7 @@ const notification_service_1 = __importDefault(require("../notification/notifica
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const adm_zip_1 = __importDefault(require("adm-zip"));
+const { convert: convertPptxToPdf } = require("pptx-to-pdf");
 // GET /api/courses
 exports.getCourses = (0, asyncHandler_1.default)(async (req, res) => {
     const { search, categoryId, isPublished, status, departmentId, page, limit } = req.query;
@@ -34,14 +35,21 @@ exports.getCourses = (0, asyncHandler_1.default)(async (req, res) => {
 });
 // GET /api/courses/:id
 exports.getCourseById = (0, asyncHandler_1.default)(async (req, res) => {
-    const id = BigInt(req.params.id);
-    const userContext = {
-        role: req.user?.role || "GUEST",
-        employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
-        departmentId: req.user?.departmentId ? BigInt(req.user.departmentId) : undefined,
-    };
-    const course = await course_service_1.default.getCourseById(id, userContext);
-    return (0, response_1.successResponse)(res, (0, prismaSerializer_1.serializeBigInt)(course), "Course fetched successfully");
+    try {
+        const id = BigInt(req.params.id);
+        const userContext = {
+            role: req.user?.role || "GUEST",
+            employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
+            departmentId: req.user?.departmentId ? BigInt(req.user.departmentId) : undefined,
+        };
+        const course = await course_service_1.default.getCourseById(id, userContext);
+        return (0, response_1.successResponse)(res, (0, prismaSerializer_1.serializeBigInt)(course), "Course fetched successfully");
+    }
+    catch (err) {
+        const isNotFound = err.message?.toLowerCase().includes("not found");
+        const statusCode = isNotFound ? 404 : 500;
+        return (0, response_1.errorResponse)(res, err.message || "Failed to fetch course", isNotFound ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR", statusCode);
+    }
 });
 // POST /api/courses
 exports.createCourse = (0, asyncHandler_1.default)(async (req, res) => {
@@ -352,6 +360,21 @@ exports.uploadDocumentFile = (0, asyncHandler_1.default)(async (req, res) => {
     fs_1.default.writeFileSync(filePath, req.file.buffer);
     const sizeMb = (req.file.size / (1024 * 1024)).toFixed(1);
     const relativeUrl = `/storage/uploads/${uniqueName}`;
+    // Convert PPTX to PDF for inline viewing (saved alongside original)
+    let convertedPdfUrl;
+    if (originalName.toLowerCase().endsWith(".pptx")) {
+        try {
+            const pdfBuffer = await convertPptxToPdf(req.file.buffer);
+            const pdfName = uniqueName.replace(/\.pptx$/i, ".converted.pdf");
+            const pdfPath = path_1.default.join(storageDir, pdfName);
+            fs_1.default.writeFileSync(pdfPath, pdfBuffer);
+            convertedPdfUrl = `/storage/uploads/${pdfName}`;
+            console.log(`PPTX converted to PDF: ${pdfName}`);
+        }
+        catch (pdfErr) {
+            console.error("PPTX to PDF conversion error:", pdfErr);
+        }
+    }
     let extractedSlides = [];
     let extractedZipFiles = [];
     if (originalName.toLowerCase().endsWith(".zip")) {
@@ -431,6 +454,7 @@ exports.uploadDocumentFile = (0, asyncHandler_1.default)(async (req, res) => {
         fileUrl: relativeUrl,
         fileName: originalName,
         fileSize: `${sizeMb} MB`,
+        convertedPdfUrl,
         extractedZipFiles: extractedZipFiles.length > 0 ? extractedZipFiles : undefined,
         extractedSlides: extractedSlides.length > 0 ? extractedSlides : undefined,
         slidesConfigJson: extractedSlides.length > 0 ? JSON.stringify(extractedSlides) : undefined,

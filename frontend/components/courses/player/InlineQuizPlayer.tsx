@@ -31,9 +31,40 @@ interface InlineQuizPlayerProps {
   configJson?: string;
   isPreview?: boolean;
   attemptNumber?: number;
+  existingSubmission?: any;
   onComplete?: (score: number, maxScore: number, answersJson?: string) => void;
   onSkip?: () => void;
   onNextLesson?: () => void;
+}
+
+function getSafeAnswerString(ans: any): string {
+  if (ans === undefined || ans === null) return "";
+  if (typeof ans === "string") return ans.trim();
+  if (typeof ans === "number" || typeof ans === "boolean") return String(ans).trim();
+  if (Array.isArray(ans)) {
+    return ans.map((item) => getSafeAnswerString(item)).filter(Boolean).join(", ");
+  }
+  if (typeof ans === "object") {
+    return (ans.text || ans.label || ans.answer || JSON.stringify(ans)).trim();
+  }
+  return String(ans).trim();
+}
+
+function isQuestionMultiSelect(q: QuestionItem): boolean {
+  if (!q) return false;
+  const qType = (q.type || "").toUpperCase();
+  if (
+    qType === "MULTIPLE_SELECT" ||
+    qType === "MULTI_SELECT" ||
+    qType === "MULTIPLE" ||
+    qType === "MULTIPLE_CHOICE"
+  ) {
+    return true;
+  }
+  if (Array.isArray(q.correctAnswer) && q.correctAnswer.length > 1) {
+    return true;
+  }
+  return false;
 }
 
 export default function InlineQuizPlayer({
@@ -41,6 +72,7 @@ export default function InlineQuizPlayer({
   configJson,
   isPreview = false,
   attemptNumber = 1,
+  existingSubmission,
   onComplete,
   onSkip,
   onNextLesson,
@@ -87,26 +119,51 @@ export default function InlineQuizPlayer({
       questionText: q.questionText || q.title || `Question ${idx + 1}`,
       type: (q.type || q.questionType || "SINGLE").toUpperCase(),
       options: opts,
-      correctAnswer: q.correctAnswer || q.answer || "",
+      correctAnswer: q.correctAnswer ?? q.answer ?? q.correctAnswers ?? "",
       explanation: q.explanation || "",
     };
   });
 
   const [currentAttempt, setCurrentAttempt] = useState(attemptNumber);
-  React.useEffect(() => {
-    setCurrentAttempt(attemptNumber);
-  }, [attemptNumber]);
-
-  const [hasStartedQuiz, setHasStartedQuiz] = useState(false);
+  const [hasStartedQuiz, setHasStartedQuiz] = useState(Boolean(existingSubmission));
   const [activeQuestions, setActiveQuestions] = useState<QuestionItem[]>(baseQuestions);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(Boolean(existingSubmission));
   const [score, setScore] = useState(0);
 
-  const isAttemptsExhausted = !isUnlimitedAttempts && currentAttempt > maxAttempts;
+  React.useEffect(() => {
+    if (existingSubmission) {
+      setHasStartedQuiz(true);
+      setIsSubmitted(true);
+      if (existingSubmission.score !== undefined && existingSubmission.score !== null) {
+        const sc = Number(existingSubmission.score);
+        const maxSc = Number(existingSubmission.maxScore || 100);
+        setScore(maxSc > 0 ? Math.round((sc / maxSc) * 100) : sc);
+      }
+      if (existingSubmission.answersJson || existingSubmission.submissionText) {
+        try {
+          const parsedAns = JSON.parse(existingSubmission.answersJson || existingSubmission.submissionText);
+          if (parsedAns && typeof parsedAns === "object") {
+            setSelectedAnswers(parsedAns);
+          }
+        } catch {}
+      }
+    } else if (attemptNumber >= maxAttempts && !isUnlimitedAttempts) {
+      setHasStartedQuiz(true);
+      setIsSubmitted(true);
+    }
+  }, [existingSubmission, attemptNumber, maxAttempts, isUnlimitedAttempts]);
+
+  React.useEffect(() => {
+    if (attemptNumber) {
+      setCurrentAttempt(attemptNumber);
+    }
+  }, [attemptNumber]);
+
+  const isAttemptsExhausted = !isUnlimitedAttempts && (currentAttempt > maxAttempts || (isSubmitted && currentAttempt >= maxAttempts) || (attemptNumber >= maxAttempts && isSubmitted));
   const isFinalAttempt = isUnlimitedAttempts ? false : (currentAttempt >= maxAttempts || maxAttempts === 1);
-  const shouldShowAnswers = showAnswersAfterSubmitSetting && (isFinalAttempt || isUnlimitedAttempts);
+  const shouldShowAnswers = showAnswersAfterSubmitSetting || isFinalAttempt || isSubmitted;
 
   const handleReset = () => {
     setCurrentAttempt((prev) => prev + 1);
@@ -162,11 +219,33 @@ export default function InlineQuizPlayer({
   const safeOptions = Array.isArray(currentQ?.options) ? currentQ.options : [];
 
   const handleSelectOption = (option: string) => {
-    if (isSubmitted) return;
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [currentQ.id]: option,
-    }));
+    if (isSubmitted || !currentQ) return;
+    const isMulti = isQuestionMultiSelect(currentQ);
+
+    if (isMulti) {
+      const currentRaw = selectedAnswers[currentQ.id] || "";
+      const currentList = currentRaw
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      let updatedList: string[];
+      if (currentList.some((item) => item.toLowerCase() === option.trim().toLowerCase())) {
+        updatedList = currentList.filter((item) => item.toLowerCase() !== option.trim().toLowerCase());
+      } else {
+        updatedList = [...currentList, option.trim()];
+      }
+
+      setSelectedAnswers((prev) => ({
+        ...prev,
+        [currentQ.id]: updatedList.join(", "),
+      }));
+    } else {
+      setSelectedAnswers((prev) => ({
+        ...prev,
+        [currentQ.id]: option,
+      }));
+    }
   };
 
   const handleTextAnswerChange = (val: string) => {
@@ -177,19 +256,58 @@ export default function InlineQuizPlayer({
     }));
   };
 
+  const isOptionSelected = (q: QuestionItem, option: string) => {
+    const rawVal = selectedAnswers[q.id] || "";
+    if (!rawVal) return false;
+    const isMulti = isQuestionMultiSelect(q);
+
+    if (isMulti) {
+      const selectedList = rawVal.split(",").map((s) => s.trim().toLowerCase());
+      return selectedList.includes(option.trim().toLowerCase());
+    }
+    return rawVal.trim().toLowerCase() === option.trim().toLowerCase();
+  };
+
   const handleSubmitQuiz = () => {
     let calculatedScore = 0;
-    const maxScore = activeQuestions.length * 25;
+    const totalQuestions = activeQuestions.length;
+    const pointsPerQuestion = totalQuestions > 0 ? 100 / totalQuestions : 100;
+
     activeQuestions.forEach((q: QuestionItem) => {
-      if (
-        selectedAnswers[q.id] &&
-        q.correctAnswer &&
-        selectedAnswers[q.id].trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()
-      ) {
-        calculatedScore += 25;
+      const userAnsStr = getSafeAnswerString(selectedAnswers[q.id]);
+      const correctAnsStr = getSafeAnswerString(q.correctAnswer);
+
+      if (!userAnsStr || !correctAnsStr) return;
+
+      const isMulti = isQuestionMultiSelect(q);
+
+      if (isMulti) {
+        const userItems = userAnsStr
+          .split(",")
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean)
+          .sort();
+        const correctItems = correctAnsStr
+          .split(",")
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean)
+          .sort();
+
+        const isMatch =
+          userItems.length === correctItems.length &&
+          userItems.every((val, idx) => val === correctItems[idx]);
+
+        if (isMatch) {
+          calculatedScore += pointsPerQuestion;
+        }
+      } else {
+        if (userAnsStr.toLowerCase() === correctAnsStr.toLowerCase()) {
+          calculatedScore += pointsPerQuestion;
+        }
       }
     });
-    const finalScore = maxScore > 0 ? Math.round((calculatedScore / maxScore) * 100) : 100;
+
+    const finalScore = Math.min(100, Math.max(0, Math.round(calculatedScore)));
     setScore(finalScore);
     setIsSubmitted(true);
     if (onComplete) {
@@ -315,10 +433,21 @@ export default function InlineQuizPlayer({
           {shouldShowAnswers ? (
             <div className="space-y-3 text-left max-w-xl mx-auto pt-4 border-t border-slate-800">
               {activeQuestions.map((q, idx) => {
-                const isCorrect =
-                  selectedAnswers[q.id] &&
-                  q.correctAnswer &&
-                  selectedAnswers[q.id].trim().toLowerCase() === q.correctAnswer.trim().toLowerCase();
+                const userAnsStr = getSafeAnswerString(selectedAnswers[q.id]);
+                const correctAnsStr = getSafeAnswerString(q.correctAnswer);
+                const isMulti = isQuestionMultiSelect(q);
+
+                let isCorrect = false;
+                if (userAnsStr && correctAnsStr) {
+                  if (isMulti) {
+                    const userItems = userAnsStr.split(",").map((s) => s.trim().toLowerCase()).sort();
+                    const correctItems = correctAnsStr.split(",").map((s) => s.trim().toLowerCase()).sort();
+                    isCorrect = userItems.length === correctItems.length && userItems.every((val, i) => val === correctItems[i]);
+                  } else {
+                    isCorrect = userAnsStr.toLowerCase() === correctAnsStr.toLowerCase();
+                  }
+                }
+
                 return (
                   <div key={q.id} className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1">
                     <div className="flex items-center justify-between font-bold">
@@ -328,11 +457,11 @@ export default function InlineQuizPlayer({
                       </Badge>
                     </div>
                     <div className="text-slate-400">
-                      Your Answer: <strong className={isCorrect ? "text-emerald-400" : "text-amber-300"}>{selectedAnswers[q.id] || "Not answered"}</strong>
+                      Your Answer: <strong className={isCorrect ? "text-emerald-400" : "text-amber-300"}>{userAnsStr || "Not answered"}</strong>
                     </div>
-                    {!isCorrect && q.correctAnswer && (
+                    {!isCorrect && correctAnsStr && (
                       <div className="text-emerald-400 text-[11px] pt-1">
-                        Correct Answer: {q.correctAnswer}
+                        Correct Answer: {correctAnsStr}
                       </div>
                     )}
                     {q.explanation && (
@@ -389,7 +518,9 @@ export default function InlineQuizPlayer({
           {safeOptions.length > 0 ? (
             <div className="space-y-2.5">
               {safeOptions.map((opt, oIdx) => {
-                const isSelected = selectedAnswers[currentQ.id] === opt;
+                const isSelected = isOptionSelected(currentQ, opt);
+                const isMulti = isQuestionMultiSelect(currentQ);
+
                 return (
                   <div
                     key={oIdx}
@@ -402,13 +533,15 @@ export default function InlineQuizPlayer({
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`h-5 w-5 rounded-full border flex items-center justify-center text-[10px] font-bold ${
+                        className={`h-5 w-5 ${
+                          isMulti ? "rounded-md" : "rounded-full"
+                        } border flex items-center justify-center text-[10px] font-bold ${
                           isSelected
                             ? "border-amber-400 bg-amber-400 text-slate-950"
                             : "border-slate-700 text-slate-400"
                         }`}
                       >
-                        {String.fromCharCode(65 + oIdx)}
+                        {isSelected ? "✓" : String.fromCharCode(65 + oIdx)}
                       </div>
                       <span>{opt}</span>
                     </div>

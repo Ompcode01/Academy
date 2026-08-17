@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import {
   FileText,
@@ -8,16 +6,22 @@ import {
   Presentation,
   AlertCircle,
   ExternalLink,
+  Folder,
+  FileCode,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getStorageUrl } from "@/services/api/course.service";
 
+import InteractivePptViewer from "./InteractivePptViewer";
+
 interface InteractiveDocViewerProps {
   title: string;
-  contentType: string; // "PDF" | "PPT" | "DOCUMENT" etc.
+  contentType: string; // "PDF" | "PPT" | "DOCUMENT" | "DOCX" | "ZIP" etc.
   contentUrl?: string;
   description?: string;
+  configJson?: string;
 }
 
 /**
@@ -51,6 +55,7 @@ export default function InteractiveDocViewer({
   contentType,
   contentUrl,
   description,
+  configJson,
 }: InteractiveDocViewerProps) {
   const hasCustomUrl = Boolean(contentUrl && contentUrl.trim() !== "");
   const [pdfCheckState, setPdfCheckState] = React.useState<"loading" | "found" | "notfound">("loading");
@@ -62,7 +67,16 @@ export default function InteractiveDocViewer({
   const isPdf =
     contentType === "PDF" ||
     (contentUrl && contentUrl.toLowerCase().includes(".pdf"));
-  const isArticle = contentType === "ARTICLE" || (!contentUrl && Boolean(description && !isPpt && !isPdf));
+  const isDoc =
+    contentType === "DOC" ||
+    contentType === "DOCX" ||
+    contentType === "DOCUMENT" ||
+    (contentUrl && contentUrl.toLowerCase().match(/\.(docx?)$/i));
+  const isZip =
+    contentType === "ZIP" ||
+    (contentUrl && contentUrl.toLowerCase().includes(".zip"));
+
+  const isArticle = contentType === "ARTICLE" || (!contentUrl && Boolean(description && !isPpt && !isPdf && !isDoc && !isZip));
 
   // Determine if the description is JSON slide data (so we don't display it as text)
   let descriptionIsSlideJson = false;
@@ -173,6 +187,178 @@ export default function InteractiveDocViewer({
           <div className="prose dark:prose-invert max-w-none text-sm leading-relaxed text-foreground whitespace-pre-line space-y-4">
             {description || "No additional text content provided for this article."}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isPpt) {
+    return (
+      <InteractivePptViewer
+        title={title}
+        contentUrl={contentUrl}
+        description={description}
+        convertedPdfUrl={convertedPdfPath || undefined}
+      />
+    );
+  }
+
+  if (isDoc) {
+    return (
+      <div className="w-full space-y-4 select-none">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs">
+          <div className="flex items-center gap-2.5">
+            <Badge className="bg-blue-600 text-white border border-blue-500/30 gap-1 font-extrabold text-[10px] uppercase">
+              <FileText className="h-3.5 w-3.5" /> Word Document (.docx)
+            </Badge>
+            <span className="font-bold text-slate-200 truncate">{title}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => window.open(`https://docs.google.com/gview?url=${encodeURIComponent(downloadUrl)}&embedded=true`, "_blank")}
+              className="h-8 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs gap-1.5 cursor-pointer"
+            >
+              <Eye className="h-3.5 w-3.5" /> View Document
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDownload}
+              className="h-8 border-slate-700 text-slate-200 hover:bg-slate-800 font-bold text-xs gap-1.5 cursor-pointer"
+            >
+              <Download className="h-3.5 w-3.5 text-amber-400" /> Download .docx
+            </Button>
+          </div>
+        </div>
+
+        <div className="p-8 bg-slate-950 border border-slate-800 rounded-2xl text-center space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mx-auto shadow-inner">
+            <FileText className="h-8 w-8" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-lg font-extrabold text-white">{title}</h3>
+            <p className="text-xs text-slate-400 max-w-md mx-auto">
+              Microsoft Word Document instructional resource. Click below to view in document viewer or download to your machine.
+            </p>
+          </div>
+          <div className="flex justify-center gap-3 pt-2">
+            <Button
+              onClick={() => window.open(`https://docs.google.com/gview?url=${encodeURIComponent(downloadUrl)}&embedded=true`, "_blank")}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
+            >
+              <Eye className="h-4 w-4" /> Open Word Viewer
+            </Button>
+            <Button
+              onClick={handleDownload}
+              variant="outline"
+              className="border-slate-700 text-slate-200 hover:bg-slate-800 font-bold text-xs gap-2 px-5 h-10 cursor-pointer"
+            >
+              <Download className="h-4 w-4 text-amber-400" /> Download Document File
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isZip) {
+    let zipEntries: any[] = [];
+    if (configJson) {
+      try {
+        const parsed = typeof configJson === "string" ? JSON.parse(configJson) : configJson;
+        zipEntries = parsed.extractedZipFiles || parsed.zipFiles || [];
+      } catch {}
+    }
+
+    return (
+      <div className="w-full space-y-4 select-none">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs">
+          <div className="flex items-center gap-2.5">
+            <Badge className="bg-amber-500 text-slate-950 border border-amber-500/30 gap-1 font-extrabold text-[10px] uppercase">
+              <Folder className="h-3.5 w-3.5" /> ZIP Archive &amp; Folder Package
+            </Badge>
+            <span className="font-bold text-slate-200 truncate">{title}</span>
+          </div>
+          <Button
+            size="sm"
+            onClick={handleDownload}
+            className="h-8 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-1.5 cursor-pointer"
+          >
+            <Download className="h-3.5 w-3.5" /> Download Full ZIP Package
+          </Button>
+        </div>
+
+        <div className="p-6 bg-slate-950 border border-slate-800 rounded-2xl space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2 text-sm font-extrabold text-amber-400">
+              <Folder className="h-5 w-5 text-amber-400" />
+              <span>Extracted Project Folder Contents ({zipEntries.length} Files)</span>
+            </div>
+            <span className="text-xs text-slate-400 font-medium">Click any file to view / download</span>
+          </div>
+
+          {zipEntries.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto scrollbar-thin">
+              {zipEntries.map((zFile: any, zIdx: number) => {
+                const fName = zFile.name || zFile.fileName || `File_${zIdx + 1}`;
+                const ext = fName.split(".").pop()?.toLowerCase() || "";
+                const isPdfExt = ext === "pdf";
+                const isPptExt = ["ppt", "pptx"].includes(ext);
+                const isDocExt = ["doc", "docx"].includes(ext);
+                const isCodeExt = ["js", "ts", "html", "css", "json", "py", "java", "sql", "txt"].includes(ext);
+                const rawFileUrl = zFile.url || zFile.fileUrl || `/storage/uploads/${fName}`;
+                const targetFileUrl = getStorageUrl(rawFileUrl);
+
+                return (
+                  <div
+                    key={zIdx}
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-xs transition-all group"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                      {isPdfExt ? (
+                        <FileText className="h-4 w-4 text-red-400 shrink-0" />
+                      ) : isPptExt ? (
+                        <Presentation className="h-4 w-4 text-amber-400 shrink-0" />
+                      ) : isDocExt ? (
+                        <FileText className="h-4 w-4 text-blue-400 shrink-0" />
+                      ) : isCodeExt ? (
+                        <FileCode className="h-4 w-4 text-emerald-400 shrink-0" />
+                      ) : (
+                        <FileText className="h-4 w-4 text-purple-400 shrink-0" />
+                      )}
+                      <div className="truncate">
+                        <p className="font-semibold text-slate-200 truncate group-hover:text-amber-400 transition-colors">
+                          {fName}
+                        </p>
+                        {zFile.sizeMb && <p className="text-[10px] text-slate-500">{zFile.sizeMb} MB</p>}
+                      </div>
+                    </div>
+
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => window.open(targetFileUrl, "_blank", "noopener,noreferrer")}
+                      className="h-7 px-2.5 text-[11px] text-amber-400 hover:text-amber-300 hover:bg-slate-800 font-bold gap-1 shrink-0"
+                    >
+                      <Download className="h-3 w-3" /> View
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-8 text-center text-xs text-slate-400 space-y-3">
+              <p>Project ZIP package uploaded by instructor.</p>
+              <Button
+                onClick={handleDownload}
+                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
+              >
+                <Download className="h-4 w-4" /> Download ZIP Folder Archive
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     );

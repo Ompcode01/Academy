@@ -23,7 +23,7 @@ export default function LearnerCertificateModal({
 
   const activeCert: IssuedCertificateData = certificate || {
     id: 99999,
-    userAccountId: 1,
+    userId: 1,
     courseId: 1,
     recipientName: fallbackRecipientName || "Enrolled Learner",
     courseTitle: fallbackCourseTitle || "Course Completion Certificate",
@@ -88,18 +88,13 @@ export default function LearnerCertificateModal({
           <div id="certificate-preview-container">
             <CertificatePreview
               logoUrl={template.logoUrl}
-              headerTitle={template.headerTitle || "CERTIFICATE"}
-              headerSubtitle={template.headerSubtitle || "OF ACHIEVEMENT"}
-              certifyText={template.certifyText || "This is to certify that"}
-              recipientName={activeCert.recipientName}
-              completionText={template.completionText || "has successfully completed and passed the course"}
-              courseTitle={activeCert.courseTitle}
-              signatoryName={template.signatoryName || "Richard Wilson"}
-              signatoryTitle={template.signatoryTitle || "Authorized Director"}
-              signatureUrl={template.signatureUrl}
+              headerTitle={template.headerTitle || "CERTIFICATE OF COMPLETION"}
+              certifyText={template.certifyText || "This is to certify that Ms./Mr."}
+              recipientName={activeCert.recipientName || "Training Administrator"}
+              completionText={template.completionText || "has successfully completed"}
+              courseTitle={activeCert.courseTitle || "Elevate... Go Beyond"}
               completionDate={activeCert.issuedAt}
               certificateCode={activeCert.certificateCode}
-              primaryColor={template.primaryColor || "#d97706"}
             />
           </div>
         </div>

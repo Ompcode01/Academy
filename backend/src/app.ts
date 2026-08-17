@@ -35,65 +35,78 @@ app.use(express.urlencoded({
     extended: true,
 }));
 
-// Serve static storage directory for unzipped SCORM packages, documents, and uploads
-app.use("/storage/uploads", express.static(path.join(process.cwd(), "public/storage/uploads")));
-app.use("/storage/documents", express.static(path.join(process.cwd(), "public/storage/uploads")));
-app.use("/storage/documents", express.static(path.join(process.cwd(), "public/storage")));
-app.use("/storage", express.static(path.join(process.cwd(), "public/storage/uploads")));
-app.use("/storage", express.static(path.join(process.cwd(), "public/storage")));
-app.use("/storage", express.static(path.join(__dirname, "../public/storage")));
-
-// Smart wildcard fallback handler for all static storage files (PDF, DOCX, ZIP, PPTX)
+// Universal Static File Resolver Middleware for /storage & /storage/uploads (ZIP, DOCX, PPTX, PDF)
 app.use("/storage", (req, res, next) => {
   if (req.method !== "GET" && req.method !== "HEAD") return next();
-  const reqPath = decodeURIComponent(req.path).replace(/^\/+/, "");
-  if (!reqPath || reqPath.includes("scorm")) return next();
-  const fileName = path.basename(reqPath);
-  const storageUploadsDir = path.join(process.cwd(), "public/storage/uploads");
-  const storageDir = path.join(process.cwd(), "public/storage");
 
-  // 1. Direct path check
-  const possiblePaths = [
-    path.join(storageUploadsDir, reqPath),
-    path.join(storageDir, reqPath),
-    path.join(storageUploadsDir, fileName),
+  const rawPath = decodeURIComponent(req.path || "").replace(/^\/+/, "");
+  if (!rawPath || rawPath.includes("scorm")) {
+    return next();
+  }
+
+  const fileName = path.basename(rawPath);
+  const uploadsDir = path.join(process.cwd(), "public/storage/uploads");
+  const storageDir = path.join(process.cwd(), "public/storage");
+  const cleanSubPath = rawPath.replace(/^uploads[\/\\]/i, "");
+
+  // Candidate paths for direct file lookup
+  const candidatePaths = [
+    path.join(uploadsDir, cleanSubPath),
+    path.join(storageDir, cleanSubPath),
+    path.join(uploadsDir, rawPath),
+    path.join(storageDir, rawPath),
+    path.join(uploadsDir, fileName),
     path.join(storageDir, fileName),
   ];
 
-  for (const p of possiblePaths) {
+  for (const p of candidatePaths) {
     if (fs.existsSync(p) && fs.statSync(p).isFile()) {
       return res.sendFile(p);
     }
   }
 
-  // 2. Fuzzy / Prefix matching across storage upload directories
-  try {
-    const searchDirs = [storageUploadsDir, storageDir];
-    const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const normTarget = normalize(fileName);
+  // Recursive search inside storage directories for timestamped files (e.g. doc-178...-TalentSense_AI.zip)
+  function searchRecursive(dir: string, targetName: string): string | null {
+    if (!fs.existsSync(dir)) return null;
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      const normTarget = targetName.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-    if (normTarget.length > 2) {
-      for (const dir of searchDirs) {
-        if (!fs.existsSync(dir)) continue;
-        const files = fs.readdirSync(dir);
-        const match = files.find((f) => {
-          const normF = normalize(f);
-          return normF.includes(normTarget) || normTarget.includes(normF);
-        });
-        if (match) {
-          const fullMatchPath = path.join(dir, match);
-          if (fs.existsSync(fullMatchPath) && fs.statSync(fullMatchPath).isFile()) {
-            return res.sendFile(fullMatchPath);
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          const found = searchRecursive(fullPath, targetName);
+          if (found) return found;
+        } else if (entry.isFile()) {
+          const normEntry = entry.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+          if (
+            entry.name === targetName ||
+            normEntry === normTarget ||
+            normEntry.includes(normTarget) ||
+            (normTarget.length > 3 && normTarget.includes(normEntry))
+          ) {
+            return fullPath;
           }
         }
       }
+    } catch (err) {
+      console.error("Static file recursive search error:", err);
     }
-  } catch (err) {
-    console.error("Storage fallback match error:", err);
+    return null;
+  }
+
+  const foundFile = searchRecursive(uploadsDir, fileName) || searchRecursive(storageDir, fileName);
+  if (foundFile) {
+    return res.sendFile(foundFile);
   }
 
   next();
 });
+
+// Standard static express middleware for relative assets
+app.use("/storage/uploads", express.static(path.join(process.cwd(), "public/storage/uploads")));
+app.use("/storage", express.static(path.join(process.cwd(), "public/storage/uploads")));
+app.use("/storage", express.static(path.join(process.cwd(), "public/storage")));
 
 app.get("/", (req, res) => {
     res.json({

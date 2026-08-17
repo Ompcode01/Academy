@@ -109,8 +109,13 @@ export const getCourses = async (filters: CourseFiltersProps = {}) => {
 };
 
 export const getCourseById = async (id: number) => {
-  const response = await api.get(`/courses/${id}`);
-  return response.data;
+  try {
+    const response = await api.get(`/courses/${id}`);
+    return response.data;
+  } catch (err: any) {
+    console.warn(`Course #${id} not found or failed to load:`, err?.message || err);
+    return { success: false, data: null, message: err?.response?.data?.message || "Course not found" };
+  }
 };
 
 export const createCourse = async (data: Partial<Course>) => {

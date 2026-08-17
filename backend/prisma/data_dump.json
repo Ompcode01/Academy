@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-14T11:57:33.635Z",
+  "exportedAt": "2026-08-17T11:06:14.307Z",
   "departments": [
     {
       "id": "1",
@@ -450,13 +450,13 @@
       "employeeId": "1",
       "username": "priyanka",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-14T11:13:05.355Z",
+      "lastLogin": "2026-08-17T10:30:28.162Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.459Z",
-      "updatedAt": "2026-08-14T11:13:05.356Z"
+      "updatedAt": "2026-08-17T10:30:28.164Z"
     },
     {
       "id": "2",
@@ -489,39 +489,39 @@
       "employeeId": "4",
       "username": "sneha",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-14T10:06:03.716Z",
+      "lastLogin": "2026-08-17T10:57:16.203Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.584Z",
-      "updatedAt": "2026-08-14T10:06:03.718Z"
+      "updatedAt": "2026-08-17T10:57:16.212Z"
     },
     {
       "id": "5",
       "employeeId": "5",
       "username": "guest",
-      "passwordHash": "$2b$10$TLHH3aFLkD331pg5.jUe8umZpUkdjvxhY0D4KR2QeqblhcM.5i9Wq",
+      "passwordHash": "$2b$10$LqYy4/X/RV3AjDf6hqZttufe0BscfOzf7dJeg9XKDSUALB1myXeeq",
       "lastLogin": null,
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.621Z",
-      "updatedAt": "2026-08-13T09:22:32.209Z"
+      "updatedAt": "2026-08-17T11:06:05.598Z"
     },
     {
       "id": "6",
       "employeeId": "6",
       "username": "employee6",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-10T07:16:44.697Z",
+      "lastLogin": "2026-08-17T11:05:30.974Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.675Z",
-      "updatedAt": "2026-08-10T07:16:44.701Z"
+      "updatedAt": "2026-08-17T11:05:30.976Z"
     },
     {
       "id": "7",
@@ -1099,7 +1099,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.381Z",
-      "updatedAt": "2026-08-10T07:17:20.219Z"
+      "updatedAt": "2026-08-14T11:58:01.692Z"
     },
     {
       "id": "2",
@@ -1118,7 +1118,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.399Z",
-      "updatedAt": "2026-08-10T07:17:23.643Z"
+      "updatedAt": "2026-08-14T11:58:01.722Z"
     },
     {
       "id": "3",
@@ -1137,7 +1137,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.413Z",
-      "updatedAt": "2026-08-10T07:17:28.823Z"
+      "updatedAt": "2026-08-14T11:58:01.736Z"
     },
     {
       "id": "4",
@@ -1156,7 +1156,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.427Z",
-      "updatedAt": "2026-08-10T07:17:26.329Z"
+      "updatedAt": "2026-08-14T11:58:01.750Z"
     },
     {
       "id": "5",
@@ -1175,7 +1175,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.440Z",
-      "updatedAt": "2026-08-10T07:17:12.256Z"
+      "updatedAt": "2026-08-14T11:58:01.760Z"
     },
     {
       "id": "6",
@@ -1194,7 +1194,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-08-08T12:00:22.886Z",
-      "updatedAt": "2026-08-10T07:17:09.592Z"
+      "updatedAt": "2026-08-14T11:58:01.774Z"
     },
     {
       "id": "7",
@@ -1211,9 +1211,9 @@
       "status": "PUBLISHED",
       "enrollmentType": "SELF",
       "isMandatory": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-11T08:34:11.884Z",
-      "updatedAt": "2026-08-11T08:34:11.884Z"
+      "updatedAt": "2026-08-17T09:04:22.675Z"
     },
     {
       "id": "8",
@@ -1230,9 +1230,28 @@
       "status": "PUBLISHED",
       "enrollmentType": "SELF",
       "isMandatory": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-12T09:06:03.007Z",
-      "updatedAt": "2026-08-12T09:06:03.007Z"
+      "updatedAt": "2026-08-17T09:04:19.670Z"
+    },
+    {
+      "id": "9",
+      "categoryId": "1",
+      "departmentId": null,
+      "creatorId": "1",
+      "title": "Agentic AI",
+      "shortDescription": "Learn the fundamentals of Agentic AI and understand how AI agents can reason, plan, use tools, make decisions, and complete tasks autonomously. Explore agent architectures, workflows, tool calling, memory, and multi-agent systems through practical examples.",
+      "description": "This course introduces learners to the fundamentals of Agentic AI and modern AI agent systems. Learners will understand the difference between traditional AI, generative AI, and agentic AI, and explore how agents use reasoning, planning, tools, memory, and feedback to accomplish complex tasks. The course covers agent architectures, tool calling, workflows, autonomous decision-making, and multi-agent collaboration. Learners will also gain hands-on experience building simple AI agents using frameworks such as LangChain and LangGraph. By the end of the course, learners will be able to explain core agentic AI concepts, design basic agent workflows, integrate tools with agents, and identify suitable real-world enterprise use cases for agentic systems.",
+      "thumbnail": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+      "duration": 7,
+      "level": "Beginner",
+      "language": "English",
+      "status": "PUBLISHED",
+      "enrollmentType": "SELF",
+      "isMandatory": false,
+      "isActive": true,
+      "createdAt": "2026-08-17T09:35:15.124Z",
+      "updatedAt": "2026-08-17T10:07:40.826Z"
     }
   ],
   "courseTeachers": [
@@ -1253,6 +1272,12 @@
       "courseId": "8",
       "teacherId": "4",
       "assignedAt": "2026-08-12T09:06:03.276Z"
+    },
+    {
+      "id": "4",
+      "courseId": "9",
+      "teacherId": "4",
+      "assignedAt": "2026-08-17T09:35:15.469Z"
     }
   ],
   "courseSections": [
@@ -1265,7 +1290,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-08T12:00:22.926Z",
-      "updatedAt": "2026-08-08T12:00:22.926Z"
+      "updatedAt": "2026-08-14T11:58:01.814Z"
     },
     {
       "id": "2",
@@ -1276,7 +1301,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-08T12:00:22.961Z",
-      "updatedAt": "2026-08-08T12:00:22.961Z"
+      "updatedAt": "2026-08-14T11:58:01.830Z"
     },
     {
       "id": "3",
@@ -1287,7 +1312,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-11T08:34:12.001Z",
-      "updatedAt": "2026-08-11T08:34:12.001Z"
+      "updatedAt": "2026-08-14T11:58:01.843Z"
     },
     {
       "id": "4",
@@ -1298,7 +1323,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-11T08:34:12.102Z",
-      "updatedAt": "2026-08-11T08:34:12.102Z"
+      "updatedAt": "2026-08-14T11:58:01.858Z"
     },
     {
       "id": "5",
@@ -1309,7 +1334,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-12T09:06:03.061Z",
-      "updatedAt": "2026-08-12T09:06:03.061Z"
+      "updatedAt": "2026-08-14T11:58:01.870Z"
     },
     {
       "id": "6",
@@ -1320,7 +1345,128 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-12T09:06:03.176Z",
-      "updatedAt": "2026-08-12T09:06:03.176Z"
+      "updatedAt": "2026-08-14T11:58:01.882Z"
+    },
+    {
+      "id": "7",
+      "courseId": "9",
+      "title": "Section 1: Introduction",
+      "description": "Welcome to Agentic AI! In this module, you will learn what Agentic AI is, how AI agents work, and how they differ from traditional AI and Generative AI systems. You will explore the core concepts of agents, including reasoning, planning, tool usage, memory, and autonomous decision-making. This introduction will provide the foundation needed to understand and build practical AI agent applications.",
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-17T09:35:15.188Z",
+      "updatedAt": "2026-08-17T10:07:40.878Z"
+    },
+    {
+      "id": "8",
+      "courseId": "9",
+      "title": "Section 2: Practicle",
+      "description": "Welcome to Agentic AI! In this module, you will learn what Agentic AI is, how AI agents work, and how they differ from traditional AI and Generative AI systems. You will explore the core concepts of agents, including reasoning, planning, tool usage, memory, and autonomous decision-making. This introduction will provide the foundation needed to understand and build practical AI agent applications.",
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-17T09:35:15.336Z",
+      "updatedAt": "2026-08-17T10:07:40.878Z"
+    },
+    {
+      "id": "9",
+      "courseId": "9",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 3,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-17T09:35:15.413Z",
+      "updatedAt": "2026-08-17T10:07:40.878Z"
+    },
+    {
+      "id": "10",
+      "courseId": "9",
+      "title": "Section 1: Introduction",
+      "description": "Welcome to Agentic AI! In this module, you will learn what Agentic AI is, how AI agents work, and how they differ from traditional AI and Generative AI systems. You will explore the core concepts of agents, including reasoning, planning, tool usage, memory, and autonomous decision-making. This introduction will provide the foundation needed to understand and build practical AI agent applications.",
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-17T09:48:47.958Z",
+      "updatedAt": "2026-08-17T10:07:40.878Z"
+    },
+    {
+      "id": "11",
+      "courseId": "9",
+      "title": "Section 2: Practicle",
+      "description": "Welcome to Agentic AI! In this module, you will learn what Agentic AI is, how AI agents work, and how they differ from traditional AI and Generative AI systems. You will explore the core concepts of agents, including reasoning, planning, tool usage, memory, and autonomous decision-making. This introduction will provide the foundation needed to understand and build practical AI agent applications.",
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-17T09:48:48.195Z",
+      "updatedAt": "2026-08-17T10:07:40.878Z"
+    },
+    {
+      "id": "12",
+      "courseId": "9",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 3,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-17T09:48:48.403Z",
+      "updatedAt": "2026-08-17T10:07:40.878Z"
+    },
+    {
+      "id": "13",
+      "courseId": "9",
+      "title": "Section 1: Introduction",
+      "description": "Welcome to Agentic AI! In this module, you will learn what Agentic AI is, how AI agents work, and how they differ from traditional AI and Generative AI systems. You will explore the core concepts of agents, including reasoning, planning, tool usage, memory, and autonomous decision-making. This introduction will provide the foundation needed to understand and build practical AI agent applications.",
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-17T10:07:40.903Z",
+      "updatedAt": "2026-08-17T10:07:40.903Z"
+    },
+    {
+      "id": "14",
+      "courseId": "9",
+      "title": "Section 2: Practicle",
+      "description": "Welcome to Agentic AI! In this module, you will learn what Agentic AI is, how AI agents work, and how they differ from traditional AI and Generative AI systems. You will explore the core concepts of agents, including reasoning, planning, tool usage, memory, and autonomous decision-making. This introduction will provide the foundation needed to understand and build practical AI agent applications.",
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-17T10:07:41.031Z",
+      "updatedAt": "2026-08-17T10:07:41.031Z"
+    },
+    {
+      "id": "15",
+      "courseId": "9",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 3,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-17T10:07:41.083Z",
+      "updatedAt": "2026-08-17T10:07:41.083Z"
+    },
+    {
+      "id": "16",
+      "courseId": "9",
+      "title": "Module 1: Foundations of Agentic Systems",
+      "description": "Core principles of autonomous AI agents, tool calling, and execution loops.",
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-17T11:06:05.857Z",
+      "updatedAt": "2026-08-17T11:06:05.857Z"
+    },
+    {
+      "id": "17",
+      "courseId": "9",
+      "title": "Module 2: Practical Projects & Feedback",
+      "description": "Hands-on project evaluation and end-of-course survey.",
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-17T11:06:05.899Z",
+      "updatedAt": "2026-08-17T11:06:05.899Z"
     }
   ],
   "learningContents": [
@@ -1339,7 +1485,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-08T12:00:22.944Z",
-      "updatedAt": "2026-08-08T12:00:22.944Z"
+      "updatedAt": "2026-08-14T11:58:01.893Z"
     },
     {
       "id": "2",
@@ -1356,7 +1502,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-08T12:00:22.944Z",
-      "updatedAt": "2026-08-08T12:00:22.944Z"
+      "updatedAt": "2026-08-14T11:58:01.912Z"
     },
     {
       "id": "3",
@@ -1373,7 +1519,7 @@
       "quizConfigJson": "[{\"id\":1,\"question\":\"Which HTTP status code signifies a resource was successfully created?\",\"options\":[\"200 OK\",\"201 Created\",\"400 Bad Request\",\"500 Server Error\"],\"correctIndex\":1,\"explanation\":\"201 Created is the standard HTTP status code for successful creation of a resource.\"},{\"id\":2,\"question\":\"What does JWT stand for in web security authentication?\",\"options\":[\"Java Web Token\",\"JSON Web Token\",\"JavaScript Web Transfer\",\"Joint Work Task\"],\"correctIndex\":1,\"explanation\":\"JWT stands for JSON Web Token.\"},{\"id\":3,\"question\":\"Which pattern is best suited for decoupled asynchronous event processing?\",\"options\":[\"Synchronous RPC\",\"Pub/Sub Messaging Queue\",\"Direct Database Access\",\"Polled File Access\"],\"correctIndex\":1,\"explanation\":\"Publish/Subscribe messaging queues allow decoupled asynchronous message handling.\"}]",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-08T12:00:22.974Z",
-      "updatedAt": "2026-08-08T12:00:22.974Z"
+      "updatedAt": "2026-08-14T11:58:01.928Z"
     },
     {
       "id": "4",
@@ -1390,7 +1536,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"instructions\":\"Design a secure Express.js microservice API endpoint that validates JWT tokens and implements role-based access control (RBAC). Submit your solution text or GitHub repo URL below.\",\"maxScore\":100,\"requiresGrading\":true}",
       "createdAt": "2026-08-08T12:00:22.990Z",
-      "updatedAt": "2026-08-08T12:00:22.990Z"
+      "updatedAt": "2026-08-14T11:58:01.942Z"
     },
     {
       "id": "5",
@@ -1407,7 +1553,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-11T08:34:12.039Z",
-      "updatedAt": "2026-08-11T08:34:12.039Z"
+      "updatedAt": "2026-08-14T11:58:01.955Z"
     },
     {
       "id": "6",
@@ -1424,7 +1570,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-11T08:34:12.077Z",
-      "updatedAt": "2026-08-11T08:34:12.077Z"
+      "updatedAt": "2026-08-14T11:58:01.968Z"
     },
     {
       "id": "7",
@@ -1441,7 +1587,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-11T08:34:12.119Z",
-      "updatedAt": "2026-08-11T08:34:12.119Z"
+      "updatedAt": "2026-08-14T11:58:01.979Z"
     },
     {
       "id": "8",
@@ -1458,7 +1604,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-11T08:34:12.137Z",
-      "updatedAt": "2026-08-11T08:34:12.137Z"
+      "updatedAt": "2026-08-14T11:58:01.992Z"
     },
     {
       "id": "9",
@@ -1475,7 +1621,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-12T09:06:03.096Z",
-      "updatedAt": "2026-08-12T09:06:03.096Z"
+      "updatedAt": "2026-08-14T11:58:02.007Z"
     },
     {
       "id": "10",
@@ -1492,7 +1638,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-12T09:06:03.145Z",
-      "updatedAt": "2026-08-12T09:06:03.145Z"
+      "updatedAt": "2026-08-14T11:58:02.022Z"
     },
     {
       "id": "11",
@@ -1509,7 +1655,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-12T09:06:03.202Z",
-      "updatedAt": "2026-08-12T09:06:03.202Z"
+      "updatedAt": "2026-08-14T11:58:02.037Z"
     },
     {
       "id": "12",
@@ -1526,7 +1672,7 @@
       "quizConfigJson": "{\"title\":\"sdfgh\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":2,\"totalMarks\":2,\"questions\":[{\"questionType\":\"TRUE_FALSE\",\"questionText\":\"Orange is Colour\",\"marks\":2,\"correctAnswer\":\"True\",\"explanation\":\"zx\"}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-12T09:06:03.229Z",
-      "updatedAt": "2026-08-12T09:06:03.229Z"
+      "updatedAt": "2026-08-14T11:58:02.051Z"
     },
     {
       "id": "13",
@@ -1543,7 +1689,432 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"title\":\"Mini Project\",\"description\":\"ASWDFRGHYJKLO;P\\nasdfghyjukl.;/\\nzavfgbhnjmkl.;/\\nasxdcfghjkl;\\nazxvfbgnhjm,k\\nl\",\"maxMarks\":50,\"deadline\":\"2026-08-22 23:59\",\"maxAttempts\":2,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Bussiness_Requirement_Document.docx\",\"size\":\"0.0 MB\"}]}",
       "createdAt": "2026-08-12T09:06:03.249Z",
-      "updatedAt": "2026-08-12T09:06:03.249Z"
+      "updatedAt": "2026-08-14T11:58:02.063Z"
+    },
+    {
+      "id": "14",
+      "sectionId": "7",
+      "title": "SCORM TESTING",
+      "contentType": "SCORM",
+      "contentUrl": "/storage/scorm/scorm-1786958549590-qhfr1u/Etiquette/Course.html",
+      "description": null,
+      "duration": 30,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:35:15.226Z",
+      "updatedAt": "2026-08-17T09:35:15.226Z"
+    },
+    {
+      "id": "15",
+      "sectionId": "7",
+      "title": "PDF TESTING",
+      "contentType": "PDF",
+      "contentUrl": "/storage/uploads/doc-1786958571938-Artboard_____1_1.pdf",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:35:15.260Z",
+      "updatedAt": "2026-08-17T09:35:15.260Z"
+    },
+    {
+      "id": "16",
+      "sectionId": "7",
+      "title": "PPT TESTING",
+      "contentType": "PPT",
+      "contentUrl": "/storage/uploads/doc-1786958585612-Enterprise_Agentic_Design.pptx",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 3,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:35:15.285Z",
+      "updatedAt": "2026-08-17T09:35:15.285Z"
+    },
+    {
+      "id": "17",
+      "sectionId": "7",
+      "title": "ARTICLE TESTING",
+      "contentType": "ARTICLE",
+      "contentUrl": null,
+      "description": "Here is some testing text for an Article content type in your LMS:\n\nTitle: Introduction to Agentic AI\n\nArticle Content:\n\nAgentic AI represents a new generation of artificial intelligence systems that can understand goals, reason about tasks, make decisions, use external tools, and take actions with limited human intervention.\n\nUnlike traditional AI systems that typically respond to a predefined request, AI agents can follow a multi-step process to accomplish a goal. An agent may analyze the user's request, create a plan, retrieve information, call an API or tool, evaluate the result, and decide what to do next.\n\nKey Components of Agentic AI\n\n1. Reasoning\nAgents analyze information and determine the appropriate next step based on the given goal.\n\n2. Planning\nAn agent can break a complex task into smaller, manageable steps and execute them in sequence.\n\n3. Tool Usage\nAgents can interact with external tools such as databases, APIs, search engines, calculators, and business applications.\n\n4. Memory\nMemory allows an agent to maintain relevant information from previous interactions and use it when making future decisions.\n\n5. Decision Making\nAgents evaluate available information and select an appropriate action to achieve their objectives.\n\nExample\n\nConsider an employee asking:\n\n\"Find my remaining leave balance and suggest suitable dates for a vacation.\"\n\nAn Agentic AI system could identify the employee, retrieve leave information from an HR system, check the company holiday calendar, analyze available dates, and provide suitable recommendations.\n\nAgentic AI vs Generative AI\n\nGenerative AI primarily focuses on generating content such as text, images, code, or summaries in response to prompts. Agentic AI goes a step further by using AI models as part of a larger system that can reason, plan, interact with tools, and perform actions.\n\nAgentic AI is therefore useful for applications such as customer support, enterprise automation, financial analysis, software development, research assistants, and workflow automation.\n\nKey Takeaway\n\nAgentic AI enables AI systems to move from simply answering questions to achieving goals through reasoning, planning, tool usage, and actions. Understanding these concepts is the foundation for building reliable and useful AI agents.",
+      "duration": 10,
+      "contentOrder": 4,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:35:15.309Z",
+      "updatedAt": "2026-08-17T09:35:15.309Z"
+    },
+    {
+      "id": "18",
+      "sectionId": "8",
+      "title": "MiniProject",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Read carefully and complete assignment within time.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Use Java Language.\\nUpload zip file only.\",\"maxMarks\":50,\"deadline\":\"2026-08-18 23:59\",\"maxAttempts\":1,\"lateSubmission\":\"NOT_ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Read carefully and complete assignment within time.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Consolidated_Enterprise_AI_Project_Scenarios (1).docx\",\"size\":\"0.0 MB\"},{\"name\":\"Artboard – 1 1.pdf\",\"size\":\"0.6 MB\"}]}",
+      "createdAt": "2026-08-17T09:35:15.361Z",
+      "updatedAt": "2026-08-17T09:35:15.361Z"
+    },
+    {
+      "id": "19",
+      "sectionId": "8",
+      "title": "Knowledge Check",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":10,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"What is a key characteristic of Agentic AI?\",\"marks\":2,\"options\":[\"It can only generate text\",\"It can reason, plan, and take actions to achieve a goal\",\"It only works with predefined responses\",\"It cannot use external tools\"],\"correctAnswer\":\"It can reason, plan, and take actions to achieve a goal\",\"explanation\":\"It can reason, plan, and take actions to achieve a goal\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"An AI system that can reason, plan, use tools, and take actions autonomously is called __________ AI.\",\"marks\":2,\"correctAnswer\":\"Agentic\",\"alternativeAnswers\":[\"agentic\"]},{\"questionType\":\"TRUE_FALSE\",\"questionText\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\",\"marks\":2,\"correctAnswer\":\"True\",\"explanation\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\"},{\"questionType\":\"MULTIPLE_SELECT\",\"questionText\":\"Which of the following are common components of an AI agent? (Select all that apply)\",\"marks\":2,\"options\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\",\"Printer Driver\"],\"correctAnswer\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\"]},{\"questionType\":\"SHORT_ANSWER\",\"questionText\":\"What is the main difference between Generative AI and Agentic AI?\",\"marks\":2,\"correctAnswer\":\"\",\"explanation\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\",\"maxWords\":100,\"instructions\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:35:15.386Z",
+      "updatedAt": "2026-08-17T09:35:15.386Z"
+    },
+    {
+      "id": "20",
+      "sectionId": "9",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:35:15.436Z",
+      "updatedAt": "2026-08-17T09:35:15.436Z"
+    },
+    {
+      "id": "21",
+      "sectionId": "10",
+      "title": "SCORM TESTING",
+      "contentType": "SCORM",
+      "contentUrl": "/storage/scorm/scorm-1786958549590-qhfr1u/Etiquette/Course.html",
+      "description": null,
+      "duration": 30,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:48:48.002Z",
+      "updatedAt": "2026-08-17T09:48:48.002Z"
+    },
+    {
+      "id": "22",
+      "sectionId": "10",
+      "title": "PDF TESTING",
+      "contentType": "PDF",
+      "contentUrl": "/storage/uploads/doc-1786958571938-Artboard_____1_1.pdf",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:48:48.044Z",
+      "updatedAt": "2026-08-17T09:48:48.044Z"
+    },
+    {
+      "id": "23",
+      "sectionId": "10",
+      "title": "PPT TESTING",
+      "contentType": "PPT",
+      "contentUrl": "/storage/uploads/doc-1786958585612-Enterprise_Agentic_Design.pptx",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 3,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:48:48.092Z",
+      "updatedAt": "2026-08-17T09:48:48.092Z"
+    },
+    {
+      "id": "24",
+      "sectionId": "10",
+      "title": "ARTICLE TESTING",
+      "contentType": "ARTICLE",
+      "contentUrl": null,
+      "description": "Here is some testing text for an Article content type in your LMS:\n\nTitle: Introduction to Agentic AI\n\nArticle Content:\n\nAgentic AI represents a new generation of artificial intelligence systems that can understand goals, reason about tasks, make decisions, use external tools, and take actions with limited human intervention.\n\nUnlike traditional AI systems that typically respond to a predefined request, AI agents can follow a multi-step process to accomplish a goal. An agent may analyze the user's request, create a plan, retrieve information, call an API or tool, evaluate the result, and decide what to do next.\n\nKey Components of Agentic AI\n\n1. Reasoning\nAgents analyze information and determine the appropriate next step based on the given goal.\n\n2. Planning\nAn agent can break a complex task into smaller, manageable steps and execute them in sequence.\n\n3. Tool Usage\nAgents can interact with external tools such as databases, APIs, search engines, calculators, and business applications.\n\n4. Memory\nMemory allows an agent to maintain relevant information from previous interactions and use it when making future decisions.\n\n5. Decision Making\nAgents evaluate available information and select an appropriate action to achieve their objectives.\n\nExample\n\nConsider an employee asking:\n\n\"Find my remaining leave balance and suggest suitable dates for a vacation.\"\n\nAn Agentic AI system could identify the employee, retrieve leave information from an HR system, check the company holiday calendar, analyze available dates, and provide suitable recommendations.\n\nAgentic AI vs Generative AI\n\nGenerative AI primarily focuses on generating content such as text, images, code, or summaries in response to prompts. Agentic AI goes a step further by using AI models as part of a larger system that can reason, plan, interact with tools, and perform actions.\n\nAgentic AI is therefore useful for applications such as customer support, enterprise automation, financial analysis, software development, research assistants, and workflow automation.\n\nKey Takeaway\n\nAgentic AI enables AI systems to move from simply answering questions to achieving goals through reasoning, planning, tool usage, and actions. Understanding these concepts is the foundation for building reliable and useful AI agents.",
+      "duration": 10,
+      "contentOrder": 4,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:48:48.151Z",
+      "updatedAt": "2026-08-17T09:48:48.151Z"
+    },
+    {
+      "id": "25",
+      "sectionId": "11",
+      "title": "MiniProject",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Read carefully and complete assignment within time.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Read carefully and complete assignment within time.\",\"maxMarks\":50,\"deadline\":\"2026-08-30 23:59\",\"maxAttempts\":1,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Read carefully and complete assignment within time.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\"}]}",
+      "createdAt": "2026-08-17T09:48:48.254Z",
+      "updatedAt": "2026-08-17T09:48:48.254Z"
+    },
+    {
+      "id": "26",
+      "sectionId": "11",
+      "title": "Knowledge Check",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":10,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"What is a key characteristic of Agentic AI?\",\"marks\":2,\"options\":[\"It can only generate text\",\"It can reason, plan, and take actions to achieve a goal\",\"It only works with predefined responses\",\"It cannot use external tools\"],\"correctAnswer\":\"It can reason, plan, and take actions to achieve a goal\",\"explanation\":\"It can reason, plan, and take actions to achieve a goal\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"An AI system that can reason, plan, use tools, and take actions autonomously is called __________ AI.\",\"marks\":2,\"correctAnswer\":\"Agentic\",\"alternativeAnswers\":[\"agentic\"]},{\"questionType\":\"TRUE_FALSE\",\"questionText\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\",\"marks\":2,\"correctAnswer\":\"True\",\"explanation\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\"},{\"questionType\":\"MULTIPLE_SELECT\",\"questionText\":\"Which of the following are common components of an AI agent? (Select all that apply)\",\"marks\":2,\"options\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\",\"Printer Driver\"],\"correctAnswer\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\"]},{\"questionType\":\"SHORT_ANSWER\",\"questionText\":\"What is the main difference between Generative AI and Agentic AI?\",\"marks\":2,\"correctAnswer\":\"\",\"explanation\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\",\"maxWords\":100,\"instructions\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:48:48.308Z",
+      "updatedAt": "2026-08-17T09:48:48.308Z"
+    },
+    {
+      "id": "27",
+      "sectionId": "12",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T09:48:48.443Z",
+      "updatedAt": "2026-08-17T09:48:48.443Z"
+    },
+    {
+      "id": "28",
+      "sectionId": "13",
+      "title": "SCORM TESTING",
+      "contentType": "SCORM",
+      "contentUrl": "/storage/scorm/scorm-1786958549590-qhfr1u/Etiquette/Course.html",
+      "description": null,
+      "duration": 30,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T10:07:40.930Z",
+      "updatedAt": "2026-08-17T10:07:40.930Z"
+    },
+    {
+      "id": "29",
+      "sectionId": "13",
+      "title": "PDF TESTING",
+      "contentType": "PDF",
+      "contentUrl": "/storage/uploads/doc-1786958571938-Artboard_____1_1.pdf",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T10:07:40.970Z",
+      "updatedAt": "2026-08-17T10:07:40.970Z"
+    },
+    {
+      "id": "30",
+      "sectionId": "13",
+      "title": "PPT TESTING",
+      "contentType": "PPT",
+      "contentUrl": "/storage/uploads/doc-1786958585612-Enterprise_Agentic_Design.pptx",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 3,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T10:07:40.992Z",
+      "updatedAt": "2026-08-17T10:07:40.992Z"
+    },
+    {
+      "id": "31",
+      "sectionId": "13",
+      "title": "ARTICLE TESTING",
+      "contentType": "ARTICLE",
+      "contentUrl": null,
+      "description": "Here is some testing text for an Article content type in your LMS:\n\nTitle: Introduction to Agentic AI\n\nArticle Content:\n\nAgentic AI represents a new generation of artificial intelligence systems that can understand goals, reason about tasks, make decisions, use external tools, and take actions with limited human intervention.\n\nUnlike traditional AI systems that typically respond to a predefined request, AI agents can follow a multi-step process to accomplish a goal. An agent may analyze the user's request, create a plan, retrieve information, call an API or tool, evaluate the result, and decide what to do next.\n\nKey Components of Agentic AI\n\n1. Reasoning\nAgents analyze information and determine the appropriate next step based on the given goal.\n\n2. Planning\nAn agent can break a complex task into smaller, manageable steps and execute them in sequence.\n\n3. Tool Usage\nAgents can interact with external tools such as databases, APIs, search engines, calculators, and business applications.\n\n4. Memory\nMemory allows an agent to maintain relevant information from previous interactions and use it when making future decisions.\n\n5. Decision Making\nAgents evaluate available information and select an appropriate action to achieve their objectives.\n\nExample\n\nConsider an employee asking:\n\n\"Find my remaining leave balance and suggest suitable dates for a vacation.\"\n\nAn Agentic AI system could identify the employee, retrieve leave information from an HR system, check the company holiday calendar, analyze available dates, and provide suitable recommendations.\n\nAgentic AI vs Generative AI\n\nGenerative AI primarily focuses on generating content such as text, images, code, or summaries in response to prompts. Agentic AI goes a step further by using AI models as part of a larger system that can reason, plan, interact with tools, and perform actions.\n\nAgentic AI is therefore useful for applications such as customer support, enterprise automation, financial analysis, software development, research assistants, and workflow automation.\n\nKey Takeaway\n\nAgentic AI enables AI systems to move from simply answering questions to achieving goals through reasoning, planning, tool usage, and actions. Understanding these concepts is the foundation for building reliable and useful AI agents.",
+      "duration": 10,
+      "contentOrder": 4,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T10:07:41.008Z",
+      "updatedAt": "2026-08-17T10:07:41.008Z"
+    },
+    {
+      "id": "32",
+      "sectionId": "14",
+      "title": "MiniProject",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Read carefully and complete assignment within time.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Read carefully and complete assignment within time.\",\"maxMarks\":50,\"deadline\":\"2026-08-30 23:59\",\"maxAttempts\":1,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Read carefully and complete assignment within time.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1786961211577-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1786961211584/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]},{\"name\":\"TalentSense_AI.py\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1786961216664-TalentSense_AI.py\"},{\"name\":\"Consolidated_Enterprise_AI_Project_Scenarios (1).docx\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1786961232520-Consolidated_Enterprise_AI_Project_Scenarios__1_.docx\"},{\"name\":\"Artboard – 1 1.pdf\",\"size\":\"0.6 MB\",\"url\":\"/storage/uploads/doc-1786961238327-Artboard_____1_1.pdf\"}]}",
+      "createdAt": "2026-08-17T10:07:41.048Z",
+      "updatedAt": "2026-08-17T10:07:41.048Z"
+    },
+    {
+      "id": "33",
+      "sectionId": "14",
+      "title": "Knowledge Check",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":10,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"What is a key characteristic of Agentic AI?\",\"marks\":2,\"options\":[\"It can only generate text\",\"It can reason, plan, and take actions to achieve a goal\",\"It only works with predefined responses\",\"It cannot use external tools\"],\"correctAnswer\":\"It can reason, plan, and take actions to achieve a goal\",\"explanation\":\"It can reason, plan, and take actions to achieve a goal\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"An AI system that can reason, plan, use tools, and take actions autonomously is called __________ AI.\",\"marks\":2,\"correctAnswer\":\"Agentic\",\"alternativeAnswers\":[\"agentic\"]},{\"questionType\":\"TRUE_FALSE\",\"questionText\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\",\"marks\":2,\"correctAnswer\":\"True\",\"explanation\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\"},{\"questionType\":\"MULTIPLE_SELECT\",\"questionText\":\"Which of the following are common components of an AI agent? (Select all that apply)\",\"marks\":2,\"options\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\",\"Printer Driver\"],\"correctAnswer\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\"]},{\"questionType\":\"SHORT_ANSWER\",\"questionText\":\"What is the main difference between Generative AI and Agentic AI?\",\"marks\":2,\"correctAnswer\":\"\",\"explanation\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\",\"maxWords\":100,\"instructions\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T10:07:41.065Z",
+      "updatedAt": "2026-08-17T10:07:41.065Z"
+    },
+    {
+      "id": "34",
+      "sectionId": "15",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T10:07:41.101Z",
+      "updatedAt": "2026-08-17T10:07:41.101Z"
+    },
+    {
+      "id": "35",
+      "sectionId": "16",
+      "title": "1.1 Introduction to Agentic AI Architecture",
+      "contentType": "LESSON",
+      "contentUrl": null,
+      "description": "Overview of agentic loops, prompt chaining, tool invocation, and memory components.",
+      "duration": 20,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T11:06:05.879Z",
+      "updatedAt": "2026-08-17T11:06:05.879Z"
+    },
+    {
+      "id": "36",
+      "sectionId": "16",
+      "title": "1.2 Video Lesson: Multi-Agent Collaboration",
+      "contentType": "VIDEO",
+      "contentUrl": "https://www.youtube.com/watch?v=lsMQRaeHwkY",
+      "description": "In-depth walkthrough of agent communication and delegation techniques.",
+      "duration": 25,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-17T11:06:05.879Z",
+      "updatedAt": "2026-08-17T11:06:05.879Z"
+    },
+    {
+      "id": "37",
+      "sectionId": "17",
+      "title": "MiniProject",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Practical agentic AI mini-project assignment for course completion.",
+      "duration": 60,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"instructions\":\"Build an autonomous AI agent workflow that integrates tool calling and multi-step reasoning. Submit your zip package or repository URL.\",\"maxScore\":50,\"requiresGrading\":true}",
+      "createdAt": "2026-08-17T11:06:05.917Z",
+      "updatedAt": "2026-08-17T11:06:05.917Z"
+    },
+    {
+      "id": "38",
+      "sectionId": "17",
+      "title": "End-of-Course Feedback & Evaluation Survey (Feedback)",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Feedback questionnaire for course evaluation.",
+      "duration": 15,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"surveyQuestions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\"},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\"},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\"}],\"isFeedback\":true}",
+      "createdAt": "2026-08-17T11:06:05.939Z",
+      "updatedAt": "2026-08-17T11:06:05.939Z"
     }
   ],
   "enrollments": [
@@ -1658,6 +2229,134 @@
       "sessionsCount": 1,
       "isMandatory": false,
       "createdAt": "2026-08-12T09:06:32.608Z"
+    },
+    {
+      "id": "8",
+      "userId": "6",
+      "courseId": "8",
+      "enrolledAt": "2026-08-17T08:41:57.891Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "40",
+      "timeSpentSeconds": 280,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-17T08:41:57.891Z"
+    },
+    {
+      "id": "9",
+      "userId": "6",
+      "courseId": "7",
+      "enrolledAt": "2026-08-17T08:49:03.177Z",
+      "startDate": null,
+      "completedAt": "2026-08-17T09:00:15.518Z",
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "COMPLETED",
+      "progress": "100",
+      "timeSpentSeconds": 115,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-17T08:49:03.177Z"
+    },
+    {
+      "id": "10",
+      "userId": "6",
+      "courseId": "9",
+      "enrolledAt": "2026-08-17T09:35:44.196Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "86",
+      "timeSpentSeconds": 3035,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-17T09:35:44.196Z"
+    },
+    {
+      "id": "11",
+      "userId": "21",
+      "courseId": "9",
+      "enrolledAt": "2026-08-17T11:06:05.955Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "0",
+      "timeSpentSeconds": 0,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-17T11:06:05.955Z"
+    },
+    {
+      "id": "12",
+      "userId": "22",
+      "courseId": "9",
+      "enrolledAt": "2026-08-17T11:06:05.977Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "0",
+      "timeSpentSeconds": 0,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-17T11:06:05.977Z"
+    },
+    {
+      "id": "13",
+      "userId": "23",
+      "courseId": "9",
+      "enrolledAt": "2026-08-17T11:06:06.003Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "0",
+      "timeSpentSeconds": 0,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-17T11:06:06.003Z"
+    },
+    {
+      "id": "14",
+      "userId": "24",
+      "courseId": "9",
+      "enrolledAt": "2026-08-17T11:06:06.024Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "0",
+      "timeSpentSeconds": 0,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-17T11:06:06.024Z"
+    },
+    {
+      "id": "15",
+      "userId": "25",
+      "courseId": "9",
+      "enrolledAt": "2026-08-17T11:06:06.043Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "0",
+      "timeSpentSeconds": 0,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-17T11:06:06.043Z"
     }
   ],
   "userLessonProgresses": [
@@ -1676,9 +2375,250 @@
       "contentId": "4",
       "isCompleted": true,
       "completedAt": "2026-08-10T04:11:56.007Z"
+    },
+    {
+      "id": "5",
+      "userId": "6",
+      "courseId": "8",
+      "contentId": "10",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T08:44:19.883Z"
+    },
+    {
+      "id": "11",
+      "userId": "6",
+      "courseId": "7",
+      "contentId": "7",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T09:00:14.622Z"
+    },
+    {
+      "id": "12",
+      "userId": "6",
+      "courseId": "7",
+      "contentId": "8",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T09:00:15.453Z"
+    },
+    {
+      "id": "14",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "14",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T09:35:56.099Z"
+    },
+    {
+      "id": "20",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "20",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T09:36:39.176Z"
+    },
+    {
+      "id": "30",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "26",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:00:25.087Z"
+    },
+    {
+      "id": "34",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "30",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:10:08.492Z"
+    },
+    {
+      "id": "35",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "29",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:10:09.460Z"
+    },
+    {
+      "id": "37",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "31",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:10:12.142Z"
+    },
+    {
+      "id": "38",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "34",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:10:14.261Z"
+    },
+    {
+      "id": "42",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "28",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:51:55.882Z"
+    },
+    {
+      "id": "43",
+      "userId": "6",
+      "courseId": "7",
+      "contentId": "999999",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:57:01.371Z"
+    },
+    {
+      "id": "44",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "19",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:57:01.421Z"
+    },
+    {
+      "id": "45",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "27",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T10:57:01.466Z"
+    },
+    {
+      "id": "47",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "32",
+      "isCompleted": true,
+      "completedAt": "2026-08-17T11:05:32.104Z"
     }
   ],
-  "assessmentSubmissions": [],
+  "assessmentSubmissions": [
+    {
+      "id": "1",
+      "userId": "6",
+      "courseId": "7",
+      "contentId": "999999",
+      "submissionType": "ASSIGNMENT",
+      "answersJson": null,
+      "submissionText": "{\"type\":\"FEEDBACK\",\"title\":\"End-of-Course Feedback Survey\",\"responses\":{\"1\":\"3 - Satisfactory\",\"2\":\"Neutral\",\"3\":\"Very Clear\",\"4\":\"NA\"},\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the overall course content and lesson structure?\"},{\"id\":2,\"questionText\":\"How effective were the practical exercises, quizzes, and learning materials?\"},{\"id\":3,\"questionText\":\"How clear and helpful were the instructor's explanations?\"},{\"id\":4,\"questionText\":\"What key improvements or additional topics would you suggest for this course?\"}]}",
+      "fileUrl": null,
+      "status": "SUBMITTED",
+      "score": 0,
+      "maxScore": 100,
+      "percentage": 0,
+      "grade": null,
+      "feedback": null,
+      "attemptNumber": 1,
+      "gradedBy": null,
+      "gradedAt": null,
+      "submittedAt": "2026-08-17T09:00:30.844Z"
+    },
+    {
+      "id": "2",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "19",
+      "submissionType": "QUIZ",
+      "answersJson": "{\"1\":\"It can reason, plan, and take actions to achieve a goal\",\"2\":\"Agentic\",\"3\":\"True\",\"4\":\"Tool Usage\",\"5\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\"}",
+      "submissionText": null,
+      "fileUrl": null,
+      "status": "SUBMITTED",
+      "score": 60,
+      "maxScore": 100,
+      "percentage": 60,
+      "grade": "C",
+      "feedback": null,
+      "attemptNumber": 1,
+      "gradedBy": null,
+      "gradedAt": null,
+      "submittedAt": "2026-08-17T09:44:16.416Z"
+    },
+    {
+      "id": "3",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "26",
+      "submissionType": "QUIZ",
+      "answersJson": "{\"1\":\"It can reason, plan, and take actions to achieve a goal\",\"2\":\"Agentic\",\"3\":\"True\",\"4\":\"Reasoning, Planning, Memory, Tool Usage\",\"5\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\"}",
+      "submissionText": null,
+      "fileUrl": null,
+      "status": "SUBMITTED",
+      "score": 80,
+      "maxScore": 100,
+      "percentage": 80,
+      "grade": "A",
+      "feedback": null,
+      "attemptNumber": 1,
+      "gradedBy": null,
+      "gradedAt": null,
+      "submittedAt": "2026-08-17T09:58:23.319Z"
+    },
+    {
+      "id": "4",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "27",
+      "submissionType": "ASSIGNMENT",
+      "answersJson": null,
+      "submissionText": "{\"type\":\"FEEDBACK\",\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"responses\":{\"1\":\"Good\",\"2\":\"Moderately Helpful\",\"3\":\"focus on practicals.\",\"1786959069376\":\"Excellent\",\"1786959083903\":\"Theory is good .\"},\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\"},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\"},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\"},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\"},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\"}]}",
+      "fileUrl": null,
+      "status": "SUBMITTED",
+      "score": 0,
+      "maxScore": 100,
+      "percentage": 0,
+      "grade": null,
+      "feedback": null,
+      "attemptNumber": 1,
+      "gradedBy": null,
+      "gradedAt": null,
+      "submittedAt": "2026-08-17T10:04:06.471Z"
+    },
+    {
+      "id": "5",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "32",
+      "submissionType": "ASSIGNMENT",
+      "answersJson": null,
+      "submissionText": "",
+      "fileUrl": "[\"doc-1786961211577-TalentSense_AI (1).zip\",\"Consolidated_Enterprise_AI_Project_Scenarios (1).docx\",\"Artboard – 1 1.pdf\"]",
+      "status": "GRADED",
+      "score": 45,
+      "maxScore": 100,
+      "percentage": 45,
+      "grade": "A",
+      "feedback": "Good",
+      "attemptNumber": 1,
+      "gradedBy": "Priyanka Davhare",
+      "gradedAt": "2026-08-17T10:25:28.527Z",
+      "submittedAt": "2026-08-17T10:23:30.089Z"
+    },
+    {
+      "id": "6",
+      "userId": "6",
+      "courseId": "9",
+      "contentId": "32",
+      "submissionType": "ASSIGNMENT",
+      "answersJson": null,
+      "submissionText": "",
+      "fileUrl": "TalentSense_AI.zip",
+      "status": "GRADED",
+      "score": 45,
+      "maxScore": 100,
+      "percentage": 45,
+      "grade": "A",
+      "feedback": "I am happy",
+      "attemptNumber": 2,
+      "gradedBy": "Priyanka Davhare",
+      "gradedAt": "2026-08-17T10:32:23.236Z",
+      "submittedAt": "2026-08-17T10:31:40.853Z"
+    }
+  ],
   "issuedCertificates": [
     {
       "id": "1",
@@ -1690,6 +2630,30 @@
       "status": "ACTIVE",
       "recipientName": "Priyanka Davhare",
       "courseTitle": "Fullstack System Architecture & Security",
+      "templateSnapshot": null
+    },
+    {
+      "id": "2",
+      "certificateCode": "HARB-2026-X2405",
+      "userId": "6",
+      "courseId": "7",
+      "issuedAt": "2026-08-17T09:00:15.687Z",
+      "expiresAt": null,
+      "status": "ACTIVE",
+      "recipientName": "Employee6 User",
+      "courseTitle": "Java Programming",
+      "templateSnapshot": null
+    },
+    {
+      "id": "3",
+      "certificateCode": "HARB-2026-X9247",
+      "userId": "6",
+      "courseId": "9",
+      "issuedAt": "2026-08-17T09:44:16.539Z",
+      "expiresAt": null,
+      "status": "ACTIVE",
+      "recipientName": "Employee6 User",
+      "courseTitle": "Agentic AI",
       "templateSnapshot": null
     }
   ],
@@ -1717,20 +2681,20 @@
   ],
   "events": [
     {
-      "id": "1",
-      "title": "Workwali yari",
-      "description": null,
-      "eventDate": "2026-08-10T00:00:00.000Z",
-      "eventTime": null,
-      "url": null,
+      "id": "2",
+      "title": "LMS DEMO",
+      "description": "Please join on Time.",
+      "eventDate": "2026-08-18T00:00:00.000Z",
+      "eventTime": "10:00 PM",
+      "url": "https:google.meet.com",
       "eventType": "site",
       "courseId": null,
       "departmentId": null,
       "creatorId": "1",
       "creatorName": "priyanka (SUPER_ADMIN)",
       "reminderSent": false,
-      "createdAt": "2026-08-10T04:14:51.777Z",
-      "updatedAt": "2026-08-10T04:14:51.777Z"
+      "createdAt": "2026-08-17T09:19:17.050Z",
+      "updatedAt": "2026-08-17T09:19:17.050Z"
     }
   ],
   "auditLogs": [
@@ -2093,6 +3057,258 @@
       "detail": "Successfully authenticated to LMS Portal",
       "type": "login",
       "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "31",
+      "timestamp": "2026-08-17T08:36:48.385Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "32",
+      "timestamp": "2026-08-17T08:38:50.451Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "33",
+      "timestamp": "2026-08-17T08:41:48.792Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "34",
+      "timestamp": "2026-08-17T08:42:44.220Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "35",
+      "timestamp": "2026-08-17T08:56:32.725Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "36",
+      "timestamp": "2026-08-17T08:59:54.757Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "37",
+      "timestamp": "2026-08-17T09:00:41.457Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "38",
+      "timestamp": "2026-08-17T09:01:38.723Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "39",
+      "timestamp": "2026-08-17T09:04:19.745Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Deleted",
+      "detail": "Deleted course 'JAVA'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "40",
+      "timestamp": "2026-08-17T09:04:23.038Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Deleted",
+      "detail": "Deleted course 'Java Programming'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "41",
+      "timestamp": "2026-08-17T09:19:17.146Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Calendar Event Created",
+      "detail": "Created event 'LMS DEMO' scheduled for 2026-08-18",
+      "type": "course",
+      "ipAddress": null
+    },
+    {
+      "id": "42",
+      "timestamp": "2026-08-17T09:35:15.601Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Published",
+      "detail": "Published 'Agentic AI'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "43",
+      "timestamp": "2026-08-17T09:48:48.739Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Updated",
+      "detail": "Updated course 'Agentic AI'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "44",
+      "timestamp": "2026-08-17T10:07:41.207Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Updated",
+      "detail": "Updated course 'Agentic AI'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "45",
+      "timestamp": "2026-08-17T10:25:28.656Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare",
+      "username": "1",
+      "departmentName": "Engineering",
+      "action": "GRADE_ASSIGNMENT",
+      "detail": "Evaluated Assignment Submission #5. Awarded Score: 45, Grade: A. Feedback: \"Good\"",
+      "type": "EVALUATION",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "46",
+      "timestamp": "2026-08-17T10:30:28.201Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "47",
+      "timestamp": "2026-08-17T10:32:23.718Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare",
+      "username": "1",
+      "departmentName": "Engineering",
+      "action": "GRADE_ASSIGNMENT",
+      "detail": "Evaluated Assignment Submission #6. Awarded Score: 45, Grade: A. Feedback: \"I am happy\"",
+      "type": "EVALUATION",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "48",
+      "timestamp": "2026-08-17T10:32:47.418Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "49",
+      "timestamp": "2026-08-17T10:57:00.531Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "50",
+      "timestamp": "2026-08-17T10:57:16.254Z",
+      "actorId": "4",
+      "actorName": "Sneha Patil (TEACHER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "51",
+      "timestamp": "2026-08-17T11:05:31.019Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
     }
   ],
   "notifications": [
@@ -2201,23 +3417,6 @@
     {
       "id": "9",
       "userId": "3",
-      "actorId": "1",
-      "type": "EVENT_CREATED",
-      "category": "EVENT",
-      "priority": "NORMAL",
-      "title": "New Event Added: Workwali yari",
-      "message": "Event \"Workwali yari\" is scheduled for Aug 10, 2026. Click to view calendar.",
-      "link": "/events",
-      "entityType": "EVENT",
-      "entityId": "1",
-      "isRead": false,
-      "metadata": null,
-      "roleTarget": null,
-      "createdAt": "2026-08-10T04:14:52.020Z"
-    },
-    {
-      "id": "10",
-      "userId": "6",
       "actorId": "1",
       "type": "EVENT_CREATED",
       "category": "EVENT",
@@ -2604,25 +3803,6 @@
     {
       "id": "34",
       "userId": "3",
-      "actorId": null,
-      "type": "COURSE_CREATED",
-      "category": "GENERAL",
-      "priority": "NORMAL",
-      "title": "New Course Available",
-      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
-      "link": "/courses/7/preview",
-      "entityType": null,
-      "entityId": null,
-      "isRead": false,
-      "metadata": {
-        "courseId": 7
-      },
-      "roleTarget": "LEARNER",
-      "createdAt": "2026-08-11T08:34:12.328Z"
-    },
-    {
-      "id": "35",
-      "userId": "6",
       "actorId": null,
       "type": "COURSE_CREATED",
       "category": "GENERAL",
@@ -3058,25 +4238,6 @@
       "createdAt": "2026-08-11T08:34:12.383Z"
     },
     {
-      "id": "59",
-      "userId": "6",
-      "actorId": null,
-      "type": "COURSE_CREATED",
-      "category": "GENERAL",
-      "priority": "NORMAL",
-      "title": "New Course Available",
-      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
-      "link": "/courses/7/preview",
-      "entityType": null,
-      "entityId": null,
-      "isRead": false,
-      "metadata": {
-        "courseId": 7
-      },
-      "roleTarget": "LEARNER",
-      "createdAt": "2026-08-11T08:34:12.383Z"
-    },
-    {
       "id": "60",
       "userId": "9",
       "actorId": null,
@@ -3402,25 +4563,6 @@
     {
       "id": "79",
       "userId": "5",
-      "actorId": null,
-      "type": "COURSE_CREATED",
-      "category": "GENERAL",
-      "priority": "NORMAL",
-      "title": "New Course Available",
-      "message": "Priyanka Davhare published a new course: \"JAVA\"",
-      "link": "/courses/8/preview",
-      "entityType": null,
-      "entityId": null,
-      "isRead": false,
-      "metadata": {
-        "courseId": 8
-      },
-      "roleTarget": "LEARNER",
-      "createdAt": "2026-08-12T09:06:03.356Z"
-    },
-    {
-      "id": "80",
-      "userId": "6",
       "actorId": null,
       "type": "COURSE_CREATED",
       "category": "GENERAL",
@@ -3856,25 +4998,6 @@
       "createdAt": "2026-08-12T09:06:03.386Z"
     },
     {
-      "id": "104",
-      "userId": "6",
-      "actorId": null,
-      "type": "COURSE_CREATED",
-      "category": "GENERAL",
-      "priority": "NORMAL",
-      "title": "New Course Available",
-      "message": "Priyanka Davhare published a new course: \"JAVA\"",
-      "link": "/courses/8/preview",
-      "entityType": null,
-      "entityId": null,
-      "isRead": false,
-      "metadata": {
-        "courseId": 8
-      },
-      "roleTarget": "LEARNER",
-      "createdAt": "2026-08-12T09:06:03.386Z"
-    },
-    {
       "id": "105",
       "userId": "7",
       "actorId": null,
@@ -4234,6 +5357,2185 @@
       },
       "roleTarget": "LEARNER",
       "createdAt": "2026-08-12T09:06:03.386Z"
+    },
+    {
+      "id": "124",
+      "userId": "3",
+      "actorId": null,
+      "type": "SKILL_SUBMITTED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Skill Approval Required",
+      "message": "Employee6 User submitted skill \"Java Programming\" for approval.",
+      "link": "/skill-cloud",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "userSkillId": 3
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-17T09:00:16.039Z"
+    },
+    {
+      "id": "128",
+      "userId": "7",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "129",
+      "userId": "10",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "130",
+      "userId": "13",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "131",
+      "userId": "16",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "132",
+      "userId": "19",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "133",
+      "userId": "21",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "134",
+      "userId": "3",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "136",
+      "userId": "9",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "137",
+      "userId": "12",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "138",
+      "userId": "15",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "139",
+      "userId": "18",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "140",
+      "userId": "22",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "141",
+      "userId": "2",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "142",
+      "userId": "5",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "143",
+      "userId": "8",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "144",
+      "userId": "11",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "145",
+      "userId": "14",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "146",
+      "userId": "17",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "147",
+      "userId": "20",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "148",
+      "userId": "23",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "149",
+      "userId": "24",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "150",
+      "userId": "25",
+      "actorId": "1",
+      "type": "EVENT_CREATED",
+      "category": "EVENT",
+      "priority": "NORMAL",
+      "title": "New Event Scheduled: LMS DEMO",
+      "message": "Event \"LMS DEMO\" is scheduled for Aug 18, 2026. Click to view details.",
+      "link": "/events",
+      "entityType": "EVENT",
+      "entityId": "2",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": null,
+      "createdAt": "2026-08-17T09:19:17.303Z"
+    },
+    {
+      "id": "153",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "154",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "155",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "156",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "157",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "158",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "159",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "161",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "162",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "163",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "164",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "165",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "166",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "167",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "168",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "169",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "170",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "171",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "172",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "173",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "174",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "175",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.569Z"
+    },
+    {
+      "id": "177",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "178",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "179",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "180",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "181",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "182",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "183",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "185",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "186",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "187",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "188",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "189",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "190",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "191",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "192",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "193",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "194",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "195",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "196",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "197",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "198",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "199",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Agentic AI\"",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:35:15.650Z"
+    },
+    {
+      "id": "204",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "205",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "206",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "207",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "208",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "209",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "210",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "211",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "212",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "213",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "214",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "215",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "216",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "217",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "218",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "219",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "220",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "221",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "222",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "223",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "224",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "225",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "226",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"Agentic AI\" in course 'Agentic AI'.",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "227",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"Agentic AI\" in course 'Agentic AI'.",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-17T09:48:48.925Z"
+    },
+    {
+      "id": "232",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "234",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "235",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "236",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "237",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "238",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "239",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "240",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "241",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "242",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "243",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "244",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "245",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "246",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "247",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "248",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "249",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "250",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "251",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "252",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "253",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "254",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "255",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "256",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"Agentic AI\" in course 'Agentic AI'.",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "257",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"Agentic AI\" in course 'Agentic AI'.",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-17T10:07:41.226Z"
+    },
+    {
+      "id": "258",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"Agentic AI\" in course 'Agentic AI'.",
+      "link": "/courses/9/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 9
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-17T10:07:41.226Z"
     }
   ]
 }

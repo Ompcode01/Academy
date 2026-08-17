@@ -24,6 +24,7 @@ import InteractiveDocViewer from "@/components/courses/player/InteractiveDocView
 import InlineQuizPlayer from "@/components/courses/player/InlineQuizPlayer";
 import InlineAssignmentPlayer from "@/components/courses/player/InlineAssignmentPlayer";
 import LearnerFeedbackModal from "@/components/courses/learner/LearnerFeedbackModal";
+import ScormPlayer from "@/components/courses/player/ScormPlayer";
 import { MessageSquare } from "lucide-react";
 
 interface CoursePreviewModalProps {
@@ -198,30 +199,13 @@ export default function CoursePreviewModal({
                 {/* Content Viewport Player */}
                 <div className="flex-1 flex flex-col justify-center min-h-[360px]">
                   {selectedLesson.contentType === "SCORM" || selectedLesson.contentUrl?.includes("/storage/scorm/") ? (
-                    <div className="w-full space-y-2">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-                        <span className="flex items-center gap-1.5 font-medium text-violet-600 dark:text-violet-400">
-                          <Archive className="h-4 w-4" /> Interactive SCORM Content
-                        </span>
-                        {selectedLesson.contentUrl && (
-                          <button
-                            onClick={() => window.open(getStorageUrl(selectedLesson.contentUrl?.trim()), "_blank")}
-                            className="hover:underline flex items-center gap-1 text-xs text-primary font-medium"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" /> Fullscreen
-                          </button>
-                        )}
-                      </div>
-                      <div className="w-full h-[380px] bg-card rounded-xl border border-border shadow-inner overflow-hidden relative">
-                        <iframe
-                          src={getStorageUrl(selectedLesson.contentUrl)}
-                          className="w-full h-full border-0"
-                          title={selectedLesson.title}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      </div>
-                    </div>
+                    <ScormPlayer
+                      key={selectedLesson.id || selectedLesson.title}
+                      title={selectedLesson.title}
+                      contentUrl={selectedLesson.contentUrl}
+                      height="380px"
+                      isPreview={true}
+                    />
                   ) : selectedLesson.contentType === "YOUTUBE" && selectedLesson.contentUrl ? (
                     <div className="w-full h-[360px] bg-black rounded-xl overflow-hidden border border-border shadow-lg">
                       <iframe
@@ -261,6 +245,7 @@ export default function CoursePreviewModal({
                   ) : selectedLesson.contentType?.toUpperCase() === "ASSIGNMENT" ? (
                     <InlineAssignmentPlayer
                       assignmentTitle={selectedLesson.title}
+                      contentUrl={selectedLesson.contentUrl}
                       description={selectedLesson.description}
                       configJson={(selectedLesson as any).assignmentConfigJson || (selectedLesson as any).configJson}
                       isPreview={true}
