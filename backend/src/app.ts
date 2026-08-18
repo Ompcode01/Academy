@@ -21,6 +21,7 @@ import auditRoutes from "./routes/audit.routes";
 import notificationRoutes from "./routes/notification.routes";
 import reportingRoutes from "./routes/reporting.routes";
 import guestGrantRoutes from "./routes/guestGrant.routes";
+import searchRoutes from "./routes/search.routes";
 
 import path from "path";
 import fs from "fs";
@@ -134,6 +135,7 @@ app.use("/api/admin/audit-logs", auditRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/reports", reportingRoutes);
 app.use("/api/guest-grants", guestGrantRoutes);
+app.use("/api/search", searchRoutes);
 
 app.use(errorHandler);
 
