@@ -34,12 +34,19 @@ const ROLE_LABELS: Record<string, string> = {
   GUEST: "Guest",
 };
 
+import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
+
 export default function UsersPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState<string | null>(null);
+  const [deptFilter, setDeptFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortValue, setSortValue] = useState<SortOption>("a_z");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [changingRole, setChangingRole] = useState<number | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
@@ -83,12 +90,10 @@ export default function UsersPage() {
 
   const handleRoleChange = async (employeeId: number, newRoleId: number) => {
     try {
-      // Find and remove existing role assignment
       const emp = employees.find((e) => e.id === employeeId);
       if (emp?.assignedRoles && emp.assignedRoles.length > 0) {
         await removeUserRole(emp.assignedRoles[0].id);
       }
-      // Assign new role
       await assignRole({ employeeId, roleId: newRoleId });
       setChangingRole(null);
       await fetchData();
@@ -111,18 +116,30 @@ export default function UsersPage() {
     }
   };
 
-  // Filter employees
-  const filteredEmployees = employees.filter((emp) => {
-    const matchesRole = !roleFilter || getPrimaryRole(emp) === roleFilter;
-    const query = searchQuery.toLowerCase();
-    const matchesSearch =
-      !query ||
-      emp.firstName.toLowerCase().includes(query) ||
-      emp.lastName.toLowerCase().includes(query) ||
-      emp.employeeCode.toLowerCase().includes(query) ||
-      emp.officialEmail.toLowerCase().includes(query);
-    return matchesRole && matchesSearch;
-  });
+  // Advanced Filtering, Sorting & Date Picker Logic
+  const filteredEmployees = applyDataFilters(
+    employees.map((emp) => ({
+      ...emp,
+      fullName: `${emp.firstName} ${emp.lastName}`,
+      roleCode: getPrimaryRole(emp),
+      departmentName: emp.department?.departmentName || "Engineering",
+      dateJoined: emp.joiningDate || "",
+    })),
+    {
+      searchQuery,
+      searchFields: ["firstName", "lastName", "employeeCode", "officialEmail", "designation", "departmentName"],
+      sortValue,
+      titleField: "fullName",
+      dateField: "dateJoined",
+      startDate,
+      endDate,
+      columnFilters: {
+        roleCode: roleFilter,
+        departmentName: deptFilter,
+        employmentStatus: statusFilter,
+      },
+    }
+  );
 
   // Which roles can the current user assign?
   const assignableRoles = roles.filter((r) => {
@@ -202,27 +219,72 @@ export default function UsersPage() {
           })}
         </div>
 
-        {/* Search and actions */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search users by name, code or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 w-80 rounded-lg border border-border bg-card pl-3 pr-4 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-            />
+        {/* Universal Filter & Sorting Toolbar */}
+        <DataFilterToolbar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search users by name, email, employee code, designation..."
+          sortValue={sortValue}
+          onSortChange={setSortValue}
+          sortOptions={[
+            { label: "Name (A-Z)", value: "a_z" },
+            { label: "Name (Z-A)", value: "z_a" },
+            { label: "Joined Date (Newest)", value: "newest" },
+            { label: "Joined Date (Oldest)", value: "oldest" },
+          ]}
+          startDate={startDate}
+          endDate={endDate}
+          onDateChange={(start, end) => {
+            setStartDate(start || "");
+            setEndDate(end || "");
+          }}
+          columnFilters={[
+            {
+              key: "departmentName",
+              label: "Dept",
+              value: deptFilter || "all",
+              options: [
+                { label: "Engineering", value: "Engineering" },
+                { label: "Human Resources", value: "Human Resources" },
+                { label: "Management", value: "Management" },
+                { label: "Sales", value: "Sales" },
+                { label: "Marketing", value: "Marketing" },
+              ],
+            },
+            {
+              key: "employmentStatus",
+              label: "Status",
+              value: statusFilter || "all",
+              options: [
+                { label: "Active", value: "ACTIVE" },
+                { label: "Inactive", value: "INACTIVE" },
+                { label: "Resigned", value: "RESIGNED" },
+              ],
+            },
+          ]}
+          onColumnFilterChange={(key, val) => {
+            if (key === "departmentName") setDeptFilter(val);
+            if (key === "employmentStatus") setStatusFilter(val);
+          }}
+          onResetAll={() => {
+            setSearchQuery("");
+            setSortValue("a_z");
+            setRoleFilter(null);
+            setDeptFilter(null);
+            setStatusFilter(null);
+            setStartDate("");
+            setEndDate("");
+          }}
+        />
+
+        {/* Results Counter & Refresh Action */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
+          <div>
+            Showing <strong className="text-foreground font-bold">{filteredEmployees.length}</strong> of <strong className="text-foreground">{employees.length}</strong> users
           </div>
-          <Button variant="outline" size="sm" className="h-9 gap-2">
-            <SlidersHorizontal className="h-4 w-4" />
-            Filters
+          <Button variant="outline" size="sm" onClick={fetchData} className="h-8 text-xs gap-1.5 font-semibold">
+            <RefreshCw className="h-3.5 w-3.5" /> Refresh List
           </Button>
-          <Button variant="ghost" size="icon-xs" onClick={fetchData} className="h-9 w-9">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-          <div className="ml-auto text-xs text-muted-foreground">
-            Showing {filteredEmployees.length} of {employees.length} users
-          </div>
         </div>
 
         {/* Table listing */}

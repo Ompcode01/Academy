@@ -45,6 +45,8 @@ import AddProjectModal from "@/components/skill-cloud/AddProjectModal";
 import RejectRequestModal from "@/components/skill-cloud/RejectRequestModal";
 import { useAuthStore } from "@/store/auth.store";
 
+import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
+
 export default function SkillCloudPage() {
   const { user } = useAuthStore();
   
@@ -62,6 +64,9 @@ export default function SkillCloudPage() {
   const [adminTypeFilter, setAdminTypeFilter] = useState<"ALL" | "SKILLS" | "PROJECTS">("ALL");
   const [adminStatusFilter, setAdminStatusFilter] = useState<string>("ALL");
   const [adminSearch, setAdminSearch] = useState("");
+  const [sortValue, setSortValue] = useState<SortOption>("newest");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Modals state
   const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
@@ -164,12 +169,26 @@ export default function SkillCloudPage() {
     return true;
   });
 
-  // Admin Filtered Requests
-  const filteredApprovalRequests = approvalRequests.filter((r) => {
-    if (adminTypeFilter === "SKILLS" && r.requestKind !== "SKILL") return false;
-    if (adminTypeFilter === "PROJECTS" && r.requestKind !== "PROJECT") return false;
-    return true;
-  });
+  // Admin Filtered Requests with Universal Sorting, Date Range & Column Search
+  const filteredApprovalRequests = applyDataFilters(
+    approvalRequests.map((r) => ({
+      ...r,
+      submittedDate: r.createdAt || r.updatedAt,
+    })),
+    {
+      searchQuery: adminSearch,
+      searchFields: ["title", "category", "subCategory", "requestKind"],
+      sortValue,
+      titleField: "title",
+      dateField: "submittedDate",
+      startDate,
+      endDate,
+      columnFilters: {
+        requestKind: adminTypeFilter === "ALL" ? null : adminTypeFilter === "SKILLS" ? "SKILL" : "PROJECT",
+        status: adminStatusFilter === "ALL" ? null : adminStatusFilter,
+      },
+    }
+  );
 
   // Admin Counts
   const pendingCount = approvalRequests.filter((r) => r.status === "PENDING").length;
@@ -979,66 +998,63 @@ export default function SkillCloudPage() {
             </div>
           </div>
 
-          {/* Admin Queue Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            {/* Filter Tabs */}
-            <div className="flex flex-wrap items-center gap-1.5">
-              <button
-                onClick={() => setAdminTypeFilter("ALL")}
-                className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                  adminTypeFilter === "ALL"
-                    ? "bg-slate-900 text-white shadow dark:bg-slate-700"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-                }`}
-              >
-                All Requests
-              </button>
-              <button
-                onClick={() => setAdminTypeFilter("SKILLS")}
-                className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                  adminTypeFilter === "SKILLS"
-                    ? "bg-slate-900 text-white shadow dark:bg-slate-700"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-                }`}
-              >
-                Skills Only
-              </button>
-              <button
-                onClick={() => setAdminTypeFilter("PROJECTS")}
-                className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                  adminTypeFilter === "PROJECTS"
-                    ? "bg-slate-900 text-white shadow dark:bg-slate-700"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-                }`}
-              >
-                Projects Only
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search by skill, employee..."
-                  value={adminSearch}
-                  onChange={(e) => setAdminSearch(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white pl-8 pr-3 py-1.5 text-xs text-slate-900 focus:border-emerald-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
-
-              <select
-                value={adminStatusFilter}
-                onChange={(e) => setAdminStatusFilter(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-              >
-                <option value="ALL">All Statuses</option>
-                <option value="PENDING">Pending Only</option>
-                <option value="APPROVED">Approved Only</option>
-                <option value="REJECTED">Rejected Only</option>
-              </select>
-            </div>
-          </div>
+          {/* Universal Filter & Sorting Toolbar for Admin Approval Queue */}
+          <DataFilterToolbar
+            searchQuery={adminSearch}
+            onSearchChange={setAdminSearch}
+            searchPlaceholder="Search request title, learner name, category..."
+            sortValue={sortValue}
+            onSortChange={setSortValue}
+            sortOptions={[
+              { label: "Request Title (A-Z)", value: "a_z" },
+              { label: "Request Title (Z-A)", value: "z_a" },
+              { label: "Date Submitted (Newest)", value: "newest" },
+              { label: "Date Submitted (Oldest)", value: "oldest" },
+            ]}
+            startDate={startDate}
+            endDate={endDate}
+            onDateChange={(start, end) => {
+              setStartDate(start || "");
+              setEndDate(end || "");
+            }}
+            columnFilters={[
+              {
+                key: "requestKind",
+                label: "Kind",
+                value: adminTypeFilter === "ALL" ? "all" : adminTypeFilter === "SKILLS" ? "SKILL" : "PROJECT",
+                options: [
+                  { label: "Skills Only", value: "SKILL" },
+                  { label: "Projects Only", value: "PROJECT" },
+                ],
+              },
+              {
+                key: "status",
+                label: "Status",
+                value: adminStatusFilter === "ALL" ? "all" : adminStatusFilter,
+                options: [
+                  { label: "Pending Only", value: "PENDING" },
+                  { label: "Approved Only", value: "APPROVED" },
+                  { label: "Rejected Only", value: "REJECTED" },
+                ],
+              },
+            ]}
+            onColumnFilterChange={(key, val) => {
+              if (key === "requestKind") {
+                setAdminTypeFilter(val === "SKILL" ? "SKILLS" : val === "PROJECT" ? "PROJECTS" : "ALL");
+              }
+              if (key === "status") {
+                setAdminStatusFilter(val || "ALL");
+              }
+            }}
+            onResetAll={() => {
+              setAdminSearch("");
+              setSortValue("newest");
+              setAdminTypeFilter("ALL");
+              setAdminStatusFilter("ALL");
+              setStartDate("");
+              setEndDate("");
+            }}
+          />
 
           {/* Admin Queue Table */}
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">

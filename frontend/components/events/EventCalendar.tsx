@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
+
 interface EventCalendarProps {
   compact?: boolean;
 }
@@ -26,9 +28,14 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
 
   const isAdmin = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
 
-  // Date Navigation State
+  // Date Navigation & Filtering State
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDateStr, setSelectedDateStr] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortValue, setSortValue] = useState<SortOption>("newest");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -157,12 +164,23 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
   // Today string YYYY-MM-DD
   const todayStr = new Date().toISOString().split("T")[0];
 
-  // Filter events: if a date is selected, show that date's events; otherwise show upcoming & today's events
-  const displayedEvents = selectedDateStr
+  // Filter events using universal sorting & datepicker filters
+  const rawEvents = selectedDateStr
     ? events.filter((evt) => evt.date === selectedDateStr)
-    : events
-        .filter((evt) => evt.date >= todayStr)
-        .sort((a, b) => (a.date > b.date ? 1 : -1));
+    : events;
+
+  const displayedEvents = applyDataFilters(rawEvents, {
+    searchQuery,
+    searchFields: ["title", "description", "type"],
+    sortValue,
+    titleField: "title",
+    dateField: "date",
+    startDate,
+    endDate,
+    columnFilters: {
+      type: typeFilter,
+    },
+  });
 
   return (
     <div className="space-y-6 select-none">
@@ -207,6 +225,50 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
           )}
         </div>
       </div>
+
+      {/* Universal Filter & Sorting Toolbar for Events */}
+      <DataFilterToolbar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search events by title or description..."
+        sortValue={sortValue}
+        onSortChange={setSortValue}
+        sortOptions={[
+          { label: "Event Title (A-Z)", value: "a_z" },
+          { label: "Event Title (Z-A)", value: "z_a" },
+          { label: "Event Date (Newest)", value: "newest" },
+          { label: "Event Date (Oldest)", value: "oldest" },
+        ]}
+        startDate={startDate}
+        endDate={endDate}
+        onDateChange={(start, end) => {
+          setStartDate(start || "");
+          setEndDate(end || "");
+        }}
+        columnFilters={[
+          {
+            key: "type",
+            label: "Scope",
+            value: typeFilter || "all",
+            options: [
+              { label: "Site Wide", value: "site" },
+              { label: "Course Specific", value: "course" },
+              { label: "Group Event", value: "group" },
+            ],
+          },
+        ]}
+        onColumnFilterChange={(key, val) => {
+          if (key === "type") setTypeFilter(val);
+        }}
+        onResetAll={() => {
+          setSearchQuery("");
+          setSortValue("newest");
+          setTypeFilter(null);
+          setStartDate("");
+          setEndDate("");
+          setSelectedDateStr(null);
+        }}
+      />
 
       {/* Main Grid: Calendar on Left/Top, Event List on Right/Bottom */}
       <div className={`grid grid-cols-1 ${compact ? "lg:grid-cols-1" : "lg:grid-cols-12"} gap-6`}>

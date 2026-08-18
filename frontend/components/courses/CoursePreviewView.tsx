@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -77,6 +77,7 @@ interface ModuleItem {
 export default function CoursePreviewView() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const courseId = params?.id ? Number(params.id) : null;
   const { user } = useAuthStore();
   const isGuest = user?.role === "GUEST";
@@ -179,7 +180,33 @@ export default function CoursePreviewView() {
 
           setModules(parsed);
           setExpandedModules(expandedIds);
-          if (parsed[0]?.lessons[0]) {
+
+          // If contentId or sectionId query param exists (e.g. from Global Search navigation)
+          const targetContentParam = searchParams?.get("contentId");
+          const targetSectionParam = searchParams?.get("sectionId");
+          const targetContentId = targetContentParam ? Number(targetContentParam) : null;
+          const targetSectionId = targetSectionParam ? Number(targetSectionParam) : null;
+
+          let targetLesson: LessonItem | null = null;
+          if (targetContentId) {
+            for (const m of parsed) {
+              const match = m.lessons.find((l) => Number(l.id) === targetContentId);
+              if (match) {
+                targetLesson = match;
+                break;
+              }
+            }
+          } else if (targetSectionId) {
+            const targetMod = parsed.find((m) => Number(m.id) === targetSectionId);
+            if (targetMod && targetMod.lessons[0]) {
+              targetLesson = targetMod.lessons[0];
+            }
+          }
+
+          if (targetLesson) {
+            setSelectedLesson(targetLesson);
+            setViewMode("player");
+          } else if (parsed[0]?.lessons[0]) {
             setSelectedLesson(parsed[0].lessons[0]);
           } else {
             setSelectedLesson(null);

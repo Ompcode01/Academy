@@ -28,6 +28,7 @@ import { getAuditLogs, AuditLogData, AuditFilterQueryParams } from "@/services/a
 import { ReportKpiCard } from "@/components/reports/ReportKpiCard";
 import { ReportTable } from "@/components/reports/ReportTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import DataFilterToolbar, { SortOption } from "@/components/common/DataFilterToolbar";
 
 export default function SuperAdminAuditLogsPage() {
   const [filters, setFilters] = useState<AuditFilterQueryParams>({
@@ -180,113 +181,54 @@ export default function SuperAdminAuditLogsPage() {
           />
         </div>
 
-        {/* Filter Controls Bar */}
-        <div className="bg-card border border-border/80 rounded-xl p-4 shadow-sm space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-border/60">
-            <div className="flex items-center space-x-2">
-              <Activity className="h-4 w-4 text-primary" />
-              <span className="text-sm font-bold text-foreground">Filter &amp; Search Audit Logs</span>
-              {activeFilterCount > 0 && (
-                <Badge className="bg-primary text-primary-foreground text-[10px] px-2 py-0.5 rounded-full font-bold">
-                  {activeFilterCount} active filter{activeFilterCount > 1 ? "s" : ""}
-                </Badge>
-              )}
-            </div>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleReset}
-              className="h-8 text-xs gap-1.5 border-border hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-600 font-semibold"
-            >
-              <RotateCcw className="h-3.5 w-3.5" /> Reset Filters
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Filter 1: Username */}
-            <div>
-              <label className="text-[11px] font-semibold text-muted-foreground mb-1 block">Filter by Username</label>
-              <Select
-                value={filters.username || "ALL"}
-                onValueChange={(val) => handleFilterChange({ username: val || "ALL" })}
-              >
-                <SelectTrigger className="h-9 text-xs">
-                  <User className="h-3.5 w-3.5 mr-1.5 text-primary" />
-                  <SelectValue placeholder="All Usernames" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Usernames</SelectItem>
-                  {auditData.filterOptions.usernames.map((u) => (
-                    <SelectItem key={u} value={u}>
-                      {u}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Filter 2: Department Name */}
-            <div>
-              <label className="text-[11px] font-semibold text-muted-foreground mb-1 block">Filter by Department</label>
-              <Select
-                value={filters.departmentName || "ALL"}
-                onValueChange={(val) => handleFilterChange({ departmentName: val || "ALL" })}
-              >
-                <SelectTrigger className="h-9 text-xs">
-                  <Building2 className="h-3.5 w-3.5 mr-1.5 text-primary" />
-                  <SelectValue placeholder="All Departments" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Departments</SelectItem>
-                  {auditData.filterOptions.departmentNames.map((d) => (
-                    <SelectItem key={d} value={d}>
-                      {d}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Filter 3: Event Type */}
-            <div>
-              <label className="text-[11px] font-semibold text-muted-foreground mb-1 block">Event Type</label>
-              <Select
-                value={filters.type || "ALL"}
-                onValueChange={(val) => handleFilterChange({ type: val || "ALL" })}
-              >
-                <SelectTrigger className="h-9 text-xs">
-                  <SelectValue placeholder="All Event Types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Event Types</SelectItem>
-                  <SelectItem value="security">Security</SelectItem>
-                  <SelectItem value="role">Role Access</SelectItem>
-                  <SelectItem value="login">Authentication / Login</SelectItem>
-                  <SelectItem value="course">Course Actions</SelectItem>
-                  <SelectItem value="user">User Admin</SelectItem>
-                  <SelectItem value="settings">System Settings</SelectItem>
-                  <SelectItem value="system">System Automation</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Filter 4: Keyword Search Input */}
-            <div>
-              <label className="text-[11px] font-semibold text-muted-foreground mb-1 block">Search Audit Content</label>
-              <div className="relative">
-                <Search className="h-3.5 w-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search Action, Actor, IP, or Detail..."
-                  value={filters.search || ""}
-                  onChange={(e) => handleFilterChange({ search: e.target.value })}
-                  className="h-9 text-xs pl-8"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Universal Filter & Sorting Toolbar for Audit Logs */}
+        <DataFilterToolbar
+          searchQuery={filters.search || ""}
+          onSearchChange={(val: string) => handleFilterChange({ search: val })}
+          searchPlaceholder="Search action code, actor name, username, IP address..."
+          sortValue={(filters as any).sortValue || "newest"}
+          onSortChange={(val: SortOption) => handleFilterChange({ sortValue: val } as any)}
+          sortOptions={[
+            { label: "Actor Name (A-Z)", value: "a_z" },
+            { label: "Actor Name (Z-A)", value: "z_a" },
+            { label: "Timestamp (Newest)", value: "newest" },
+            { label: "Timestamp (Oldest)", value: "oldest" },
+          ]}
+          startDate={(filters as any).startDate || ""}
+          endDate={(filters as any).endDate || ""}
+          onDateChange={(start?: string, end?: string) => handleFilterChange({ startDate: start, endDate: end } as any)}
+          columnFilters={[
+            {
+              key: "username",
+              label: "Actor",
+              value: filters.username || "all",
+              options: auditData.filterOptions.usernames.map((u) => ({ label: u, value: u })),
+            },
+            {
+              key: "departmentName",
+              label: "Dept",
+              value: filters.departmentName || "all",
+              options: auditData.filterOptions.departmentNames.map((d) => ({ label: d, value: d })),
+            },
+            {
+              key: "type",
+              label: "Event Type",
+              value: filters.type || "all",
+              options: [
+                { label: "Security", value: "security" },
+                { label: "Role Access", value: "role" },
+                { label: "Authentication / Login", value: "login" },
+                { label: "Course Actions", value: "course" },
+                { label: "User Admin", value: "user" },
+                { label: "System Settings", value: "settings" },
+              ],
+            },
+          ]}
+          onColumnFilterChange={(key: string, val: string | null) => {
+            handleFilterChange({ [key]: val || "ALL" });
+          }}
+          onResetAll={handleReset}
+        />
 
         {/* Audit Log Table */}
         <ReportTable

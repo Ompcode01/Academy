@@ -1,0 +1,19 @@
+<svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50" cy="50" r="48" fill="#0B132B" stroke="#1E293B" stroke-width="4"/>
+  <!-- Top Wave Swoosh -->
+  <path
+    d="M 42 49 C 56 40, 75 36, 68 18"
+    stroke="#C82333"
+    stroke-width="13"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <!-- Bottom Wave Swoosh -->
+  <path
+    d="M 78 51 C 64 60, 44 64, 46 84"
+    stroke="#C82333"
+    stroke-width="13"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

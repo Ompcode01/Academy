@@ -6,6 +6,8 @@ import TopBar from "@/components/layout/TopBar";
 import SecondaryNav from "@/components/layout/SecondaryNav";
 import AuthGuard from "@/components/auth/AuthGuard";
 
+import Footer from "@/components/layout/Footer";
+
 export default function DashboardLayout({
   children,
 }: {
@@ -28,8 +30,9 @@ export default function DashboardLayout({
         {/* 3. Main dual-column layout */}
         <div className="flex flex-1 flex-row min-h-0 w-full overflow-hidden">
           {/* Left/Center Main Content (75% or 100%) */}
-          <main className="flex-1 overflow-y-auto min-w-0 bg-[#EBF5F8] transition-all duration-200">
-            {children}
+          <main className="flex-1 overflow-y-auto min-w-0 bg-[#EBF5F8] transition-all duration-200 flex flex-col justify-between">
+            <div className="flex-1">{children}</div>
+            <Footer variant="light" />
           </main>
 
           {/* Right Collapsible Sidebar (25% or w-80) */}

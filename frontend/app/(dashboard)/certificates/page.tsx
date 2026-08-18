@@ -22,6 +22,8 @@ import LearnerCertificateModal from "@/components/certificates/LearnerCertificat
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
 
+import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
+
 export default function CertificatesPage() {
   const { user } = useAuthStore();
   const userRole = user?.role || ROLES.GUEST;
@@ -29,6 +31,9 @@ export default function CertificatesPage() {
   const [certificates, setCertificates] = useState<IssuedCertificateData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortValue, setSortValue] = useState<SortOption>("newest");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [verifyInput, setVerifyInput] = useState("");
   const [verifyResult, setVerifyResult] = useState<IssuedCertificateData | null>(null);
   const [verifyError, setVerifyError] = useState("");
@@ -71,14 +76,21 @@ export default function CertificatesPage() {
     }
   };
 
-  const filteredCerts = certificates.filter((c) => {
-    const q = searchQuery.toLowerCase();
-    return (
-      c.recipientName.toLowerCase().includes(q) ||
-      c.courseTitle.toLowerCase().includes(q) ||
-      c.certificateCode.toLowerCase().includes(q)
-    );
-  });
+  const filteredCerts = applyDataFilters(
+    certificates.map((c) => ({
+      ...c,
+      issuedDate: c.issuedAt,
+    })),
+    {
+      searchQuery,
+      searchFields: ["recipientName", "courseTitle", "certificateCode"],
+      sortValue,
+      titleField: "recipientName",
+      dateField: "issuedDate",
+      startDate,
+      endDate,
+    }
+  );
 
   const getPageTitle = () => {
     if (userRole === ROLES.SUPER_ADMIN || userRole === ROLES.ADMIN) {
@@ -125,23 +137,39 @@ export default function CertificatesPage() {
         </div>
       </div>
 
+      {/* Universal Filter & Sorting Toolbar for Certificates */}
+      <DataFilterToolbar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search certificates by learner, course, or serial code..."
+        sortValue={sortValue}
+        onSortChange={setSortValue}
+        sortOptions={[
+          { label: "Learner Name (A-Z)", value: "a_z" },
+          { label: "Learner Name (Z-A)", value: "z_a" },
+          { label: "Issued Date (Newest)", value: "newest" },
+          { label: "Issued Date (Oldest)", value: "oldest" },
+        ]}
+        startDate={startDate}
+        endDate={endDate}
+        onDateChange={(start, end) => {
+          setStartDate(start || "");
+          setEndDate(end || "");
+        }}
+        onResetAll={() => {
+          setSearchQuery("");
+          setSortValue("newest");
+          setStartDate("");
+          setEndDate("");
+        }}
+      />
+
       {/* Issued Certificates Table */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">
             Issued Certificates Records ({filteredCerts.length})
           </h3>
-
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by learner, course, or serial..."
-              className="w-full sm:w-64 rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-4 py-1.5 text-xs text-slate-900 focus:border-emerald-500 focus:outline-none dark:border-slate-800 dark:bg-slate-800 dark:text-white"
-            />
-          </div>
         </div>
 
         <div className="overflow-x-auto">

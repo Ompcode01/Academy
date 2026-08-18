@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import NotificationPanel from "@/components/layout/NotificationPanel";
 import GuestBanner from "@/components/layout/GuestBanner";
+import TopBarSearch from "@/components/layout/TopBarSearch";
+import HarbingerLogoIcon from "@/components/common/HarbingerLogoIcon";
 
 const fullNameMap: Record<string, string> = {
   omprakash: "Omprakash Pandey",
@@ -56,15 +58,9 @@ export default function TopBar() {
       <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between bg-[#0B132B] px-6 text-white shrink-0 select-none">
       {/* Left Logo and Tagline */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          {/* Custom Wavy/Red Crest Logo */}
-          <svg
-            className="h-6 w-6 text-[#C82333]"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-          </svg>
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push("/dashboard")}>
+          {/* Official Harbinger Red Wave Logo */}
+          <HarbingerLogoIcon size={26} color="#C82333" />
           <span className="text-base font-bold tracking-wide">
             Harbinger Group
           </span>
@@ -75,17 +71,15 @@ export default function TopBar() {
         </span>
       </div>
 
-      {/* Right Brand, Search, and Profile */}
-      <div className="flex items-center gap-6">
+      {/* Right Brand, Inline TopBar Search, and Profile */}
+      <div className="flex items-center gap-3 sm:gap-6">
         {/* CapDev Brand */}
-        <span className="text-sm font-semibold tracking-wide text-white">
+        <span className="hidden md:inline text-sm font-semibold tracking-wide text-white">
           CapDev
         </span>
 
-        {/* Search Toggle Icon */}
-        <button className="text-slate-300 hover:text-white transition-colors cursor-pointer">
-          <Search className="h-4 w-4" />
-        </button>
+        {/* Direct Inline Platform Search Bar */}
+        <TopBarSearch />
 
         {/* Notification Bell */}
         <div className="relative" ref={bellRef}>

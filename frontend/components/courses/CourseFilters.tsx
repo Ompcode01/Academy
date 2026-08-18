@@ -1,23 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
 import { getCategories, type Category } from "@/services/api/course.service";
 import { getDepartments, type Department } from "@/services/api/org.service";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import DataFilterToolbar, { SortOption } from "@/components/common/DataFilterToolbar";
+
+export type CourseSortOption = "a_z" | "z_a" | "newest" | "oldest";
 
 interface CourseFiltersProps {
   onSearch?: (value: string) => void;
   onCategoryChange?: (value: string | null) => void;
   onDepartmentChange?: (value: string | null) => void;
   onStatusChange?: (value: string | null) => void;
+  onSortChange?: (value: CourseSortOption) => void;
+  onDateChange?: (start?: string, end?: string) => void;
+  onResetAll?: () => void;
+  searchQuery?: string;
+  sortValue?: CourseSortOption;
+  startDate?: string;
+  endDate?: string;
 }
 
 export default function CourseFilters({
@@ -25,6 +26,13 @@ export default function CourseFilters({
   onCategoryChange,
   onDepartmentChange,
   onStatusChange,
+  onSortChange,
+  onDateChange,
+  onResetAll,
+  searchQuery = "",
+  sortValue = "newest",
+  startDate = "",
+  endDate = "",
 }: CourseFiltersProps) {
   const [categories, setCategories] = useState<Category[]>([
     { id: 1, name: "Technical", isActive: true },
@@ -37,6 +45,10 @@ export default function CourseFilters({
     { id: 2, departmentCode: "HR", departmentName: "Human Resources", isActive: true, createdAt: "", updatedAt: "" },
     { id: 3, departmentCode: "MGT", departmentName: "Management", isActive: true, createdAt: "", updatedAt: "" },
   ]);
+
+  const [catFilter, setCatFilter] = useState<string>("all");
+  const [deptFilter, setDeptFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     async function loadFilterOptions() {
@@ -62,69 +74,72 @@ export default function CourseFilters({
   }, []);
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="Search by course name or description..."
-          onChange={(e) => onSearch?.(e.target.value)}
-          className="h-9 w-[260px] rounded-lg border border-border bg-card pl-9 pr-4 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-        />
-      </div>
-
-      {/* Category Filter */}
-      <Select onValueChange={(val) => onCategoryChange?.(val === "all" ? null : val)} defaultValue="all">
-        <SelectTrigger className="h-9 w-[150px] bg-card text-sm">
-          <span className="mr-1 text-muted-foreground">Category</span>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
-          {categories.map((cat) => (
-            <SelectItem key={cat.id} value={String(cat.id)}>
-              {cat.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {/* Department Filter */}
-      <Select onValueChange={(val) => onDepartmentChange?.(val === "all" ? null : val)} defaultValue="all">
-        <SelectTrigger className="h-9 w-[160px] bg-card text-sm">
-          <span className="mr-1 text-muted-foreground">Department</span>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Departments</SelectItem>
-          {departments.map((dept) => (
-            <SelectItem key={dept.id} value={String(dept.id)}>
-              {dept.departmentCode}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {/* Status Filter */}
-      <Select onValueChange={(val) => onStatusChange?.(val === "all" ? null : val)} defaultValue="all">
-        <SelectTrigger className="h-9 w-[130px] bg-card text-sm">
-          <span className="mr-1 text-muted-foreground">Status</span>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Statuses</SelectItem>
-          <SelectItem value="PUBLISHED">Published</SelectItem>
-          <SelectItem value="DRAFT">Draft</SelectItem>
-          <SelectItem value="ARCHIVED">Archived</SelectItem>
-        </SelectContent>
-      </Select>
-
-      {/* Reset button indicator */}
-      <Button variant="outline" size="sm" className="h-9 gap-2">
-        <SlidersHorizontal className="h-4 w-4" />
-        Filters
-      </Button>
-    </div>
+    <DataFilterToolbar
+      title="Course Catalog Search & Filters"
+      searchQuery={searchQuery}
+      onSearchChange={onSearch}
+      searchPlaceholder="Search courses by name or description..."
+      sortValue={sortValue as SortOption}
+      onSortChange={(val) => onSortChange?.(val as CourseSortOption)}
+      sortOptions={[
+        { label: "Course Title (A-Z)", value: "a_z" },
+        { label: "Course Title (Z-A)", value: "z_a" },
+        { label: "Newest Created", value: "newest" },
+        { label: "Oldest Created", value: "oldest" },
+      ]}
+      startDate={startDate}
+      endDate={endDate}
+      onDateChange={onDateChange}
+      columnFilters={[
+        {
+          key: "category",
+          label: "Category",
+          value: catFilter,
+          options: categories.map((c) => ({ label: c.name, value: String(c.id) })),
+        },
+        {
+          key: "department",
+          label: "Dept",
+          value: deptFilter,
+          options: departments.map((d) => ({ label: `${d.departmentCode} - ${d.departmentName}`, value: String(d.id) })),
+        },
+        {
+          key: "status",
+          label: "Status",
+          value: statusFilter,
+          options: [
+            { label: "Published", value: "PUBLISHED" },
+            { label: "Draft", value: "DRAFT" },
+            { label: "Archived", value: "ARCHIVED" },
+          ],
+        },
+      ]}
+      onColumnFilterChange={(key, val) => {
+        if (key === "category") {
+          setCatFilter(val || "all");
+          onCategoryChange?.(val);
+        }
+        if (key === "department") {
+          setDeptFilter(val || "all");
+          onDepartmentChange?.(val);
+        }
+        if (key === "status") {
+          setStatusFilter(val || "all");
+          onStatusChange?.(val);
+        }
+      }}
+      onResetAll={() => {
+        setCatFilter("all");
+        setDeptFilter("all");
+        setStatusFilter("all");
+        onCategoryChange?.(null);
+        onDepartmentChange?.(null);
+        onStatusChange?.(null);
+        onSearch?.("");
+        onSortChange?.("newest");
+        onDateChange?.("", "");
+        onResetAll?.();
+      }}
+    />
   );
 }
