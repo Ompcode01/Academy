@@ -83,241 +83,27 @@ export default function CertificateForm({
       </div>
 
       {data.enableCertificate && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Interactive Editor Controls */}
-          <div className="lg:col-span-5 space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm">
-            {/* Editor Sub-nav Tabs */}
-            <div className="flex border-b border-border text-xs font-bold gap-4 pb-2">
-              <button
-                type="button"
-                onClick={() => setActiveSubTab("text")}
-                className={`flex items-center gap-1.5 pb-2 transition-colors border-b-2 ${
-                  activeSubTab === "text"
-                    ? "border-primary text-primary font-bold"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <FileText className="h-4 w-4" /> Text Content
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveSubTab("branding")}
-                className={`flex items-center gap-1.5 pb-2 transition-colors border-b-2 ${
-                  activeSubTab === "branding"
-                    ? "border-primary text-primary font-bold"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Palette className="h-4 w-4" /> Branding &amp; Color
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveSubTab("signatory")}
-                className={`flex items-center gap-1.5 pb-2 transition-colors border-b-2 ${
-                  activeSubTab === "signatory"
-                    ? "border-primary text-primary font-bold"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Sliders className="h-4 w-4" /> Signatory &amp; Rules
-              </button>
-            </div>
-
-            {/* TAB 1: TEXT CONTENT */}
-            {activeSubTab === "text" && (
-              <div className="space-y-4 text-xs">
-                <div>
-                  <Label className="text-xs font-semibold">Header Main Title</Label>
-                  <Input
-                    value={data.certificateTitle || "CERTIFICATE"}
-                    onChange={(e) => onChange({ certificateTitle: e.target.value })}
-                    placeholder="e.g. CERTIFICATE"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold">Header Subtitle Banner</Label>
-                  <Input
-                    value={data.headerSubtitle ?? "OF ACHIEVEMENT"}
-                    onChange={(e) => onChange({ headerSubtitle: e.target.value })}
-                    placeholder="e.g. OF ACHIEVEMENT"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold">Certify Opening Text</Label>
-                  <Input
-                    value={data.certifyText ?? "This is to certify that"}
-                    onChange={(e) => onChange({ certifyText: e.target.value })}
-                    placeholder="e.g. This is to certify that"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold">Completion Statement Text</Label>
-                  <Input
-                    value={data.completionText ?? "has successfully completed and passed the course"}
-                    onChange={(e) => onChange({ completionText: e.target.value })}
-                    placeholder="e.g. has successfully completed and passed the course"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div className="rounded-lg bg-muted/40 p-3 text-[11px] text-muted-foreground border border-border">
-                  <span className="font-bold text-foreground">Dynamic Course Title: </span>
-                  <span className="text-primary font-semibold">{courseTitle || "Not set yet"}</span>
-                  <p className="mt-1">
-                    This course title is automatically extracted from Step 1 and rendered on the certificate.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 2: BRANDING & COLORS */}
-            {activeSubTab === "branding" && (
-              <div className="space-y-4 text-xs">
-                <div>
-                  <Label className="text-xs font-semibold">Company Logo Option</Label>
-                  <p className="text-[11px] text-muted-foreground mb-1.5">
-                    Default uses the official <b>Harbinger Group</b> logo. Provide a URL to customize.
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={data.logoUrl || ""}
-                      onChange={(e) => onChange({ logoUrl: e.target.value || null })}
-                      placeholder="Leave blank for Harbinger Group logo"
-                    />
-                    {data.logoUrl && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onChange({ logoUrl: null })}
-                      >
-                        Reset
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold">Theme Primary Color</Label>
-                  <div className="flex flex-wrap items-center gap-2 mt-2">
-                    {[
-                      { name: "Gold Classic", color: "#d97706" },
-                      { name: "Navy Corporate", color: "#1e3a8a" },
-                      { name: "Emerald Academic", color: "#059669" },
-                      { name: "Royal Purple", color: "#7c3aed" },
-                      { name: "Crimson Red", color: "#dc2626" },
-                    ].map((c) => (
-                      <button
-                        key={c.color}
-                        type="button"
-                        onClick={() => onChange({ primaryColor: c.color })}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-semibold transition-all ${
-                          (data.primaryColor || "#d97706") === c.color
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border hover:bg-muted"
-                        }`}
-                      >
-                        <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
-                        {c.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 3: SIGNATORY & RULES */}
-            {activeSubTab === "signatory" && (
-              <div className="space-y-4 text-xs">
-                <div>
-                  <Label className="text-xs font-semibold">Signatory Name</Label>
-                  <Input
-                    value={data.signatoryName ?? "Richard Wilson"}
-                    onChange={(e) => onChange({ signatoryName: e.target.value })}
-                    placeholder="e.g. Richard Wilson"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold">Signatory Title</Label>
-                  <Input
-                    value={data.signatoryTitle ?? "Authorized Director"}
-                    onChange={(e) => onChange({ signatoryTitle: e.target.value })}
-                    placeholder="e.g. Authorized Director"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold">Custom Signature Image URL (Optional)</Label>
-                  <Input
-                    value={data.signatureUrl || ""}
-                    onChange={(e) => onChange({ signatureUrl: e.target.value || null })}
-                    placeholder="Leave blank for signature typography"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold">Certificate Issue Date (Optional)</Label>
-                  <Input
-                    value={data.customDate || ""}
-                    onChange={(e) => onChange({ customDate: e.target.value || null })}
-                    placeholder="e.g. August 4, 2026 (Leave blank for completion date)"
-                    className="mt-1"
-                  />
-                  <p className="text-[11px] text-muted-foreground mt-1">
-                    Custom date text displayed on the certificate baseline.
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold">Completion Score Threshold (%)</Label>
-                  <Input
-                    type="number"
-                    value={data.passingThreshold}
-                    onChange={(e) => onChange({ passingThreshold: Number(e.target.value) })}
-                    min={0}
-                    max={100}
-                    className="mt-1"
-                  />
-                  <p className="text-[11px] text-muted-foreground mt-1">
-                    Minimum assessment score required for automatic certificate generation.
-                  </p>
-                </div>
-              </div>
-            )}
+        <div className="space-y-4">
+          {/* Certificate Preview Only */}
+          <div className="flex items-center justify-between text-xs font-bold text-muted-foreground px-1">
+            <span>LIVE CERTIFICATE PREVIEW</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+              Standard Issue Template
+            </span>
           </div>
 
-          {/* Right Column: Live Interactive Certificate Preview */}
-          <div className="lg:col-span-7 space-y-3">
-            <div className="flex items-center justify-between text-xs font-bold text-muted-foreground px-1">
-              <span>LIVE CERTIFICATE PREVIEW</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                Updates in Real-Time
-              </span>
-            </div>
-
-            {/* Render Certificate Preview Component */}
-            <div className="transform transition-transform">
-              <CertificatePreview
-                logoUrl={data.logoUrl}
-                headerTitle={data.certificateTitle || "CERTIFICATE OF COMPLETION"}
-                certifyText={data.certifyText || "This is to certify that Ms./Mr."}
-                recipientName="Training Administrator"
-                completionText={data.completionText || "has successfully completed"}
-                courseTitle={courseTitle || "Elevate... Go Beyond"}
-                customDate={data.customDate}
-                certificateCode="HARB-2026-X892A"
-              />
-            </div>
+          {/* Render Certificate Preview Component */}
+          <div className="transform transition-transform max-w-4xl mx-auto">
+            <CertificatePreview
+              logoUrl={data.logoUrl}
+              headerTitle={data.certificateTitle || "CERTIFICATE OF COMPLETION"}
+              certifyText={data.certifyText || "This is to certify that Ms./Mr."}
+              recipientName="Training Administrator"
+              completionText={data.completionText || "has successfully completed"}
+              courseTitle={courseTitle || "Elevate... Go Beyond"}
+              customDate={data.customDate}
+              certificateCode="HARB-2026-X892A"
+            />
           </div>
         </div>
       )}

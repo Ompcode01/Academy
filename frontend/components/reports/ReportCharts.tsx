@@ -95,7 +95,7 @@ export const StatusPieChart: React.FC<{ data: { name: string; value: number; col
   );
 };
 
-// 2. Bar Chart Component (e.g. Top Courses, Department Comparison)
+// 2. Bar Chart Component (e.g. Top Courses, Business Unit Comparison)
 export const SimpleBarChart: React.FC<{
   data: any[];
   xKey: string;

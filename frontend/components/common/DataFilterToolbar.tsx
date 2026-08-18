@@ -184,7 +184,7 @@ export default function DataFilterToolbar({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all" className="text-xs font-bold text-slate-500">
-                  All {col.label}s
+                  {col.label === "Category" ? "All Categories" : `All ${col.label}s`}
                 </SelectItem>
                 {col.options.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium">

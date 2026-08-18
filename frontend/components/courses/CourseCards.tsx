@@ -127,7 +127,7 @@ export default function CourseCards({
                     {/* ID & Dept */}
                     <div className="flex items-center justify-between text-[10px] text-muted-foreground font-semibold">
                       <span>ID: {course.id.toString()}</span>
-                      <span>Dept: {departmentCode}</span>
+                      <span>BU: {departmentCode}</span>
                     </div>
 
                     {/* Title */}

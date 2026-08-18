@@ -52,6 +52,7 @@ import InlineAssignmentPlayer from "@/components/courses/player/InlineAssignment
 import LearnerFeedbackModal from "@/components/courses/learner/LearnerFeedbackModal";
 import ScormPlayer from "@/components/courses/player/ScormPlayer";
 import { MessageSquare } from "lucide-react";
+import { getYouTubeEmbedUrl } from "@/lib/utils";
 
 interface LessonItem {
   id: number;
@@ -543,7 +544,7 @@ export default function CoursePreviewView() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Building2 className="h-4 w-4 text-amber-400 shrink-0" />
-                  <span>Department: <strong className="text-white font-semibold">{course.creatorInfo?.creatorDepartment || departmentLabel}</strong></span>
+                  <span>Business Unit: <strong className="text-white font-semibold">{course.creatorInfo?.creatorDepartment || departmentLabel}</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-emerald-400 shrink-0" />
@@ -689,7 +690,7 @@ export default function CoursePreviewView() {
                   <span className="font-extrabold text-primary block">{course.code || `CO${course.id}`}</span>
                 </div>
                 <div className="p-3 bg-muted/20 rounded-xl border border-border space-y-1">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase block">Department</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase block">Business Unit</span>
                   <span className="font-extrabold text-foreground block">{departmentLabel}</span>
                 </div>
                 <div className="p-3 bg-muted/20 rounded-xl border border-border space-y-1">
@@ -1188,13 +1189,7 @@ export default function CoursePreviewView() {
                   <div className="w-full space-y-2">
                     <div className="w-full h-[480px] bg-black rounded-xl overflow-hidden border border-border shadow-md">
                       <iframe
-                        src={
-                          selectedLesson.contentUrl.includes("watch?v=")
-                            ? selectedLesson.contentUrl.replace("watch?v=", "embed/")
-                            : selectedLesson.contentUrl.includes("youtu.be/")
-                            ? selectedLesson.contentUrl.replace("youtu.be/", "www.youtube.com/embed/")
-                            : selectedLesson.contentUrl
-                        }
+                        src={getYouTubeEmbedUrl(selectedLesson.contentUrl)}
                         className="w-full h-full border-0"
                         title={selectedLesson.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1388,7 +1383,7 @@ export default function CoursePreviewView() {
                           <span className="font-bold text-primary block">{course?.code || `CO${course?.id}`}</span>
                         </div>
                         <div className="p-2 bg-muted/20 rounded-lg border border-border">
-                          <span className="text-[9px] font-bold text-muted-foreground uppercase block">Department</span>
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase block">Business Unit</span>
                           <span className="font-bold text-foreground block">{departmentLabel}</span>
                         </div>
                         <div className="p-2 bg-muted/20 rounded-lg border border-border">

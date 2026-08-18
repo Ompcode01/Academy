@@ -217,9 +217,9 @@ export default function CreateCourseModal({
             )}
           </div>
 
-          {/* Department (Restricted/Auto for Teacher, Editable for Admin/Superadmin) */}
+          {/* Business Unit (Restricted/Auto for Teacher, Editable for Admin/Superadmin) */}
           <div className="space-y-1">
-            <Label htmlFor="department">Mmapped Department</Label>
+            <Label htmlFor="department">Mapped Business Unit</Label>
             <Select
               disabled={isTeacher}
               defaultValue={isTeacher && user?.departmentId ? String(user.departmentId) : "global"}
@@ -229,7 +229,7 @@ export default function CreateCourseModal({
                 <SelectValue placeholder="Select target department" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="global">Global (All Departments)</SelectItem>
+                <SelectItem value="global">Global (All Business Units)</SelectItem>
                 {departments.map((dept) => (
                   <SelectItem key={dept.id} value={String(dept.id)}>
                     {dept.departmentName} ({dept.departmentCode})

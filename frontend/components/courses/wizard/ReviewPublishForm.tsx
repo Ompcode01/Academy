@@ -286,7 +286,7 @@ export default function ReviewPublishForm({
             </div>
             <div className="flex items-center gap-2">
               <Globe className="h-3.5 w-3.5 text-blue-500" />
-              <span>Department Access: <strong>{enrollment.departmentAccess}</strong></span>
+              <span>Business Unit Access: <strong>{enrollment.departmentAccess}</strong></span>
             </div>
           </div>
         </div>

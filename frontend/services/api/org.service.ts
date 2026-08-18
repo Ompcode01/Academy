@@ -43,7 +43,7 @@ export interface Employee {
   assignedRoles?: UserRole[];
 }
 
-// Department API
+// Business Unit API
 export const getDepartments = async () => {
   const response = await api.get("/departments");
   return response.data;

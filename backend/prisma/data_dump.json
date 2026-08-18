@@ -1,45 +1,45 @@
 {
-  "exportedAt": "2026-08-18T04:20:21.101Z",
+  "exportedAt": "2026-08-18T15:55:27.931Z",
   "departments": [
     {
       "id": "1",
-      "departmentCode": "ENG",
-      "departmentName": "Engineering",
+      "departmentCode": "ABU",
+      "departmentName": "Across BUs",
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.289Z",
-      "updatedAt": "2026-07-31T09:32:40.289Z"
+      "updatedAt": "2026-08-18T15:44:01.189Z"
     },
     {
       "id": "2",
-      "departmentCode": "HR",
-      "departmentName": "Human Resources",
+      "departmentCode": "TSC",
+      "departmentName": "Tech Services- Core",
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.319Z",
-      "updatedAt": "2026-07-31T09:32:40.319Z"
+      "updatedAt": "2026-08-18T15:44:01.208Z"
     },
     {
       "id": "3",
-      "departmentCode": "MGT",
-      "departmentName": "Management",
+      "departmentCode": "TSD",
+      "departmentName": "Tech Services - DPU",
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.338Z",
-      "updatedAt": "2026-07-31T09:32:40.338Z"
+      "updatedAt": "2026-08-18T15:44:01.221Z"
     },
     {
       "id": "4",
-      "departmentCode": "SALES",
-      "departmentName": "Sales",
+      "departmentCode": "CS",
+      "departmentName": "Content Services",
       "isActive": true,
       "createdAt": "2026-08-08T12:00:22.402Z",
-      "updatedAt": "2026-08-08T12:00:22.402Z"
+      "updatedAt": "2026-08-18T15:44:01.242Z"
     },
     {
       "id": "5",
-      "departmentCode": "MKT",
-      "departmentName": "Marketing",
+      "departmentCode": "BE",
+      "departmentName": "Business Enablers",
       "isActive": true,
       "createdAt": "2026-08-08T12:00:22.423Z",
-      "updatedAt": "2026-08-08T12:00:22.423Z"
+      "updatedAt": "2026-08-18T15:44:01.257Z"
     }
   ],
   "employees": [
@@ -450,26 +450,26 @@
       "employeeId": "1",
       "username": "priyanka",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-18T04:06:46.895Z",
+      "lastLogin": "2026-08-18T09:38:05.360Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.459Z",
-      "updatedAt": "2026-08-18T04:06:46.891Z"
+      "updatedAt": "2026-08-18T09:38:05.363Z"
     },
     {
       "id": "2",
       "employeeId": "2",
       "username": "omprakash",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-08T12:02:05.147Z",
+      "lastLogin": "2026-08-18T09:39:13.558Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.507Z",
-      "updatedAt": "2026-08-08T12:02:05.149Z"
+      "updatedAt": "2026-08-18T09:39:13.561Z"
     },
     {
       "id": "3",
@@ -502,26 +502,26 @@
       "employeeId": "5",
       "username": "guest",
       "passwordHash": "$2b$10$LqYy4/X/RV3AjDf6hqZttufe0BscfOzf7dJeg9XKDSUALB1myXeeq",
-      "lastLogin": null,
+      "lastLogin": "2026-08-18T10:06:44.003Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.621Z",
-      "updatedAt": "2026-08-17T11:06:05.598Z"
+      "updatedAt": "2026-08-18T10:06:44.005Z"
     },
     {
       "id": "6",
       "employeeId": "6",
       "username": "employee6",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-17T12:20:59.276Z",
+      "lastLogin": "2026-08-18T11:18:39.107Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.675Z",
-      "updatedAt": "2026-08-17T12:20:59.277Z"
+      "updatedAt": "2026-08-18T11:18:39.110Z"
     },
     {
       "id": "7",
@@ -567,13 +567,13 @@
       "employeeId": "10",
       "username": "employee10",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": null,
+      "lastLogin": "2026-08-18T10:06:57.741Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.879Z",
-      "updatedAt": "2026-07-31T09:32:40.879Z"
+      "updatedAt": "2026-08-18T10:06:57.743Z"
     },
     {
       "id": "11",
@@ -1054,31 +1054,31 @@
       "description": "Technical and engineering courses",
       "isActive": true,
       "createdAt": "2026-07-31T09:32:41.318Z",
-      "updatedAt": "2026-07-31T09:32:41.318Z"
+      "updatedAt": "2026-08-18T15:43:19.903Z"
     },
     {
       "id": "2",
-      "name": "Management",
+      "name": "Soft Skill",
       "description": "Leadership and management training",
       "isActive": true,
       "createdAt": "2026-07-31T09:32:41.333Z",
-      "updatedAt": "2026-07-31T09:32:41.333Z"
+      "updatedAt": "2026-08-18T15:43:20.018Z"
     },
     {
       "id": "3",
-      "name": "Soft Skills",
+      "name": "Process/Compliances",
       "description": "Communication and interpersonal skills",
       "isActive": true,
       "createdAt": "2026-07-31T09:32:41.345Z",
-      "updatedAt": "2026-07-31T09:32:41.345Z"
+      "updatedAt": "2026-08-18T15:43:20.049Z"
     },
     {
       "id": "4",
-      "name": "HR",
+      "name": "Leadership (Futurefit, MCC, Basecamp)",
       "description": "Human resources and compliance",
       "isActive": true,
       "createdAt": "2026-07-31T09:32:41.357Z",
-      "updatedAt": "2026-07-31T09:32:41.357Z"
+      "updatedAt": "2026-08-18T15:43:20.070Z"
     }
   ],
   "courses": [
@@ -1252,6 +1252,44 @@
       "isActive": true,
       "createdAt": "2026-08-17T09:35:15.124Z",
       "updatedAt": "2026-08-17T14:24:40.562Z"
+    },
+    {
+      "id": "10",
+      "categoryId": "1",
+      "departmentId": null,
+      "creatorId": "1",
+      "title": "Python",
+      "shortDescription": "Core Java fundamentals and secure development practices.",
+      "description": "",
+      "thumbnail": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80",
+      "duration": 10,
+      "level": "Beginner",
+      "language": "English",
+      "status": "PUBLISHED",
+      "enrollmentType": "SELF",
+      "isMandatory": false,
+      "isActive": true,
+      "createdAt": "2026-08-18T09:50:30.313Z",
+      "updatedAt": "2026-08-18T09:50:30.313Z"
+    },
+    {
+      "id": "11",
+      "categoryId": "1",
+      "departmentId": null,
+      "creatorId": "1",
+      "title": "Java Programming",
+      "shortDescription": "Core Java fundamentals and secure development practices.",
+      "description": "",
+      "thumbnail": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+      "duration": 8,
+      "level": "Beginner",
+      "language": "English",
+      "status": "PUBLISHED",
+      "enrollmentType": "ADMIN",
+      "isMandatory": false,
+      "isActive": true,
+      "createdAt": "2026-08-18T12:25:49.118Z",
+      "updatedAt": "2026-08-18T12:26:07.497Z"
     }
   ],
   "courseTeachers": [
@@ -1278,6 +1316,18 @@
       "courseId": "9",
       "teacherId": "4",
       "assignedAt": "2026-08-17T09:35:15.469Z"
+    },
+    {
+      "id": "5",
+      "courseId": "10",
+      "teacherId": "4",
+      "assignedAt": "2026-08-18T09:50:30.486Z"
+    },
+    {
+      "id": "6",
+      "courseId": "11",
+      "teacherId": "4",
+      "assignedAt": "2026-08-18T12:25:49.450Z"
     }
   ],
   "courseSections": [
@@ -1445,6 +1495,94 @@
       "isActive": true,
       "createdAt": "2026-08-17T10:07:41.083Z",
       "updatedAt": "2026-08-17T14:24:41.372Z"
+    },
+    {
+      "id": "18",
+      "courseId": "10",
+      "title": "Section 1: Introduction",
+      "description": null,
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-18T09:50:30.367Z",
+      "updatedAt": "2026-08-18T09:50:30.367Z"
+    },
+    {
+      "id": "19",
+      "courseId": "10",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-18T09:50:30.429Z",
+      "updatedAt": "2026-08-18T09:50:30.429Z"
+    },
+    {
+      "id": "20",
+      "courseId": "11",
+      "title": "Section 1: Introduction",
+      "description": null,
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-18T12:25:49.219Z",
+      "updatedAt": "2026-08-18T12:26:07.564Z"
+    },
+    {
+      "id": "21",
+      "courseId": "11",
+      "title": "Section 2: QUIZ",
+      "description": null,
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-18T12:25:49.350Z",
+      "updatedAt": "2026-08-18T12:26:07.564Z"
+    },
+    {
+      "id": "22",
+      "courseId": "11",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 3,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-18T12:25:49.396Z",
+      "updatedAt": "2026-08-18T12:26:07.564Z"
+    },
+    {
+      "id": "23",
+      "courseId": "11",
+      "title": "Section 1: Introduction",
+      "description": null,
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-18T12:26:07.598Z",
+      "updatedAt": "2026-08-18T12:26:07.598Z"
+    },
+    {
+      "id": "24",
+      "courseId": "11",
+      "title": "Section 2: QUIZ",
+      "description": null,
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-18T12:26:07.701Z",
+      "updatedAt": "2026-08-18T12:26:07.701Z"
+    },
+    {
+      "id": "25",
+      "courseId": "11",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 3,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-18T12:26:07.739Z",
+      "updatedAt": "2026-08-18T12:26:07.739Z"
     }
   ],
   "learningContents": [
@@ -2025,6 +2163,210 @@
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T10:07:41.101Z",
       "updatedAt": "2026-08-17T14:24:43.288Z"
+    },
+    {
+      "id": "39",
+      "sectionId": "18",
+      "title": "Youtube link testing",
+      "contentType": "YOUTUBE",
+      "contentUrl": "https://harbingertechventures.sharepoint.com/:v:/r/sites/TestCHAMPBatch7-July2026/Shared%20Documents/CHAMP%20Batch%207%20-%20July%202026/4%20Styles%20of%20Communication%20_%20Communication%20Styles%20In%20The%20Workplace%20-%20YouTube%20(360p).mp4?d=w2398276583b0437395003c494fd0d76b&csf=1&web=1&e=oIZMFq",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T09:50:30.402Z",
+      "updatedAt": "2026-08-18T09:50:30.402Z"
+    },
+    {
+      "id": "40",
+      "sectionId": "19",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T09:50:30.455Z",
+      "updatedAt": "2026-08-18T09:50:30.455Z"
+    },
+    {
+      "id": "41",
+      "sectionId": "20",
+      "title": "sample pdf",
+      "contentType": "PDF",
+      "contentUrl": "/storage/uploads/doc-1787053552124-Harbinger_Corporate_PPT_Template__1_.pdf",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T12:25:49.259Z",
+      "updatedAt": "2026-08-18T12:25:49.259Z"
+    },
+    {
+      "id": "42",
+      "sectionId": "20",
+      "title": "Youtube link testing",
+      "contentType": "YOUTUBE",
+      "contentUrl": "https://youtu.be/oodOj8jx8ds?si=kcEoXQyedxED28w9",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T12:25:49.297Z",
+      "updatedAt": "2026-08-18T12:25:49.297Z"
+    },
+    {
+      "id": "43",
+      "sectionId": "20",
+      "title": "POC module 1",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Sample POC to be done.",
+      "duration": 10,
+      "contentOrder": 3,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"POC module 1\",\"description\":\"Sample POC to be done.\",\"maxMarks\":100,\"deadline\":\"2026-08-20 23:59\",\"maxAttempts\":3,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":0,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Consolidated_Enterprise_AI_Project_Scenarios (1) (1).docx\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787053868245-Consolidated_Enterprise_AI_Project_Scenarios__1___1_.docx\"},{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787053881599-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1787053881605/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]}]}",
+      "createdAt": "2026-08-18T12:25:49.319Z",
+      "updatedAt": "2026-08-18T12:25:49.319Z"
+    },
+    {
+      "id": "44",
+      "sectionId": "21",
+      "title": "Quiz Testing",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Quiz Testing\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":4,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"WHo is Prime Minister of India?\",\"marks\":2,\"options\":[\"Narendra Modi\",\"Rahul Gandhi\",\"Kejriwal\"],\"correctAnswer\":\"Narendra Modi\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"Harbinger was Founded in the year ____ .\",\"marks\":2,\"correctAnswer\":\"1990\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T12:25:49.376Z",
+      "updatedAt": "2026-08-18T12:25:49.376Z"
+    },
+    {
+      "id": "45",
+      "sectionId": "22",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1787055695480,\"questionText\":\"Any Suggestions?\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T12:25:49.422Z",
+      "updatedAt": "2026-08-18T12:25:49.422Z"
+    },
+    {
+      "id": "46",
+      "sectionId": "23",
+      "title": "sample pdf",
+      "contentType": "PDF",
+      "contentUrl": "/storage/uploads/doc-1787053552124-Harbinger_Corporate_PPT_Template__1_.pdf",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T12:26:07.625Z",
+      "updatedAt": "2026-08-18T12:26:07.625Z"
+    },
+    {
+      "id": "47",
+      "sectionId": "23",
+      "title": "Youtube link testing",
+      "contentType": "YOUTUBE",
+      "contentUrl": "https://youtu.be/oodOj8jx8ds?si=kcEoXQyedxED28w9",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T12:26:07.655Z",
+      "updatedAt": "2026-08-18T12:26:07.655Z"
+    },
+    {
+      "id": "48",
+      "sectionId": "23",
+      "title": "POC module 1",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Sample POC to be done.",
+      "duration": 10,
+      "contentOrder": 3,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"POC module 1\",\"description\":\"Sample POC to be done.\",\"maxMarks\":100,\"deadline\":\"2026-08-20 23:59\",\"maxAttempts\":3,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":0,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Consolidated_Enterprise_AI_Project_Scenarios (1) (1).docx\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787053868245-Consolidated_Enterprise_AI_Project_Scenarios__1___1_.docx\"},{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787053881599-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1787053881605/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]}]}",
+      "createdAt": "2026-08-18T12:26:07.678Z",
+      "updatedAt": "2026-08-18T12:26:07.678Z"
+    },
+    {
+      "id": "49",
+      "sectionId": "24",
+      "title": "Quiz Testing",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Quiz Testing\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":4,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"WHo is Prime Minister of India?\",\"marks\":2,\"options\":[\"Narendra Modi\",\"Rahul Gandhi\",\"Kejriwal\"],\"correctAnswer\":\"Narendra Modi\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"Harbinger was Founded in the year ____ .\",\"marks\":2,\"correctAnswer\":\"1990\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T12:26:07.723Z",
+      "updatedAt": "2026-08-18T12:26:07.723Z"
+    },
+    {
+      "id": "50",
+      "sectionId": "25",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1787055695480,\"questionText\":\"Any Suggestions?\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-18T12:26:07.760Z",
+      "updatedAt": "2026-08-18T12:26:07.760Z"
     }
   ],
   "enrollments": [
@@ -2267,6 +2609,86 @@
       "sessionsCount": 1,
       "isMandatory": false,
       "createdAt": "2026-08-17T11:06:06.043Z"
+    },
+    {
+      "id": "16",
+      "userId": "1",
+      "courseId": "9",
+      "enrolledAt": "2026-08-18T09:45:22.285Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "14",
+      "timeSpentSeconds": 5,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-18T09:45:22.285Z"
+    },
+    {
+      "id": "17",
+      "userId": "1",
+      "courseId": "10",
+      "enrolledAt": "2026-08-18T09:50:45.596Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "0",
+      "timeSpentSeconds": 135,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-18T09:50:45.596Z"
+    },
+    {
+      "id": "18",
+      "userId": "10",
+      "courseId": "9",
+      "enrolledAt": "2026-08-18T10:07:20.307Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "14",
+      "timeSpentSeconds": 395,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-18T10:07:20.307Z"
+    },
+    {
+      "id": "19",
+      "userId": "4",
+      "courseId": "11",
+      "enrolledAt": "2026-08-18T12:25:49.489Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "0",
+      "timeSpentSeconds": 0,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-18T12:25:49.489Z"
+    },
+    {
+      "id": "20",
+      "userId": "10",
+      "courseId": "11",
+      "enrolledAt": "2026-08-18T12:25:49.523Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": null,
+      "status": "IN_PROGRESS",
+      "progress": "0",
+      "timeSpentSeconds": 0,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-18T12:25:49.523Z"
     }
   ],
   "userLessonProgresses": [
@@ -2413,6 +2835,14 @@
       "contentId": "32",
       "isCompleted": true,
       "completedAt": "2026-08-17T12:00:36.375Z"
+    },
+    {
+      "id": "55",
+      "userId": "1",
+      "courseId": "9",
+      "contentId": "29",
+      "isCompleted": true,
+      "completedAt": "2026-08-18T09:45:23.941Z"
     }
   ],
   "assessmentSubmissions": [
@@ -3359,6 +3789,126 @@
       "detail": "Successfully authenticated to LMS Portal",
       "type": "login",
       "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "63",
+      "timestamp": "2026-08-18T09:38:05.484Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "64",
+      "timestamp": "2026-08-18T09:39:13.610Z",
+      "actorId": "2",
+      "actorName": "Omprakash Pandey (ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "65",
+      "timestamp": "2026-08-18T09:50:30.597Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Published",
+      "detail": "Published 'Python'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "66",
+      "timestamp": "2026-08-18T10:06:18.779Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "67",
+      "timestamp": "2026-08-18T10:06:31.111Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "68",
+      "timestamp": "2026-08-18T10:06:44.051Z",
+      "actorId": "5",
+      "actorName": "Employee5 User (GUEST)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "69",
+      "timestamp": "2026-08-18T10:06:57.797Z",
+      "actorId": "10",
+      "actorName": "Employee10 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "70",
+      "timestamp": "2026-08-18T11:18:39.216Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "71",
+      "timestamp": "2026-08-18T12:25:49.609Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Published",
+      "detail": "Published 'Java Programming'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "72",
+      "timestamp": "2026-08-18T12:26:07.865Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Updated",
+      "detail": "Updated course 'Java Programming'",
+      "type": "course",
+      "ipAddress": "::1"
     }
   ],
   "notifications": [
@@ -6657,25 +7207,6 @@
       "createdAt": "2026-08-17T09:48:48.925Z"
     },
     {
-      "id": "205",
-      "userId": "10",
-      "actorId": null,
-      "type": "COURSE_UPDATED",
-      "category": "GENERAL",
-      "priority": "NORMAL",
-      "title": "Course Content Updated",
-      "message": "Your course 'Agentic AI' was updated by Super Admin priyanka. New content added: Agentic AI (Course Update).",
-      "link": "/courses/9/preview",
-      "entityType": null,
-      "entityId": null,
-      "isRead": false,
-      "metadata": {
-        "courseId": 9
-      },
-      "roleTarget": "LEARNER",
-      "createdAt": "2026-08-17T09:48:48.925Z"
-    },
-    {
       "id": "206",
       "userId": "13",
       "actorId": null,
@@ -7586,6 +8117,2438 @@
       },
       "roleTarget": "ADMIN",
       "createdAt": "2026-08-17T12:19:45.272Z"
+    },
+    {
+      "id": "269",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'Python'. You can now view and edit its curriculum.",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-18T09:50:30.539Z"
+    },
+    {
+      "id": "270",
+      "userId": "4",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "271",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "272",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "273",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "274",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "275",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "276",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "277",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "278",
+      "userId": "6",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "279",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "280",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "281",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "282",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "283",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "284",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "285",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "286",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "287",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "288",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "289",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "290",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "291",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "292",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "293",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.575Z"
+    },
+    {
+      "id": "294",
+      "userId": "4",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "295",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "297",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "298",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "299",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "300",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "301",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "302",
+      "userId": "6",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "303",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "304",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "305",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "306",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "307",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "308",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "309",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "310",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "311",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "312",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "313",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "314",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "315",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "316",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "317",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Python\"",
+      "link": "/courses/10/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 10
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T09:50:30.644Z"
+    },
+    {
+      "id": "318",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'Java Programming'. You can now view and edit its curriculum.",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-18T12:25:49.489Z"
+    },
+    {
+      "id": "319",
+      "userId": "4",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "320",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "321",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "322",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "323",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "324",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "325",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "326",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "327",
+      "userId": "6",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "328",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "329",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "330",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "331",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "332",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "333",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "334",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "335",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "336",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "337",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "338",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "339",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "340",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "341",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "342",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.578Z"
+    },
+    {
+      "id": "343",
+      "userId": "10",
+      "actorId": null,
+      "type": "ENROLLMENT",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Enrollment",
+      "message": "priyanka enrolled you in the course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.642Z"
+    },
+    {
+      "id": "344",
+      "userId": "4",
+      "actorId": null,
+      "type": "ENROLLMENT",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Enrollment",
+      "message": "priyanka enrolled you in the course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.642Z"
+    },
+    {
+      "id": "345",
+      "userId": "4",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "346",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "347",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "348",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "349",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "350",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "351",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "352",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "353",
+      "userId": "6",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "354",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "355",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "356",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "357",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "358",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "359",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "360",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "361",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "362",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "363",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "364",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "365",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "366",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "367",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "368",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_CREATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "New Course Available",
+      "message": "Priyanka Davhare published a new course: \"Java Programming\"",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:25:49.656Z"
+    },
+    {
+      "id": "369",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'Java Programming'. You can now view and edit its curriculum.",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-18T12:26:07.833Z"
+    },
+    {
+      "id": "370",
+      "userId": "4",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "371",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "372",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "373",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "374",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "375",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "376",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "377",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "378",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "379",
+      "userId": "6",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "380",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "381",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "382",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "383",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "384",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "385",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "386",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "387",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "388",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "389",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "390",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "391",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "392",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "393",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "394",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "395",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"Java Programming\" in course 'Java Programming'.",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "396",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"Java Programming\" in course 'Java Programming'.",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-18T12:26:07.888Z"
+    },
+    {
+      "id": "397",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"Java Programming\" in course 'Java Programming'.",
+      "link": "/courses/11/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 11
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-18T12:26:07.888Z"
     }
   ]
 }

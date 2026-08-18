@@ -568,20 +568,22 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
                 />
               </div>
 
-              {/* Department Target Selection */}
+              {/* Business Unit Target Selection */}
               <div>
                 <label className="text-xs font-bold text-[#212529] block mb-1">
-                  Target Department Scope
+                  Target Business Unit Scope
                 </label>
                 <select
                   value={targetDeptId}
                   onChange={(e) => setTargetDeptId(e.target.value)}
                   className="w-full rounded border border-[#E0E6ED] p-2 text-xs font-medium focus:border-[#C82333] outline-none bg-white cursor-pointer"
                 >
-                  <option value="all">🌐 All Departments (Global Event)</option>
-                  <option value="1">Engineering (ENG)</option>
-                  <option value="2">Human Resources (HR)</option>
-                  <option value="3">Management (MGT)</option>
+                  <option value="all">🌐 All Business Units (Global Event)</option>
+                  <option value="1">Across BUs</option>
+                  <option value="2">Tech Services- Core</option>
+                  <option value="3">Tech Services - DPU</option>
+                  <option value="4">Content Services</option>
+                  <option value="5">Business Enablers</option>
                 </select>
                 <p className="text-[10px] text-muted-foreground mt-1">
                   {user?.role === "ADMIN"

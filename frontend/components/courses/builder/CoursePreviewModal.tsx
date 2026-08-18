@@ -26,6 +26,7 @@ import InlineAssignmentPlayer from "@/components/courses/player/InlineAssignment
 import LearnerFeedbackModal from "@/components/courses/learner/LearnerFeedbackModal";
 import ScormPlayer from "@/components/courses/player/ScormPlayer";
 import { MessageSquare } from "lucide-react";
+import { getYouTubeEmbedUrl } from "@/lib/utils";
 
 interface CoursePreviewModalProps {
   open: boolean;
@@ -209,13 +210,7 @@ export default function CoursePreviewModal({
                   ) : selectedLesson.contentType === "YOUTUBE" && selectedLesson.contentUrl ? (
                     <div className="w-full h-[360px] bg-black rounded-xl overflow-hidden border border-border shadow-lg">
                       <iframe
-                        src={
-                          selectedLesson.contentUrl.includes("watch?v=")
-                            ? selectedLesson.contentUrl.replace("watch?v=", "embed/")
-                            : selectedLesson.contentUrl.includes("youtu.be/")
-                            ? selectedLesson.contentUrl.replace("youtu.be/", "www.youtube.com/embed/")
-                            : selectedLesson.contentUrl
-                        }
+                        src={getYouTubeEmbedUrl(selectedLesson.contentUrl)}
                         className="w-full h-full border-0"
                         title={selectedLesson.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -350,7 +345,7 @@ export default function CoursePreviewModal({
                         <span className="font-extrabold text-primary block">{courseCode}</span>
                       </div>
                       <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
-                        <span className="text-[9px] font-bold text-muted-foreground uppercase block">Department</span>
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase block">Business Unit</span>
                         <span className="font-extrabold text-foreground block">{department}</span>
                       </div>
                       <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
@@ -415,7 +410,7 @@ export default function CoursePreviewModal({
                       <span className="font-extrabold text-primary block">{courseCode}</span>
                     </div>
                     <div className="p-2.5 bg-muted/20 rounded-lg border border-border">
-                      <span className="text-[9px] font-bold text-muted-foreground uppercase block">Department</span>
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase block">Business Unit</span>
                       <span className="font-extrabold text-foreground block">{department}</span>
                     </div>
                     <div className="p-2.5 bg-muted/20 rounded-lg border border-border">

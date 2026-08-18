@@ -156,8 +156,8 @@ export default function GuestGrantModal({ isOpen, onClose }: GuestGrantModalProp
                   onChange={(e) => setScope(e.target.value as any)}
                   className="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500"
                 >
-                  <option value="DEPARTMENT">Department Scoped</option>
-                  {isSuperAdmin && <option value="GLOBAL">Global Access (All Departments)</option>}
+                  <option value="DEPARTMENT">Business Unit Scoped</option>
+                  {isSuperAdmin && <option value="GLOBAL">Global Access (All Business Units)</option>}
                 </select>
               </div>
 

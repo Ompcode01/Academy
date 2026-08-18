@@ -346,7 +346,7 @@ export default function EnrollmentForm({
             <div>
               <h3 className="text-sm font-bold text-foreground">2) Admin Direct Enroll</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Super Admin or Dept Admin directly enrolls specific employees one by one using Email or Username.
+                Super Admin or BU Admin directly enrolls specific employees one by one using Email or Username.
               </p>
             </div>
           </div>
@@ -781,11 +781,11 @@ export default function EnrollmentForm({
         </div>
       </div>
 
-      {/* Target Department Scoping Banner */}
+      {/* Target Business Unit Scoping Banner */}
       <div className="space-y-4 rounded-xl border border-border bg-card p-5">
         <div className="flex items-center justify-between border-b border-border pb-2">
           <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-            Target Department Eligibility
+            Target Business Unit Eligibility
           </h3>
           {isAdmin && (
             <span className="text-xs font-bold text-amber-600 flex items-center gap-1 bg-amber-500/10 px-2.5 py-0.5 rounded border border-amber-500/20">
@@ -795,14 +795,14 @@ export default function EnrollmentForm({
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs font-semibold">Target Department Scope</Label>
+          <Label className="text-xs font-semibold">Target Business Unit Scope</Label>
           <select
             disabled={isAdmin}
             value={data.departmentAccess || "ALL"}
             onChange={(e) => onChange({ departmentAccess: e.target.value })}
             className="w-full h-10 px-3 rounded-lg bg-background border border-input text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isSuperAdmin && <option value="ALL">Global (All Organizational Departments)</option>}
+            {isSuperAdmin && <option value="ALL">Global (All Organizational Business Units)</option>}
             <option value="ENG">Engineering (ENG)</option>
             <option value="HR">Human Resources (HR)</option>
             <option value="MGT">Management (MGT)</option>

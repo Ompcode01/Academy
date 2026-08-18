@@ -155,7 +155,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
           </Select>
         </div>
 
-        {/* 3. Department Scope */}
+        {/* 3. Business Unit Scope */}
         <div className="min-w-[170px]">
           {isSuperAdmin ? (
             <Select
@@ -163,13 +163,13 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
               onValueChange={(val) => onFilterChange({ departmentId: val || "ALL" })}
             >
               <SelectTrigger className="h-9.5 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
-                <span className="text-slate-400 font-normal mr-1">Dept:</span>
+                <span className="text-slate-400 font-normal mr-1">BU:</span>
                 <SelectValue>
-                  {selectedDeptObj ? `${selectedDeptObj.departmentName}` : "All Depts"}
+                  {selectedDeptObj ? `${selectedDeptObj.departmentName}` : "All BUs"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL" className="text-xs font-bold text-slate-500">All Organization Departments</SelectItem>
+                <SelectItem value="ALL" className="text-xs font-bold text-slate-500">All Organization Business Units</SelectItem>
                 {options?.departments?.map((d) => (
                   <SelectItem key={d.id} value={String(d.id)} className="text-xs font-medium">
                     {d.departmentName} ({d.departmentCode})

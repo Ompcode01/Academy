@@ -51,7 +51,7 @@ interface BasicInfoFormProps {
 const presetThumbnails = [
   {
     id: "tech",
-    categoryName: "Software & Technology",
+    categoryName: "Technical",
     tag: "Technical",
     url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
     icon: Laptop,
@@ -59,24 +59,24 @@ const presetThumbnails = [
   },
   {
     id: "management",
-    categoryName: "Business & Leadership",
-    tag: "Management",
+    categoryName: "Leadership",
+    tag: "Leadership",
     url: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80",
     icon: Briefcase,
     badgeClass: "bg-purple-500/10 text-purple-500 border-purple-500/20",
   },
   {
     id: "softskills",
-    categoryName: "Soft Skills & Teamwork",
-    tag: "Soft Skills",
+    categoryName: "Soft Skill",
+    tag: "Soft Skill",
     url: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80",
     icon: Users,
     badgeClass: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
   },
   {
     id: "hr",
-    categoryName: "HR & Governance",
-    tag: "HR & Legal",
+    categoryName: "Process/Compliances",
+    tag: "Compliance",
     url: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
     icon: ShieldCheck,
     badgeClass: "bg-amber-500/10 text-amber-500 border-amber-500/20",
@@ -167,15 +167,15 @@ export default function BasicInfoForm({
 
           {/* Line 2: Department, Category, Level, Duration (4 Equal Columns) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Department */}
+            {/* Business Unit */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-bold text-foreground">
-                  Department <span className="text-destructive">*</span>
+                  Business Unit <span className="text-destructive">*</span>
                 </Label>
                 {isAdmin && (
                   <span className="text-[10px] text-amber-600 font-bold flex items-center gap-1">
-                    <Lock className="h-3 w-3" /> Fixed (Your Dept)
+                    <Lock className="h-3 w-3" /> Fixed (Your BU)
                   </span>
                 )}
               </div>
@@ -185,18 +185,19 @@ export default function BasicInfoForm({
                 onValueChange={(val: string | null) => onChange({ departmentId: val || "" })}
               >
                 <SelectTrigger className="h-10 text-xs bg-background w-full">
-                  <SelectValue placeholder="Select Department" />
+                  <SelectValue placeholder="Select Business Unit" />
                 </SelectTrigger>
                 <SelectContent>
-                  {isSuperAdmin && <SelectItem value="global">Global (All Departments)</SelectItem>}
-                  <SelectItem value="1">Engineering (ENG)</SelectItem>
-                  <SelectItem value="2">Human Resources (HR)</SelectItem>
-                  <SelectItem value="3">Management (MGT)</SelectItem>
+                  <SelectItem value="1">Across BUs</SelectItem>
+                  <SelectItem value="2">Tech Services- Core</SelectItem>
+                  <SelectItem value="3">Tech Services - DPU</SelectItem>
+                  <SelectItem value="4">Content Services</SelectItem>
+                  <SelectItem value="5">Business Enablers</SelectItem>
                 </SelectContent>
               </Select>
               {isAdmin && (
                 <p className="text-[10px] text-muted-foreground">
-                  As an Admin, courses created are restricted to your assigned department.
+                  As an Admin, courses created are restricted to your assigned business unit.
                 </p>
               )}
             </div>
@@ -212,10 +213,10 @@ export default function BasicInfoForm({
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">Technical &amp; Software</SelectItem>
-                  <SelectItem value="2">Business &amp; Leadership</SelectItem>
-                  <SelectItem value="3">Soft Skills &amp; Communication</SelectItem>
-                  <SelectItem value="4">HR &amp; Compliance</SelectItem>
+                  <SelectItem value="1">Technical</SelectItem>
+                  <SelectItem value="2">Soft Skill</SelectItem>
+                  <SelectItem value="3">Process/Compliances</SelectItem>
+                  <SelectItem value="4">Leadership (Futurefit, MCC, Basecamp)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

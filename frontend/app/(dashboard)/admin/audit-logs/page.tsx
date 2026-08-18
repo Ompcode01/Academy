@@ -255,7 +255,7 @@ export default function SuperAdminAuditLogsPage() {
               ),
             },
             {
-              header: "Department",
+              header: "Business Unit",
               cell: (r: AuditLogData) => (
                 <span className="font-medium text-foreground">
                   {r.departmentName || "System / Global"}
@@ -338,7 +338,7 @@ export default function SuperAdminAuditLogsPage() {
                     <span className="font-mono font-bold text-primary">{selectedLog.username || "N/A"}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[10px]">Department Name</span>
+                    <span className="text-muted-foreground block text-[10px]">Business Unit Name</span>
                     <span className="font-semibold text-foreground">{selectedLog.departmentName || "Global / System"}</span>
                   </div>
                   <div>

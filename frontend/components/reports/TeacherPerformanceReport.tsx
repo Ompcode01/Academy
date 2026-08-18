@@ -238,7 +238,7 @@ export default function TeacherPerformanceReport() {
           <thead className="bg-muted/40 text-muted-foreground uppercase font-semibold border-b border-border">
             <tr>
               <th className="p-3">Teacher Profile</th>
-              <th className="p-3">Department</th>
+              <th className="p-3">Business Unit</th>
               <th className="p-3">Assigned Courses</th>
               <th className="p-3 text-center">Supervised Learners</th>
               <th className="p-3 text-center">Total Submissions</th>
@@ -324,7 +324,7 @@ export default function TeacherPerformanceReport() {
                 Teacher Audit Trail: {selectedTeacher?.teacherName || "All Teachers"}
               </span>
               <Badge variant="outline" className="text-xs font-bold border-purple-500 text-purple-600">
-                {selectedTeacher?.departmentName || "All Departments"}
+                {selectedTeacher?.departmentName || "All Business Units"}
               </Badge>
             </DialogTitle>
           </DialogHeader>

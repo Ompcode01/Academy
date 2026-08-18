@@ -7,34 +7,34 @@ async function main() {
   const passwordHash = await bcrypt.hash("Admin@123", 10);
 
   // Departments
-  const eng = await prisma.department.upsert({
-    where: { departmentCode: "ENG" },
+  const tsc = await prisma.department.upsert({
+    where: { departmentCode: "TSC" },
     update: {},
-    create: { departmentCode: "ENG", departmentName: "Engineering" },
+    create: { departmentCode: "TSC", departmentName: "Tech Services- Core" },
   });
 
-  const hr = await prisma.department.upsert({
-    where: { departmentCode: "HR" },
+  const tsd = await prisma.department.upsert({
+    where: { departmentCode: "TSD" },
     update: {},
-    create: { departmentCode: "HR", departmentName: "Human Resources" },
+    create: { departmentCode: "TSD", departmentName: "Tech Services - DPU" },
   });
 
-  const mgt = await prisma.department.upsert({
-    where: { departmentCode: "MGT" },
+  const cs = await prisma.department.upsert({
+    where: { departmentCode: "CS" },
     update: {},
-    create: { departmentCode: "MGT", departmentName: "Management" },
+    create: { departmentCode: "CS", departmentName: "Content Services" },
   });
 
-  const sales = await prisma.department.upsert({
-    where: { departmentCode: "SALES" },
+  const be = await prisma.department.upsert({
+    where: { departmentCode: "BE" },
     update: {},
-    create: { departmentCode: "SALES", departmentName: "Sales" },
+    create: { departmentCode: "BE", departmentName: "Business Enablers" },
   });
 
-  const mkt = await prisma.department.upsert({
-    where: { departmentCode: "MKT" },
+  const abu = await prisma.department.upsert({
+    where: { departmentCode: "ABU" },
     update: {},
-    create: { departmentCode: "MKT", departmentName: "Marketing" },
+    create: { departmentCode: "ABU", departmentName: "Across BUs" },
   });
 
   // Roles
@@ -70,7 +70,7 @@ async function main() {
       lastName: "Davhare",
       officialEmail: "priyanka@company.com",
       designation: "Super Administrator",
-      departmentId: eng.id,
+      departmentId: tsc.id,
       joiningDate: new Date(),
       employmentStatus: EmploymentStatus.ACTIVE,
     },
@@ -102,7 +102,7 @@ async function main() {
       lastName: "Pandey",
       officialEmail: "omprakash@company.com",
       designation: "Department Admin",
-      departmentId: mgt.id,
+      departmentId: cs.id,
       joiningDate: new Date(),
       employmentStatus: EmploymentStatus.ACTIVE,
     },
@@ -134,7 +134,7 @@ async function main() {
       lastName: "Patil",
       officialEmail: "sneha@company.com",
       designation: "Senior Instructor",
-      departmentId: eng.id,
+      departmentId: tsc.id,
       joiningDate: new Date(),
       employmentStatus: EmploymentStatus.ACTIVE,
     },
@@ -166,7 +166,7 @@ async function main() {
       lastName: "Visitor",
       officialEmail: "guest@company.com",
       designation: "Auditor",
-      departmentId: hr.id,
+      departmentId: tsd.id,
       joiningDate: new Date(),
       employmentStatus: EmploymentStatus.ACTIVE,
     },
@@ -197,7 +197,7 @@ async function main() {
     await prisma.guestAccessGrant.create({
       data: {
         userId: guestEmp.id,
-        departmentId: eng.id,
+        departmentId: tsc.id,
         scope: "DEPARTMENT",
         grantedById: superadminEmp.id,
         isActive: true,
@@ -261,9 +261,9 @@ async function main() {
   // Categories
   const categoryData = [
     { name: "Technical", description: "Technical and engineering courses" },
-    { name: "Management", description: "Leadership and management training" },
-    { name: "Soft Skills", description: "Communication and interpersonal skills" },
-    { name: "HR", description: "Human resources and compliance" },
+    { name: "Soft Skill", description: "Communication and interpersonal skills" },
+    { name: "Process/Compliances", description: "Process and compliance training" },
+    { name: "Leadership (Futurefit, MCC, Basecamp)", description: "Leadership training programs" },
   ];
 
   const categories: Record<string, any> = {};
@@ -287,7 +287,7 @@ async function main() {
         shortDescription: "Master microservice architecture, API design, RBAC security, and dynamic workflows.",
         description: "An intensive enterprise course covering modern web architecture, distributed systems, role-based access control, security best practices, and hands-on assessments.",
         categoryId: categories["Technical"].id,
-        departmentId: eng.id,
+        departmentId: tsc.id,
         creatorId: superadminEmp.id,
         level: "Intermediate",
         language: "English",
@@ -461,7 +461,7 @@ async function main() {
         shortDescription: "Master Autonomous AI Agents, LLM Orchestration, Multi-Agent Workflows, and Tool Integrations.",
         description: "Comprehensive enterprise course covering LLM agentic design patterns, function calling, prompt engineering, multi-agent collaboration, stateful reasoning loops, and real-world deployment.",
         categoryId: categories["Technical"].id,
-        departmentId: eng.id,
+        departmentId: tsc.id,
         creatorId: superadminEmp.id,
         level: "Beginner",
         language: "English",

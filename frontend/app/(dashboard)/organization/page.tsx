@@ -108,7 +108,7 @@ export default function OrganizationPage() {
               <form onSubmit={handleCreate} className="space-y-4 py-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="code" className="text-sm font-medium">
-                    Department Code *
+                    Business Unit Code *
                   </Label>
                   <Input
                     id="code"
@@ -120,7 +120,7 @@ export default function OrganizationPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="name" className="text-sm font-medium">
-                    Department Name *
+                    Business Unit Name *
                   </Label>
                   <Input
                     id="name"
@@ -174,7 +174,7 @@ export default function OrganizationPage() {
                 Code
               </TableHead>
               <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Department Name
+                Business Unit Name
               </TableHead>
               <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Status

@@ -142,7 +142,7 @@ export default function Dashboard() {
   // Title by Role
   const dashboardTitleMap: Record<string, string> = {
     [ROLES.SUPER_ADMIN]: `${fullName} — Executive Admin Dashboard`,
-    [ROLES.ADMIN]: `${fullName} — Department Admin Dashboard`,
+    [ROLES.ADMIN]: `${fullName} — Business Unit Admin Dashboard`,
     [ROLES.TEACHER]: `${fullName} — Educator Dashboard`,
     [ROLES.LEARNER]: `${fullName} — Learner Dashboard`,
     [ROLES.GUEST]: `${fullName} — Guest Catalog Preview`,
@@ -284,7 +284,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Active Departments
+                  Active Business Units
                 </span>
                 <span className="text-lg font-extrabold text-[#212529]">
                   {stats?.departmentsCount ?? 5}
@@ -313,7 +313,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Departments
+                  Business Units
                 </span>
                 <span className="text-lg font-extrabold text-[#212529]">
                   {stats?.departmentsCount ?? 5}
@@ -594,18 +594,18 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* 2. Recently Added Programs & Department Mapped Courses */}
+      {/* 2. Recently Added Programs & Business Unit Mapped Courses */}
       <div className="space-y-3">
         <div className="flex items-center justify-between border-b border-[#E0E6ED] pb-1.5">
           <div className="flex items-center gap-2">
             <List className="h-4 w-4 text-[#C82333]" />
             <h3 className="text-sm font-bold tracking-wide text-[#212529]">
               {userRole === ROLES.LEARNER
-                ? "My Department Courses"
+                ? "My Business Unit Courses"
                 : userRole === ROLES.TEACHER
-                ? "Assigned & Department Programs"
+                ? "Assigned & Business Unit Programs"
                 : userRole === ROLES.ADMIN
-                ? "Department Program Catalog"
+                ? "Business Unit Program Catalog"
                 : userRole === ROLES.SUPER_ADMIN
                 ? "All Platform Programs"
                 : "Featured Catalog Programs"}

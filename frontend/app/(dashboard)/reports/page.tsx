@@ -317,7 +317,7 @@ export default function ReportsPage() {
                     className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
                   >
                     <Building2 className="h-3.5 w-3.5 shrink-0" />
-                    <span className="whitespace-nowrap">Department Perf</span>
+                    <span className="whitespace-nowrap">Business Unit Perf</span>
                   </TabsTrigger>
 
                   <TabsTrigger
@@ -528,7 +528,7 @@ export default function ReportsPage() {
                     </button>
                   ),
                 },
-                { header: "Department", accessorKey: "department" },
+                { header: "Business Unit", accessorKey: "department" },
                 { header: "Course Title", accessorKey: "courseTitle" },
                 { header: "Enrolled Date", cell: (r: any) => new Date(r.enrolledAt).toLocaleDateString() },
                 { header: "Progress %", cell: (r: any) => <span className="font-semibold text-primary">{r.progress}%</span> },
@@ -585,7 +585,7 @@ export default function ReportsPage() {
               columns={[
                 { header: "Course Title", accessorKey: "courseTitle" },
                 { header: "Category", accessorKey: "category" },
-                { header: "Department", accessorKey: "department" },
+                { header: "Business Unit", accessorKey: "department" },
                 { header: "Enrolled", accessorKey: "enrolled" },
                 { header: "Completed", accessorKey: "completed" },
                 { header: "In Progress", accessorKey: "inProgress" },
@@ -647,7 +647,7 @@ export default function ReportsPage() {
                     </button>
                   ),
                 },
-                { header: "Department", accessorKey: "department" },
+                { header: "Business Unit", accessorKey: "department" },
                 { header: "Enrolled", accessorKey: "coursesEnrolled" },
                 { header: "Completed", accessorKey: "coursesCompleted" },
                 { header: "Avg Progress %", cell: (r: any) => <span className="font-semibold text-primary">{r.avgProgress}%</span> },
@@ -698,7 +698,7 @@ export default function ReportsPage() {
               <ReportTable
                 columns={[
                   { header: "Learner Name", accessorKey: "learnerName" },
-                  { header: "Department", accessorKey: "department" },
+                  { header: "Business Unit", accessorKey: "department" },
                   { header: "Course Title", accessorKey: "courseTitle" },
                   { header: "Type", accessorKey: "assessmentType" },
                   { header: "Attempts", accessorKey: "attempts" },
@@ -763,7 +763,7 @@ export default function ReportsPage() {
                     </button>
                   ),
                 },
-                { header: "Department", accessorKey: "department" },
+                { header: "Business Unit", accessorKey: "department" },
                 { header: "Last Login", accessorKey: "lastLogin" },
                 { header: "Last Activity", accessorKey: "lastLearningActivity" },
                 { header: "Sessions", accessorKey: "sessions" },
@@ -784,7 +784,7 @@ export default function ReportsPage() {
           {isSuperAdmin && (
             <TabsContent value="department-performance" className="space-y-5 pt-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                <ReportKpiCard title="Total Departments" value={reportData?.kpis?.totalDepartments ?? 0} icon={Building2} variant="amber" loading={loading} />
+                <ReportKpiCard title="Total Business Units" value={reportData?.kpis?.totalDepartments ?? 0} icon={Building2} variant="amber" loading={loading} />
                 <ReportKpiCard title="Org Completion Rate" value={reportData?.kpis?.orgCompletionRate ?? "0%"} icon={Award} variant="emerald" loading={loading} />
                 <ReportKpiCard title="Org Avg Score" value={reportData?.kpis?.orgAvgScore ?? "N/A"} icon={CheckCircle2} variant="blue" loading={loading} />
                 <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={Users} variant="indigo" loading={loading} />
@@ -792,17 +792,17 @@ export default function ReportsPage() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <ChartCard title="Department Completion Comparison" subtitle="Department level course completion %" loading={loading}>
+                <ChartCard title="Business Unit Completion Comparison" subtitle="Business Unit level course completion %" loading={loading}>
                   <SimpleBarChart data={reportData?.charts?.departmentCompletion || []} xKey="departmentName" yKey="completionPercentage" fillColor="#f59e0b" unit="%" />
                 </ChartCard>
-                <ChartCard title="Department Avg Score Comparison" subtitle="Average assessment score by department" loading={loading}>
+                <ChartCard title="Business Unit Avg Score Comparison" subtitle="Average assessment score by department" loading={loading}>
                   <SimpleBarChart data={reportData?.charts?.departmentAvgScore || []} xKey="departmentName" yKey="avgScore" fillColor="#3b82f6" unit="%" />
                 </ChartCard>
               </div>
 
               <ReportTable
                 columns={[
-                  { header: "Department Name", accessorKey: "departmentName" },
+                  { header: "Business Unit Name", accessorKey: "departmentName" },
                   { header: "Employees", accessorKey: "employeesCount" },
                   { header: "Active Learners", accessorKey: "activeLearners" },
                   { header: "Courses Assigned", accessorKey: "coursesAssigned" },
@@ -864,7 +864,7 @@ export default function ReportsPage() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <ChartCard title="Organization Department Matrix" subtitle="Completion rate vs Avg Score" loading={loading}>
+                <ChartCard title="Organization Business Unit Matrix" subtitle="Completion rate vs Avg Score" loading={loading}>
                   <SimpleBarChart data={reportData?.charts?.departmentPerformance || []} xKey="department" yKey="completion" fillColor="#d97706" unit="%" />
                 </ChartCard>
                 <ChartCard title="Organization Learning Trajectory" subtitle="Overall monthly growth" loading={loading}>
