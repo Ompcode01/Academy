@@ -91,7 +91,19 @@ export interface SearchResultCategory {
   url: string;
 }
 
+export type SearchCategory =
+  | "courses"
+  | "modules"
+  | "lessons"
+  | "quizzes"
+  | "assignments"
+  | "events"
+  | "skills"
+  | "categories";
+
 export interface GlobalSearchResponseData {
+  /** Buckets the current role is permitted to search at all. */
+  allowedCategories: SearchCategory[];
   courses: SearchResultCourse[];
   modules: SearchResultModule[];
   lessons: SearchResultLesson[];
@@ -107,6 +119,7 @@ export interface GlobalSearchResponse {
   success: boolean;
   data: GlobalSearchResponseData;
   userRole: string;
+  allowedCategories?: SearchCategory[];
 }
 
 export async function globalSearch(
@@ -123,6 +136,7 @@ export async function globalSearch(
     return {
       success: false,
       data: {
+        allowedCategories: [],
         courses: [],
         modules: [],
         lessons: [],

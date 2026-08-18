@@ -24,6 +24,7 @@ import {
 import {
   globalSearch,
   GlobalSearchResponseData,
+  SearchCategory,
 } from "@/services/api/search.service";
 import { useAuthStore } from "@/store/auth.store";
 
@@ -35,6 +36,19 @@ interface GlobalSearchModalProps {
 type TabCategory = "all" | "courses" | "modules_lessons" | "quizzes_assignments" | "events_skills";
 
 const RECENT_SEARCHES_KEY = "dlms_recent_searches_v1";
+
+/**
+ * Which server-side buckets each tab draws from. A tab is only offered when the
+ * role is allowed to search at least one of them - a guest, for instance, may
+ * only search courses, so every other tab is hidden rather than shown empty.
+ */
+const TABS: { id: TabCategory; label: string; buckets: SearchCategory[] }[] = [
+  { id: "all", label: "All Results", buckets: [] },
+  { id: "courses", label: "Courses", buckets: ["courses"] },
+  { id: "modules_lessons", label: "Modules & Lessons", buckets: ["modules", "lessons"] },
+  { id: "quizzes_assignments", label: "Quizzes & Assignments", buckets: ["quizzes", "assignments"] },
+  { id: "events_skills", label: "Events & Skills", buckets: ["events", "skills", "categories"] },
+];
 
 export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
   const router = useRouter();
@@ -48,6 +62,13 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
   const [userRole, setUserRole] = useState<string>(user?.role || "GUEST");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [allowedCategories, setAllowedCategories] = useState<SearchCategory[]>([]);
+
+  const visibleTabs = TABS.filter(
+    (tab) =>
+      tab.buckets.length === 0 ||
+      tab.buckets.some((bucket) => allowedCategories.includes(bucket))
+  );
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -98,6 +119,14 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
         if (res.success) {
           setResults(res.data);
           setUserRole(res.userRole || user?.role || "GUEST");
+          const allowed = res.allowedCategories || res.data.allowedCategories || [];
+          setAllowedCategories(allowed);
+          // The role may not be permitted to search the tab that is open (e.g. a
+          // guest landing on "Quizzes"); fall back to the always-available tab.
+          const activeBuckets = TABS.find((t) => t.id === activeTab)?.buckets || [];
+          if (activeBuckets.length > 0 && !activeBuckets.some((b) => allowed.includes(b))) {
+            setActiveTab("all");
+          }
         }
       } catch (err) {
         console.error("Search execution error:", err);
@@ -217,17 +246,11 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
         {/* Category Tabs & Scoped RBAC Info Bar */}
         <div className="px-4 py-2 bg-slate-100/60 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
           <div className="flex flex-wrap items-center gap-1.5">
-            {[
-              { id: "all", label: "All Results" },
-              { id: "courses", label: "Courses" },
-              { id: "modules_lessons", label: "Modules & Lessons" },
-              { id: "quizzes_assignments", label: "Quizzes & Assignments" },
-              { id: "events_skills", label: "Events & Skills" },
-            ].map((tab) => (
+            {visibleTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => {
-                  setActiveTab(tab.id as TabCategory);
+                  setActiveTab(tab.id);
                   setSelectedIndex(-1);
                 }}
                 className={`px-3 py-1 rounded-lg font-semibold transition-all ${

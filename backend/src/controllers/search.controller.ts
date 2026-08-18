@@ -10,7 +10,7 @@ export const globalSearch = async (req: AuthRequest, res: Response): Promise<voi
 
     const userContext = req.user
       ? {
-          role: req.user.role || "LEARNER",
+          role: req.user.role || "GUEST",
           employeeId: req.user.employeeId ? BigInt(req.user.employeeId) : undefined,
           departmentId: req.user.departmentId ? BigInt(req.user.departmentId) : undefined,
         }
@@ -29,6 +29,7 @@ export const globalSearch = async (req: AuthRequest, res: Response): Promise<voi
       success: true,
       data: results,
       userRole: userContext?.role || "GUEST",
+      allowedCategories: results.allowedCategories,
     });
   } catch (error: any) {
     console.error("Global search controller error:", error);

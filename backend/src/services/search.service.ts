@@ -13,6 +13,54 @@ export interface SearchOptions {
   limit?: number;
 }
 
+export type SearchCategory =
+  | "courses"
+  | "modules"
+  | "lessons"
+  | "quizzes"
+  | "assignments"
+  | "events"
+  | "skills"
+  | "categories";
+
+const ALL_CATEGORIES: SearchCategory[] = [
+  "courses",
+  "modules",
+  "lessons",
+  "quizzes",
+  "assignments",
+  "events",
+  "skills",
+  "categories",
+];
+
+/**
+ * Which result buckets a role is allowed to search at all.
+ *
+ * - SUPER_ADMIN: everything on the platform.
+ * - ADMIN: everything, but scoped to the department they administer.
+ * - TEACHER / LEARNER: catalogue-level things (courses, skills, categories,
+ *   events) plus course-internal things, which are further restricted to the
+ *   courses they are enrolled in / teach (see buildContentScopeFilter).
+ * - GUEST: courses only. A guest can see what is on offer but cannot enter a
+ *   course, so nothing inside a course is searchable for them.
+ */
+function getAllowedCategories(role?: string): SearchCategory[] {
+  switch (role) {
+    case "SUPER_ADMIN":
+    case "ADMIN":
+    case "TEACHER":
+    case "LEARNER":
+      return ALL_CATEGORIES;
+    case "GUEST":
+    default:
+      return ["courses"];
+  }
+}
+
+/** Matches nothing - used to hard-block a scope. */
+const BLOCK_ALL = { id: BigInt(-1) };
+
 class SearchService {
   /**
    * Build Prisma where-clause additions for Course scope based on role
@@ -78,12 +126,59 @@ class SearchService {
     }
   }
 
+  /**
+   * Course filter for things that live *inside* a course (sections, lessons,
+   * quizzes, assignments).
+   *
+   * Being able to see a course in the catalogue is not the same as being able
+   * to see its contents, so this is deliberately stricter than
+   * buildCourseScopeFilter: learners only reach the inside of a course they
+   * are enrolled in, teachers only the courses they own or teach (plus any
+   * they are enrolled in themselves), and guests never reach it at all.
+   */
+  private async buildContentScopeFilter(userContext?: UserContext): Promise<any> {
+    if (!userContext) return BLOCK_ALL;
+
+    const { role, employeeId } = userContext;
+
+    switch (role) {
+      case "SUPER_ADMIN":
+      case "ADMIN":
+        // Same reach as the catalogue: platform-wide, or department-wide.
+        return this.buildCourseScopeFilter(userContext);
+
+      case "TEACHER": {
+        if (!employeeId) return BLOCK_ALL;
+        return {
+          OR: [
+            { teachers: { some: { teacherId: employeeId } } },
+            { creatorId: employeeId },
+            { enrollments: { some: { userId: employeeId } } },
+          ],
+        };
+      }
+
+      case "LEARNER": {
+        if (!employeeId) return BLOCK_ALL;
+        return {
+          status: "PUBLISHED",
+          enrollments: { some: { userId: employeeId } },
+        };
+      }
+
+      case "GUEST":
+      default:
+        return BLOCK_ALL;
+    }
+  }
+
   async globalSearch(options: SearchOptions, userContext?: UserContext) {
     const { q, category = "all", limit = 20 } = options;
     const queryTerm = q.trim();
 
     if (!queryTerm) {
       return {
+        allowedCategories: getAllowedCategories(userContext?.role),
         courses: [],
         modules: [],
         lessons: [],
@@ -96,10 +191,15 @@ class SearchService {
       };
     }
 
-    const courseScopeWhere = await this.buildCourseScopeFilter(userContext);
-    const isStudentOrGuest = userContext?.role === "LEARNER" || userContext?.role === "GUEST";
+    const allowedCategories = getAllowedCategories(userContext?.role);
+    const canSearch = (c: SearchCategory) =>
+      allowedCategories.includes(c) && (category === "all" || category === c);
 
-    const fetchAll = category === "all";
+    const [courseScopeWhere, contentScopeWhere] = await Promise.all([
+      this.buildCourseScopeFilter(userContext),
+      this.buildContentScopeFilter(userContext),
+    ]);
+    const isStudentOrGuest = userContext?.role === "LEARNER" || userContext?.role === "GUEST";
 
     const [
       courses,
@@ -112,7 +212,7 @@ class SearchService {
       categories,
     ] = await Promise.all([
       // 1. Courses
-      (fetchAll || category === "courses")
+      canSearch("courses")
         ? prisma.course.findMany({
             where: {
               ...courseScopeWhere,
@@ -133,7 +233,7 @@ class SearchService {
         : Promise.resolve([]),
 
       // 2. Modules / Sections
-      (fetchAll || category === "modules")
+      canSearch("modules")
         ? prisma.courseSection.findMany({
             where: {
               isActive: true,
@@ -143,7 +243,7 @@ class SearchService {
                 { description: { contains: queryTerm } },
               ],
               course: {
-                ...courseScopeWhere,
+                ...contentScopeWhere,
                 isActive: true,
               },
             },
@@ -161,12 +261,12 @@ class SearchService {
         : Promise.resolve([]),
 
       // 3. Lessons / General Learning Content (non-quiz, non-assignment)
-      (fetchAll || category === "lessons")
+      canSearch("lessons")
         ? prisma.learningContent.findMany({
             where: {
               isActive: true,
               contentType: { notIn: ["QUIZ", "ASSIGNMENT"] },
-              ...(isStudentOrGuest ? { isPublished: true, section: { isPublished: true } } : {}),
+              ...(isStudentOrGuest ? { isPublished: true } : {}),
               OR: [
                 { title: { contains: queryTerm } },
                 { description: { contains: queryTerm } },
@@ -174,8 +274,9 @@ class SearchService {
               ],
               section: {
                 isActive: true,
+                ...(isStudentOrGuest ? { isPublished: true } : {}),
                 course: {
-                  ...courseScopeWhere,
+                  ...contentScopeWhere,
                   isActive: true,
                 },
               },
@@ -199,7 +300,7 @@ class SearchService {
         : Promise.resolve([]),
 
       // 4. Quizzes
-      (fetchAll || category === "quizzes")
+      canSearch("quizzes")
         ? prisma.learningContent.findMany({
             where: {
               isActive: true,
@@ -216,11 +317,12 @@ class SearchService {
                   ],
                 },
               ],
-              ...(isStudentOrGuest ? { isPublished: true, section: { isPublished: true } } : {}),
+              ...(isStudentOrGuest ? { isPublished: true } : {}),
               section: {
                 isActive: true,
+                ...(isStudentOrGuest ? { isPublished: true } : {}),
                 course: {
-                  ...courseScopeWhere,
+                  ...contentScopeWhere,
                   isActive: true,
                 },
               },
@@ -244,7 +346,7 @@ class SearchService {
         : Promise.resolve([]),
 
       // 5. Assignments
-      (fetchAll || category === "assignments")
+      canSearch("assignments")
         ? prisma.learningContent.findMany({
             where: {
               isActive: true,
@@ -261,11 +363,12 @@ class SearchService {
                   ],
                 },
               ],
-              ...(isStudentOrGuest ? { isPublished: true, section: { isPublished: true } } : {}),
+              ...(isStudentOrGuest ? { isPublished: true } : {}),
               section: {
                 isActive: true,
+                ...(isStudentOrGuest ? { isPublished: true } : {}),
                 course: {
-                  ...courseScopeWhere,
+                  ...contentScopeWhere,
                   isActive: true,
                 },
               },
@@ -289,22 +392,28 @@ class SearchService {
         : Promise.resolve([]),
 
       // 6. Events
-      (fetchAll || category === "events")
+      canSearch("events")
         ? prisma.event.findMany({
             where: {
-              OR: [
-                { title: { contains: queryTerm } },
-                { description: { contains: queryTerm } },
-                { eventType: { contains: queryTerm } },
+              AND: [
+                {
+                  OR: [
+                    { title: { contains: queryTerm } },
+                    { description: { contains: queryTerm } },
+                    { eventType: { contains: queryTerm } },
+                  ],
+                },
+                ...(userContext?.role !== "SUPER_ADMIN" && userContext?.departmentId
+                  ? [
+                      {
+                        OR: [
+                          { departmentId: null },
+                          { departmentId: userContext.departmentId },
+                        ],
+                      },
+                    ]
+                  : []),
               ],
-              ...(userContext?.role !== "SUPER_ADMIN" && userContext?.departmentId
-                ? {
-                    OR: [
-                      { departmentId: null },
-                      { departmentId: userContext.departmentId },
-                    ],
-                  }
-                : {}),
             },
             include: {
               department: { select: { id: true, departmentName: true } },
@@ -314,7 +423,7 @@ class SearchService {
         : Promise.resolve([]),
 
       // 7. Skills
-      (fetchAll || category === "skills")
+      canSearch("skills")
         ? prisma.skill.findMany({
             where: {
               isActive: true,
@@ -329,7 +438,7 @@ class SearchService {
         : Promise.resolve([]),
 
       // 8. Categories
-      (fetchAll || category === "categories")
+      canSearch("categories")
         ? prisma.category.findMany({
             where: {
               isActive: true,
@@ -458,6 +567,7 @@ class SearchService {
       formattedCategories.length;
 
     return {
+      allowedCategories,
       courses: formattedCourses,
       modules: formattedModules,
       lessons: formattedLessons,
