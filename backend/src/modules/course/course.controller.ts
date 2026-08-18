@@ -96,11 +96,37 @@ export const createCourse = asyncHandler(
       departmentId = userDepartmentId;
     }
 
+    const isDraft = String(req.body.status || "").toUpperCase() === "DRAFT";
+
+    // A draft is, by definition, unfinished: the creator may have cancelled or
+    // navigated away before picking a category or even typing a title. Fill in
+    // placeholders so the work can still be persisted and resumed later, rather
+    // than throwing it away for failing validation it was never meant to pass.
+    let categoryId: bigint;
+    if (req.body.categoryId) {
+      categoryId = BigInt(req.body.categoryId);
+    } else if (isDraft) {
+      const fallbackCategory = await courseService.getFallbackCategoryId();
+      if (!fallbackCategory) {
+        return errorResponse(
+          res,
+          "Cannot save draft: no course category exists yet.",
+          "VALIDATION_ERROR",
+          400
+        );
+      }
+      categoryId = fallbackCategory;
+    } else {
+      return errorResponse(res, "categoryId is required", "VALIDATION_ERROR", 400);
+    }
+
     const data = {
       ...req.body,
-      categoryId: BigInt(req.body.categoryId),
+      title: req.body.title || (isDraft ? "Untitled Course" : req.body.title),
+      categoryId,
       creatorId: userEmployeeId,
       departmentId,
+      draftStep: isDraft && req.body.draftStep ? Number(req.body.draftStep) : null,
       enrollmentType: req.body.enrollmentType || "SELF",
       enrolledUserIds: req.body.enrolledUserIds || [],
       teacherIds: req.body.teacherIds || [],
@@ -113,15 +139,18 @@ export const createCourse = asyncHandler(
     await prisma.auditLog.create({
       data: {
         actorName,
-        action: "Course Published",
-        detail: `Published '${course?.title || "Course"}'`,
+        action: isDraft ? "Course Draft Saved" : "Course Published",
+        detail: isDraft
+          ? `Saved draft '${course?.title || "Course"}' at step ${data.draftStep ?? 1}`
+          : `Published '${course?.title || "Course"}'`,
         type: "course",
         ipAddress: req.ip || "Internal",
       },
     });
 
-    // Notify department employees about the new course
-    if (course) {
+    // Notify department employees about the new course. Drafts are invisible to
+    // learners, so announcing one would advertise a course nobody can open.
+    if (course && !isDraft) {
       notificationService.notifyCourseCreated({
         id: course.id,
         title: course.title,
@@ -147,7 +176,12 @@ export const createCourse = asyncHandler(
       }
     }
 
-    return successResponse(res, serializeBigInt(course), "Course created successfully", 201);
+    return successResponse(
+      res,
+      serializeBigInt(course),
+      isDraft ? "Draft saved successfully" : "Course created successfully",
+      201
+    );
   }
 );
 
@@ -165,6 +199,11 @@ export const updateCourse = asyncHandler(
       username: req.user?.username || "System User",
     };
 
+    const isDraft = String(data.status || "").toUpperCase() === "DRAFT";
+    // Once a course leaves draft state the resume marker is meaningless, so it is
+    // cleared rather than left pointing at a step that no longer applies.
+    data.draftStep = isDraft && data.draftStep ? Number(data.draftStep) : null;
+
     const course = await courseService.updateCourse(id, data, userContext);
 
     // Audit Log
@@ -172,14 +211,20 @@ export const updateCourse = asyncHandler(
     await prisma.auditLog.create({
       data: {
         actorName,
-        action: "Course Updated",
-        detail: `Updated course '${course?.title || "Course"}'`,
+        action: isDraft ? "Course Draft Saved" : "Course Updated",
+        detail: isDraft
+          ? `Saved draft '${course?.title || "Course"}' at step ${data.draftStep ?? 1}`
+          : `Updated course '${course?.title || "Course"}'`,
         type: "course",
         ipAddress: req.ip || "Internal",
       },
     });
 
-    return successResponse(res, serializeBigInt(course), "Course updated successfully");
+    return successResponse(
+      res,
+      serializeBigInt(course),
+      isDraft ? "Draft saved successfully" : "Course updated successfully"
+    );
   }
 );
 

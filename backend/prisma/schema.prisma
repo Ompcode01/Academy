@@ -164,6 +164,10 @@ model Course {
   level            String?         @db.VarChar(50)
   language         String?         @db.VarChar(50)
   status           CourseStatus    @default(DRAFT)
+  /// Wizard step the creator last left off on. Only meaningful while the course
+  /// is still a DRAFT - it lets an abandoned or cancelled creation resume from
+  /// exactly where it stopped instead of starting over.
+  draftStep        Int?
   enrollmentType   String          @default("SELF") @db.VarChar(50)
   isMandatory      Boolean         @default(false)
   isActive         Boolean         @default(true)

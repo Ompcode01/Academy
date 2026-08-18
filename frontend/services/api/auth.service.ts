@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useAuthStore } from "@/store/auth.store";
 
-const getBaseURL = () => {
+export const getBaseURL = () => {
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
     return `http://${hostname}:5000/api`;

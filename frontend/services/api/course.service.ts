@@ -15,6 +15,8 @@ export interface Course {
   level?: string;
   language?: string;
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  /** Wizard step an unfinished draft was left on; null once published. */
+  draftStep?: number | null;
   enrollmentType?: string;
   isActive: boolean;
   createdAt: string;

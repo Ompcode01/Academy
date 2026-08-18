@@ -21,6 +21,8 @@ interface CreateCourseData {
   level?: string;
   language?: string;
   status?: string;
+  /** Wizard step an unfinished draft was left on, so it can be resumed. */
+  draftStep?: number | null;
   enrollmentType?: string;
 }
 
@@ -189,6 +191,7 @@ class CourseRepository {
         level: data.level,
         language: data.language,
         status: (data.status as any) ?? "DRAFT",
+        draftStep: data.draftStep ?? null,
         enrollmentType: data.enrollmentType ?? "SELF",
       },
       include: {

@@ -208,16 +208,18 @@ class CourseService {
     level?: string;
     language?: string;
     status?: string;
+    draftStep?: number | null;
     enrollmentType?: string;
     enrolledUserIds?: string[];
     teacherIds?: string[];
     sections?: any[];
   }) {
+    const isDraft = String(data.status || "").toUpperCase() === "DRAFT";
     const { teacherIds, enrolledUserIds, sections, ...createFields } = data;
     const course = await courseRepository.create(createFields);
 
     if (sections && Array.isArray(sections) && sections.length > 0) {
-      await this.saveCourseSectionsAndContents(course.id, sections);
+      await this.saveCourseSectionsAndContents(course.id, sections, undefined, isDraft);
     }
 
     if (teacherIds && teacherIds.length > 0) {
@@ -250,18 +252,40 @@ class CourseService {
       }
     }
 
-    // Trigger course creation and enrollment notifications
-    notificationService.notifyCourseCreated({
-      id: course.id,
-      title: course.title,
-      departmentId: course.departmentId,
-      creatorId: course.creatorId,
-    });
+    // Trigger course creation and enrollment notifications. A draft is not yet
+    // visible to anyone, so it is announced only once it is actually published.
+    if (!isDraft) {
+      notificationService.notifyCourseCreated({
+        id: course.id,
+        title: course.title,
+        departmentId: course.departmentId,
+        creatorId: course.creatorId,
+      });
+    }
 
     return this.getCourseById(course.id);
   }
 
-  async saveCourseSectionsAndContents(courseId: bigint, sections: any[], existingSections?: any[]) {
+  /**
+   * Look up a category to hang an unfinished draft on when the author never got
+   * as far as choosing one. Courses require a category at the database level,
+   * so a draft needs something to point at.
+   */
+  async getFallbackCategoryId(): Promise<bigint | null> {
+    const category = await prisma.category.findFirst({
+      where: { isActive: true },
+      orderBy: { id: "asc" },
+      select: { id: true },
+    });
+    return category?.id ?? null;
+  }
+
+  async saveCourseSectionsAndContents(
+    courseId: bigint,
+    sections: any[],
+    existingSections?: any[],
+    isDraft = false
+  ) {
     if (!sections || !Array.isArray(sections) || sections.length === 0) return;
 
     // Build lookup map of existing content item configs by title to preserve legacy data if needed
@@ -286,7 +310,7 @@ class CourseService {
           title: sectionTitle,
           description: secData.description || null,
           sectionOrder: secData.sectionOrder || sIdx + 1,
-          isPublished: true,
+          isPublished: !isDraft,
         },
       });
 
@@ -352,7 +376,7 @@ class CourseService {
               duration: cntData.duration || 10,
               contentOrder: cntData.contentOrder || cIdx + 1,
               isMandatory: true,
-              isPublished: true,
+              isPublished: !isDraft,
               quizConfigJson: quizJson,
               assignmentConfigJson: assignmentJson,
             },
@@ -375,6 +399,7 @@ class CourseService {
       level?: string;
       language?: string;
       status?: string;
+      draftStep?: number | null;
       enrollmentType?: string;
       enrolledUserIds?: string[];
       teacherIds?: string[];
@@ -382,6 +407,7 @@ class CourseService {
     },
     userContext?: { role?: string; employeeId?: bigint; username?: string }
   ) {
+    const isDraft = String(data.status || "").toUpperCase() === "DRAFT";
     const existing = await this.getCourseById(id);
     const existingSections = (existing as any)?.sections || [];
 
@@ -396,13 +422,28 @@ class CourseService {
     const { enrolledUserIds, teacherIds, sections, ...courseData } = data;
     const course = await courseRepository.update(id, courseData);
 
-    if (sections && Array.isArray(sections) && sections.length > 0) {
+    // A draft is a mirror of the builder's current state, so an empty array is a
+    // meaningful instruction ("the author deleted every module") and must clear
+    // the stored sections. For a published save an empty array is treated as
+    // "nothing to change", preserving the existing curriculum.
+    if (Array.isArray(sections) && (sections.length > 0 || isDraft)) {
       // Soft-delete existing sections for clean update
       await prisma.courseSection.updateMany({
         where: { courseId: id },
         data: { isActive: false },
       });
-      await this.saveCourseSectionsAndContents(id, sections, existingSections);
+      await this.saveCourseSectionsAndContents(id, sections, existingSections, isDraft);
+    } else if (!isDraft) {
+      // Publishing without resending the curriculum: bring any sections and
+      // contents that were written while this was a draft live with the course.
+      await prisma.courseSection.updateMany({
+        where: { courseId: id, isActive: true, isPublished: false },
+        data: { isPublished: true },
+      });
+      await prisma.learningContent.updateMany({
+        where: { section: { courseId: id, isActive: true }, isPublished: false },
+        data: { isPublished: true },
+      });
     }
 
     if (teacherIds && userContext?.role !== "TEACHER") {
@@ -446,17 +487,21 @@ class CourseService {
       }
     }
 
-    // Rule 7, 8, 13: Notify enrolled learners & creators/admins about content updates
-    const updaterName = userContext?.username || "Instructor";
-    const updaterRole = userContext?.role || "TEACHER";
-    notificationService.notifyCourseUpdated({
-      courseId: id,
-      courseTitle: course.title,
-      updaterName,
-      updaterRole,
-      addedOrUpdatedTitle: data.title || "Curriculum & Lessons",
-      contentType: "Course Update",
-    });
+    // Rule 7, 8, 13: Notify enrolled learners & creators/admins about content
+    // updates. Autosaving an unfinished draft is not a content update anyone
+    // should be paged about, so drafts are skipped.
+    if (!isDraft) {
+      const updaterName = userContext?.username || "Instructor";
+      const updaterRole = userContext?.role || "TEACHER";
+      notificationService.notifyCourseUpdated({
+        courseId: id,
+        courseTitle: course.title,
+        updaterName,
+        updaterRole,
+        addedOrUpdatedTitle: data.title || "Curriculum & Lessons",
+        contentType: "Course Update",
+      });
+    }
 
     return this.getCourseById(id);
   }

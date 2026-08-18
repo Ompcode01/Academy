@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import WizardStepper from "@/components/courses/wizard/WizardStepper";
 import BasicInfoForm, { BasicInfoData } from "@/components/courses/wizard/BasicInfoForm";
@@ -10,8 +10,10 @@ import EnrollmentForm, { EnrollmentRuleData } from "@/components/courses/wizard/
 import CertificateForm, { CertificateRuleData } from "@/components/courses/wizard/CertificateForm";
 import FeedbackStepForm, { FeedbackRuleData } from "@/components/courses/wizard/FeedbackStepForm";
 import ReviewPublishForm from "@/components/courses/wizard/ReviewPublishForm";
-import { getCourseById } from "@/services/api/course.service";
+import { getCourseById, createCourse, updateCourse } from "@/services/api/course.service";
+import { buildCoursePayload, hasDraftWorthSaving } from "@/lib/courseWizardPayload";
 import { useAuthStore } from "@/store/auth.store";
+import { getBaseURL } from "@/services/api/auth.service";
 import { ROLES } from "@/lib/rbac";
 
 const wizardSteps = [
@@ -30,6 +32,17 @@ function CreateCourseContent() {
   const courseId = searchParams.get("id");
 
   const [currentStep, setCurrentStep] = useState(1);
+
+  // The course row this wizard writes to. It starts as the ?id= being edited,
+  // but a brand-new course also acquires one the moment its first draft is
+  // autosaved, so every later save updates that same row instead of piling up
+  // duplicate drafts.
+  const [draftId, setDraftId] = useState<string | null>(courseId);
+
+  // Only unfinished work is autosaved as a draft. Re-editing an already
+  // published course must never silently demote it back to DRAFT, so the loaded
+  // status decides whether autosave is allowed at all.
+  const [isDraftCourse, setIsDraftCourse] = useState(!courseId);
 
   // Persistent Wizard State Container
   const [wizardState, setWizardState] = useState<{
@@ -149,6 +162,12 @@ function CreateCourseContent() {
               }
             }
 
+            // Resume an unfinished course exactly where its author left off.
+            setIsDraftCourse(c.status === "DRAFT");
+            if (c.status === "DRAFT" && c.draftStep) {
+              setCurrentStep(Math.min(Math.max(Number(c.draftStep), 1), wizardSteps.length));
+            }
+
             setWizardState((prev) => ({
               ...prev,
               basicInfo: {
@@ -240,6 +259,79 @@ function CreateCourseContent() {
     }
   }, [courseId]);
 
+  // Latest wizard state, readable from unmount / page-exit handlers that would
+  // otherwise close over a stale snapshot.
+  const latestRef = useRef({ wizardState, currentStep, draftId, isDraftCourse });
+  useEffect(() => {
+    latestRef.current = { wizardState, currentStep, draftId, isDraftCourse };
+  }, [wizardState, currentStep, draftId, isDraftCourse]);
+
+  const savingRef = useRef(false);
+
+  /**
+   * Persist the unfinished course as a DRAFT, tagged with the step it was left
+   * on. Called whenever the author leaves the builder without publishing -
+   * cancelling, backing out of the first step, or closing the tab - so partial
+   * work survives instead of being discarded.
+   */
+  const saveDraft = useCallback(async (): Promise<string | null> => {
+    const { wizardState: state, currentStep: step, draftId: id, isDraftCourse: draft } =
+      latestRef.current;
+
+    // Never demote a published course, never save a blank slate, and never let
+    // two saves race each other into duplicate rows.
+    if (!draft || savingRef.current || !hasDraftWorthSaving(state as any)) return id;
+
+    savingRef.current = true;
+    try {
+      const payload = buildCoursePayload(state as any, { status: "DRAFT", draftStep: step });
+      const res = id
+        ? await updateCourse(Number(id), payload)
+        : await createCourse(payload);
+
+      if (res?.success) {
+        const savedId = String(id || res.data?.id || "");
+        if (savedId && savedId !== id) setDraftId(savedId);
+        return savedId || null;
+      }
+      return id;
+    } catch (err) {
+      console.error("Draft autosave failed:", err);
+      return id;
+    } finally {
+      savingRef.current = false;
+    }
+  }, []);
+
+  // Closing or reloading the tab mid-build is just another way of abandoning
+  // the course, so checkpoint it on the way out. keepalive lets the request
+  // outlive the page; a normal fetch would be cancelled.
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const { wizardState: state, currentStep: step, draftId: id, isDraftCourse: draft } =
+        latestRef.current;
+      if (!draft || !hasDraftWorthSaving(state as any)) return;
+
+      const payload = buildCoursePayload(state as any, { status: "DRAFT", draftStep: step });
+      const token = useAuthStore.getState().token;
+      const base = getBaseURL();
+      try {
+        fetch(id ? `${base}/courses/${id}` : `${base}/courses`, {
+          method: id ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {});
+      } catch (_) {}
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   const updateBasicInfo = (updated: Partial<BasicInfoData>) => {
     setWizardState((prev) => ({
       ...prev,
@@ -270,17 +362,31 @@ function CreateCourseContent() {
 
   const handleNext = () => {
     if (currentStep < wizardSteps.length) {
-      setCurrentStep(currentStep + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      // Checkpoint each completed step, so an abrupt exit later (a crash, a
+      // closed laptop) still leaves the course saved at the furthest point.
+      latestRef.current = { ...latestRef.current, currentStep: nextStep };
+      void saveDraft();
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      const prevStep = currentStep - 1;
+      setCurrentStep(prevStep);
+      latestRef.current = { ...latestRef.current, currentStep: prevStep };
+      void saveDraft();
+    } else {
+      // Backing out of the first step leaves the builder entirely.
+      void handleCancel();
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    // Cancelling abandons the course but not the work: whatever was filled in
+    // is kept as a draft, resumable from this exact step.
+    await saveDraft();
     router.push("/courses");
   };
 
@@ -322,7 +428,7 @@ function CreateCourseContent() {
       case 4:
         return (
           <EnrollmentForm
-            courseId={courseId}
+            courseId={draftId}
             data={wizardState.enrollment}
             onChange={updateEnrollment}
             onNext={handleNext}
@@ -354,7 +460,7 @@ function CreateCourseContent() {
       case 7:
         return (
           <ReviewPublishForm
-            courseId={courseId}
+            courseId={draftId}
             wizardData={wizardState}
             onBack={handleBack}
             onCancel={handleCancel}

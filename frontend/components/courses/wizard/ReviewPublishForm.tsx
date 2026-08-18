@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { createCourse, updateCourse } from "@/services/api/course.service";
+import { buildCoursePayload } from "@/lib/courseWizardPayload";
 import { saveCertificateTemplate } from "@/services/api/certificate.service";
 import {
   CheckCircle2,
@@ -72,86 +73,7 @@ export default function ReviewPublishForm({
   const handlePublish = async () => {
     try {
       setLoading(true);
-      const selectedType = (enrollment as any).enrollmentType || "SELF";
-      const enrolledUserIdsPayload =
-        selectedType === "SELF"
-          ? []
-          : ((enrollment as any).enrolledUsersList || []).map((u: any) => String(u.userId));
-
-      // Prepare sections array ensuring feedback item incorporates Step 5 questions
-      let processedSections = JSON.parse(JSON.stringify(sections || []));
-      const fbData = (wizardData as any).feedback;
-      if (fbData && fbData.enableFeedback !== false) {
-        const feedbackConfigJson = JSON.stringify({
-          title: fbData.feedbackTitle || "End-of-Course Feedback & Evaluation Survey",
-          description: fbData.description || "",
-          questions: fbData.questions || [],
-        });
-
-        let foundFb = false;
-        for (const sec of processedSections) {
-          if (sec.contents && Array.isArray(sec.contents)) {
-            for (const cnt of sec.contents) {
-              if (cnt.contentType?.toUpperCase() === "FEEDBACK") {
-                cnt.title = fbData.feedbackTitle || cnt.title;
-                cnt.description = fbData.description || cnt.description;
-                
-                let effectiveQuestions: any[] = fbData.questions || [];
-                if (cnt.quizConfigJson) {
-                  try {
-                    const parsedCntConfig = typeof cnt.quizConfigJson === "string" ? JSON.parse(cnt.quizConfigJson) : cnt.quizConfigJson;
-                    if (Array.isArray(parsedCntConfig.questions) && parsedCntConfig.questions.length > 0) {
-                      if (effectiveQuestions.length === 0) {
-                        effectiveQuestions = parsedCntConfig.questions;
-                      }
-                    }
-                  } catch (e) {}
-                }
-
-                cnt.quizConfigJson = JSON.stringify({
-                  title: fbData.feedbackTitle || cnt.title || "End-of-Course Feedback & Evaluation Survey",
-                  description: fbData.description || cnt.description || "",
-                  questions: effectiveQuestions,
-                });
-                foundFb = true;
-              }
-            }
-          }
-        }
-
-        if (!foundFb) {
-          processedSections.push({
-            title: "Course Feedback & Evaluation",
-            description: "End-of-course survey evaluation.",
-            contents: [
-              {
-                title: fbData.feedbackTitle || "End-of-Course Feedback Survey",
-                contentType: "FEEDBACK",
-                description: fbData.description || "Please share your review regarding course structure, content clarity, and instructor support.",
-                quizConfigJson: feedbackConfigJson,
-                isMandatory: Boolean(fbData.requireFeedbackForCertificate),
-              },
-            ],
-          });
-        }
-      }
-
-      const payload = {
-        title: basicInfo.title || "Java Programming",
-        shortDescription: basicInfo.shortDescription || "Core Java fundamentals and secure development practices.",
-        description: basicInfo.description,
-        categoryId: basicInfo.categoryId ? Number(basicInfo.categoryId) : 1,
-        departmentId: basicInfo.departmentId && basicInfo.departmentId !== "global" ? Number(basicInfo.departmentId) : null,
-        thumbnail: (basicInfo as any).thumbnailUrl || (basicInfo as any).thumbnail || undefined,
-        level: basicInfo.level || "Beginner",
-        language: basicInfo.language || "English",
-        duration: basicInfo.duration || 20,
-        status: status,
-        enrollmentType: selectedType,
-        enrolledUserIds: enrolledUserIdsPayload,
-        teacherIds: (enrollment as any).teacherIds || ["4"],
-        sections: processedSections,
-      };
+      const payload = buildCoursePayload(wizardData as any, { status });
 
       let res;
       if (courseId) {
