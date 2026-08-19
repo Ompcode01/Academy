@@ -29,9 +29,11 @@ import {
   Layers,
   Lock,
 } from "lucide-react";
+import { generateAutoCourseCode, generateAutoShortName } from "@/lib/courseTitleHelper";
 
 export interface BasicInfoData {
   title: string;
+  shortName?: string;
   courseCode: string;
   departmentId: string;
   level: string;
@@ -85,6 +87,21 @@ const presetThumbnails = [
   },
 ];
 
+const departmentNames: Record<string, string> = {
+  "1": "Tech Services- Core",
+  "2": "Tech Services - DPU",
+  "3": "Content Services",
+  "4": "Business Enablers",
+  "5": "Across BUs",
+};
+
+const categoryNames: Record<string, string> = {
+  "1": "Technical",
+  "2": "Soft Skill",
+  "3": "Process/Compliances",
+  "4": "Leadership (Futurefit, MCC, Basecamp)",
+};
+
 export default function BasicInfoForm({
   data,
   onChange,
@@ -93,6 +110,8 @@ export default function BasicInfoForm({
 }: BasicInfoFormProps) {
   const { user } = useAuthStore();
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ title?: string; shortDescription?: string; categoryId?: string }>({});
+  const [isCustomShortName, setIsCustomShortName] = useState(false);
 
   const isAdmin = user?.role === "ADMIN" || user?.role === "TEACHER";
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
@@ -105,6 +124,62 @@ export default function BasicInfoForm({
   }, [isAdmin, user?.departmentId]);
 
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    // Automatically generate code if courseCode is currently empty
+    if (!data.courseCode && (data.title || data.shortName)) {
+      const code = generateAutoCourseCode(data.title || "", data.shortName);
+      if (code) {
+        onChange({ courseCode: code });
+      }
+    }
+  }, [data.title, data.shortName]);
+
+  const handleTitleChange = (newTitle: string) => {
+    const derivedShort = !isCustomShortName ? generateAutoShortName(newTitle) : data.shortName;
+    const autoCode = generateAutoCourseCode(newTitle, derivedShort);
+    const updates: Partial<BasicInfoData> = {
+      title: newTitle,
+      ...(!isCustomShortName ? { shortName: derivedShort } : {}),
+      ...(autoCode ? { courseCode: autoCode } : {}),
+    };
+    if (newTitle.trim().length >= 3) {
+      setErrors((prev) => ({ ...prev, title: undefined }));
+    }
+    onChange(updates);
+  };
+
+  const handleShortNameChange = (newShortName: string) => {
+    setIsCustomShortName(true);
+    const autoCode = generateAutoCourseCode(data.title, newShortName);
+    const updates: Partial<BasicInfoData> = {
+      shortName: newShortName,
+      ...(autoCode ? { courseCode: autoCode } : {}),
+    };
+    onChange(updates);
+  };
+
+  const handleNextClick = () => {
+    const newErrs: { title?: string; shortDescription?: string; categoryId?: string } = {};
+    if (!data.title || data.title.trim().length < 3) {
+      newErrs.title = "Course Name is required (minimum 3 characters)";
+    }
+    if (!data.shortDescription || data.shortDescription.trim().length < 5) {
+      newErrs.shortDescription = "Short Description is required (minimum 5 characters)";
+    }
+    if (!data.categoryId) {
+      newErrs.categoryId = "Please select a Category";
+    }
+
+    if (Object.keys(newErrs).length > 0) {
+      setErrors(newErrs);
+      toast.error("Required fields are empty! Please fill out Course Name, Short Description, and Category first.");
+      return;
+    }
+
+    setErrors({});
+    onNext?.();
+  };
 
   const handleCustomFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -152,31 +227,45 @@ export default function BasicInfoForm({
         </h3>
 
         <div className="space-y-5">
-          {/* Line 1: Course Name (col-span-2) & Course Code (col-span-1) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Line 1: Course Name, Short Name / Nickname, Course Code */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="space-y-1.5 md:col-span-2">
               <Label className="text-xs font-bold text-foreground">
                 Course Name <span className="text-destructive">*</span>
               </Label>
               <Input
-                placeholder="e.g. Advanced System Architecture & Microservices"
+                placeholder="e.g. The AI Engineer Course 2026: Complete AI Engineer Bootcamp"
                 value={data.title}
-                onChange={(e) => onChange({ title: e.target.value })}
-                className="h-10 text-xs bg-background focus:ring-2 focus:ring-primary/20"
+                onChange={(e) => handleTitleChange(e.target.value)}
+                className={`h-10 text-xs bg-background focus:ring-2 ${errors.title ? "border-destructive ring-2 ring-destructive/20" : "focus:ring-primary/20"
+                  }`}
+              />
+              {errors.title && (
+                <p className="text-[11px] font-semibold text-destructive mt-0.5">{errors.title}</p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-foreground">
+                Short Name  <span className="text-[10px] text-muted-foreground font-normal">(Optional)</span>
+              </Label>
+              <Input
+                placeholder="e.g. AI Engineer"
+                value={data.shortName || ""}
+                onChange={(e) => handleShortNameChange(e.target.value)}
+                className="h-10 text-xs bg-background"
               />
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-bold text-foreground">
-                  Course Code
-                </Label>
-              </div>
+              <Label className="text-xs font-bold text-foreground">
+                Course Code
+              </Label>
               <Input
-                placeholder="e.g. CRS-PY-101"
+                placeholder="e.g. AI47"
                 value={data.courseCode}
                 onChange={(e) => onChange({ courseCode: e.target.value })}
-                className="h-10 text-xs font-mono uppercase bg-background"
+                className="h-10 text-xs font-mono uppercase bg-background font-bold tracking-wider"
               />
             </div>
           </div>
@@ -201,14 +290,16 @@ export default function BasicInfoForm({
                 onValueChange={(val: string | null) => onChange({ departmentId: val || "" })}
               >
                 <SelectTrigger className="h-10 text-xs bg-background w-full">
-                  <SelectValue placeholder="Select Business Unit" />
+                  <SelectValue placeholder="Select Business Unit">
+                    {departmentNames[data.departmentId || (isAdmin && user?.departmentId ? String(user.departmentId) : "")] || "Select Business Unit"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">Across BUs</SelectItem>
-                  <SelectItem value="2">Tech Services- Core</SelectItem>
-                  <SelectItem value="3">Tech Services - DPU</SelectItem>
-                  <SelectItem value="4">Content Services</SelectItem>
-                  <SelectItem value="5">Business Enablers</SelectItem>
+                  <SelectItem value="1">Tech Services- Core</SelectItem>
+                  <SelectItem value="2">Tech Services - DPU</SelectItem>
+                  <SelectItem value="3">Content Services</SelectItem>
+                  <SelectItem value="4">Business Enablers</SelectItem>
+                  <SelectItem value="5">Across BUs</SelectItem>
                 </SelectContent>
               </Select>
               {isAdmin && (
@@ -220,13 +311,20 @@ export default function BasicInfoForm({
 
             {/* Category */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-foreground">Category</Label>
+              <Label className="text-xs font-bold text-foreground">
+                Category <span className="text-destructive">*</span>
+              </Label>
               <Select
                 value={data.categoryId || ""}
-                onValueChange={(val: string | null) => onChange({ categoryId: val || "" })}
+                onValueChange={(val: string | null) => {
+                  if (val) setErrors((prev) => ({ ...prev, categoryId: undefined }));
+                  onChange({ categoryId: val || "" });
+                }}
               >
-                <SelectTrigger className="h-10 text-xs bg-background w-full">
-                  <SelectValue placeholder="Select Category" />
+                <SelectTrigger className={`h-10 text-xs bg-background w-full ${errors.categoryId ? "border-destructive ring-2 ring-destructive/20" : ""}`}>
+                  <SelectValue placeholder="Select Category">
+                    {categoryNames[data.categoryId] || "Select Category"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">Technical</SelectItem>
@@ -235,6 +333,9 @@ export default function BasicInfoForm({
                   <SelectItem value="4">Leadership (Futurefit, MCC, Basecamp)</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.categoryId && (
+                <p className="text-[11px] font-semibold text-destructive mt-0.5">{errors.categoryId}</p>
+              )}
             </div>
 
             {/* Difficulty Level */}
@@ -248,22 +349,32 @@ export default function BasicInfoForm({
                   <SelectValue placeholder="Select Level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Beginner">Beginner Level</SelectItem>
-                  <SelectItem value="Intermediate">Intermediate Level</SelectItem>
-                  <SelectItem value="Advanced">Advanced Level</SelectItem>
+                  <SelectItem value="Beginner">Beginner </SelectItem>
+                  <SelectItem value="Intermediate">Intermediate </SelectItem>
+                  <SelectItem value="Advanced">Advanced </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Estimated Duration */}
+            {/*  Duration */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-foreground">Estimated Duration</Label>
+              <Label className="text-xs font-bold text-foreground"> Duration</Label>
               <div className="relative">
                 <Input
                   type="number"
+                  min="1"
+                  step="1"
                   placeholder="e.g. 20"
                   value={data.duration ?? ""}
-                  onChange={(e) => onChange({ duration: e.target.value ? Number(e.target.value) : undefined })}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (!val) {
+                      onChange({ duration: undefined });
+                      return;
+                    }
+                    const positiveNum = Math.max(1, Math.abs(parseInt(val, 10) || 1));
+                    onChange({ duration: positiveNum });
+                  }}
                   className="h-10 text-xs bg-background pr-16"
                 />
                 <span className="absolute right-3 top-2.5 text-xs text-muted-foreground font-semibold">
@@ -288,12 +399,21 @@ export default function BasicInfoForm({
               Short Description <span className="text-destructive">*</span>
             </Label>
             <Textarea
-              placeholder="Enter a compelling brief summary displayed on catalog cards..."
+              placeholder="Provide learning objectives of this Course..."
               value={data.shortDescription}
-              onChange={(e) => onChange({ shortDescription: e.target.value })}
-              className="min-h-[75px] text-xs resize-none bg-background"
+              onChange={(e) => {
+                if (e.target.value.trim().length >= 5) {
+                  setErrors((prev) => ({ ...prev, shortDescription: undefined }));
+                }
+                onChange({ shortDescription: e.target.value });
+              }}
+              className={`min-h-[75px] text-xs resize-none bg-background ${errors.shortDescription ? "border-destructive ring-2 ring-destructive/20" : ""
+                }`}
               maxLength={500}
             />
+            {errors.shortDescription && (
+              <p className="text-[11px] font-semibold text-destructive mt-0.5">{errors.shortDescription}</p>
+            )}
             <p className="text-right text-[10px] text-muted-foreground">
               {data.shortDescription?.length || 0}/500
             </p>
@@ -302,7 +422,7 @@ export default function BasicInfoForm({
           <div className="space-y-1.5">
             <Label className="text-xs font-bold text-foreground">Detailed Description (Optional)</Label>
             <Textarea
-              placeholder="Enter full course objectives, modules details, target audience, and prerequisites..."
+              placeholder="Provide course objectives, modules details,prerequisites etc"
               value={data.description}
               onChange={(e) => onChange({ description: e.target.value })}
               className="min-h-[110px] text-xs resize-none bg-background"
@@ -335,11 +455,10 @@ export default function BasicInfoForm({
               <div
                 key={preset.id}
                 onClick={() => handleSelectPreset(preset.url, preset.id)}
-                className={`group relative rounded-2xl overflow-hidden border-2 cursor-pointer transition-all duration-300 ${
-                  isSelected
-                    ? "border-primary ring-4 ring-primary/20 shadow-lg scale-[1.02]"
-                    : "border-border hover:border-primary/40 hover:shadow-md"
-                }`}
+                className={`group relative rounded-2xl overflow-hidden border-2 cursor-pointer transition-all duration-300 ${isSelected
+                  ? "border-primary ring-4 ring-primary/20 shadow-lg scale-[1.02]"
+                  : "border-border hover:border-primary/40 hover:shadow-md"
+                  }`}
               >
                 {/* 16:9 Image */}
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
@@ -349,7 +468,7 @@ export default function BasicInfoForm({
                     className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  
+
                   {/* Category Tag Badge */}
                   <span className={`absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase border backdrop-blur-md ${preset.badgeClass}`}>
                     {preset.tag}
@@ -421,7 +540,7 @@ export default function BasicInfoForm({
         <Button variant="outline" onClick={onCancel} className="px-6">
           Cancel
         </Button>
-        <Button onClick={onNext} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 shadow-sm">
+        <Button onClick={handleNextClick} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 shadow-sm">
           Save &amp; Next &rarr;
         </Button>
       </div>

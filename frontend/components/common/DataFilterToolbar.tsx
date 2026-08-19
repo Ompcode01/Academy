@@ -66,10 +66,10 @@ export default function DataFilterToolbar({
   sortValue = "newest",
   onSortChange,
   sortOptions = [
-    { label: "Title (A-Z)", value: "a_z" },
-    { label: "Title (Z-A)", value: "z_a" },
-    { label: "Newest First", value: "newest" },
-    { label: "Oldest First", value: "oldest" },
+    { label: "Newest", value: "newest" },
+    { label: "Oldest", value: "oldest" },
+    { label: "A-Z", value: "a_z" },
+    { label: "Z-A", value: "z_a" },
     { label: "Progress (High → Low)", value: "progress_high" },
     { label: "Progress (Low → High)", value: "progress_low" },
   ],
@@ -156,7 +156,7 @@ export default function DataFilterToolbar({
         {onSortChange && (
           <div className="min-w-[150px]">
             <Select value={sortValue} onValueChange={(val) => onSortChange(val as SortOption)}>
-              <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-bold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
+              <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-bold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl capitalize">
                 <ArrowUpDown className="h-3.5 w-3.5 mr-1.5 text-[#C82333] shrink-0" />
                 <SelectValue placeholder="Sort order" />
               </SelectTrigger>
@@ -262,7 +262,10 @@ export function applyDataFilters<T extends Record<string, any>>(
 
   // 3. Date Range Filter
   if (params.startDate || params.endDate) {
-    const dField = params.dateField || ("createdAt" in (data[0] || {}) ? "createdAt" : "eventDate");
+    const sample = data[0] || {};
+    const dField =
+      params.dateField ||
+      ("date" in sample ? "date" : "createdAt" in sample ? "createdAt" : "eventDate");
     const startTs = params.startDate ? new Date(params.startDate).getTime() : 0;
     const endTs = params.endDate ? new Date(`${params.endDate}T23:59:59`).getTime() : Infinity;
 

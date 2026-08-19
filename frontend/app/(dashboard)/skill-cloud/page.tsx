@@ -43,12 +43,37 @@ import {
 import AddSkillModal from "@/components/skill-cloud/AddSkillModal";
 import AddProjectModal from "@/components/skill-cloud/AddProjectModal";
 import RejectRequestModal from "@/components/skill-cloud/RejectRequestModal";
+import ConfirmModal from "@/components/common/ConfirmModal";
 import { useAuthStore } from "@/store/auth.store";
 
 import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
 
 export default function SkillCloudPage() {
   const { user } = useAuthStore();
+  const isAdminOrTeacher = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" || user?.role === "TEACHER";
+
+  const [confirmModalState, setConfirmModalState] = useState<{
+    isOpen: boolean;
+    message: string;
+    description?: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: "",
+    onConfirm: () => {},
+  });
+
+  const openConfirmModal = (message: string, description: string | undefined, onConfirmAction: () => void) => {
+    setConfirmModalState({
+      isOpen: true,
+      message,
+      description,
+      onConfirm: async () => {
+        setConfirmModalState((prev) => ({ ...prev, isOpen: false }));
+        await onConfirmAction();
+      },
+    });
+  };
   
   // 5 Roles Access Enforcement (SUPER_ADMIN, ADMIN, LEARNER allowed; TEACHER, GUEST restricted)
   const userRole = user?.role || "LEARNER";
@@ -128,33 +153,45 @@ export default function SkillCloudPage() {
     }
   };
 
-  const handleDeleteSkill = async (id: number) => {
-    if (confirm("Are you sure you want to delete this skill entry?")) {
-      await deleteUserSkill(id);
-      loadData();
-    }
-  };
-
-  const handleDeleteProject = async (id: number) => {
-    if (confirm("Are you sure you want to delete this project entry?")) {
-      await deleteUserProject(id);
-      loadData();
-    }
-  };
-
-  const handleDeleteAdminRequest = async (reqItem: ApprovalRequestItem) => {
-    if (confirm(`Are you sure you want to permanently delete this ${reqItem.requestKind.toLowerCase()} entry ("${reqItem.title}")?`)) {
-      try {
-        if (reqItem.requestKind === "SKILL") {
-          await deleteUserSkill(reqItem.id);
-        } else {
-          await deleteUserProject(reqItem.id);
-        }
+  const handleDeleteSkill = (id: number) => {
+    openConfirmModal(
+      "Are you sure you want to delete this skill entry?",
+      "This skill record will be permanently removed from your profile.",
+      async () => {
+        await deleteUserSkill(id);
         loadData();
-      } catch (err) {
-        console.error("Failed to delete request:", err);
       }
-    }
+    );
+  };
+
+  const handleDeleteProject = (id: number) => {
+    openConfirmModal(
+      "Are you sure you want to delete this project entry?",
+      "This project showcase entry will be removed from your skill cloud.",
+      async () => {
+        await deleteUserProject(id);
+        loadData();
+      }
+    );
+  };
+
+  const handleDeleteAdminRequest = (reqItem: ApprovalRequestItem) => {
+    openConfirmModal(
+      `Are you sure you want to permanently delete this ${reqItem.requestKind.toLowerCase()} entry ("${reqItem.title}")?`,
+      "This approval request record will be permanently deleted.",
+      async () => {
+        try {
+          if (reqItem.requestKind === "SKILL") {
+            await deleteUserSkill(reqItem.id);
+          } else {
+            await deleteUserProject(reqItem.id);
+          }
+          loadData();
+        } catch (err) {
+          console.error("Failed to delete request:", err);
+        }
+      }
+    );
   };
 
   // Learner Filtered Skills
@@ -1284,6 +1321,19 @@ export default function SkillCloudPage() {
           </div>
         </div>
       )}
+
+      {/* Harbinger Branded Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModalState.isOpen}
+        onClose={() => setConfirmModalState((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModalState.onConfirm}
+        title="Harbinger Academy"
+        message={confirmModalState.message}
+        description={confirmModalState.description}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

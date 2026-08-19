@@ -71,7 +71,7 @@ export const ReportDrilldownModal: React.FC<ReportDrilldownModalProps> = ({
                 <h3 className="text-base font-bold text-foreground">{drillData.employee.name}</h3>
                 <p className="text-xs text-muted-foreground">
                   Code: <span className="font-semibold">{drillData.employee.employeeCode}</span> |{" "}
-                  Department: <span className="font-semibold">{drillData.employee.department}</span>
+                  Business Unit: <span className="font-semibold">{drillData.employee.department}</span>
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Email: {drillData.employee.email} | Designation: {drillData.employee.designation}

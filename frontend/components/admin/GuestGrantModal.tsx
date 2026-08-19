@@ -164,7 +164,7 @@ export default function GuestGrantModal({ isOpen, onClose }: GuestGrantModalProp
               {scope === "DEPARTMENT" && (
                 <div>
                   <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-                    Department
+                    Business Unit
                   </label>
                   <select
                     value={departmentId}

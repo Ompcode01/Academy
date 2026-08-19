@@ -184,8 +184,13 @@ export const deleteContent = async (contentId: number) => {
 
 // Category API
 export const getCategories = async () => {
-  const response = await api.get("/categories");
-  return response.data;
+  try {
+    const response = await api.get("/categories");
+    return response.data;
+  } catch (error) {
+    console.warn("getCategories API network error, returning fallback:", error);
+    return { success: false, data: [] };
+  }
 };
 
 export const createCategory = async (data: {

@@ -75,19 +75,39 @@ class CourseService {
 
       case "ADMIN":
         return {
-          OR: [
-            { departmentId: null },
-            ...(departmentId ? [{ departmentId }] : []),
-            ...(employeeId ? [{ creatorId: employeeId }] : []),
-            ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
+          AND: [
+            {
+              OR: [
+                { status: "PUBLISHED" },
+                ...(employeeId ? [{ creatorId: employeeId }] : []),
+              ],
+            },
+            {
+              OR: [
+                { departmentId: null },
+                ...(departmentId ? [{ departmentId }] : []),
+                ...(employeeId ? [{ creatorId: employeeId }] : []),
+                ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
+              ],
+            },
           ],
         };
 
       case "TEACHER":
         return {
-          OR: [
-            ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
-            ...(employeeId ? [{ creatorId: employeeId }] : []),
+          AND: [
+            {
+              OR: [
+                { status: "PUBLISHED" },
+                ...(employeeId ? [{ creatorId: employeeId }] : []),
+              ],
+            },
+            {
+              OR: [
+                ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
+                ...(employeeId ? [{ creatorId: employeeId }] : []),
+              ],
+            },
           ],
         };
 

@@ -190,8 +190,25 @@ export const updateCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const id = BigInt(req.params.id as string);
     const data = { ...req.body };
-    if (data.categoryId) data.categoryId = BigInt(data.categoryId);
-    if (data.departmentId) data.departmentId = BigInt(data.departmentId);
+    if (data.categoryId !== undefined && data.categoryId !== null && data.categoryId !== "") {
+      data.categoryId = BigInt(data.categoryId);
+    } else if (data.categoryId === null || data.categoryId === "") {
+      delete data.categoryId;
+    }
+
+    if (data.departmentId !== undefined) {
+      if (
+        data.departmentId === null ||
+        data.departmentId === "global" ||
+        data.departmentId === "ALL" ||
+        data.departmentId === "" ||
+        data.departmentId === "null"
+      ) {
+        data.departmentId = null;
+      } else {
+        data.departmentId = BigInt(data.departmentId);
+      }
+    }
 
     const userContext = {
       role: req.user?.role || "GUEST",

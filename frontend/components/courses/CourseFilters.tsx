@@ -41,11 +41,10 @@ export default function CourseFilters({
     { id: 4, name: "Leadership (Futurefit, MCC, Basecamp)", isActive: true },
   ]);
   const [departments, setDepartments] = useState<Department[]>([
-    { id: 1, departmentCode: "ABU", departmentName: "Across BUs", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 2, departmentCode: "TSC", departmentName: "Tech Services- Core", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 3, departmentCode: "TSD", departmentName: "Tech Services - DPU", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 4, departmentCode: "CS", departmentName: "Content Services", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 5, departmentCode: "BE", departmentName: "Business Enablers", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 1, departmentCode: "TSC", departmentName: "Tech Services- Core", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 2, departmentCode: "TSD", departmentName: "Tech Services - DPU", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 3, departmentCode: "CS", departmentName: "Content Services", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 4, departmentCode: "BE", departmentName: "Business Enablers", isActive: true, createdAt: "", updatedAt: "" },
   ]);
 
   const [catFilter, setCatFilter] = useState<string>("all");
@@ -101,7 +100,7 @@ export default function CourseFilters({
         },
         {
           key: "department",
-          label: "BU",
+          label: "Business Unit",
           value: deptFilter,
           options: departments.map((d) => ({ label: `${d.departmentCode} - ${d.departmentName}`, value: String(d.id) })),
         },

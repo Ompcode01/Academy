@@ -57,8 +57,11 @@ export interface ContentItem {
   assignmentConfigJson?: string;
 }
 
+import { getCourseDisplayTitle } from "@/lib/courseTitleHelper";
+
 interface CurriculumBuilderViewProps {
   courseTitle?: string;
+  shortName?: string;
   level?: string;
   category?: string;
   durationHours?: number;
@@ -69,6 +72,7 @@ interface CurriculumBuilderViewProps {
 
 export default function CurriculumBuilderView({
   courseTitle = "New Course",
+  shortName,
   level = "Beginner",
   category = "Development",
   durationHours = 0,
@@ -405,7 +409,9 @@ export default function CurriculumBuilderView({
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold text-foreground">{courseTitle}</h2>
+              <h2 className="text-xl font-bold text-foreground" title={courseTitle}>
+                {getCourseDisplayTitle(courseTitle, shortName)}
+              </h2>
               <span
                 className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase ${
                   status === "Published"
@@ -441,7 +447,9 @@ export default function CurriculumBuilderView({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sections List */}
         <div className="lg:col-span-3 space-y-4">
-          {sections.map((section) => (
+          {sections
+            .filter((s) => s.title !== "Course Feedback & Evaluation" && !s.contents?.some((c) => c.contentType === "FEEDBACK"))
+            .map((section) => (
             <div
               key={section.id}
               className="rounded-2xl border border-border bg-card overflow-hidden transition-all shadow-sm"

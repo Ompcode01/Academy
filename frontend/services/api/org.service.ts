@@ -45,8 +45,13 @@ export interface Employee {
 
 // Business Unit API
 export const getDepartments = async () => {
-  const response = await api.get("/departments");
-  return response.data;
+  try {
+    const response = await api.get("/departments");
+    return response.data;
+  } catch (error) {
+    console.warn("getDepartments API network error, returning fallback:", error);
+    return { success: false, data: [] };
+  }
 };
 
 export const createDepartment = async (data: {

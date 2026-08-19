@@ -27,14 +27,8 @@ async function main() {
 
   const be = await prisma.department.upsert({
     where: { departmentCode: "BE" },
-    update: {},
+    update: { departmentName: "Business Enablers" },
     create: { departmentCode: "BE", departmentName: "Business Enablers" },
-  });
-
-  const abu = await prisma.department.upsert({
-    where: { departmentCode: "ABU" },
-    update: {},
-    create: { departmentCode: "ABU", departmentName: "Across BUs" },
   });
 
   // Roles
@@ -215,11 +209,11 @@ async function main() {
 
   // 5 Dedicated Learners for testing across different departments
   const dummyLearners = [
-    { code: "EMP101", username: "learner1", first: "Aarav", last: "Verma", dept: eng, email: "learner1@company.com" },
-    { code: "EMP102", username: "learner2", first: "Diya", last: "Kulkarni", dept: hr, email: "learner2@company.com" },
-    { code: "EMP103", username: "learner3", first: "Rohan", last: "Mehta", dept: mgt, email: "learner3@company.com" },
-    { code: "EMP104", username: "learner4", first: "Ananya", last: "Singh", dept: sales, email: "learner4@company.com" },
-    { code: "EMP105", username: "learner5", first: "Vikram", last: "Nair", dept: mkt, email: "learner5@company.com" },
+    { code: "EMP101", username: "learner1", first: "Aarav", last: "Verma", dept: tsc, email: "learner1@company.com" },
+    { code: "EMP102", username: "learner2", first: "Diya", last: "Kulkarni", dept: tsd, email: "learner2@company.com" },
+    { code: "EMP103", username: "learner3", first: "Rohan", last: "Mehta", dept: cs, email: "learner3@company.com" },
+    { code: "EMP104", username: "learner4", first: "Ananya", last: "Singh", dept: be, email: "learner4@company.com" },
+    { code: "EMP105", username: "learner5", first: "Vikram", last: "Nair", dept: tsc, email: "learner5@company.com" },
   ];
 
   const createdLearners: any[] = [];

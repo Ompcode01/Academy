@@ -55,17 +55,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   if (!isOpen) return null;
 
   return (
-    <aside className="w-80 shrink-0 border-l border-[#E0E6ED] bg-[#F4F7F9] text-[#212529] select-none flex flex-col h-full overflow-y-auto relative animate-in slide-in-from-right duration-200">
+    <aside className="w-80 shrink-0 border-l border-[#E0E6ED] bg-[#F4F7F9] text-[#212529] select-none flex flex-col h-full sticky top-0 self-start overflow-y-auto scrollbar-thin relative animate-in slide-in-from-right duration-200">
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 rounded-md p-1.5 text-[#6C757D] hover:bg-slate-200 hover:text-[#212529] transition-all cursor-pointer"
+        className="absolute top-4 right-4 rounded-md p-1.5 text-[#6C757D] hover:bg-slate-200 hover:text-[#212529] transition-all cursor-pointer z-10"
         title="Close sidebar"
       >
         <X className="h-4 w-4" />
       </button>
 
-      <div className="p-5 space-y-6">
+      <div className="p-5 space-y-6 sticky top-0">
 
         {/* Section 1: Skill Cloud & Certificates */}
         <div className="space-y-2">

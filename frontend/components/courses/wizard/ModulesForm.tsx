@@ -5,6 +5,12 @@ import CurriculumBuilderView, { SectionItem } from "../builder/CurriculumBuilder
 
 interface ModulesFormProps {
   sections?: SectionItem[];
+  courseTitle?: string;
+  shortName?: string;
+  level?: string;
+  category?: string;
+  durationHours?: number;
+  status?: "Draft" | "Published";
   onSectionsChange?: (sections: SectionItem[]) => void;
   onNext?: () => void;
   onBack?: () => void;
@@ -13,6 +19,12 @@ interface ModulesFormProps {
 
 export default function ModulesForm({
   sections,
+  courseTitle,
+  shortName,
+  level,
+  category,
+  durationHours,
+  status,
   onSectionsChange,
   onNext,
   onBack,
@@ -22,6 +34,12 @@ export default function ModulesForm({
     <div className="space-y-6">
       <CurriculumBuilderView
         sections={sections}
+        courseTitle={courseTitle}
+        shortName={shortName}
+        level={level}
+        category={category}
+        durationHours={durationHours}
+        status={status}
         onSectionsChange={onSectionsChange}
       />
 
