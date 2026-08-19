@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { FileCode, CheckCircle2, Clock, Upload, Award, AlertCircle, Paperclip, Download, Calendar, HardDrive } from "lucide-react";
 import { submitAssignment } from "@/services/api/course.service";
+import toast from "react-hot-toast";
 
 interface LearnerAssignmentModalProps {
   open: boolean;
@@ -89,7 +90,7 @@ export default function LearnerAssignmentModal({
       }
     } catch (err: any) {
       console.error("Assignment submission error:", err);
-      alert(err?.response?.data?.message || "Failed to submit assignment.");
+      toast.error(err?.response?.data?.message || "Failed to submit assignment.");
     } finally {
       setSubmitting(false);
     }

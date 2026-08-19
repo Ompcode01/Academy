@@ -18,7 +18,9 @@ import {
   Clock,
   Award,
   BookOpen,
+  FileUp,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface QuizBuilderModalProps {
   open: boolean;
@@ -60,10 +62,11 @@ export default function QuizBuilderModal({
   const [description, setDescription] = useState("");
   const [durationMinutes, setDurationMinutes] = useState(20);
   const [passingPercentage, setPassingPercentage] = useState(70);
-  const [maxAttempts, setMaxAttempts] = useState<number>(1);
+  const [maxAttempts, setMaxAttempts] = useState<number>(3);
   const [shuffleQuestions, setShuffleQuestions] = useState(true);
   const [showAnswers, setShowAnswers] = useState(true);
   const [oneQuestionAtTime, setOneQuestionAtTime] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [questions, setQuestions] = useState<QuestionData[]>([]);
 
@@ -84,7 +87,7 @@ export default function QuizBuilderModal({
         setDescription("");
         setDurationMinutes(20);
         setPassingPercentage(70);
-        setMaxAttempts(1);
+        setMaxAttempts(3);
         setShuffleQuestions(true);
         setShowAnswers(true);
         setOneQuestionAtTime(false);
@@ -95,16 +98,81 @@ export default function QuizBuilderModal({
 
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType | null>(null);
+  const [editingQuestionIdx, setEditingQuestionIdx] = useState<number | null>(null);
 
   const totalMarks = questions.reduce((acc, q) => acc + q.marks, 0);
 
   const handleOpenAddQuestion = (qType: QuestionType) => {
+    setEditingQuestionIdx(null);
     setSelectedQuestionType(qType);
     setQuestionModalOpen(true);
   };
 
-  const handleSaveQuestion = (newQuestion: QuestionData) => {
-    setQuestions((prev) => [...prev, newQuestion]);
+  const handleEditQuestion = (idx: number) => {
+    setEditingQuestionIdx(idx);
+    setSelectedQuestionType(questions[idx].questionType as QuestionType);
+    setQuestionModalOpen(true);
+  };
+
+  const handleSaveQuestion = (newQuestion: QuestionData, editIdx?: number | null) => {
+    if (editIdx !== undefined && editIdx !== null) {
+      setQuestions((prev) => {
+        const copy = [...prev];
+        copy[editIdx] = newQuestion;
+        return copy;
+      });
+    } else {
+      setQuestions((prev) => [...prev, newQuestion]);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split("\n");
+      const newQs: QuestionData[] = [];
+      // Expected CSV: QuestionText,Type,Option1,Option2,Option3,Option4,CorrectAnswer
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        const cols = line.split(",").map(c => c.trim().replace(/^"|"$/g, ''));
+        if (cols.length < 2) continue;
+        
+        const qText = cols[0];
+        let qTypeStr = cols[1].toUpperCase();
+        if (qTypeStr === "TF" || qTypeStr === "TRUE/FALSE") qTypeStr = "TRUE_FALSE";
+        if (qTypeStr === "MULTI") qTypeStr = "MULTIPLE_SELECT";
+        
+        const type = ["MCQ", "TRUE_FALSE", "MULTIPLE_SELECT", "SHORT_ANSWER"].includes(qTypeStr) ? qTypeStr as QuestionType : "MCQ";
+        
+        let options: string[] | undefined = undefined;
+        let correctAnswer: any = cols[6] || "";
+        
+        if (type === "MCQ" || type === "MULTIPLE_SELECT") {
+          options = cols.slice(2, 6).filter(Boolean);
+          if (type === "MULTIPLE_SELECT") {
+            correctAnswer = correctAnswer.split(";").map((s: string) => s.trim());
+          }
+        }
+        
+        newQs.push({
+          questionText: qText,
+          questionType: type,
+          marks: 2,
+          options,
+          correctAnswer,
+        });
+      }
+      if (newQs.length > 0) {
+        setQuestions((prev) => [...prev, ...newQs]);
+      }
+      e.target.value = ""; // Reset
+    };
+    reader.readAsText(file);
   };
 
   const handleDeleteQuestion = (idx: number) => {
@@ -123,7 +191,11 @@ export default function QuizBuilderModal({
   };
 
   const handleFinalSave = () => {
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setActiveStep("DETAILS");
+      toast.error("Please provide a Quiz Title before saving.");
+      return;
+    }
     onSaveQuiz({
       title,
       description,
@@ -312,7 +384,19 @@ export default function QuizBuilderModal({
 
               {/* Add Question Selector Grid */}
               <div className="space-y-2">
-                <Label className="text-xs font-semibold">Add Question by Type:</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-semibold">Add Question by Type:</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="gap-1.5 text-xs text-primary border-primary/30 hover:bg-primary/10 cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Bulk Upload (CSV)
+                  </Button>
+                  <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileUpload} />
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {[
                     { type: "MCQ", label: "MCQ" },
@@ -372,6 +456,13 @@ export default function QuizBuilderModal({
                         <div className="flex items-center gap-1.5">
                           <button
                             type="button"
+                            onClick={() => handleEditQuestion(idx)}
+                            className="p-1 text-primary hover:text-primary/80"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => handleMoveQuestion(idx, "UP")}
                             disabled={idx === 0}
                             className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
@@ -420,6 +511,8 @@ export default function QuizBuilderModal({
         type={selectedQuestionType}
         onOpenChange={setQuestionModalOpen}
         onSaveQuestion={handleSaveQuestion}
+        initialQuestion={editingQuestionIdx !== null ? questions[editingQuestionIdx] : null}
+        editIndex={editingQuestionIdx}
       />
     </>
   );

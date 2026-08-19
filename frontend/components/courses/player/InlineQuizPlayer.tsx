@@ -98,8 +98,8 @@ export default function InlineQuizPlayer({
   
   // Read exact maxAttempts entered by author (Admin, SA, Teacher), or 1 if not specified
   const rawMaxAttempts = parsedConfig.maxAttempts ?? parsedConfig.attemptsAllowed ?? parsedConfig.attempts;
-  const maxAttempts = rawMaxAttempts !== undefined && rawMaxAttempts !== null && rawMaxAttempts !== "" ? Number(rawMaxAttempts) : 1;
-  const isUnlimitedAttempts = maxAttempts === 0 || maxAttempts >= 999;
+  const maxAttempts = rawMaxAttempts !== undefined && rawMaxAttempts !== null && rawMaxAttempts !== "" ? Number(rawMaxAttempts) : 3;
+  const isUnlimitedAttempts = isPreview ? true : (maxAttempts === 0 || maxAttempts >= 999);
   const durationMinutes = parsedConfig.durationMinutes || 15;
 
   // Normalize questions to guarantee safety
@@ -163,7 +163,7 @@ export default function InlineQuizPlayer({
 
   const isAttemptsExhausted = !isUnlimitedAttempts && (currentAttempt > maxAttempts || (isSubmitted && currentAttempt >= maxAttempts) || (attemptNumber >= maxAttempts && isSubmitted));
   const isFinalAttempt = isUnlimitedAttempts ? false : (currentAttempt >= maxAttempts || maxAttempts === 1);
-  const shouldShowAnswers = showAnswersAfterSubmitSetting || isFinalAttempt || isSubmitted;
+  const shouldShowAnswers = isPreview ? true : (showAnswersAfterSubmitSetting || isFinalAttempt || isSubmitted);
 
   const handleReset = () => {
     setCurrentAttempt((prev) => prev + 1);

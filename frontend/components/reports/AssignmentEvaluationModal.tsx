@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { FileCheck2, CheckCircle2, Paperclip, Download, Award, Clock, User, AlertCircle, RefreshCw, MessageSquare, Archive, ExternalLink, FileText } from "lucide-react";
+import toast from "react-hot-toast";
 import { evaluateAssignmentSubmission } from "@/services/api/reporting.service";
 import { getStorageUrl } from "@/services/api/course.service";
 import InteractiveDocViewer from "@/components/courses/player/InteractiveDocViewer";
@@ -113,7 +114,7 @@ export default function AssignmentEvaluationModal({
       }
     } catch (err: any) {
       console.error("Failed to evaluate assignment:", err);
-      alert(err?.response?.data?.message || "Failed to submit assignment evaluation.");
+      toast.error(err?.response?.data?.message || "Failed to submit assignment evaluation.");
     } finally {
       setSubmitting(false);
     }

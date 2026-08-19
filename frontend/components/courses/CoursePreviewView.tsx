@@ -53,6 +53,7 @@ import LearnerFeedbackModal from "@/components/courses/learner/LearnerFeedbackMo
 import ScormPlayer from "@/components/courses/player/ScormPlayer";
 import { MessageSquare } from "lucide-react";
 import { getYouTubeEmbedUrl } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 interface LessonItem {
   id: number;
@@ -275,7 +276,7 @@ export default function CoursePreviewView() {
       await loadCourseAndProgress();
       setViewMode("player");
     } catch (err: any) {
-      alert(err?.response?.data?.message || err?.message || "Failed to enroll in course");
+      toast.error(err?.response?.data?.message || err?.message || "Failed to enroll in course");
     } finally {
       setEnrolling(false);
     }
@@ -353,7 +354,7 @@ export default function CoursePreviewView() {
       return;
     }
     if (!isCourseFullyCompleted) {
-      alert(
+      toast.error(
         `Certificate Locked (${computedProgressPercent}% Completed) — Please complete 100% of all course sections and lessons to unlock your official certificate.`
       );
       return;
@@ -368,7 +369,7 @@ export default function CoursePreviewView() {
       return;
     }
     if (requiresSelfEnrollment) {
-      alert("Self-Enrollment Required — Please click 'Enroll Now' on the course overview page to unlock lessons.");
+      toast.error("Self-Enrollment Required — Please click 'Enroll Now' on the course overview page to unlock lessons.");
       return;
     }
 
@@ -1140,7 +1141,7 @@ export default function CoursePreviewView() {
                                   const ansKey = `_fb_ans_${q.id || i}`;
                                   const val = (selectedLesson as any)[ansKey] || "";
                                   if (q.isMandatory && !val.trim()) {
-                                    alert(`Please answer mandatory question #${i + 1}: "${q.questionText}"`);
+                                    toast.error(`Please answer mandatory question #${i + 1}: "${q.questionText}"`);
                                     return;
                                   }
                                   responseMap[String(q.id || i + 1)] = val;
@@ -1158,7 +1159,7 @@ export default function CoursePreviewView() {
                                   }).catch(console.error);
                                 }
                                 handleToggleLessonComplete(selectedLesson.id);
-                                alert("Thank you! Your feedback survey response has been saved.");
+                                toast.success("Thank you! Your feedback survey response has been saved.");
                               }}
                               className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
                             >

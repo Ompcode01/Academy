@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-18T15:55:27.931Z",
+  "exportedAt": "2026-08-19T07:25:40.772Z",
   "departments": [
     {
       "id": "1",
@@ -450,13 +450,13 @@
       "employeeId": "1",
       "username": "priyanka",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-18T09:38:05.360Z",
+      "lastLogin": "2026-08-19T06:58:10.446Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.459Z",
-      "updatedAt": "2026-08-18T09:38:05.363Z"
+      "updatedAt": "2026-08-19T06:58:10.449Z"
     },
     {
       "id": "2",
@@ -1099,7 +1099,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.381Z",
-      "updatedAt": "2026-08-17T14:24:40.274Z"
+      "updatedAt": "2026-08-19T04:12:24.759Z"
     },
     {
       "id": "2",
@@ -1118,7 +1118,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.399Z",
-      "updatedAt": "2026-08-17T14:24:40.330Z"
+      "updatedAt": "2026-08-19T04:12:24.778Z"
     },
     {
       "id": "3",
@@ -1137,7 +1137,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.413Z",
-      "updatedAt": "2026-08-17T14:24:40.366Z"
+      "updatedAt": "2026-08-19T04:12:24.797Z"
     },
     {
       "id": "4",
@@ -1156,7 +1156,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.427Z",
-      "updatedAt": "2026-08-17T14:24:40.400Z"
+      "updatedAt": "2026-08-19T04:12:24.812Z"
     },
     {
       "id": "5",
@@ -1175,7 +1175,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-07-31T09:32:41.440Z",
-      "updatedAt": "2026-08-17T14:24:40.429Z"
+      "updatedAt": "2026-08-19T04:12:24.823Z"
     },
     {
       "id": "6",
@@ -1194,7 +1194,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-08-08T12:00:22.886Z",
-      "updatedAt": "2026-08-17T14:24:40.461Z"
+      "updatedAt": "2026-08-19T04:12:24.835Z"
     },
     {
       "id": "7",
@@ -1213,7 +1213,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-08-11T08:34:11.884Z",
-      "updatedAt": "2026-08-17T14:24:40.494Z"
+      "updatedAt": "2026-08-19T04:12:24.848Z"
     },
     {
       "id": "8",
@@ -1232,7 +1232,7 @@
       "isMandatory": false,
       "isActive": false,
       "createdAt": "2026-08-12T09:06:03.007Z",
-      "updatedAt": "2026-08-17T14:24:40.528Z"
+      "updatedAt": "2026-08-19T04:12:24.860Z"
     },
     {
       "id": "9",
@@ -1251,7 +1251,7 @@
       "isMandatory": false,
       "isActive": true,
       "createdAt": "2026-08-17T09:35:15.124Z",
-      "updatedAt": "2026-08-17T14:24:40.562Z"
+      "updatedAt": "2026-08-19T04:12:24.872Z"
     },
     {
       "id": "10",
@@ -1270,7 +1270,7 @@
       "isMandatory": false,
       "isActive": true,
       "createdAt": "2026-08-18T09:50:30.313Z",
-      "updatedAt": "2026-08-18T09:50:30.313Z"
+      "updatedAt": "2026-08-19T04:12:24.883Z"
     },
     {
       "id": "11",
@@ -1289,7 +1289,7 @@
       "isMandatory": false,
       "isActive": true,
       "createdAt": "2026-08-18T12:25:49.118Z",
-      "updatedAt": "2026-08-18T12:26:07.497Z"
+      "updatedAt": "2026-08-19T04:12:24.895Z"
     }
   ],
   "courseTeachers": [
@@ -1340,7 +1340,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-08T12:00:22.926Z",
-      "updatedAt": "2026-08-17T14:24:40.606Z"
+      "updatedAt": "2026-08-19T04:12:24.908Z"
     },
     {
       "id": "2",
@@ -1351,7 +1351,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-08T12:00:22.961Z",
-      "updatedAt": "2026-08-17T14:24:40.670Z"
+      "updatedAt": "2026-08-19T04:12:24.924Z"
     },
     {
       "id": "3",
@@ -1362,7 +1362,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-11T08:34:12.001Z",
-      "updatedAt": "2026-08-17T14:24:40.716Z"
+      "updatedAt": "2026-08-19T04:12:24.940Z"
     },
     {
       "id": "4",
@@ -1373,7 +1373,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-11T08:34:12.102Z",
-      "updatedAt": "2026-08-17T14:24:40.772Z"
+      "updatedAt": "2026-08-19T04:12:24.952Z"
     },
     {
       "id": "5",
@@ -1384,7 +1384,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-12T09:06:03.061Z",
-      "updatedAt": "2026-08-17T14:24:40.818Z"
+      "updatedAt": "2026-08-19T04:12:24.964Z"
     },
     {
       "id": "6",
@@ -1395,7 +1395,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-12T09:06:03.176Z",
-      "updatedAt": "2026-08-17T14:24:40.876Z"
+      "updatedAt": "2026-08-19T04:12:24.974Z"
     },
     {
       "id": "7",
@@ -1406,7 +1406,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-17T09:35:15.188Z",
-      "updatedAt": "2026-08-17T14:24:40.927Z"
+      "updatedAt": "2026-08-19T04:12:24.986Z"
     },
     {
       "id": "8",
@@ -1417,7 +1417,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-17T09:35:15.336Z",
-      "updatedAt": "2026-08-17T14:24:41.005Z"
+      "updatedAt": "2026-08-19T04:12:24.998Z"
     },
     {
       "id": "9",
@@ -1428,7 +1428,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-17T09:35:15.413Z",
-      "updatedAt": "2026-08-17T14:24:41.056Z"
+      "updatedAt": "2026-08-19T04:12:25.010Z"
     },
     {
       "id": "10",
@@ -1439,7 +1439,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-17T09:48:47.958Z",
-      "updatedAt": "2026-08-17T14:24:41.111Z"
+      "updatedAt": "2026-08-19T04:12:25.022Z"
     },
     {
       "id": "11",
@@ -1450,7 +1450,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-17T09:48:48.195Z",
-      "updatedAt": "2026-08-17T14:24:41.160Z"
+      "updatedAt": "2026-08-19T04:12:25.033Z"
     },
     {
       "id": "12",
@@ -1461,7 +1461,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-17T09:48:48.403Z",
-      "updatedAt": "2026-08-17T14:24:41.218Z"
+      "updatedAt": "2026-08-19T04:12:25.044Z"
     },
     {
       "id": "13",
@@ -1472,7 +1472,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-17T10:07:40.903Z",
-      "updatedAt": "2026-08-17T14:24:41.272Z"
+      "updatedAt": "2026-08-19T04:12:25.057Z"
     },
     {
       "id": "14",
@@ -1483,7 +1483,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-17T10:07:41.031Z",
-      "updatedAt": "2026-08-17T14:24:41.324Z"
+      "updatedAt": "2026-08-19T04:12:25.068Z"
     },
     {
       "id": "15",
@@ -1494,7 +1494,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-17T10:07:41.083Z",
-      "updatedAt": "2026-08-17T14:24:41.372Z"
+      "updatedAt": "2026-08-19T04:12:25.084Z"
     },
     {
       "id": "18",
@@ -1505,7 +1505,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-18T09:50:30.367Z",
-      "updatedAt": "2026-08-18T09:50:30.367Z"
+      "updatedAt": "2026-08-19T04:12:25.099Z"
     },
     {
       "id": "19",
@@ -1516,7 +1516,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-18T09:50:30.429Z",
-      "updatedAt": "2026-08-18T09:50:30.429Z"
+      "updatedAt": "2026-08-19T04:12:25.113Z"
     },
     {
       "id": "20",
@@ -1527,7 +1527,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:25:49.219Z",
-      "updatedAt": "2026-08-18T12:26:07.564Z"
+      "updatedAt": "2026-08-19T04:12:25.129Z"
     },
     {
       "id": "21",
@@ -1538,7 +1538,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:25:49.350Z",
-      "updatedAt": "2026-08-18T12:26:07.564Z"
+      "updatedAt": "2026-08-19T04:12:25.147Z"
     },
     {
       "id": "22",
@@ -1549,7 +1549,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:25:49.396Z",
-      "updatedAt": "2026-08-18T12:26:07.564Z"
+      "updatedAt": "2026-08-19T04:12:25.171Z"
     },
     {
       "id": "23",
@@ -1560,7 +1560,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-18T12:26:07.598Z",
-      "updatedAt": "2026-08-18T12:26:07.598Z"
+      "updatedAt": "2026-08-19T04:12:25.193Z"
     },
     {
       "id": "24",
@@ -1571,7 +1571,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-18T12:26:07.701Z",
-      "updatedAt": "2026-08-18T12:26:07.701Z"
+      "updatedAt": "2026-08-19T04:12:25.211Z"
     },
     {
       "id": "25",
@@ -1582,7 +1582,7 @@
       "isPublished": true,
       "isActive": true,
       "createdAt": "2026-08-18T12:26:07.739Z",
-      "updatedAt": "2026-08-18T12:26:07.739Z"
+      "updatedAt": "2026-08-19T04:12:25.230Z"
     }
   ],
   "learningContents": [
@@ -1601,7 +1601,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-08T12:00:22.944Z",
-      "updatedAt": "2026-08-17T14:24:41.425Z"
+      "updatedAt": "2026-08-19T04:12:25.247Z"
     },
     {
       "id": "2",
@@ -1618,7 +1618,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-08T12:00:22.944Z",
-      "updatedAt": "2026-08-17T14:24:41.507Z"
+      "updatedAt": "2026-08-19T04:12:25.274Z"
     },
     {
       "id": "3",
@@ -1635,7 +1635,7 @@
       "quizConfigJson": "[{\"id\":1,\"question\":\"Which HTTP status code signifies a resource was successfully created?\",\"options\":[\"200 OK\",\"201 Created\",\"400 Bad Request\",\"500 Server Error\"],\"correctIndex\":1,\"explanation\":\"201 Created is the standard HTTP status code for successful creation of a resource.\"},{\"id\":2,\"question\":\"What does JWT stand for in web security authentication?\",\"options\":[\"Java Web Token\",\"JSON Web Token\",\"JavaScript Web Transfer\",\"Joint Work Task\"],\"correctIndex\":1,\"explanation\":\"JWT stands for JSON Web Token.\"},{\"id\":3,\"question\":\"Which pattern is best suited for decoupled asynchronous event processing?\",\"options\":[\"Synchronous RPC\",\"Pub/Sub Messaging Queue\",\"Direct Database Access\",\"Polled File Access\"],\"correctIndex\":1,\"explanation\":\"Publish/Subscribe messaging queues allow decoupled asynchronous message handling.\"}]",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-08T12:00:22.974Z",
-      "updatedAt": "2026-08-17T14:24:41.553Z"
+      "updatedAt": "2026-08-19T04:12:25.294Z"
     },
     {
       "id": "4",
@@ -1652,7 +1652,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"instructions\":\"Design a secure Express.js microservice API endpoint that validates JWT tokens and implements role-based access control (RBAC). Submit your solution text or GitHub repo URL below.\",\"maxScore\":100,\"requiresGrading\":true}",
       "createdAt": "2026-08-08T12:00:22.990Z",
-      "updatedAt": "2026-08-17T14:24:41.657Z"
+      "updatedAt": "2026-08-19T04:12:25.319Z"
     },
     {
       "id": "5",
@@ -1669,7 +1669,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-11T08:34:12.039Z",
-      "updatedAt": "2026-08-17T14:24:41.726Z"
+      "updatedAt": "2026-08-19T04:12:25.341Z"
     },
     {
       "id": "6",
@@ -1686,7 +1686,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-11T08:34:12.077Z",
-      "updatedAt": "2026-08-17T14:24:41.789Z"
+      "updatedAt": "2026-08-19T04:12:25.375Z"
     },
     {
       "id": "7",
@@ -1703,7 +1703,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-11T08:34:12.119Z",
-      "updatedAt": "2026-08-17T14:24:41.865Z"
+      "updatedAt": "2026-08-19T04:12:25.413Z"
     },
     {
       "id": "8",
@@ -1720,7 +1720,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-11T08:34:12.137Z",
-      "updatedAt": "2026-08-17T14:24:41.930Z"
+      "updatedAt": "2026-08-19T04:12:25.455Z"
     },
     {
       "id": "9",
@@ -1737,7 +1737,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-12T09:06:03.096Z",
-      "updatedAt": "2026-08-17T14:24:42.003Z"
+      "updatedAt": "2026-08-19T04:12:25.491Z"
     },
     {
       "id": "10",
@@ -1754,7 +1754,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-12T09:06:03.145Z",
-      "updatedAt": "2026-08-17T14:24:42.050Z"
+      "updatedAt": "2026-08-19T04:12:25.524Z"
     },
     {
       "id": "11",
@@ -1771,7 +1771,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-12T09:06:03.202Z",
-      "updatedAt": "2026-08-17T14:24:42.097Z"
+      "updatedAt": "2026-08-19T04:12:25.558Z"
     },
     {
       "id": "12",
@@ -1788,7 +1788,7 @@
       "quizConfigJson": "{\"title\":\"sdfgh\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":2,\"totalMarks\":2,\"questions\":[{\"questionType\":\"TRUE_FALSE\",\"questionText\":\"Orange is Colour\",\"marks\":2,\"correctAnswer\":\"True\",\"explanation\":\"zx\"}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-12T09:06:03.229Z",
-      "updatedAt": "2026-08-17T14:24:42.160Z"
+      "updatedAt": "2026-08-19T04:12:25.591Z"
     },
     {
       "id": "13",
@@ -1805,7 +1805,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"title\":\"Mini Project\",\"description\":\"ASWDFRGHYJKLO;P\\nasdfghyjukl.;/\\nzavfgbhnjmkl.;/\\nasxdcfghjkl;\\nazxvfbgnhjm,k\\nl\",\"maxMarks\":50,\"deadline\":\"2026-08-22 23:59\",\"maxAttempts\":2,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Bussiness_Requirement_Document.docx\",\"size\":\"0.0 MB\"}]}",
       "createdAt": "2026-08-12T09:06:03.249Z",
-      "updatedAt": "2026-08-17T14:24:42.206Z"
+      "updatedAt": "2026-08-19T04:12:25.620Z"
     },
     {
       "id": "14",
@@ -1822,7 +1822,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:35:15.226Z",
-      "updatedAt": "2026-08-17T14:24:42.246Z"
+      "updatedAt": "2026-08-19T04:12:25.655Z"
     },
     {
       "id": "15",
@@ -1839,7 +1839,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:35:15.260Z",
-      "updatedAt": "2026-08-17T14:24:42.311Z"
+      "updatedAt": "2026-08-19T04:12:25.696Z"
     },
     {
       "id": "16",
@@ -1856,7 +1856,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:35:15.285Z",
-      "updatedAt": "2026-08-17T14:24:42.412Z"
+      "updatedAt": "2026-08-19T04:12:25.752Z"
     },
     {
       "id": "17",
@@ -1873,7 +1873,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:35:15.309Z",
-      "updatedAt": "2026-08-17T14:24:42.468Z"
+      "updatedAt": "2026-08-19T04:12:25.784Z"
     },
     {
       "id": "18",
@@ -1890,7 +1890,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Use Java Language.\\nUpload zip file only.\",\"maxMarks\":50,\"deadline\":\"2026-08-18 23:59\",\"maxAttempts\":1,\"lateSubmission\":\"NOT_ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Read carefully and complete assignment within time.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Consolidated_Enterprise_AI_Project_Scenarios (1).docx\",\"size\":\"0.0 MB\"},{\"name\":\"Artboard – 1 1.pdf\",\"size\":\"0.6 MB\"}]}",
       "createdAt": "2026-08-17T09:35:15.361Z",
-      "updatedAt": "2026-08-17T14:24:42.555Z"
+      "updatedAt": "2026-08-19T04:12:25.812Z"
     },
     {
       "id": "19",
@@ -1907,7 +1907,7 @@
       "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":10,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"What is a key characteristic of Agentic AI?\",\"marks\":2,\"options\":[\"It can only generate text\",\"It can reason, plan, and take actions to achieve a goal\",\"It only works with predefined responses\",\"It cannot use external tools\"],\"correctAnswer\":\"It can reason, plan, and take actions to achieve a goal\",\"explanation\":\"It can reason, plan, and take actions to achieve a goal\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"An AI system that can reason, plan, use tools, and take actions autonomously is called __________ AI.\",\"marks\":2,\"correctAnswer\":\"Agentic\",\"alternativeAnswers\":[\"agentic\"]},{\"questionType\":\"TRUE_FALSE\",\"questionText\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\",\"marks\":2,\"correctAnswer\":\"True\",\"explanation\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\"},{\"questionType\":\"MULTIPLE_SELECT\",\"questionText\":\"Which of the following are common components of an AI agent? (Select all that apply)\",\"marks\":2,\"options\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\",\"Printer Driver\"],\"correctAnswer\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\"]},{\"questionType\":\"SHORT_ANSWER\",\"questionText\":\"What is the main difference between Generative AI and Agentic AI?\",\"marks\":2,\"correctAnswer\":\"\",\"explanation\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\",\"maxWords\":100,\"instructions\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\"}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:35:15.386Z",
-      "updatedAt": "2026-08-17T14:24:42.619Z"
+      "updatedAt": "2026-08-19T04:12:25.845Z"
     },
     {
       "id": "20",
@@ -1924,7 +1924,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:35:15.436Z",
-      "updatedAt": "2026-08-17T14:24:42.663Z"
+      "updatedAt": "2026-08-19T04:12:25.874Z"
     },
     {
       "id": "21",
@@ -1941,7 +1941,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:48:48.002Z",
-      "updatedAt": "2026-08-17T14:24:42.711Z"
+      "updatedAt": "2026-08-19T04:12:25.916Z"
     },
     {
       "id": "22",
@@ -1958,7 +1958,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:48:48.044Z",
-      "updatedAt": "2026-08-17T14:24:42.752Z"
+      "updatedAt": "2026-08-19T04:12:25.980Z"
     },
     {
       "id": "23",
@@ -1975,7 +1975,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:48:48.092Z",
-      "updatedAt": "2026-08-17T14:24:42.792Z"
+      "updatedAt": "2026-08-19T04:12:26.039Z"
     },
     {
       "id": "24",
@@ -1992,7 +1992,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:48:48.151Z",
-      "updatedAt": "2026-08-17T14:24:42.830Z"
+      "updatedAt": "2026-08-19T04:12:26.060Z"
     },
     {
       "id": "25",
@@ -2009,7 +2009,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Read carefully and complete assignment within time.\",\"maxMarks\":50,\"deadline\":\"2026-08-30 23:59\",\"maxAttempts\":1,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Read carefully and complete assignment within time.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\"}]}",
       "createdAt": "2026-08-17T09:48:48.254Z",
-      "updatedAt": "2026-08-17T14:24:42.868Z"
+      "updatedAt": "2026-08-19T04:12:26.083Z"
     },
     {
       "id": "26",
@@ -2026,7 +2026,7 @@
       "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":10,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"What is a key characteristic of Agentic AI?\",\"marks\":2,\"options\":[\"It can only generate text\",\"It can reason, plan, and take actions to achieve a goal\",\"It only works with predefined responses\",\"It cannot use external tools\"],\"correctAnswer\":\"It can reason, plan, and take actions to achieve a goal\",\"explanation\":\"It can reason, plan, and take actions to achieve a goal\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"An AI system that can reason, plan, use tools, and take actions autonomously is called __________ AI.\",\"marks\":2,\"correctAnswer\":\"Agentic\",\"alternativeAnswers\":[\"agentic\"]},{\"questionType\":\"TRUE_FALSE\",\"questionText\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\",\"marks\":2,\"correctAnswer\":\"True\",\"explanation\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\"},{\"questionType\":\"MULTIPLE_SELECT\",\"questionText\":\"Which of the following are common components of an AI agent? (Select all that apply)\",\"marks\":2,\"options\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\",\"Printer Driver\"],\"correctAnswer\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\"]},{\"questionType\":\"SHORT_ANSWER\",\"questionText\":\"What is the main difference between Generative AI and Agentic AI?\",\"marks\":2,\"correctAnswer\":\"\",\"explanation\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\",\"maxWords\":100,\"instructions\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\"}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:48:48.308Z",
-      "updatedAt": "2026-08-17T14:24:42.906Z"
+      "updatedAt": "2026-08-19T04:12:26.102Z"
     },
     {
       "id": "27",
@@ -2043,7 +2043,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T09:48:48.443Z",
-      "updatedAt": "2026-08-17T14:24:42.946Z"
+      "updatedAt": "2026-08-19T04:12:26.123Z"
     },
     {
       "id": "28",
@@ -2060,7 +2060,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T10:07:40.930Z",
-      "updatedAt": "2026-08-17T14:24:42.985Z"
+      "updatedAt": "2026-08-19T04:12:26.145Z"
     },
     {
       "id": "29",
@@ -2077,7 +2077,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T10:07:40.970Z",
-      "updatedAt": "2026-08-17T14:24:43.025Z"
+      "updatedAt": "2026-08-19T04:12:26.161Z"
     },
     {
       "id": "30",
@@ -2094,7 +2094,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T10:07:40.992Z",
-      "updatedAt": "2026-08-17T14:24:43.059Z"
+      "updatedAt": "2026-08-19T04:12:26.179Z"
     },
     {
       "id": "31",
@@ -2111,7 +2111,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T10:07:41.008Z",
-      "updatedAt": "2026-08-17T14:24:43.121Z"
+      "updatedAt": "2026-08-19T04:12:26.197Z"
     },
     {
       "id": "32",
@@ -2128,7 +2128,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Read carefully and complete assignment within time.\",\"maxMarks\":50,\"deadline\":\"2026-08-30 23:59\",\"maxAttempts\":1,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Read carefully and complete assignment within time.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1786961211577-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1786961211584/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]},{\"name\":\"TalentSense_AI.py\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1786961216664-TalentSense_AI.py\"},{\"name\":\"Consolidated_Enterprise_AI_Project_Scenarios (1).docx\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1786961232520-Consolidated_Enterprise_AI_Project_Scenarios__1_.docx\"},{\"name\":\"Artboard – 1 1.pdf\",\"size\":\"0.6 MB\",\"url\":\"/storage/uploads/doc-1786961238327-Artboard_____1_1.pdf\"}]}",
       "createdAt": "2026-08-17T10:07:41.048Z",
-      "updatedAt": "2026-08-17T14:24:43.179Z"
+      "updatedAt": "2026-08-19T04:12:26.215Z"
     },
     {
       "id": "33",
@@ -2145,7 +2145,7 @@
       "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":10,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"What is a key characteristic of Agentic AI?\",\"marks\":2,\"options\":[\"It can only generate text\",\"It can reason, plan, and take actions to achieve a goal\",\"It only works with predefined responses\",\"It cannot use external tools\"],\"correctAnswer\":\"It can reason, plan, and take actions to achieve a goal\",\"explanation\":\"It can reason, plan, and take actions to achieve a goal\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"An AI system that can reason, plan, use tools, and take actions autonomously is called __________ AI.\",\"marks\":2,\"correctAnswer\":\"Agentic\",\"alternativeAnswers\":[\"agentic\"]},{\"questionType\":\"TRUE_FALSE\",\"questionText\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\",\"marks\":2,\"correctAnswer\":\"True\",\"explanation\":\"Agentic AI can use external tools such as APIs, databases, and search systems to accomplish tasks.\"},{\"questionType\":\"MULTIPLE_SELECT\",\"questionText\":\"Which of the following are common components of an AI agent? (Select all that apply)\",\"marks\":2,\"options\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\",\"Printer Driver\"],\"correctAnswer\":[\"Reasoning\",\"Planning\",\"Tool Usage\",\"Memory\"]},{\"questionType\":\"SHORT_ANSWER\",\"questionText\":\"What is the main difference between Generative AI and Agentic AI?\",\"marks\":2,\"correctAnswer\":\"\",\"explanation\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\",\"maxWords\":100,\"instructions\":\"Generative AI primarily generates content in response to prompts, while Agentic AI can reason, plan, use tools, make decisions, and take actions to achieve a goal.\"}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T10:07:41.065Z",
-      "updatedAt": "2026-08-17T14:24:43.233Z"
+      "updatedAt": "2026-08-19T04:12:26.229Z"
     },
     {
       "id": "34",
@@ -2162,7 +2162,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1786959069376,\"questionText\":\"How would you rate your overall learning experience in this Agentic AI course?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1786959083903,\"questionText\":\"What did you find most us?eful in this course, and what improvements would you suggest\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-17T10:07:41.101Z",
-      "updatedAt": "2026-08-17T14:24:43.288Z"
+      "updatedAt": "2026-08-19T04:12:26.249Z"
     },
     {
       "id": "39",
@@ -2179,7 +2179,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T09:50:30.402Z",
-      "updatedAt": "2026-08-18T09:50:30.402Z"
+      "updatedAt": "2026-08-19T04:12:26.266Z"
     },
     {
       "id": "40",
@@ -2196,7 +2196,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T09:50:30.455Z",
-      "updatedAt": "2026-08-18T09:50:30.455Z"
+      "updatedAt": "2026-08-19T04:12:26.282Z"
     },
     {
       "id": "41",
@@ -2213,7 +2213,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T12:25:49.259Z",
-      "updatedAt": "2026-08-18T12:25:49.259Z"
+      "updatedAt": "2026-08-19T04:12:26.297Z"
     },
     {
       "id": "42",
@@ -2230,7 +2230,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T12:25:49.297Z",
-      "updatedAt": "2026-08-18T12:25:49.297Z"
+      "updatedAt": "2026-08-19T04:12:26.311Z"
     },
     {
       "id": "43",
@@ -2247,7 +2247,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"title\":\"POC module 1\",\"description\":\"Sample POC to be done.\",\"maxMarks\":100,\"deadline\":\"2026-08-20 23:59\",\"maxAttempts\":3,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":0,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Consolidated_Enterprise_AI_Project_Scenarios (1) (1).docx\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787053868245-Consolidated_Enterprise_AI_Project_Scenarios__1___1_.docx\"},{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787053881599-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1787053881605/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]}]}",
       "createdAt": "2026-08-18T12:25:49.319Z",
-      "updatedAt": "2026-08-18T12:25:49.319Z"
+      "updatedAt": "2026-08-19T04:12:26.335Z"
     },
     {
       "id": "44",
@@ -2264,7 +2264,7 @@
       "quizConfigJson": "{\"title\":\"Quiz Testing\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":4,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"WHo is Prime Minister of India?\",\"marks\":2,\"options\":[\"Narendra Modi\",\"Rahul Gandhi\",\"Kejriwal\"],\"correctAnswer\":\"Narendra Modi\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"Harbinger was Founded in the year ____ .\",\"marks\":2,\"correctAnswer\":\"1990\"}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T12:25:49.376Z",
-      "updatedAt": "2026-08-18T12:25:49.376Z"
+      "updatedAt": "2026-08-19T04:12:26.354Z"
     },
     {
       "id": "45",
@@ -2281,7 +2281,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1787055695480,\"questionText\":\"Any Suggestions?\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T12:25:49.422Z",
-      "updatedAt": "2026-08-18T12:25:49.422Z"
+      "updatedAt": "2026-08-19T04:12:26.370Z"
     },
     {
       "id": "46",
@@ -2298,7 +2298,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T12:26:07.625Z",
-      "updatedAt": "2026-08-18T12:26:07.625Z"
+      "updatedAt": "2026-08-19T04:12:26.389Z"
     },
     {
       "id": "47",
@@ -2315,7 +2315,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T12:26:07.655Z",
-      "updatedAt": "2026-08-18T12:26:07.655Z"
+      "updatedAt": "2026-08-19T04:12:26.404Z"
     },
     {
       "id": "48",
@@ -2332,7 +2332,7 @@
       "quizConfigJson": null,
       "assignmentConfigJson": "{\"title\":\"POC module 1\",\"description\":\"Sample POC to be done.\",\"maxMarks\":100,\"deadline\":\"2026-08-20 23:59\",\"maxAttempts\":3,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":0,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Consolidated_Enterprise_AI_Project_Scenarios (1) (1).docx\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787053868245-Consolidated_Enterprise_AI_Project_Scenarios__1___1_.docx\"},{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787053881599-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1787053881605/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]}]}",
       "createdAt": "2026-08-18T12:26:07.678Z",
-      "updatedAt": "2026-08-18T12:26:07.678Z"
+      "updatedAt": "2026-08-19T04:12:26.418Z"
     },
     {
       "id": "49",
@@ -2349,7 +2349,7 @@
       "quizConfigJson": "{\"title\":\"Quiz Testing\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":1,\"totalMarks\":4,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionType\":\"MCQ\",\"questionText\":\"WHo is Prime Minister of India?\",\"marks\":2,\"options\":[\"Narendra Modi\",\"Rahul Gandhi\",\"Kejriwal\"],\"correctAnswer\":\"Narendra Modi\"},{\"questionType\":\"FILL_IN_BLANK\",\"questionText\":\"Harbinger was Founded in the year ____ .\",\"marks\":2,\"correctAnswer\":\"1990\"}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T12:26:07.723Z",
-      "updatedAt": "2026-08-18T12:26:07.723Z"
+      "updatedAt": "2026-08-19T04:12:26.433Z"
     },
     {
       "id": "50",
@@ -2366,7 +2366,7 @@
       "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1787055695480,\"questionText\":\"Any Suggestions?\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
       "assignmentConfigJson": null,
       "createdAt": "2026-08-18T12:26:07.760Z",
-      "updatedAt": "2026-08-18T12:26:07.760Z"
+      "updatedAt": "2026-08-19T04:12:26.449Z"
     }
   ],
   "enrollments": [
@@ -3027,24 +3027,7 @@
       "updatedAt": "2026-08-10T04:08:27.819Z"
     }
   ],
-  "events": [
-    {
-      "id": "2",
-      "title": "LMS DEMO",
-      "description": "Please join on Time.",
-      "eventDate": "2026-08-18T00:00:00.000Z",
-      "eventTime": "10:00 PM",
-      "url": "https:google.meet.com",
-      "eventType": "site",
-      "courseId": null,
-      "departmentId": null,
-      "creatorId": "1",
-      "creatorName": "priyanka (SUPER_ADMIN)",
-      "reminderSent": false,
-      "createdAt": "2026-08-17T09:19:17.050Z",
-      "updatedAt": "2026-08-17T09:19:17.050Z"
-    }
-  ],
+  "events": [],
   "auditLogs": [
     {
       "id": "1",
@@ -3909,6 +3892,30 @@
       "detail": "Updated course 'Java Programming'",
       "type": "course",
       "ipAddress": "::1"
+    },
+    {
+      "id": "73",
+      "timestamp": "2026-08-19T06:17:18.223Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "74",
+      "timestamp": "2026-08-19T06:58:10.506Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
     }
   ],
   "notifications": [
@@ -10057,25 +10064,6 @@
       "createdAt": "2026-08-18T12:26:07.888Z"
     },
     {
-      "id": "372",
-      "userId": "1",
-      "actorId": null,
-      "type": "COURSE_UPDATED",
-      "category": "GENERAL",
-      "priority": "NORMAL",
-      "title": "Course Content Updated",
-      "message": "Your course 'Java Programming' was updated by Super Admin priyanka. New content added: Java Programming (Course Update).",
-      "link": "/courses/11/preview",
-      "entityType": null,
-      "entityId": null,
-      "isRead": false,
-      "metadata": {
-        "courseId": 11
-      },
-      "roleTarget": "LEARNER",
-      "createdAt": "2026-08-18T12:26:07.888Z"
-    },
-    {
       "id": "373",
       "userId": "7",
       "actorId": null,
@@ -10515,25 +10503,6 @@
     {
       "id": "396",
       "userId": "2",
-      "actorId": null,
-      "type": "COURSE_UPDATED_ADMIN",
-      "category": "GENERAL",
-      "priority": "NORMAL",
-      "title": "Super Admin Updated Course Content",
-      "message": "Super Admin priyanka added/updated content: \"Java Programming\" in course 'Java Programming'.",
-      "link": "/courses/11/preview",
-      "entityType": null,
-      "entityId": null,
-      "isRead": false,
-      "metadata": {
-        "courseId": 11
-      },
-      "roleTarget": "ADMIN",
-      "createdAt": "2026-08-18T12:26:07.888Z"
-    },
-    {
-      "id": "397",
-      "userId": "1",
       "actorId": null,
       "type": "COURSE_UPDATED_ADMIN",
       "category": "GENERAL",

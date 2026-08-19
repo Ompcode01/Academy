@@ -217,9 +217,30 @@ class CourseRepository {
   }
 
   async update(id: bigint, data: any) {
+    const updateData: any = { ...data };
+    
+    if (updateData.categoryId !== undefined) {
+      updateData.category = { connect: { id: updateData.categoryId } };
+      delete updateData.categoryId;
+    }
+    
+    if (updateData.departmentId !== undefined) {
+      if (updateData.departmentId === null) {
+        updateData.department = { disconnect: true };
+      } else {
+        updateData.department = { connect: { id: updateData.departmentId } };
+      }
+      delete updateData.departmentId;
+    }
+
+    if (updateData.creatorId !== undefined) {
+      updateData.creator = { connect: { id: updateData.creatorId } };
+      delete updateData.creatorId;
+    }
+
     return prisma.course.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         category: true,
         department: true,

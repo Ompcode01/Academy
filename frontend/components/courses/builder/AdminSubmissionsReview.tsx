@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Download, CheckCircle2, Award, ExternalLink, Eye, MessageSquare } from "lucide-react";
+import { Search, Download, CheckCircle2, Award, ExternalLink, Eye, MessageSquare, XCircle } from "lucide-react";
+import toast from "react-hot-toast";
 import { getTeacherSubmissions, gradeSubmission } from "@/services/api/course.service";
 
 export interface SubmissionItem {
@@ -98,7 +99,7 @@ export default function AdminSubmissionsReview({
       }
     } catch (err: any) {
       console.error("Failed to grade submission:", err);
-      alert(err?.response?.data?.message || "Failed to grade submission.");
+      toast.error(err?.response?.data?.message || "Failed to grade submission.");
     } finally {
       setSubmittingGrade(false);
     }

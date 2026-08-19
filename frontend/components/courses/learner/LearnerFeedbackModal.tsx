@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, CheckCircle2, AlertCircle, Send } from "lucide-react";
 import { submitAssignment } from "@/services/api/course.service";
+import toast from "react-hot-toast";
 
 export interface FeedbackFormQuestion {
   id: number;
@@ -77,7 +78,7 @@ export default function LearnerFeedbackModal({
     // Validate mandatory questions
     for (const q of activeQuestions) {
       if (q.isMandatory && (!answers[q.id] || !answers[q.id].trim())) {
-        alert(`Please complete mandatory question: "${q.questionText}"`);
+        toast.error(`Please complete mandatory question: "${q.questionText}"`);
         return;
       }
     }
@@ -102,7 +103,7 @@ export default function LearnerFeedbackModal({
       }
     } catch (err: any) {
       console.error("Failed to submit feedback:", err);
-      alert(err?.response?.data?.message || "Failed to submit course feedback.");
+      toast.error(err?.response?.data?.message || "Failed to submit course feedback.");
     } finally {
       setSubmitting(false);
     }

@@ -13,6 +13,7 @@ import { ROLES } from "@/lib/rbac";
 import RoleGate from "@/components/auth/RoleGate";
 import { getCourses, type Course, deleteCourse } from "@/services/api/course.service";
 import { getMyEnrollments, UserEnrollmentItem } from "@/services/api/progress.service";
+import toast from "react-hot-toast";
 
 export default function CoursesPage() {
   const router = useRouter();
@@ -94,11 +95,11 @@ export default function CoursesPage() {
         if (res?.success) {
           fetchCoursesList();
         } else {
-          alert(res?.message || "Failed to delete course");
+          toast.error(res?.message || "Failed to delete course");
         }
       } catch (err) {
         console.error(err);
-        alert("Failed to delete course due to role authorization restrictions.");
+        toast.error("Failed to delete course due to role authorization restrictions.");
       }
     }
   };

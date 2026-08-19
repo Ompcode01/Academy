@@ -133,10 +133,10 @@ export default function Dashboard() {
   const learnerAvgProgress =
     enrolledCount > 0
       ? Math.round(
-          (userEnrollments.reduce((sum, e) => sum + (Number(e.progress) || 0), 0) /
-            enrolledCount) *
-            10
-        ) / 10
+        (userEnrollments.reduce((sum, e) => sum + (Number(e.progress) || 0), 0) /
+          enrolledCount) *
+        10
+      ) / 10
       : 0;
 
   // Title by Role
@@ -603,12 +603,14 @@ export default function Dashboard() {
               {userRole === ROLES.LEARNER
                 ? "My Business Unit Courses"
                 : userRole === ROLES.TEACHER
-                ? "Assigned & Business Unit Programs"
-                : userRole === ROLES.ADMIN
-                ? "Business Unit Program Catalog"
-                : userRole === ROLES.SUPER_ADMIN
-                ? "All Platform Programs"
-                : "Featured Catalog Programs"}
+                  ? "Assigned & Business Unit Programs"
+                  : userRole === ROLES.ADMIN
+                    ? "Business Unit Program Catalog"
+                    : userRole === ROLES.SUPER_ADMIN
+                      ? "All Programs"
+                      : "Featured Catalog Programs"}
+              {" "}
+              <span className="text-[#6C757D] font-bold">({courses.length})</span>
             </h3>
           </div>
           {user?.departmentId && (

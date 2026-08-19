@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,9 @@ interface AddQuestionModalProps {
   open: boolean;
   type: QuestionType | null;
   onOpenChange: (open: boolean) => void;
-  onSaveQuestion: (question: QuestionData) => void;
+  onSaveQuestion: (question: QuestionData, editIndex?: number | null) => void;
+  initialQuestion?: QuestionData | null;
+  editIndex?: number | null;
 }
 
 export default function AddQuestionModal({
@@ -41,6 +43,8 @@ export default function AddQuestionModal({
   type,
   onOpenChange,
   onSaveQuestion,
+  initialQuestion,
+  editIndex,
 }: AddQuestionModalProps) {
   const [questionText, setQuestionText] = useState("");
   const [marks, setMarks] = useState(2);
@@ -51,6 +55,45 @@ export default function AddQuestionModal({
   const [explanation, setExplanation] = useState("");
   const [maxWords, setMaxWords] = useState(100);
   const [instructions, setInstructions] = useState("");
+
+  useEffect(() => {
+    if (open && initialQuestion && type) {
+      setQuestionText(initialQuestion.questionText || "");
+      setMarks(initialQuestion.marks || 2);
+      
+      const isMultiSelect = type === "MULTIPLE_SELECT";
+      const isMCQ = type === "MCQ";
+      
+      if (isMCQ || isMultiSelect) {
+        setOptions(initialQuestion.options || ["", ""]);
+      } else {
+        setOptions(["", ""]);
+      }
+      
+      if (isMultiSelect) {
+        setMultiCorrect(Array.isArray(initialQuestion.correctAnswer) ? initialQuestion.correctAnswer : (initialQuestion.correctAnswer ? [initialQuestion.correctAnswer as string] : []));
+        setCorrectAnswer("");
+      } else {
+        setCorrectAnswer((initialQuestion.correctAnswer as string) || "");
+        setMultiCorrect([]);
+      }
+      
+      setAltAnswers(initialQuestion.alternativeAnswers ? initialQuestion.alternativeAnswers.join(", ") : "");
+      setExplanation(initialQuestion.explanation || "");
+      setMaxWords(initialQuestion.maxWords || 100);
+      setInstructions(initialQuestion.instructions || "");
+    } else if (open && !initialQuestion) {
+      setQuestionText("");
+      setMarks(2);
+      setOptions(["", ""]);
+      setCorrectAnswer("");
+      setMultiCorrect([]);
+      setAltAnswers("");
+      setExplanation("");
+      setMaxWords(100);
+      setInstructions("");
+    }
+  }, [open, initialQuestion, type]);
 
   if (!type) return null;
 
@@ -89,7 +132,7 @@ export default function AddQuestionModal({
       explanation: explanation.trim() || undefined,
       maxWords: type === "SHORT_ANSWER" ? Number(maxWords) : undefined,
       instructions: instructions.trim() || undefined,
-    });
+    }, editIndex);
 
     // Reset form
     setQuestionText("");

@@ -20,6 +20,7 @@ import {
   Lock,
   MessageSquare,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import CoursePreviewModal from "../builder/CoursePreviewModal";
 
 interface ReviewPublishFormProps {
@@ -106,18 +107,18 @@ export default function ReviewPublishForm({
           }
         }
 
-        alert(
+        toast.success(
           status === "PUBLISHED"
             ? "🚀 Course successfully PUBLISHED! It is now live for learners on their dashboard with verifiable certificate configuration."
             : "💾 Course saved as DRAFT."
         );
         router.push("/courses");
       } else {
-        alert(res?.message || "Failed to save course.");
+        toast.error(res?.message || "Failed to save course.");
       }
     } catch (err: any) {
       console.error("Publishing error:", err);
-      alert(err?.response?.data?.message || "An error occurred while saving the course.");
+      toast.error(err?.response?.data?.message || "An error occurred while saving the course.");
     } finally {
       setLoading(false);
     }

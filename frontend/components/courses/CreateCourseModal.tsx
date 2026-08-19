@@ -12,6 +12,7 @@ import {
   createCourse,
   type Category,
 } from "@/services/api/course.service";
+import toast from "react-hot-toast";
 import { getDepartments, type Department } from "@/services/api/org.service";
 import {
   Dialog,
@@ -148,11 +149,11 @@ export default function CreateCourseModal({
           router.push("/courses/create");
         }
       } else {
-        alert(res?.message || "Failed to create course");
+        toast.error(res?.message || "Failed to create course");
       }
     } catch (err: any) {
       console.error(err);
-      alert(err?.response?.data?.message || "An error occurred while creating course.");
+      toast.error(err?.response?.data?.message || "An error occurred while creating course.");
     } finally {
       setLoading(false);
     }

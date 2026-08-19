@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full w-full overflow-x-hidden antialiased`}>
       <body className="min-h-screen w-full overflow-x-hidden flex flex-col font-sans">
         <TooltipProvider>{children}</TooltipProvider>
+        <Toaster position="top-center" />
       </body>
     </html>
   );
