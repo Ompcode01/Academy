@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
-import ConfirmModal from "@/components/common/ConfirmModal";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 interface EventCalendarProps {
   compact?: boolean;
@@ -695,21 +695,22 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
       )}
 
       {/* Harbinger Branded Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={deleteConfirmId !== null}
-        onClose={() => setDeleteConfirmId(null)}
+      <HarbingerConfirmModal
+        open={deleteConfirmId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteConfirmId(null);
+        }}
+        title="Are you sure you want to delete this event?"
+        description="This event will be permanently removed from the calendar schedule for all users."
+        confirmLabel="Delete Event"
+        cancelLabel="Cancel"
+        variant="danger"
         onConfirm={async () => {
           if (deleteConfirmId !== null) {
             await removeEvent(deleteConfirmId);
             setDeleteConfirmId(null);
           }
         }}
-        title="Harbinger Academy"
-        message="Are you sure you want to delete this event?"
-        description="This event will be permanently removed from the calendar schedule for all users."
-        confirmText="Delete Event"
-        cancelText="Cancel"
-        variant="danger"
       />
     </div>
   );

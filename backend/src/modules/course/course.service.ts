@@ -75,39 +75,19 @@ class CourseService {
 
       case "ADMIN":
         return {
-          AND: [
-            {
-              OR: [
-                { status: "PUBLISHED" },
-                ...(employeeId ? [{ creatorId: employeeId }] : []),
-              ],
-            },
-            {
-              OR: [
-                { departmentId: null },
-                ...(departmentId ? [{ departmentId }] : []),
-                ...(employeeId ? [{ creatorId: employeeId }] : []),
-                ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
-              ],
-            },
+          OR: [
+            { departmentId: null },
+            ...(departmentId ? [{ departmentId }] : []),
+            ...(employeeId ? [{ creatorId: employeeId }] : []),
+            ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
           ],
         };
 
       case "TEACHER":
         return {
-          AND: [
-            {
-              OR: [
-                { status: "PUBLISHED" },
-                ...(employeeId ? [{ creatorId: employeeId }] : []),
-              ],
-            },
-            {
-              OR: [
-                ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
-                ...(employeeId ? [{ creatorId: employeeId }] : []),
-              ],
-            },
+          OR: [
+            ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
+            ...(employeeId ? [{ creatorId: employeeId }] : []),
           ],
         };
 
@@ -524,6 +504,31 @@ class CourseService {
     }
 
     return this.getCourseById(id);
+  }
+
+  async deleteCourse(id: bigint) {
+    const course = await prisma.course.findUnique({ where: { id } });
+    if (!course) throw new Error("Course not found");
+
+    if (course.status === "ARCHIVED") {
+      // Permanent deletion: clean up related records and delete course row
+      await prisma.courseTeacher.deleteMany({ where: { courseId: id } });
+      await prisma.enrollment.deleteMany({ where: { courseId: id } });
+      await prisma.certificateTemplate.deleteMany({ where: { courseId: id } });
+      const sections = await prisma.courseSection.findMany({ where: { courseId: id }, select: { id: true } });
+      const secIds = sections.map((s) => s.id);
+      if (secIds.length > 0) {
+        await prisma.courseContent.deleteMany({ where: { sectionId: { in: secIds } } });
+        await prisma.courseSection.deleteMany({ where: { courseId: id } });
+      }
+      return prisma.course.delete({ where: { id } });
+    } else {
+      // Soft deletion: update status to ARCHIVED
+      return prisma.course.update({
+        where: { id },
+        data: { status: "ARCHIVED" },
+      });
+    }
   }
 
   async assignTeachers(courseId: bigint, teacherIdStrs: string[]) {

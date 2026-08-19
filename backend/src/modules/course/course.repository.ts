@@ -274,7 +274,7 @@ class CourseRepository {
   async softDelete(id: bigint) {
     return prisma.course.update({
       where: { id },
-      data: { isActive: false },
+      data: { status: "ARCHIVED", isActive: true },
     });
   }
 

@@ -17,6 +17,7 @@ interface CourseFiltersProps {
   onResetAll?: () => void;
   searchQuery?: string;
   sortValue?: CourseSortOption;
+  statusValue?: string;
   startDate?: string;
   endDate?: string;
 }
@@ -31,6 +32,7 @@ export default function CourseFilters({
   onResetAll,
   searchQuery = "",
   sortValue = "newest",
+  statusValue = "PUBLISHED",
   startDate = "",
   endDate = "",
 }: CourseFiltersProps) {
@@ -49,7 +51,13 @@ export default function CourseFilters({
 
   const [catFilter, setCatFilter] = useState<string>("all");
   const [deptFilter, setDeptFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>(statusValue || "PUBLISHED");
+
+  useEffect(() => {
+    if (statusValue !== undefined) {
+      setStatusFilter(statusValue || "all");
+    }
+  }, [statusValue]);
 
   useEffect(() => {
     async function loadFilterOptions() {
@@ -132,10 +140,10 @@ export default function CourseFilters({
       onResetAll={() => {
         setCatFilter("all");
         setDeptFilter("all");
-        setStatusFilter("all");
+        setStatusFilter("PUBLISHED");
         onCategoryChange?.(null);
         onDepartmentChange?.(null);
-        onStatusChange?.(null);
+        onStatusChange?.("PUBLISHED");
         onSearch?.("");
         onSortChange?.("newest");
         onDateChange?.("", "");
