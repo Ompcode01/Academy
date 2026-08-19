@@ -25,6 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, FolderTree, RefreshCw } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -67,8 +68,7 @@ export default function CategoriesPage() {
       setOpen(false);
       fetchCats();
     } catch (err: any) {
-      console.error(err);
-      alert(err?.response?.data?.message || "Failed to create category.");
+      toast.error(err?.response?.data?.message || "Failed to create category.");
     } finally {
       setSubmitLoading(false);
     }

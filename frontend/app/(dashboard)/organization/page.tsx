@@ -25,6 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Building2, Plus, SlidersHorizontal, RefreshCw } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function OrganizationPage() {
   const user = useAuthStore((state) => state.user);
@@ -69,7 +70,7 @@ export default function OrganizationPage() {
       fetchDepts();
     } catch (err: any) {
       console.error(err);
-      alert(err?.response?.data?.message || "Failed to create department. Admin permissions required.");
+      toast.error(err?.response?.data?.message || "Failed to create department. Admin permissions required.");
     } finally {
       setSubmitLoading(false);
     }

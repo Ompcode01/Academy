@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import toast from "react-hot-toast";
 import { uploadDocumentFile, getStorageUrl } from "@/services/api/course.service";
 import InteractivePptViewer from "./InteractivePptViewer";
 
@@ -159,7 +160,7 @@ export default function InlineAssignmentPlayer({
       });
 
       if (invalidFiles.length > 0) {
-        alert(
+        toast.error(
           `Only files with the following formats are allowed: ${allowedFileTypes.join(", ")}.\nInvalid files: ${invalidFiles
             .map((f) => f.name)
             .join(", ")}`
@@ -170,7 +171,7 @@ export default function InlineAssignmentPlayer({
       setSelectedFiles((prev) => {
         const combined = [...prev, ...files];
         if (combined.length > maxFiles) {
-          alert(`Maximum allowed files limit is ${maxFiles}. Attached first ${maxFiles} files.`);
+          toast.error(`Maximum allowed files limit is ${maxFiles}. Attached first ${maxFiles} files.`);
           return combined.slice(0, maxFiles);
         }
         return combined;

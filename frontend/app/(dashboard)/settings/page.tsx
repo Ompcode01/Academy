@@ -20,6 +20,7 @@ import { User, Lock, Settings as SettingsIcon, ShieldCheck, Shield, Globe, Key }
 import RoleGate from "@/components/auth/RoleGate";
 import { ROLES } from "@/lib/rbac";
 import { getRoles, Role } from "@/services/api/org.service";
+import toast from "react-hot-toast";
 
 export default function SettingsPage() {
   const user = useAuthStore((state) => state.user);
@@ -58,7 +59,7 @@ export default function SettingsPage() {
     e.preventDefault();
     if (!currentPassword || !newPassword || !confirmPassword) return;
     if (newPassword !== confirmPassword) {
-      alert("New password and confirmation password do not match.");
+      toast.error("New password and confirmation password do not match.");
       return;
     }
 
@@ -68,7 +69,7 @@ export default function SettingsPage() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      alert("Password updated successfully!");
+      toast.success("Password updated successfully!");
     }, 1000);
   };
 
@@ -347,7 +348,7 @@ export default function SettingsPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="border-t border-border pt-4">
-                  <Button onClick={() => alert("Security policies saved (mock).")}>
+                  <Button onClick={() => toast.success("Security policies saved (mock).")}>
                     Save Security Policies
                   </Button>
                 </CardFooter>

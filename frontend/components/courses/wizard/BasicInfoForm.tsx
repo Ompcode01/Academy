@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/auth.store";
+import { uploadDocumentFile, getStorageUrl } from "@/services/api/course.service";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -102,12 +104,26 @@ export default function BasicInfoForm({
     }
   }, [isAdmin, user?.departmentId]);
 
-  const handleCustomFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [uploading, setUploading] = useState(false);
+
+  const handleCustomFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setSelectedPreset(null);
-      onChange({ thumbnailUrl: imageUrl });
+      try {
+        setUploading(true);
+        const res = await uploadDocumentFile(file);
+        setSelectedPreset(null);
+        if (res.data?.fileUrl) {
+          onChange({ thumbnailUrl: res.data.fileUrl });
+        } else if (res.fileUrl) {
+          onChange({ thumbnailUrl: res.fileUrl });
+        }
+      } catch (err: any) {
+        console.error("Failed to upload thumbnail:", err);
+        toast.error("Failed to upload thumbnail image");
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
@@ -368,10 +384,10 @@ export default function BasicInfoForm({
             className="absolute inset-0 opacity-0 cursor-pointer z-10"
           />
           <div className="p-3 rounded-full bg-primary/10 text-primary mb-2 group-hover:scale-110 transition-transform">
-            <Upload className="h-6 w-6" />
+            {uploading ? <Sparkles className="h-6 w-6 animate-pulse" /> : <Upload className="h-6 w-6" />}
           </div>
           <h4 className="text-xs font-bold text-foreground">
-            Or Upload Custom Cover Image from Device
+            {uploading ? "Uploading..." : "Or Upload Custom Cover Image from Device"}
           </h4>
           <p className="text-[11px] text-muted-foreground mt-1">
             Drag &amp; drop or click to browse local files • Recommended ratio 16:9 (JPG, PNG, WEBP)
@@ -386,7 +402,7 @@ export default function BasicInfoForm({
             </span>
             <div className="relative aspect-[21/9] max-h-48 w-full overflow-hidden rounded-xl border border-border bg-black shadow-inner">
               <img
-                src={data.thumbnailUrl}
+                src={getStorageUrl(data.thumbnailUrl)}
                 alt="Active Cover"
                 className="h-full w-full object-cover"
               />

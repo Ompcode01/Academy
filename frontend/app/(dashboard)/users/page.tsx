@@ -17,6 +17,7 @@ import { SlidersHorizontal, RefreshCw, Mail, Calendar, ShieldCheck, Shield, Tras
 import RoleGate from "@/components/auth/RoleGate";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
+import toast from "react-hot-toast";
 
 const ROLE_COLORS: Record<string, string> = {
   SUPER_ADMIN: "bg-red-100 text-red-700 border-red-200",
@@ -99,7 +100,7 @@ export default function UsersPage() {
       await fetchData();
     } catch (err: any) {
       console.error("Failed to change role:", err);
-      alert(err?.response?.data?.message || "Failed to change role. You may not have permission.");
+      toast.error(err?.response?.data?.message || "Failed to change role. You may not have permission.");
       setChangingRole(null);
     }
   };
@@ -111,7 +112,7 @@ export default function UsersPage() {
       await fetchData();
     } catch (err: any) {
       console.error("Failed to delete employee:", err);
-      alert(err?.response?.data?.message || "Failed to delete employee. You may not have permission.");
+      toast.error(err?.response?.data?.message || "Failed to delete employee. You may not have permission.");
       setConfirmDelete(null);
     }
   };

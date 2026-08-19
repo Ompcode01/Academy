@@ -15,6 +15,7 @@ import { buildCoursePayload, hasDraftWorthSaving } from "@/lib/courseWizardPaylo
 import { useAuthStore } from "@/store/auth.store";
 import { getBaseURL } from "@/services/api/auth.service";
 import { ROLES } from "@/lib/rbac";
+import toast from "react-hot-toast";
 
 const wizardSteps = [
   { number: 1, label: "Basic Info" },
@@ -115,7 +116,7 @@ function CreateCourseContent() {
     if (isLearnerOrGuest) {
       router.replace("/courses");
     } else if (isTeacher && !courseId) {
-      alert("Teachers cannot create new courses. You can edit your assigned courses.");
+      toast.error("Teachers cannot create new courses. You can edit your assigned courses.");
       router.replace("/courses");
     }
   }, [isLearnerOrGuest, isTeacher, courseId, router]);

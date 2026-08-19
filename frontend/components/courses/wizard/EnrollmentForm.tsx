@@ -29,6 +29,7 @@ import {
   verifyUser,
   verifyBulkFile,
 } from "@/services/api/course.service";
+import { getEmployees, Employee } from "@/services/api/org.service";
 
 export interface EnrollmentRuleData {
   selfEnrollment: boolean;
@@ -77,6 +78,31 @@ export default function EnrollmentForm({
   const [singleUser, setSingleUser] = useState("");
   const [singleLoading, setSingleLoading] = useState(false);
   const [singleMessage, setSingleMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    if (isAdmin || isSuperAdmin) {
+      const fetchEmployees = async () => {
+        try {
+          const res = await getEmployees();
+          if (res?.data) {
+             setEmployees(res.data);
+          }
+        } catch (e) {
+          console.error("Failed to load employees for autocomplete", e);
+        }
+      };
+      fetchEmployees();
+    }
+  }, [isAdmin, isSuperAdmin]);
+
+  const filteredEmployees = employees.filter(emp => {
+    const q = singleUser.toLowerCase();
+    return emp.officialEmail.toLowerCase().includes(q) || 
+           emp.employeeCode.toLowerCase().includes(q) ||
+           `${emp.firstName} ${emp.lastName}`.toLowerCase().includes(q);
+  });
 
   // Bulk Excel Upload State
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -449,9 +475,31 @@ export default function EnrollmentForm({
                 <Input
                   placeholder="e.g. priyanka, omprakash@company.com, or EMP001"
                   value={singleUser}
-                  onChange={(e) => setSingleUser(e.target.value)}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                  onChange={(e) => {
+                    setSingleUser(e.target.value);
+                    setShowDropdown(true);
+                  }}
                   className="pl-9 h-10 text-xs bg-background"
                 />
+                {showDropdown && singleUser.trim() && filteredEmployees.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-lg shadow-xl z-50">
+                    {filteredEmployees.map(emp => (
+                      <div
+                        key={emp.id}
+                        onClick={() => {
+                          setSingleUser(emp.employeeCode || emp.officialEmail);
+                          setShowDropdown(false);
+                        }}
+                        className="px-3 py-2 hover:bg-muted cursor-pointer text-xs flex justify-between items-center transition-colors"
+                      >
+                        <span className="font-semibold text-foreground">{emp.firstName} {emp.lastName}</span>
+                        <span className="text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">{emp.employeeCode || emp.officialEmail}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <Button
                 disabled={singleLoading || !singleUser.trim()}

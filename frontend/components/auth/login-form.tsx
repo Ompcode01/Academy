@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, User } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -49,7 +50,7 @@ export default function LoginForm() {
       router.push("/dashboard");
     } catch (error: any) {
       console.error(error);
-      alert(
+      toast.error(
         error?.response?.data?.message ||
           "Unable to login. Please verify your credentials."
       );
@@ -119,7 +120,7 @@ export default function LoginForm() {
             <button
               type="button"
               className="text-[10px] font-bold text-[#C82333] hover:underline"
-              onClick={() => alert("Contact system administrator to reset password.")}
+              onClick={() => toast.error("Contact system administrator to reset password.")}
             >
               Forgot password?
             </button>
