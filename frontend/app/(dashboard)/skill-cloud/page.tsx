@@ -63,7 +63,21 @@ export default function SkillCloudPage() {
     onConfirm: () => {},
   });
 
-  const openConfirmModal = (message: string, description: string | undefined, onConfirmAction: () => void) => {
+  const [successModalState, setSuccessModalState] = useState<{
+    isOpen: boolean;
+    message: string;
+    description?: string;
+  }>({
+    isOpen: false,
+    message: "",
+  });
+
+  const openConfirmModal = (
+    message: string,
+    description: string | undefined,
+    onConfirmAction: () => Promise<void> | void,
+    successMessage?: string
+  ) => {
     setConfirmModalState({
       isOpen: true,
       message,
@@ -71,6 +85,13 @@ export default function SkillCloudPage() {
       onConfirm: async () => {
         setConfirmModalState((prev) => ({ ...prev, isOpen: false }));
         await onConfirmAction();
+        if (successMessage) {
+          setSuccessModalState({
+            isOpen: true,
+            message: successMessage,
+            description: "Record has been successfully deleted.",
+          });
+        }
       },
     });
   };
@@ -160,7 +181,8 @@ export default function SkillCloudPage() {
       async () => {
         await deleteUserSkill(id);
         loadData();
-      }
+      },
+      "Skill Entry Deleted"
     );
   };
 
@@ -171,7 +193,8 @@ export default function SkillCloudPage() {
       async () => {
         await deleteUserProject(id);
         loadData();
-      }
+      },
+      "Project Entry Deleted"
     );
   };
 
@@ -190,7 +213,8 @@ export default function SkillCloudPage() {
         } catch (err) {
           console.error("Failed to delete request:", err);
         }
-      }
+      },
+      "Request Record Deleted"
     );
   };
 
@@ -1333,6 +1357,19 @@ export default function SkillCloudPage() {
         confirmText="Delete"
         cancelText="Cancel"
         variant="danger"
+      />
+
+      {/* Harbinger Branded Success Notification Modal (No Cancel Button) */}
+      <ConfirmModal
+        isOpen={successModalState.isOpen}
+        onClose={() => setSuccessModalState((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={() => setSuccessModalState((prev) => ({ ...prev, isOpen: false }))}
+        title="Harbinger Academy"
+        message={successModalState.message}
+        description={successModalState.description}
+        confirmText="OK"
+        showCancelButton={false}
+        variant="success"
       />
     </div>
   );

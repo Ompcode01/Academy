@@ -18,6 +18,7 @@ import RoleGate from "@/components/auth/RoleGate";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
 import toast from "react-hot-toast";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 const ROLE_COLORS: Record<string, string> = {
   SUPER_ADMIN: "bg-red-100 text-red-700 border-red-200",
@@ -50,6 +51,7 @@ export default function UsersPage() {
   const [endDate, setEndDate] = useState("");
   const [changingRole, setChangingRole] = useState<number | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [successModal, setSuccessModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
 
   const currentUser = useAuthStore((state) => state.user);
   const isSuperAdmin = currentUser?.role === ROLES.SUPER_ADMIN;
@@ -91,12 +93,19 @@ export default function UsersPage() {
 
   const handleRoleChange = async (employeeId: number, newRoleId: number) => {
     try {
+      setChangingRole(employeeId);
       const emp = employees.find((e) => e.id === employeeId);
       if (emp?.assignedRoles && emp.assignedRoles.length > 0) {
         await removeUserRole(emp.assignedRoles[0].id);
       }
       await assignRole({ employeeId, roleId: newRoleId });
       setChangingRole(null);
+      const selectedRole = roles.find((r) => r.id === newRoleId);
+      setSuccessModal({
+        open: true,
+        title: "Role Updated Successfully",
+        description: `User role has been updated to ${selectedRole?.roleName || "new role"}.`,
+      });
       await fetchData();
     } catch (err: any) {
       console.error("Failed to change role:", err);
@@ -109,6 +118,11 @@ export default function UsersPage() {
     try {
       await deleteEmployee(id);
       setConfirmDelete(null);
+      setSuccessModal({
+        open: true,
+        title: "User Account Deleted",
+        description: "The user record has been permanently removed from the system directory.",
+      });
       await fetchData();
     } catch (err: any) {
       console.error("Failed to delete employee:", err);
@@ -485,6 +499,22 @@ export default function UsersPage() {
           </Table>
         </div>
       </div>
+
+      {/* Harbinger Branded Success Popup Modal (No Cancel Button) */}
+      {successModal && (
+        <HarbingerConfirmModal
+          open={successModal.open}
+          onOpenChange={(open) => {
+            if (!open) setSuccessModal(null);
+          }}
+          title={successModal.title}
+          description={successModal.description}
+          confirmLabel="OK"
+          showCancelButton={false}
+          variant="success"
+          autoCloseMs={4000}
+        />
+      )}
     </RoleGate>
   );
 }

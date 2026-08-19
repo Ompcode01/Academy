@@ -14,6 +14,7 @@ export interface ConfirmModalProps {
   description?: string;
   confirmText?: string;
   cancelText?: string;
+  showCancelButton?: boolean;
   variant?: "danger" | "warning" | "success" | "info";
   isLoading?: boolean;
 }
@@ -27,10 +28,16 @@ export default function ConfirmModal({
   description,
   confirmText = "Confirm",
   cancelText = "Cancel",
+  showCancelButton,
   variant = "danger",
   isLoading = false,
 }: ConfirmModalProps) {
   if (!isOpen) return null;
+
+  const shouldShowCancel =
+    showCancelButton !== undefined
+      ? showCancelButton
+      : variant !== "success" && cancelText !== "";
 
   const getVariantIcon = () => {
     switch (variant) {
@@ -95,15 +102,17 @@ export default function ConfirmModal({
 
         {/* Modal Footer Actions */}
         <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            disabled={isLoading}
-            className="text-xs font-bold border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer"
-          >
-            {cancelText}
-          </Button>
+          {shouldShowCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isLoading}
+              className="text-xs font-bold border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer"
+            >
+              {cancelText}
+            </Button>
+          )}
           <Button
             type="button"
             onClick={onConfirm}

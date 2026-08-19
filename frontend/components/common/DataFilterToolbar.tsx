@@ -128,18 +128,18 @@ export default function DataFilterToolbar({
         )}
       </div>
 
-      {/* Streamlined Controls Grid without redundant stacked label text */}
-      <div className="flex flex-wrap items-center gap-3">
+      {/* Streamlined Controls Toolbar (Single Line Row) */}
+      <div className="flex flex-nowrap items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none w-full">
         {/* 1. Keyword Search Bar */}
         {onSearchChange && (
-          <div className="relative flex-1 min-w-[200px] sm:max-w-[280px]">
+          <div className="relative flex-1 min-w-[160px] max-w-[240px] shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               placeholder={searchPlaceholder}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="h-9 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 pl-8 pr-8 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#C82333] focus:outline-none focus:ring-2 focus:ring-[#C82333]/20 shadow-sm transition-all"
+              className="h-9 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 pl-8 pr-7 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#C82333] focus:outline-none focus:ring-2 focus:ring-[#C82333]/20 shadow-sm transition-all truncate"
             />
             {searchQuery && (
               <button
@@ -154,13 +154,15 @@ export default function DataFilterToolbar({
 
         {/* 2. Sort Order Selector */}
         {onSortChange && (
-          <div className="min-w-[150px]">
+          <div className="shrink-0 min-w-[135px]">
             <Select value={sortValue} onValueChange={(val) => onSortChange(val as SortOption)}>
-              <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-bold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl capitalize">
-                <ArrowUpDown className="h-3.5 w-3.5 mr-1.5 text-[#C82333] shrink-0" />
-                <SelectValue placeholder="Sort order" />
+              <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-bold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl px-3 gap-1">
+                <ArrowUpDown className="h-3.5 w-3.5 mr-1 text-[#C82333] shrink-0" />
+                <span className="font-bold text-slate-900 dark:text-white truncate">
+                  {sortOptions.find((o) => o.value === sortValue)?.label || "Sort"}
+                </span>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-auto min-w-[150px] max-w-[280px] whitespace-nowrap bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl">
                 {sortOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium">
                     {opt.label}
@@ -172,33 +174,40 @@ export default function DataFilterToolbar({
         )}
 
         {/* 3. Column-Wise Filters */}
-        {columnFilters.map((col) => (
-          <div key={col.key} className="min-w-[140px]">
-            <Select
-              value={col.value || "all"}
-              onValueChange={(val) => onColumnFilterChange?.(col.key, val === "all" ? null : val)}
-            >
-              <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
-                <span className="text-slate-400 font-normal mr-1">{col.label}:</span>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="text-xs font-bold text-slate-500">
-                  {col.label === "Category" ? "All Categories" : `All ${col.label}s`}
-                </SelectItem>
-                {col.options.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium">
-                    {opt.label}
+        {columnFilters.map((col) => {
+          const isAll = !col.value || col.value === "all" || col.value === "ALL" || col.value === "All";
+          const selectedOpt = col.options.find((opt) => String(opt.value) === String(col.value));
+          const displayText = isAll ? "All" : (selectedOpt ? selectedOpt.label : col.value);
+          const normalizedVal = isAll ? "All" : col.value;
+
+          return (
+            <div key={col.key} className="shrink-0 min-w-[130px] max-w-[220px]">
+              <Select
+                value={normalizedVal}
+                onValueChange={(val) => onColumnFilterChange?.(col.key, val === "All" || val === "all" ? null : val)}
+              >
+                <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl px-3 gap-1">
+                  <span className="text-slate-400 font-normal shrink-0">{col.label}:</span>
+                  <span className="font-bold text-slate-900 dark:text-white truncate">{displayText}</span>
+                </SelectTrigger>
+                <SelectContent className="w-auto min-w-[180px] max-w-[380px] whitespace-nowrap bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl">
+                  <SelectItem value="All" className="text-xs font-bold text-slate-500">
+                    All
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        ))}
+                  {col.options.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium">
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          );
+        })}
 
         {/* 4. Custom Date Range Picker */}
         {showDatePicker && onDateChange && (
-          <div className="flex-1 min-w-[280px]">
+          <div className="shrink-0 min-w-[220px]">
             <CustomDateRangePicker
               startDate={startDate}
               endDate={endDate}
@@ -233,7 +242,7 @@ export function applyDataFilters<T extends Record<string, any>>(
   // 1. Column filters
   if (params.columnFilters) {
     Object.entries(params.columnFilters).forEach(([key, val]) => {
-      if (val && val !== "all" && val !== "ALL") {
+      if (val && val !== "all" && val !== "ALL" && val !== "All") {
         result = result.filter((item) => {
           const itemVal = item[key];
           if (itemVal === undefined || itemVal === null) return false;

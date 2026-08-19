@@ -17,6 +17,7 @@ import { getBaseURL } from "@/services/api/auth.service";
 import { ROLES } from "@/lib/rbac";
 import toast from "react-hot-toast";
 import { getCourseDisplayTitle, generateAutoCourseCode } from "@/lib/courseTitleHelper";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 const wizardSteps = [
   { number: 1, label: "Basic Info" },
@@ -363,20 +364,34 @@ function CreateCourseContent() {
     }));
   };
 
+  const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
+
   const validateStep = (targetStep: number): boolean => {
     if (targetStep <= currentStep) return true;
 
     const { title, shortDescription, categoryId } = wizardState.basicInfo;
     if (!title || title.trim().length < 3) {
-      toast.error("Please fill out Course Name (minimum 3 characters) in Step 1 first.");
+      setValidationModal({
+        open: true,
+        title: "Required Step Incomplete",
+        description: "Please fill out Course Name (minimum 3 characters) in Step 1 before proceeding to the next step.",
+      });
       return false;
     }
     if (!shortDescription || shortDescription.trim().length < 5) {
-      toast.error("Please fill out Short Description (minimum 5 characters) in Step 1 first.");
+      setValidationModal({
+        open: true,
+        title: "Required Step Incomplete",
+        description: "Please fill out Short Description (minimum 5 characters) in Step 1 before proceeding to the next step.",
+      });
       return false;
     }
     if (!categoryId) {
-      toast.error("Please select a Category in Step 1 first.");
+      setValidationModal({
+        open: true,
+        title: "Required Step Incomplete",
+        description: "Please select a Category in Step 1 before proceeding to the next step.",
+      });
       return false;
     }
 
@@ -538,6 +553,21 @@ function CreateCourseContent() {
       <div className="rounded-xl border border-border bg-card p-6">
         {renderStepContent()}
       </div>
+
+      {/* Validation Error Popup Modal (No Cancel Button, Red Warning Icon) */}
+      {validationModal && (
+        <HarbingerConfirmModal
+          open={validationModal.open}
+          onOpenChange={(open) => {
+            if (!open) setValidationModal(null);
+          }}
+          title={validationModal.title}
+          description={validationModal.description}
+          confirmLabel="OK"
+          showCancelButton={false}
+          variant="danger"
+        />
+      )}
     </div>
   );
 }

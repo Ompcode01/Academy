@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Upload, FileText, Link as LinkIcon, Video, GraduationCap, Archive, RefreshCw } from "lucide-react";
 import { ContentTypeKey } from "./ContentTypePickerModal";
 import { uploadScormPackage, uploadDocumentFile } from "@/services/api/course.service";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 interface AddContentModalProps {
   open: boolean;
@@ -38,6 +39,7 @@ export default function AddContentModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
 
   if (!type) return null;
 
@@ -96,7 +98,14 @@ export default function AddContentModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setValidationModal({
+        open: true,
+        title: "Required Fields Missing",
+        description: `Please enter a Title for this ${type || "content"} before saving.`,
+      });
+      return;
+    }
 
     let finalContentUrl = url.trim() || undefined;
     let finalFileSize = isDocument || isScorm ? fileSize : undefined;
@@ -176,7 +185,8 @@ export default function AddContentModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl w-[92vw] max-h-[90vh] bg-card border-border shadow-2xl rounded-2xl flex flex-col overflow-hidden p-0 gap-0">
         {/* Modal Header */}
         <DialogHeader className="px-6 py-4 border-b border-border bg-muted/20 shrink-0">
@@ -328,5 +338,21 @@ export default function AddContentModal({
         </form>
       </DialogContent>
     </Dialog>
+
+    {/* Validation Error Popup Modal (No Cancel Button, Red Warning Icon) */}
+    {validationModal && (
+      <HarbingerConfirmModal
+        open={validationModal.open}
+        onOpenChange={(open) => {
+          if (!open) setValidationModal(null);
+        }}
+        title={validationModal.title}
+        description={validationModal.description}
+        confirmLabel="OK"
+        showCancelButton={false}
+        variant="danger"
+      />
+    )}
+  </>
   );
 }

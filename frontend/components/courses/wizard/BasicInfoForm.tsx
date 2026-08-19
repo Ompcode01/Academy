@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/auth.store";
 import { uploadDocumentFile, getStorageUrl } from "@/services/api/course.service";
 import toast from "react-hot-toast";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -124,6 +125,7 @@ export default function BasicInfoForm({
   }, [isAdmin, user?.departmentId]);
 
   const [uploading, setUploading] = useState(false);
+  const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
 
   useEffect(() => {
     // Automatically generate code if courseCode is currently empty
@@ -173,7 +175,11 @@ export default function BasicInfoForm({
 
     if (Object.keys(newErrs).length > 0) {
       setErrors(newErrs);
-      toast.error("Required fields are empty! Please fill out Course Name, Short Description, and Category first.");
+      setValidationModal({
+        open: true,
+        title: "Required Fields Missing",
+        description: "Please fill out Course Name, Short Description, and Category before proceeding to the next step.",
+      });
       return;
     }
 
@@ -544,6 +550,21 @@ export default function BasicInfoForm({
           Save &amp; Next &rarr;
         </Button>
       </div>
+
+      {/* Validation Error Popup Modal (No Cancel Button, Red Warning Icon) */}
+      {validationModal && (
+        <HarbingerConfirmModal
+          open={validationModal.open}
+          onOpenChange={(open) => {
+            if (!open) setValidationModal(null);
+          }}
+          title={validationModal.title}
+          description={validationModal.description}
+          confirmLabel="OK"
+          showCancelButton={false}
+          variant="danger"
+        />
+      )}
     </div>
   );
 }

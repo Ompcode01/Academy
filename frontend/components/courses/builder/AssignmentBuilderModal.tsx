@@ -16,6 +16,7 @@ import {
   FileCode,
 } from "lucide-react";
 import { uploadDocumentFile } from "@/services/api/course.service";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 interface UploadedFileItem {
   name: string;
@@ -63,6 +64,7 @@ export default function AssignmentBuilderModal({
   onSaveAssignment,
 }: AssignmentBuilderModalProps) {
   const [activeTab, setActiveTab] = useState<"DETAILS" | "SUBMISSION">("DETAILS");
+  const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
   const [title, setTitle] = useState("");
   const [maxMarks, setMaxMarks] = useState(50);
   const [deadlineDate, setDeadlineDate] = useState("");
@@ -160,9 +162,29 @@ export default function AssignmentBuilderModal({
     }
   };
 
+  const handleSwitchTab = (targetTab: "DETAILS" | "SUBMISSION") => {
+    if (targetTab === "SUBMISSION" && !title.trim()) {
+      setValidationModal({
+        open: true,
+        title: "Required Step Incomplete",
+        description: "Please fill out the mandatory Assignment Title in Step 1 before proceeding to Submission Rules.",
+      });
+      return;
+    }
+    setActiveTab(targetTab);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setActiveTab("DETAILS");
+      setValidationModal({
+        open: true,
+        title: "Required Step Incomplete",
+        description: "Please fill out the mandatory Assignment Title in Step 1 before saving the assignment.",
+      });
+      return;
+    }
 
     onSaveAssignment({
       title: title.trim(),
@@ -185,7 +207,8 @@ export default function AssignmentBuilderModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[92vh] overflow-y-auto bg-card border-border">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
@@ -197,7 +220,7 @@ export default function AssignmentBuilderModal({
         {/* Tab Header */}
         <div className="flex items-center gap-4 border-b border-border pb-2">
           <button
-            onClick={() => setActiveTab("DETAILS")}
+            onClick={() => handleSwitchTab("DETAILS")}
             className={`text-sm font-semibold pb-1 border-b-2 transition-all ${
               activeTab === "DETAILS"
                 ? "border-primary text-primary"
@@ -207,7 +230,7 @@ export default function AssignmentBuilderModal({
             1. Details &amp; Scenario Files
           </button>
           <button
-            onClick={() => setActiveTab("SUBMISSION")}
+            onClick={() => handleSwitchTab("SUBMISSION")}
             className={`text-sm font-semibold pb-1 border-b-2 transition-all ${
               activeTab === "SUBMISSION"
                 ? "border-primary text-primary"
@@ -489,5 +512,21 @@ export default function AssignmentBuilderModal({
         </form>
       </DialogContent>
     </Dialog>
+
+    {/* Validation Error Popup Modal (No Cancel Button, Red Warning Icon) */}
+    {validationModal && (
+      <HarbingerConfirmModal
+        open={validationModal.open}
+        onOpenChange={(open) => {
+          if (!open) setValidationModal(null);
+        }}
+        title={validationModal.title}
+        description={validationModal.description}
+        confirmLabel="OK"
+        showCancelButton={false}
+        variant="danger"
+      />
+    )}
+  </>
   );
 }

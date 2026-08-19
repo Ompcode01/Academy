@@ -21,6 +21,7 @@ import {
   FileUp,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 interface QuizBuilderModalProps {
   open: boolean;
@@ -58,6 +59,7 @@ export default function QuizBuilderModal({
   onSaveQuiz,
 }: QuizBuilderModalProps) {
   const [activeStep, setActiveStep] = useState<"DETAILS" | "QUESTIONS">("DETAILS");
+  const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [durationMinutes, setDurationMinutes] = useState(20);
@@ -190,10 +192,26 @@ export default function QuizBuilderModal({
     setQuestions(newQuestions);
   };
 
+  const handleSwitchTab = (targetStep: "DETAILS" | "QUESTIONS") => {
+    if (targetStep === "QUESTIONS" && !title.trim()) {
+      setValidationModal({
+        open: true,
+        title: "Required Step Incomplete",
+        description: "Please fill out the mandatory Quiz Title in Step 1 before proceeding to Questions Bank.",
+      });
+      return;
+    }
+    setActiveStep(targetStep);
+  };
+
   const handleFinalSave = () => {
     if (!title.trim()) {
       setActiveStep("DETAILS");
-      toast.error("Please provide a Quiz Title before saving.");
+      setValidationModal({
+        open: true,
+        title: "Required Step Incomplete",
+        description: "Please fill out the mandatory Quiz Title in Step 1 before saving the quiz.",
+      });
       return;
     }
     onSaveQuiz({
@@ -225,7 +243,7 @@ export default function QuizBuilderModal({
           {/* Stepper Header */}
           <div className="flex items-center gap-4 border-b border-border pb-3">
             <button
-              onClick={() => setActiveStep("DETAILS")}
+              onClick={() => handleSwitchTab("DETAILS")}
               className={`text-sm font-semibold pb-1 border-b-2 transition-all ${
                 activeStep === "DETAILS"
                   ? "border-primary text-primary"
@@ -235,7 +253,7 @@ export default function QuizBuilderModal({
               1. Quiz Details &amp; Settings
             </button>
             <button
-              onClick={() => setActiveStep("QUESTIONS")}
+              onClick={() => handleSwitchTab("QUESTIONS")}
               className={`text-sm font-semibold pb-1 border-b-2 transition-all ${
                 activeStep === "QUESTIONS"
                   ? "border-primary text-primary"
@@ -514,6 +532,21 @@ export default function QuizBuilderModal({
         initialQuestion={editingQuestionIdx !== null ? questions[editingQuestionIdx] : null}
         editIndex={editingQuestionIdx}
       />
+
+      {/* Validation Error Popup Modal (No Cancel Button, Red Warning Icon) */}
+      {validationModal && (
+        <HarbingerConfirmModal
+          open={validationModal.open}
+          onOpenChange={(open) => {
+            if (!open) setValidationModal(null);
+          }}
+          title={validationModal.title}
+          description={validationModal.description}
+          confirmLabel="OK"
+          showCancelButton={false}
+          variant="danger"
+        />
+      )}
     </>
   );
 }
