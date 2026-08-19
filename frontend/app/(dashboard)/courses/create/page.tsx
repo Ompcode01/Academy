@@ -16,6 +16,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { getBaseURL } from "@/services/api/auth.service";
 import { ROLES } from "@/lib/rbac";
 import toast from "react-hot-toast";
+import { getCourseDisplayTitle, generateAutoCourseCode } from "@/lib/courseTitleHelper";
 
 const wizardSteps = [
   { number: 1, label: "Basic Info" },
@@ -173,7 +174,8 @@ function CreateCourseContent() {
               ...prev,
               basicInfo: {
                 title: c.title || "",
-                courseCode: `DPU-COURSE-${c.id}`,
+                shortName: c.shortName || "",
+                courseCode: c.courseCode || generateAutoCourseCode(c.title || "", c.shortName) || "",
                 departmentId: c.departmentId ? String(c.departmentId) : "global",
                 level: c.level || "Beginner",
                 shortDescription: c.shortDescription || "",
@@ -361,7 +363,28 @@ function CreateCourseContent() {
     }));
   };
 
+  const validateStep = (targetStep: number): boolean => {
+    if (targetStep <= currentStep) return true;
+
+    const { title, shortDescription, categoryId } = wizardState.basicInfo;
+    if (!title || title.trim().length < 3) {
+      toast.error("Please fill out Course Name (minimum 3 characters) in Step 1 first.");
+      return false;
+    }
+    if (!shortDescription || shortDescription.trim().length < 5) {
+      toast.error("Please fill out Short Description (minimum 5 characters) in Step 1 first.");
+      return false;
+    }
+    if (!categoryId) {
+      toast.error("Please select a Category in Step 1 first.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleNext = () => {
+    if (!validateStep(currentStep + 1)) return;
     if (currentStep < wizardSteps.length) {
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
@@ -403,9 +426,21 @@ function CreateCourseContent() {
           />
         );
       case 2:
+        const categoryMap: Record<string, string> = {
+          "1": "Technical",
+          "2": "Soft Skill",
+          "3": "Process/Compliances",
+          "4": "Leadership",
+        };
         return (
           <ModulesForm
             sections={wizardState.sections}
+            courseTitle={wizardState.basicInfo.title}
+            shortName={wizardState.basicInfo.shortName}
+            level={wizardState.basicInfo.level}
+            category={categoryMap[wizardState.basicInfo.categoryId] || "Development"}
+            durationHours={wizardState.basicInfo.duration || 0}
+            status={draftId ? "Published" : "Draft"}
             onSectionsChange={(newSections) =>
               setWizardState((prev) => ({ ...prev, sections: newSections }))
             }
@@ -477,7 +512,9 @@ function CreateCourseContent() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">
-          {courseId ? `Edit Course: ${wizardState.basicInfo.title || "Course"}` : "Create New Course"}
+          {courseId
+            ? `Edit Course: ${getCourseDisplayTitle(wizardState.basicInfo.title, wizardState.basicInfo.shortName) || "Course"}`
+            : "Create New Course"}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Configure basic details, curriculum, assessments, enrollment, certificate, and publish to learner dashboard.
@@ -489,7 +526,11 @@ function CreateCourseContent() {
         <WizardStepper
           steps={wizardSteps}
           currentStep={currentStep}
-          onStepClick={setCurrentStep}
+          onStepClick={(targetStep) => {
+            if (validateStep(targetStep)) {
+              setCurrentStep(targetStep);
+            }
+          }}
         />
       </div>
 

@@ -11,6 +11,7 @@
 export interface CourseWizardState {
   basicInfo: {
     title: string;
+    shortName?: string;
     courseCode?: string;
     departmentId: string;
     level: string;
@@ -52,7 +53,7 @@ export interface CourseWizardState {
  */
 function applyFeedbackToSections(sections: any[], fbData: CourseWizardState["feedback"]) {
   const processedSections = JSON.parse(JSON.stringify(sections || []));
-  if (!fbData || fbData.enableFeedback === false) return processedSections;
+  if (!fbData || fbData.enableFeedback !== true) return processedSections;
 
   const feedbackConfigJson = JSON.stringify({
     title: fbData.feedbackTitle || "End-of-Course Feedback & Evaluation Survey",
@@ -135,6 +136,8 @@ export function buildCoursePayload(
     // A draft is saved exactly as far as the author got, so its fields stay
     // empty when unanswered. A publish keeps the long-standing defaults.
     title: basicInfo.title || (isDraft ? "" : "Java Programming"),
+    shortName: basicInfo.shortName || undefined,
+    courseCode: basicInfo.courseCode || undefined,
     shortDescription:
       basicInfo.shortDescription ||
       (isDraft ? "" : "Core Java fundamentals and secure development practices."),

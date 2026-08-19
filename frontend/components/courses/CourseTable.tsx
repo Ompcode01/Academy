@@ -29,6 +29,8 @@ const statusColors: Record<string, string> = {
   ARCHIVED: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800/30",
 };
 
+import { getCourseDisplayTitle } from "@/lib/courseTitleHelper";
+
 interface CourseTableProps {
   courses: Course[];
   currentPage?: number;
@@ -116,8 +118,8 @@ export default function CourseTable({
                   >
                     <TableCell className="pl-5">
                       <div>
-                        <p className="text-sm font-medium text-foreground">
-                          {course.title}
+                        <p className="text-sm font-bold text-foreground" title={course.title}>
+                          {getCourseDisplayTitle(course.title, (course as any).shortName)}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           ID: {course.id.toString()} • {course.level || "Beginner"}

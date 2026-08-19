@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import CoursePreviewModal from "../builder/CoursePreviewModal";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 interface ReviewPublishFormProps {
   courseId?: string | null;
@@ -63,6 +64,18 @@ export default function ReviewPublishForm({
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">("PUBLISHED");
   const [loading, setLoading] = useState(false);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [successModal, setSuccessModal] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    variant: "success" | "amber";
+  }>({
+    open: false,
+    title: "",
+    description: "",
+    variant: "success",
+  });
 
   const { basicInfo, sections, enrollment, certificate } = wizardData;
 
@@ -107,12 +120,14 @@ export default function ReviewPublishForm({
           }
         }
 
-        toast.success(
-          status === "PUBLISHED"
-            ? "🚀 Course successfully PUBLISHED! It is now live for learners on their dashboard with verifiable certificate configuration."
-            : "💾 Course saved as DRAFT."
-        );
-        router.push("/courses");
+        setSuccessModal({
+          open: true,
+          title: status === "PUBLISHED" ? "Course PUBLISHED Successfully!" : "Course saved as DRAFT.",
+          description: status === "PUBLISHED"
+            ? "Your course is now live on the catalog and available for assigned learners and managers."
+            : "Your progress has been saved as a draft. You can return to edit and publish it anytime.",
+          variant: status === "PUBLISHED" ? "success" : "amber",
+        });
       } else {
         toast.error(res?.message || "Failed to save course.");
       }
@@ -329,7 +344,8 @@ export default function ReviewPublishForm({
             &larr; Back
           </Button>
           <Button
-            onClick={handlePublish}
+            type="button"
+            onClick={() => setConfirmModalOpen(true)}
             disabled={loading}
             className={`gap-2 font-bold text-white ${
               status === "PUBLISHED"
@@ -346,6 +362,42 @@ export default function ReviewPublishForm({
           </Button>
         </div>
       </div>
+
+      {/* Confirmation Modal for Publishing or Saving Draft */}
+      <HarbingerConfirmModal
+        open={confirmModalOpen}
+        onOpenChange={setConfirmModalOpen}
+        title={
+          status === "PUBLISHED"
+            ? "Publish Course to Catalog?"
+            : "Save Course as Draft?"
+        }
+        description={
+          status === "PUBLISHED"
+            ? "Are you sure you want to publish this course? It will immediately become live and available for assigned learners and managers."
+            : "Are you sure you want to save this course as a draft? Your work will be saved safely and you can return to publish it anytime."
+        }
+        confirmLabel={status === "PUBLISHED" ? "Publish Course" : "Save Draft"}
+        cancelLabel="Cancel"
+        variant={status === "PUBLISHED" ? "success" : "amber"}
+        loading={loading}
+        onConfirm={() => {
+          setConfirmModalOpen(false);
+          handlePublish();
+        }}
+      />
+
+      {/* 3-Second Harbinger Branded Success Notification Modal without buttons */}
+      <HarbingerConfirmModal
+        open={successModal.open}
+        onOpenChange={(open) => setSuccessModal((prev) => ({ ...prev, open }))}
+        title={successModal.title}
+        description={successModal.description}
+        variant={successModal.variant}
+        showButtons={false}
+        autoCloseMs={3000}
+        onAutoClose={() => router.push("/courses")}
+      />
 
       {/* Interactive Course Preview Modal */}
       <CoursePreviewModal

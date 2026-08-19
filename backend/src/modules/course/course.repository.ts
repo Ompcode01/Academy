@@ -14,6 +14,8 @@ interface CreateCourseData {
   creatorId: bigint;
   departmentId?: bigint | null;
   title: string;
+  shortName?: string | null;
+  courseCode?: string | null;
   shortDescription?: string;
   description?: string;
   thumbnail?: string;
@@ -184,6 +186,8 @@ class CourseRepository {
         creatorId: data.creatorId,
         departmentId: data.departmentId ?? null,
         title: data.title,
+        shortName: data.shortName ?? null,
+        courseCode: data.courseCode ?? null,
         shortDescription: data.shortDescription,
         description: data.description,
         thumbnail: data.thumbnail,
@@ -220,7 +224,9 @@ class CourseRepository {
     const updateData: any = { ...data };
     
     if (updateData.categoryId !== undefined) {
-      updateData.category = { connect: { id: updateData.categoryId } };
+      if (updateData.categoryId) {
+        updateData.category = { connect: { id: updateData.categoryId } };
+      }
       delete updateData.categoryId;
     }
     
@@ -234,7 +240,9 @@ class CourseRepository {
     }
 
     if (updateData.creatorId !== undefined) {
-      updateData.creator = { connect: { id: updateData.creatorId } };
+      if (updateData.creatorId) {
+        updateData.creator = { connect: { id: updateData.creatorId } };
+      }
       delete updateData.creatorId;
     }
 
@@ -266,7 +274,7 @@ class CourseRepository {
   async softDelete(id: bigint) {
     return prisma.course.update({
       where: { id },
-      data: { isActive: false },
+      data: { status: "ARCHIVED", isActive: true },
     });
   }
 

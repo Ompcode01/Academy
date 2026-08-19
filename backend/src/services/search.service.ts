@@ -127,14 +127,7 @@ class SearchService {
   }
 
   /**
-   * Course filter for things that live *inside* a course (sections, lessons,
-   * quizzes, assignments).
-   *
-   * Being able to see a course in the catalogue is not the same as being able
-   * to see its contents, so this is deliberately stricter than
-   * buildCourseScopeFilter: learners only reach the inside of a course they
-   * are enrolled in, teachers only the courses they own or teach (plus any
-   * they are enrolled in themselves), and guests never reach it at all.
+   * Course filter for things that live *inside* a course (sections, lessons).
    */
   private async buildContentScopeFilter(userContext?: UserContext): Promise<any> {
     if (!userContext) return BLOCK_ALL;
@@ -144,7 +137,6 @@ class SearchService {
     switch (role) {
       case "SUPER_ADMIN":
       case "ADMIN":
-        // Same reach as the catalogue: platform-wide, or department-wide.
         return this.buildCourseScopeFilter(userContext);
 
       case "TEACHER": {
@@ -165,6 +157,40 @@ class SearchService {
           enrollments: { some: { userId: employeeId } },
         };
       }
+
+      case "GUEST":
+      default:
+        return BLOCK_ALL;
+    }
+  }
+
+  /**
+   * Scope filter specifically for Quizzes and Assignments:
+   * Users can only search/view quizzes and assignments for courses they are enrolled in
+   * (or courses they created / teach if they are an admin or teacher).
+   */
+  private async buildQuizAndAssignmentScopeFilter(userContext?: UserContext): Promise<any> {
+    if (!userContext || !userContext.employeeId) return BLOCK_ALL;
+
+    const { role, employeeId } = userContext;
+
+    switch (role) {
+      case "SUPER_ADMIN":
+      case "ADMIN":
+      case "TEACHER":
+        return {
+          OR: [
+            { enrollments: { some: { userId: employeeId } } },
+            { creatorId: employeeId },
+            { teachers: { some: { teacherId: employeeId } } },
+          ],
+        };
+
+      case "LEARNER":
+        return {
+          status: "PUBLISHED",
+          enrollments: { some: { userId: employeeId } },
+        };
 
       case "GUEST":
       default:
@@ -195,9 +221,10 @@ class SearchService {
     const canSearch = (c: SearchCategory) =>
       allowedCategories.includes(c) && (category === "all" || category === c);
 
-    const [courseScopeWhere, contentScopeWhere] = await Promise.all([
+    const [courseScopeWhere, contentScopeWhere, quizAssignmentScopeWhere] = await Promise.all([
       this.buildCourseScopeFilter(userContext),
       this.buildContentScopeFilter(userContext),
+      this.buildQuizAndAssignmentScopeFilter(userContext),
     ]);
     const isStudentOrGuest = userContext?.role === "LEARNER" || userContext?.role === "GUEST";
 
@@ -322,7 +349,7 @@ class SearchService {
                 isActive: true,
                 ...(isStudentOrGuest ? { isPublished: true } : {}),
                 course: {
-                  ...contentScopeWhere,
+                  ...quizAssignmentScopeWhere,
                   isActive: true,
                 },
               },
@@ -368,7 +395,7 @@ class SearchService {
                 isActive: true,
                 ...(isStudentOrGuest ? { isPublished: true } : {}),
                 course: {
-                  ...contentScopeWhere,
+                  ...quizAssignmentScopeWhere,
                   isActive: true,
                 },
               },

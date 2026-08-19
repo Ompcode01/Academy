@@ -47,11 +47,11 @@ export default function Dashboard() {
     async function loadData() {
       try {
         setLoading(true);
-        // Load courses
-        const courseRes = await getCourses({ limit: 100 });
+        // Load courses (only PUBLISHED programs appear on main learner dashboard)
+        const courseRes = await getCourses({ status: "PUBLISHED", limit: 100 });
         let activeCourses: Course[] = [];
         if (courseRes?.success && Array.isArray(courseRes.data.courses)) {
-          activeCourses = courseRes.data.courses;
+          activeCourses = courseRes.data.courses.filter((c: Course) => c.status === "PUBLISHED");
           setCourses(activeCourses);
         }
 
@@ -141,14 +141,14 @@ export default function Dashboard() {
 
   // Title by Role
   const dashboardTitleMap: Record<string, string> = {
-    [ROLES.SUPER_ADMIN]: `${fullName} — Executive Admin Dashboard`,
-    [ROLES.ADMIN]: `${fullName} — Business Unit Admin Dashboard`,
-    [ROLES.TEACHER]: `${fullName} — Educator Dashboard`,
-    [ROLES.LEARNER]: `${fullName} — Learner Dashboard`,
-    [ROLES.GUEST]: `${fullName} — Guest Catalog Preview`,
+    [ROLES.SUPER_ADMIN]: "Super Admin Dashboard",
+    [ROLES.ADMIN]: "Business Unit Admin Dashboard",
+    [ROLES.TEACHER]: "Educator Dashboard",
+    [ROLES.LEARNER]: "Learner Dashboard",
+    [ROLES.GUEST]: "Guest Catalog Preview",
   };
 
-  const dashboardTitle = dashboardTitleMap[userRole] || `${fullName} — Dashboard Overview`;
+  const dashboardTitle = dashboardTitleMap[userRole] || "Dashboard Overview";
 
   return (
     <div className="p-6 space-y-6 select-none">
@@ -159,9 +159,6 @@ export default function Dashboard() {
             <h1 className="text-xl font-extrabold text-[#212529]">
               {dashboardTitle}
             </h1>
-            <p className="text-xs text-[#6C757D] font-medium mt-0.5">
-              Scoped Role: <strong className="text-[#C82333]">{userRole}</strong> • Department: <strong className="text-[#212529]">{{ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)", 4: "Sales", 5: "Marketing" }[user?.departmentId || 1] || `Dept #${user?.departmentId}`}</strong>
-            </p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -615,7 +612,7 @@ export default function Dashboard() {
           </div>
           {user?.departmentId && (
             <span className="text-[10px] font-bold bg-[#C82333]/10 text-[#C82333] px-2.5 py-0.5 rounded border border-[#C82333]/20">
-              Department: {{ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)", 4: "Sales", 5: "Marketing" }[user.departmentId] || `Dept #${user.departmentId}`}
+              Business Unit: {{ 1: "Tech Services- Core (TSC)", 2: "Tech Services - DPU (TSD)", 3: "Content Services (CS)", 4: "Business Enablers (BE)" }[user.departmentId] || `BU #${user.departmentId}`}
             </span>
           )}
         </div>
@@ -623,8 +620,8 @@ export default function Dashboard() {
         {courses.length === 0 ? (
           <div className="bg-white rounded-xl border border-[#E0E6ED] border-dashed py-8 flex flex-col items-center justify-center text-[#6C757D] shadow-sm">
             <BookOpen className="h-8 w-8 text-[#6C757D]/50 mb-2" />
-            <p className="text-xs font-bold text-[#212529]">No published courses available for your department yet.</p>
-            <p className="text-[11px] text-[#6C757D] mt-0.5">Courses published by Admins for your department will appear here.</p>
+            <p className="text-xs font-bold text-[#212529]">No published courses available for your Business Unit yet.</p>
+            <p className="text-[11px] text-[#6C757D] mt-0.5">Courses published by Admins for your Business Unit will appear here.</p>
           </div>
         ) : (
           <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-thin">

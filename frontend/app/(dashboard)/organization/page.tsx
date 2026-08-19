@@ -87,7 +87,7 @@ export default function OrganizationPage() {
             Organization
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Manage your company departments and organizational structure.
+            Manage company Business Units and organizational structure.
           </p>
         </div>
 
@@ -96,14 +96,14 @@ export default function OrganizationPage() {
             <DialogTrigger render={
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
-                Add Department
+                Add Business Unit
               </Button>
             } />
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Add New Department</DialogTitle>
+                <DialogTitle>Add New Business Unit</DialogTitle>
                 <DialogDescription>
-                  Enter the details for the new department. Click save when done.
+                  Enter details for the new Business Unit. Click save when done.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleCreate} className="space-y-4 py-4">
@@ -113,7 +113,7 @@ export default function OrganizationPage() {
                   </Label>
                   <Input
                     id="code"
-                    placeholder="e.g. ENG, HR, MGT"
+                    placeholder="e.g. TSC, TSD, CS, BE"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     required
@@ -125,7 +125,7 @@ export default function OrganizationPage() {
                   </Label>
                   <Input
                     id="name"
-                    placeholder="e.g. Engineering"
+                    placeholder="e.g. Tech Services- Core"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -136,7 +136,7 @@ export default function OrganizationPage() {
                     Cancel
                   </Button>
                   <Button type="submit" disabled={submitLoading}>
-                    {submitLoading ? "Saving..." : "Save Department"}
+                    {submitLoading ? "Saving..." : "Save Business Unit"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -150,7 +150,7 @@ export default function OrganizationPage() {
         <div className="relative">
           <input
             type="text"
-            placeholder="Search departments..."
+            placeholder="Search Business Units..."
             className="h-9 w-64 rounded-lg border border-border bg-card pl-3 pr-4 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>

@@ -17,6 +17,7 @@ interface CourseFiltersProps {
   onResetAll?: () => void;
   searchQuery?: string;
   sortValue?: CourseSortOption;
+  statusValue?: string;
   startDate?: string;
   endDate?: string;
 }
@@ -31,6 +32,7 @@ export default function CourseFilters({
   onResetAll,
   searchQuery = "",
   sortValue = "newest",
+  statusValue = "PUBLISHED",
   startDate = "",
   endDate = "",
 }: CourseFiltersProps) {
@@ -41,16 +43,21 @@ export default function CourseFilters({
     { id: 4, name: "Leadership (Futurefit, MCC, Basecamp)", isActive: true },
   ]);
   const [departments, setDepartments] = useState<Department[]>([
-    { id: 1, departmentCode: "ABU", departmentName: "Across BUs", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 2, departmentCode: "TSC", departmentName: "Tech Services- Core", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 3, departmentCode: "TSD", departmentName: "Tech Services - DPU", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 4, departmentCode: "CS", departmentName: "Content Services", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 5, departmentCode: "BE", departmentName: "Business Enablers", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 1, departmentCode: "TSC", departmentName: "Tech Services- Core", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 2, departmentCode: "TSD", departmentName: "Tech Services - DPU", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 3, departmentCode: "CS", departmentName: "Content Services", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 4, departmentCode: "BE", departmentName: "Business Enablers", isActive: true, createdAt: "", updatedAt: "" },
   ]);
 
   const [catFilter, setCatFilter] = useState<string>("all");
   const [deptFilter, setDeptFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>(statusValue || "PUBLISHED");
+
+  useEffect(() => {
+    if (statusValue !== undefined) {
+      setStatusFilter(statusValue || "all");
+    }
+  }, [statusValue]);
 
   useEffect(() => {
     async function loadFilterOptions() {
@@ -101,7 +108,7 @@ export default function CourseFilters({
         },
         {
           key: "department",
-          label: "BU",
+          label: "Business Unit",
           value: deptFilter,
           options: departments.map((d) => ({ label: `${d.departmentCode} - ${d.departmentName}`, value: String(d.id) })),
         },
@@ -133,10 +140,10 @@ export default function CourseFilters({
       onResetAll={() => {
         setCatFilter("all");
         setDeptFilter("all");
-        setStatusFilter("all");
+        setStatusFilter("PUBLISHED");
         onCategoryChange?.(null);
         onDepartmentChange?.(null);
-        onStatusChange?.(null);
+        onStatusChange?.("PUBLISHED");
         onSearch?.("");
         onSortChange?.("newest");
         onDateChange?.("", "");

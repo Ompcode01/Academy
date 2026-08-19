@@ -2,20 +2,18 @@
 
 import React from "react";
 
-interface CapDevLogoProps {
+interface HarbingerGroupLogoProps {
   height?: number;
   className?: string;
 }
 
-export default function CapDevLogo({ height = 24, className = "" }: CapDevLogoProps) {
+export default function HarbingerGroupLogo({ height = 28, className = "" }: HarbingerGroupLogoProps) {
   return (
     <img
-      src="/images/capdev-logo.png"
-      alt="CapDev Logo"
+      src="/images/harbinger-group-logo.png"
+      alt="Harbinger Group Logo"
       style={{ height: `${height}px` }}
       className={`shrink-0 w-auto object-contain ${className}`}
     />
   );
 }
-
-

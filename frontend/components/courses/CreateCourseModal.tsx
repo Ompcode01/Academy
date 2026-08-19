@@ -69,10 +69,12 @@ export default function CreateCourseModal({
     { id: 4, name: "HR", isActive: true },
   ]);
   const [departments, setDepartments] = useState<Department[]>([
-    { id: 1, departmentCode: "ENG", departmentName: "Engineering", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 2, departmentCode: "HR", departmentName: "Human Resources", isActive: true, createdAt: "", updatedAt: "" },
-    { id: 3, departmentCode: "MGT", departmentName: "Management", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 1, departmentCode: "TSC", departmentName: "Tech Services- Core", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 2, departmentCode: "TSD", departmentName: "Tech Services - DPU", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 3, departmentCode: "CS", departmentName: "Content Services", isActive: true, createdAt: "", updatedAt: "" },
+    { id: 4, departmentCode: "BE", departmentName: "Business Enablers", isActive: true, createdAt: "", updatedAt: "" },
   ]);
+
   const [loading, setLoading] = useState(false);
 
   const {
@@ -227,7 +229,7 @@ export default function CreateCourseModal({
               onValueChange={(val: string | null) => setValue("departmentId", val === "global" || val === null ? undefined : val)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select target department" />
+                <SelectValue placeholder="Select target Business Unit" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="global">Global (All Business Units)</SelectItem>
@@ -240,7 +242,7 @@ export default function CreateCourseModal({
             </Select>
             {isTeacher && (
               <p className="text-xs text-muted-foreground">
-                Teachers are locked to their own department listings.
+                Teachers are locked to their own Business Unit listings.
               </p>
             )}
           </div>

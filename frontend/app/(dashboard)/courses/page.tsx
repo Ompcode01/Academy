@@ -14,6 +14,7 @@ import RoleGate from "@/components/auth/RoleGate";
 import { getCourses, type Course, deleteCourse } from "@/services/api/course.service";
 import { getMyEnrollments, UserEnrollmentItem } from "@/services/api/progress.service";
 import toast from "react-hot-toast";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 export default function CoursesPage() {
   const router = useRouter();
@@ -23,13 +24,14 @@ export default function CoursesPage() {
   const [totalCourses, setTotalCourses] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filter States
   const [search, setSearch] = useState<string>("");
   const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
   const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
-  const [status, setStatus] = useState<string | undefined>(undefined);
+  const [status, setStatus] = useState<string | undefined>("PUBLISHED");
 
   const pageSize = 5;
 
@@ -88,20 +90,8 @@ export default function CoursesPage() {
     router.push(`/courses/create?id=${id}`);
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this course from the directory?")) {
-      try {
-        const res = await deleteCourse(id);
-        if (res?.success) {
-          fetchCoursesList();
-        } else {
-          toast.error(res?.message || "Failed to delete course");
-        }
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to delete course due to role authorization restrictions.");
-      }
-    }
+  const handleDelete = (id: number) => {
+    setDeleteConfirmId(id);
   };
 
   return (
@@ -132,6 +122,7 @@ export default function CoursesPage() {
           onCategoryChange={handleCategoryChange}
           onDepartmentChange={handleDepartmentChange}
           onStatusChange={handleStatusChange}
+          statusValue={status}
         />
       </div>
 
@@ -169,6 +160,55 @@ export default function CoursesPage() {
         onOpenChange={setIsModalOpen}
         onSuccess={fetchCoursesList}
       />
+
+      {/* Harbinger Branded Course Deletion Confirmation Modal */}
+      {(() => {
+        const targetCourse = courses.find((c) => Number(c.id) === deleteConfirmId);
+        const isArchived = targetCourse?.status === "ARCHIVED";
+        return (
+          <HarbingerConfirmModal
+            open={deleteConfirmId !== null}
+            onOpenChange={(open) => {
+              if (!open) setDeleteConfirmId(null);
+            }}
+            title={
+              isArchived
+                ? "Are you sure you want to delete this course?"
+                : "Archive Course?"
+            }
+            description={
+              isArchived
+                ? "This course will be permanently removed from the catalog database for all users."
+                : "This course will be archived and safely stored in the catalog archive."
+            }
+            confirmLabel={isArchived ? "Delete Course" : "Archive Course"}
+            cancelLabel="Cancel"
+            variant="danger"
+            onConfirm={async () => {
+              if (deleteConfirmId !== null) {
+                const idToDelete = deleteConfirmId;
+                setDeleteConfirmId(null);
+                try {
+                  const res = await deleteCourse(idToDelete);
+                  if (res?.success) {
+                    toast.success(
+                      isArchived
+                        ? "Course permanently deleted"
+                        : "Course archived successfully"
+                    );
+                    fetchCoursesList();
+                  } else {
+                    toast.error(res?.message || "Failed to delete course");
+                  }
+                } catch (err) {
+                  console.error(err);
+                  toast.error("Failed to delete course due to role authorization restrictions.");
+                }
+              }
+            }}
+          />
+        );
+      })()}
     </div>
   );
 }

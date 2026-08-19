@@ -157,6 +157,8 @@ model Course {
   departmentId     BigInt?
   creatorId        BigInt
   title            String          @db.VarChar(200)
+  shortName        String?         @db.VarChar(100)
+  courseCode       String?         @db.VarChar(50)
   shortDescription String?         @db.VarChar(500)
   description      String?         @db.Text
   thumbnail        String?         @db.VarChar(255)

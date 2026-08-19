@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useEventsStore, EventItem } from "@/store/events.store";
 import { useAuthStore } from "@/store/auth.store";
 import {
@@ -15,11 +15,113 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 interface EventCalendarProps {
   compact?: boolean;
+}
+
+// Helper to convert time strings ("10:00 AM", "2:30 PM", "14:30") to HH:mm for <input type="time" />
+const formatTimeForInput = (timeStr?: string) => {
+  if (!timeStr) return "";
+  const trimmed = timeStr.trim();
+  if (/^\d{2}:\d{2}$/.test(trimmed)) return trimmed;
+  if (/^\d{1}:\d{2}$/.test(trimmed)) return `0${trimmed}`;
+
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if (match) {
+    let hours = parseInt(match[1], 10);
+    const minutes = match[2];
+    const modifier = match[3]?.toUpperCase();
+
+    if (modifier === "PM" && hours < 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    return `${hours.toString().padStart(2, "0")}:${minutes}`;
+  }
+  return trimmed;
+};
+
+// Helper to format HH:mm to 12-hour AM/PM for display
+const formatTimeForDisplay = (timeStr?: string) => {
+  if (!timeStr) return "";
+  const trimmed = timeStr.trim();
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+  if (match) {
+    let hours = parseInt(match[1], 10);
+    const minutes = match[2];
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours}:${minutes} ${ampm}`;
+  }
+  return timeStr;
+};
+
+interface CustomTimePickerProps {
+  value: string;
+  onChange: (val: string) => void;
+}
+
+function CustomTimePicker({ value, onChange }: CustomTimePickerProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleContainerClick = () => {
+    if (inputRef.current) {
+      if (typeof inputRef.current.showPicker === "function") {
+        try {
+          inputRef.current.showPicker();
+        } catch (_) {
+          inputRef.current.focus();
+        }
+      } else {
+        inputRef.current.focus();
+      }
+    }
+  };
+
+  return (
+    <div
+      onClick={handleContainerClick}
+      className="relative flex items-center justify-between w-full h-9 px-3 rounded-lg border border-[#E0E6ED] bg-white hover:border-[#C82333] focus-within:border-[#C82333] focus-within:ring-1 focus-within:ring-[#C82333] transition-all cursor-pointer select-none group"
+    >
+      <div className="flex items-center gap-2 min-w-0">
+        <Clock className="h-4 w-4 text-slate-400 group-hover:text-[#C82333] transition-colors shrink-0" />
+        <span className={`text-xs font-medium truncate ${value ? "text-slate-900 font-bold" : "text-slate-400"}`}>
+          {value ? formatTimeForDisplay(value) : "Select Time"}
+        </span>
+      </div>
+
+      {value ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onChange("");
+          }}
+          className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0 z-10"
+          title="Clear time"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      ) : (
+        <span className="text-[10px] font-bold text-[#C82333] bg-[#C82333]/10 px-1.5 py-0.5 rounded shrink-0">
+          Pick
+        </span>
+      )}
+
+      {/* Invisible native time input that covers full width/height & triggers showPicker on click anywhere */}
+      <input
+        ref={inputRef}
+        type="time"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 opacity-0 w-full h-full cursor-pointer pointer-events-auto"
+        tabIndex={-1}
+      />
+    </div>
+  );
 }
 
 export default function EventCalendar({ compact = false }: EventCalendarProps) {
@@ -40,6 +142,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
   // Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -113,7 +216,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
     setEditingEvent(evt);
     setTitle(evt.title);
     setDate(evt.date);
-    setTime(evt.time || "");
+    setTime(formatTimeForInput(evt.time));
     setDescription(evt.description || "");
     setUrl(evt.url || "");
     setTargetDeptId(evt.departmentId ? String(evt.departmentId) : "all");
@@ -154,11 +257,9 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = (id: number) => {
     if (!isAdmin) return;
-    if (confirm("Are you sure you want to delete this event?")) {
-      await removeEvent(id);
-    }
+    setDeleteConfirmId(id);
   };
 
   // Today string YYYY-MM-DD
@@ -177,9 +278,6 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
     dateField: "date",
     startDate,
     endDate,
-    columnFilters: {
-      type: typeFilter,
-    },
   });
 
   return (
@@ -234,31 +332,16 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
         sortValue={sortValue}
         onSortChange={setSortValue}
         sortOptions={[
-          { label: "Event Title (A-Z)", value: "a_z" },
-          { label: "Event Title (Z-A)", value: "z_a" },
-          { label: "Event Date (Newest)", value: "newest" },
-          { label: "Event Date (Oldest)", value: "oldest" },
+          { label: "Newest", value: "newest" },
+          { label: "Oldest", value: "oldest" },
+          { label: "A-Z", value: "a_z" },
+          { label: "Z-A", value: "z_a" },
         ]}
         startDate={startDate}
         endDate={endDate}
-        onDateChange={(start, end) => {
+        onDateChange={(start?: string, end?: string) => {
           setStartDate(start || "");
           setEndDate(end || "");
-        }}
-        columnFilters={[
-          {
-            key: "type",
-            label: "Scope",
-            value: typeFilter || "all",
-            options: [
-              { label: "Site Wide", value: "site" },
-              { label: "Course Specific", value: "course" },
-              { label: "Group Event", value: "group" },
-            ],
-          },
-        ]}
-        onColumnFilterChange={(key, val) => {
-          if (key === "type") setTypeFilter(val);
         }}
         onResetAll={() => {
           setSearchQuery("");
@@ -411,7 +494,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
               </div>
             ) : (
               <div className="space-y-3 max-h-[460px] overflow-y-auto pr-1 scrollbar-thin">
-                {displayedEvents.map((evt) => (
+                {displayedEvents.map((evt: EventItem) => (
                   <div
                     key={evt.id}
                     className="p-3.5 rounded-lg border border-[#E0E6ED] bg-slate-50/50 hover:bg-slate-100/50 transition-colors space-y-2 relative group"
@@ -427,7 +510,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
                           </span>
                           {evt.time && (
                             <span className="flex items-center gap-1 text-slate-600">
-                              <Clock className="h-3 w-3" /> {evt.time}
+                              <Clock className="h-3 w-3" /> {formatTimeForDisplay(evt.time)}
                             </span>
                           )}
                         </div>
@@ -530,13 +613,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
                   <label className="text-xs font-bold text-[#212529] block mb-1">
                     Time (Optional)
                   </label>
-                  <input
-                    type="text"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                    placeholder="e.g. 10:00 AM"
-                    className="w-full rounded border border-[#E0E6ED] p-2 text-xs font-medium focus:border-[#C82333] outline-none"
-                  />
+                  <CustomTimePicker value={time} onChange={setTime} />
                 </div>
               </div>
 
@@ -616,6 +693,25 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
           </div>
         </div>
       )}
+
+      {/* Harbinger Branded Delete Confirmation Modal */}
+      <HarbingerConfirmModal
+        open={deleteConfirmId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteConfirmId(null);
+        }}
+        title="Are you sure you want to delete this event?"
+        description="This event will be permanently removed from the calendar schedule for all users."
+        confirmLabel="Delete Event"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={async () => {
+          if (deleteConfirmId !== null) {
+            await removeEvent(deleteConfirmId);
+            setDeleteConfirmId(null);
+          }
+        }}
+      />
     </div>
   );
 }
