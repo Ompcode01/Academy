@@ -328,10 +328,17 @@ async function importDatabase() {
     if (dump.userLessonProgresses?.length > 0) {
       for (const ulp of dump.userLessonProgresses) {
         await prisma.userLessonProgress.upsert({
-          where: { id: toBigInt(ulp.id) },
-          update: {},
+          where: { 
+            userId_contentId: {
+              userId: toBigInt(ulp.userId),
+              contentId: toBigInt(ulp.contentId)
+            }
+          },
+          update: {
+            isCompleted: ulp.isCompleted ?? true,
+            completedAt: new Date(ulp.completedAt),
+          },
           create: {
-            id: toBigInt(ulp.id),
             userId: toBigInt(ulp.userId),
             courseId: toBigInt(ulp.courseId),
             contentId: toBigInt(ulp.contentId),
@@ -376,10 +383,16 @@ async function importDatabase() {
     if (dump.issuedCertificates?.length > 0) {
       for (const cert of dump.issuedCertificates) {
         await prisma.issuedCertificate.upsert({
-          where: { id: toBigInt(cert.id) },
-          update: {},
+          where: { certificateCode: cert.certificateCode },
+          update: {
+            recipientName: cert.recipientName || "Learner",
+            courseTitle: cert.courseTitle || "Academy Course",
+            templateSnapshot: cert.templateSnapshot,
+            status: cert.status || "ACTIVE",
+            issuedAt: new Date(cert.issuedAt),
+            expiresAt: toDateNullable(cert.expiresAt),
+          },
           create: {
-            id: toBigInt(cert.id),
             certificateCode: cert.certificateCode,
             userId: toBigInt(cert.userId),
             courseId: toBigInt(cert.courseId),

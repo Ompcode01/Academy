@@ -213,6 +213,13 @@ async function main() {
     });
   }
 
+  // Mapping old department variables to the new ones
+  const eng = tsc;
+  const hr = tsd;
+  const mgt = cs;
+  const sales = be;
+  const mkt = abu;
+
   // 5 Dedicated Learners for testing across different departments
   const dummyLearners = [
     { code: "EMP101", username: "learner1", first: "Aarav", last: "Verma", dept: eng, email: "learner1@company.com" },
