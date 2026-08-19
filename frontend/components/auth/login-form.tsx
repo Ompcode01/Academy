@@ -78,13 +78,10 @@ export default function LoginForm() {
   return (
     <div className="space-y-6 w-full max-w-sm bg-slate-900/40 p-8 rounded-xl border border-slate-800 backdrop-blur-sm shadow-xl">
       {/* Title */}
-      <div className="space-y-1 text-center lg:text-left">
+      <div className="text-center lg:text-left">
         <h2 className="text-2xl font-extrabold tracking-tight text-white">
           Sign In
         </h2>
-        <p className="text-xs text-slate-400 font-medium">
-          Enter your employee credentials to access the LMS portal.
-        </p>
       </div>
 
       {/* Form */}

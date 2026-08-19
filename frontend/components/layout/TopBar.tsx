@@ -11,6 +11,7 @@ import NotificationPanel from "@/components/layout/NotificationPanel";
 import GuestBanner from "@/components/layout/GuestBanner";
 import TopBarSearch from "@/components/layout/TopBarSearch";
 import HarbingerLogoIcon from "@/components/common/HarbingerLogoIcon";
+import CapDevLogo from "@/components/common/CapDevLogo";
 
 const fullNameMap: Record<string, string> = {
   omprakash: "Omprakash Pandey",
@@ -25,6 +26,7 @@ export default function TopBar() {
   const { user, logout } = useAuthStore();
   const { unreadCount, togglePanel, fetchUnreadCount } = useNotificationStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
 
   // Poll unread count every 30 seconds
@@ -55,31 +57,48 @@ export default function TopBar() {
   return (
     <>
       <GuestBanner />
-      <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between bg-[#0B132B] px-6 text-white shrink-0 select-none">
-      {/* Left Logo and Tagline */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push("/dashboard")}>
-          {/* Official Harbinger Red Wave Logo */}
-          <HarbingerLogoIcon size={26} color="#C82333" />
-          <span className="text-base font-bold tracking-wide">
-            Harbinger Group
-          </span>
+      <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between bg-[#0B132B] px-6 text-white shrink-0 select-none relative transition-all">
+        {/* Left Section: 2-Line Harbinger Group Logo & Pushed Elements when search expands */}
+        <div className="flex items-center gap-4 transition-all duration-300">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push("/dashboard")}>
+            <HarbingerLogoIcon size={30} color="#E33446" />
+            <div className="flex flex-col font-extrabold leading-none tracking-tight text-white shrink-0">
+              <span className="text-sm font-black tracking-tight text-white">Harbinger</span>
+              <span className="text-sm font-black tracking-tight text-white">Group</span>
+            </div>
+          </div>
+
+          {/* When search expands, shift Elevate... Go Beyond and CapDev logo to the left side next to logo */}
+          {isSearchExpanded && (
+            <div className="hidden lg:flex items-center gap-3 animate-in fade-in slide-in-from-left-4 duration-200">
+              <div className="h-4 w-px bg-white/20" />
+              <span className="text-xs font-medium text-slate-300 whitespace-nowrap">
+                Elevate... Go Beyond
+              </span>
+              <div className="h-4 w-px bg-white/20" />
+              <CapDevLogo height={20} />
+            </div>
+          )}
         </div>
-        <div className="hidden sm:block h-4 w-px bg-white/20" />
-        <span className="hidden sm:inline text-xs font-medium text-slate-300">
-          Elevate... Go Beyond
-        </span>
-      </div>
 
-      {/* Right Brand, Inline TopBar Search, and Profile */}
-      <div className="flex items-center gap-3 sm:gap-6">
-        {/* CapDev Brand */}
-        <span className="hidden md:inline text-sm font-semibold tracking-wide text-white">
-          CapDev
-        </span>
+        {/* Center Tagline: Elevate... Go Beyond (Shown only when search is collapsed) */}
+        {!isSearchExpanded && (
+          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center pointer-events-none transition-all">
+            <span className="text-xs sm:text-sm font-medium tracking-wide text-slate-300">
+              Elevate... Go Beyond
+            </span>
+          </div>
+        )}
 
-        {/* Direct Inline Platform Search Bar */}
-        <TopBarSearch />
+        {/* Right Section & Controls */}
+        <div className="flex items-center gap-3 sm:gap-5">
+          {/* CapDev Logo Image (Shown on right only when search is collapsed) */}
+          {!isSearchExpanded && (
+            <CapDevLogo height={22} />
+          )}
+
+          {/* Expandable TopBar Search */}
+          <TopBarSearch onExpandChange={setIsSearchExpanded} />
 
         {/* Notification Bell */}
         <div className="relative" ref={bellRef}>

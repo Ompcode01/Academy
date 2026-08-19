@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-19T07:25:40.772Z",
+  "exportedAt": "2026-08-19T09:14:44.322Z",
   "departments": [
     {
       "id": "1",
@@ -450,13 +450,13 @@
       "employeeId": "1",
       "username": "priyanka",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-19T06:58:10.446Z",
+      "lastLogin": "2026-08-19T08:59:41.801Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.459Z",
-      "updatedAt": "2026-08-19T06:58:10.449Z"
+      "updatedAt": "2026-08-19T08:59:41.802Z"
     },
     {
       "id": "2",
@@ -3908,6 +3908,18 @@
     {
       "id": "74",
       "timestamp": "2026-08-19T06:58:10.506Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "75",
+      "timestamp": "2026-08-19T08:59:41.882Z",
       "actorId": "1",
       "actorName": "Priyanka Davhare (SUPER_ADMIN)",
       "username": null,

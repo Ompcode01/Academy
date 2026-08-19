@@ -494,12 +494,27 @@ export class ReportingService {
       ? (totalCompletionTimeSeconds / completedCoursesWithTimeCount / 86400).toFixed(1) + " days"
       : "N/A";
 
-    const completionTrend = [
-      { month: "Jan", rate: Math.max(0, overallRate - 15) },
-      { month: "Feb", rate: Math.max(0, overallRate - 10) },
-      { month: "Mar", rate: Math.max(0, overallRate - 5) },
-      { month: "Apr", rate: overallRate },
-    ];
+    const monthData: Record<string, { enrolled: number, completed: number }> = {};
+    courses.forEach((c) => {
+      c.enrollments.forEach((e) => {
+        if (e.enrolledAt) {
+          const m = new Date(e.enrolledAt).toLocaleString('default', { month: 'short' });
+          if (!monthData[m]) monthData[m] = { enrolled: 0, completed: 0 };
+          monthData[m].enrolled++;
+        }
+        if (e.status === "COMPLETED" && e.completedAt) {
+          const m = new Date(e.completedAt).toLocaleString('default', { month: 'short' });
+          if (!monthData[m]) monthData[m] = { enrolled: 0, completed: 0 };
+          monthData[m].completed++;
+        }
+      });
+    });
+
+    const completionTrend = Object.keys(monthData).map((m) => {
+      const d = monthData[m];
+      const rate = d.enrolled > 0 ? Math.round((d.completed / d.enrolled) * 100) : 0;
+      return { month: m, rate };
+    });
 
     const courseComparisonChart = tableRows.slice(0, 6).map((r) => ({
       courseTitle: r.courseTitle.length > 18 ? r.courseTitle.substring(0, 18) + "..." : r.courseTitle,
@@ -1140,8 +1155,8 @@ export class ReportingService {
       },
       {
         type: "TREND",
-        title: "Period Performance Growth",
-        message: `Overall organization completion rate is currently at ${overallCompletionPct}%, showing a steady +4.2% increase compared to previous quarter metrics.`,
+        title: "Current Performance",
+        message: `Overall organization completion rate is currently at ${overallCompletionPct}%.`,
       },
     ];
 
