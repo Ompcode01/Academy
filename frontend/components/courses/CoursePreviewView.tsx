@@ -89,7 +89,7 @@ export default function CoursePreviewView() {
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
   const [expandedModules, setExpandedModules] = useState<number[]>([]);
-  
+
   // View mode: "overview" (Course Landing Page) vs "player" (Udemy Course Player)
   const [viewMode, setViewMode] = useState<"overview" | "player">("overview");
 
@@ -256,7 +256,7 @@ export default function CoursePreviewView() {
     if (viewMode !== "player" || !courseId || !selectedLesson) return;
 
     const interval = setInterval(() => {
-      updateLessonProgress(courseId, selectedLesson.id, false, 15).catch(() => {});
+      updateLessonProgress(courseId, selectedLesson.id, false, 15).catch(() => { });
     }, 15000);
 
     return () => clearInterval(interval);
@@ -335,13 +335,13 @@ export default function CoursePreviewView() {
       const lessonIds = module.lessons.map((l) => l.id);
       setCompletedLessonIds((prev) => prev.filter((id) => !lessonIds.includes(id)));
       for (const les of module.lessons) {
-        await updateLessonProgress(courseId, les.id, false, 2).catch(() => {});
+        await updateLessonProgress(courseId, les.id, false, 2).catch(() => { });
       }
     } else {
       const newIds = uncompletedLessons.map((l) => l.id);
       setCompletedLessonIds((prev) => Array.from(new Set([...prev, ...newIds])));
       for (const les of uncompletedLessons) {
-        await updateLessonProgress(courseId, les.id, true, 5).catch(() => {});
+        await updateLessonProgress(courseId, les.id, true, 5).catch(() => { });
       }
     }
     await loadCourseAndProgress();
@@ -497,7 +497,7 @@ export default function CoursePreviewView() {
         {/* Hero Banner Section */}
         <div className="bg-slate-900 text-white px-6 py-10 border-b border-slate-800">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            
+
             {/* Left 2 Columns: Course Hero Details */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
@@ -534,11 +534,10 @@ export default function CoursePreviewView() {
                   <User className="h-4 w-4 text-primary shrink-0" />
                   <span>
                     Created by <strong className="text-white font-semibold">{course.creatorInfo?.creatorName || creatorName}</strong>
-                    <span className={`ml-1.5 px-1.5 py-0.5 text-[9px] font-extrabold rounded border uppercase ${
-                      course.creatorInfo?.creatorRole === "SUPER_ADMIN"
+                    <span className={`ml-1.5 px-1.5 py-0.5 text-[9px] font-extrabold rounded border uppercase ${course.creatorInfo?.creatorRole === "SUPER_ADMIN"
                         ? "bg-red-500/20 text-red-400 border-red-500/30"
                         : "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                    }`}>
+                      }`}>
                       {course.creatorInfo?.creatorRole === "SUPER_ADMIN" ? "Super Admin" : "Admin"}
                     </span>
                   </span>
@@ -668,7 +667,7 @@ export default function CoursePreviewView() {
         <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left 2 Columns: Tabs & Curriculum Breakdown */}
           <div className="lg:col-span-2 space-y-8">
-            
+
             {/* 1. Course Identity & Classification Card */}
             <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
@@ -921,16 +920,16 @@ export default function CoursePreviewView() {
 
       {/* 2. Main Player Body (Sidebar + Content Viewport) */}
       <div className="flex-1 flex overflow-hidden">
-        
+
         {/* Left / Center Viewport */}
         <div className="flex-1 flex flex-col overflow-y-auto bg-background">
-          
+
           {/* Main Content Player Card */}
           <div className="p-6 max-w-5xl mx-auto w-full space-y-6 flex-1">
-            
+
             {selectedLesson ? (
               <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-6">
-                
+
                 {/* Content Header Title & Controls */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-4">
                   <div>
@@ -1045,7 +1044,7 @@ export default function CoursePreviewView() {
                             authorQuestions = parsed.questions;
                           }
                         }
-                      } catch {}
+                      } catch { }
 
                       const questionsToRender = authorQuestions || [
                         {
@@ -1085,8 +1084,8 @@ export default function CoursePreviewView() {
                             const opts: string[] = q.options && Array.isArray(q.options) && q.options.length > 0
                               ? q.options
                               : q.questionType === "MCQ"
-                              ? ["Excellent", "Good", "Average", "Needs Improvement"]
-                              : [];
+                                ? ["Excellent", "Good", "Average", "Needs Improvement"]
+                                : [];
 
                             return (
                               <div key={q.id || qIdx} className="p-3.5 rounded-xl bg-muted/20 border border-border space-y-2">
@@ -1115,11 +1114,10 @@ export default function CoursePreviewView() {
                                           (selectedLesson as any)[ansKey] = opt;
                                           setCourse((prev) => (prev ? { ...prev } : prev));
                                         }}
-                                        className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
-                                          currentAns === opt
+                                        className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${currentAns === opt
                                             ? "bg-amber-500 text-slate-950 border-amber-500 font-extrabold shadow-sm"
                                             : "bg-background border-border text-foreground hover:bg-muted"
-                                        }`}
+                                          }`}
                                       >
                                         {opt}
                                       </button>
@@ -1301,7 +1299,7 @@ export default function CoursePreviewView() {
                       try {
                         const raw = selectedLesson.quizConfigJson || (selectedLesson as any).configJson;
                         if (raw) qConfig = typeof raw === "string" ? JSON.parse(raw) : raw;
-                      } catch {}
+                      } catch { }
                       const qCount = Array.isArray(qConfig.questions) ? qConfig.questions.length : (Array.isArray(qConfig) ? qConfig.length : 0);
                       return (
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 border-t border-border text-[11px]">
@@ -1319,13 +1317,13 @@ export default function CoursePreviewView() {
                       try {
                         const raw = selectedLesson.assignmentConfigJson || (selectedLesson as any).configJson;
                         if (raw) aConfig = typeof raw === "string" ? JSON.parse(raw) : raw;
-                      } catch {}
+                      } catch { }
                       const refFiles: any[] = aConfig.questionFiles || aConfig.attachments || aConfig.files || [];
                       return (
                         <div className="space-y-3 pt-3 border-t border-border text-[11px]">
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <div>Max Marks: <strong className="text-purple-600 dark:text-purple-400 font-bold">{aConfig.maxMarks || 50}</strong></div>
-                            <div>Max Attempts: <strong className="text-foreground font-bold">{aConfig.maxAttempts === 0 ? "Unlimited" : (aConfig.maxAttempts ?? aConfig.attemptsAllowed ?? 1)}</strong></div>
+                            <div>Max Marks: <strong className="text-purple-600 dark:text-purple-400 font-bold">{aConfig.maxMarks || 100}</strong></div>
+                            <div>Max Attempts: <strong className="text-foreground font-bold">{aConfig.maxAttempts === 0 ? "Unlimited" : (aConfig.maxAttempts ?? aConfig.attemptsAllowed ?? 3)}</strong></div>
                             <div>Due Date: <strong className="text-amber-500 font-bold">{aConfig.deadline || "No strict deadline"}</strong></div>
                             <div>Max Size: <strong className="text-muted-foreground">{aConfig.maxFileSizeMb || 50} MB</strong></div>
                           </div>
@@ -1437,11 +1435,10 @@ export default function CoursePreviewView() {
                       <div key={idx} className="p-4 bg-muted/10 border border-border rounded-xl space-y-2.5">
                         <div className="flex flex-wrap items-center justify-between gap-2 font-bold">
                           <span className="text-foreground flex items-center gap-2">
-                            <Badge className={`text-[10px] ${
-                              sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"')
+                            <Badge className={`text-[10px] ${sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"')
                                 ? "bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30"
                                 : "bg-primary/20 text-primary border-primary/30"
-                            }`}>
+                              }`}>
                               {sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"')
                                 ? "FEEDBACK EVALUATION"
                                 : sub.submissionType}
@@ -1452,9 +1449,8 @@ export default function CoursePreviewView() {
                             <span className="text-[10px] text-muted-foreground font-normal">
                               {sub.submittedAt ? new Date(sub.submittedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : ""}
                             </span>
-                            <Badge className={`text-[10px] uppercase font-bold ${
-                              sub.status === "GRADED" ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30" : "bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30"
-                            }`}>
+                            <Badge className={`text-[10px] uppercase font-bold ${sub.status === "GRADED" ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30" : "bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30"
+                              }`}>
                               {sub.status}
                             </Badge>
                           </div>
@@ -1477,7 +1473,7 @@ export default function CoursePreviewView() {
                               if (fbData && (fbData.type === "FEEDBACK" || fbData.responses)) {
                                 isFeedback = true;
                               }
-                            } catch {}
+                            } catch { }
                           }
 
                           if (isFeedback && fbData) {
@@ -1692,7 +1688,7 @@ export default function CoursePreviewView() {
                 const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
                 if (Array.isArray(parsed.questions)) return parsed.questions;
               }
-            } catch {}
+            } catch { }
             return undefined;
           })()}
           onSuccess={() => {
