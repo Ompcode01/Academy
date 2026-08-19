@@ -143,6 +143,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
   const [showModal, setShowModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [successModal, setSuccessModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -709,9 +710,30 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
           if (deleteConfirmId !== null) {
             await removeEvent(deleteConfirmId);
             setDeleteConfirmId(null);
+            setSuccessModal({
+              open: true,
+              title: "Event Permanently Deleted",
+              description: "This event has been permanently removed from the calendar schedule for all users.",
+            });
           }
         }}
       />
+
+      {/* Harbinger Branded Success Popup Modal (No Cancel Button) */}
+      {successModal && (
+        <HarbingerConfirmModal
+          open={successModal.open}
+          onOpenChange={(open) => {
+            if (!open) setSuccessModal(null);
+          }}
+          title={successModal.title}
+          description={successModal.description}
+          confirmLabel="OK"
+          showCancelButton={false}
+          variant="success"
+          autoCloseMs={4000}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-19T12:07:46.653Z",
+  "exportedAt": "2026-08-19T12:48:45.331Z",
   "departments": [
     {
       "id": "2",
@@ -442,13 +442,13 @@
       "employeeId": "1",
       "username": "priyanka",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-19T09:34:31.803Z",
+      "lastLogin": "2026-08-19T12:22:15.002Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.459Z",
-      "updatedAt": "2026-08-19T09:34:31.805Z"
+      "updatedAt": "2026-08-19T12:22:15.004Z"
     },
     {
       "id": "2",
@@ -1158,9 +1158,9 @@
       "draftStep": null,
       "enrollmentType": "SELF",
       "isMandatory": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-07-31T09:32:41.427Z",
-      "updatedAt": "2026-08-19T11:58:30.288Z"
+      "updatedAt": "2026-08-19T12:29:57.797Z"
     },
     {
       "id": "5",
@@ -1202,9 +1202,9 @@
       "draftStep": null,
       "enrollmentType": "SELF",
       "isMandatory": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-08T12:00:22.886Z",
-      "updatedAt": "2026-08-19T11:58:30.288Z"
+      "updatedAt": "2026-08-19T12:30:04.684Z"
     },
     {
       "id": "7",
@@ -1224,9 +1224,9 @@
       "draftStep": null,
       "enrollmentType": "SELF",
       "isMandatory": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-11T08:34:11.884Z",
-      "updatedAt": "2026-08-19T11:58:30.288Z"
+      "updatedAt": "2026-08-19T12:30:10.571Z"
     },
     {
       "id": "8",
@@ -1290,9 +1290,9 @@
       "draftStep": null,
       "enrollmentType": "SELF",
       "isMandatory": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-18T09:50:30.313Z",
-      "updatedAt": "2026-08-19T11:58:30.288Z"
+      "updatedAt": "2026-08-19T12:22:53.437Z"
     },
     {
       "id": "11",
@@ -1312,9 +1312,9 @@
       "draftStep": null,
       "enrollmentType": "ADMIN",
       "isMandatory": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-18T12:25:49.118Z",
-      "updatedAt": "2026-08-19T11:58:30.288Z"
+      "updatedAt": "2026-08-19T12:12:55.569Z"
     },
     {
       "id": "12",
@@ -1403,21 +1403,31 @@
       "isActive": true,
       "createdAt": "2026-08-19T12:03:45.345Z",
       "updatedAt": "2026-08-19T12:03:45.345Z"
+    },
+    {
+      "id": "16",
+      "categoryId": "4",
+      "departmentId": null,
+      "creatorId": "1",
+      "title": "CHAMP July 2026",
+      "shortName": "CHAMP July 2026",
+      "courseCode": "CH83",
+      "shortDescription": "as sd fgh",
+      "description": "",
+      "thumbnail": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+      "duration": 20,
+      "level": "Beginner",
+      "language": "English",
+      "status": "PUBLISHED",
+      "draftStep": null,
+      "enrollmentType": "SELF",
+      "isMandatory": false,
+      "isActive": true,
+      "createdAt": "2026-08-19T12:26:01.253Z",
+      "updatedAt": "2026-08-19T12:37:32.302Z"
     }
   ],
   "courseTeachers": [
-    {
-      "id": "1",
-      "courseId": "6",
-      "teacherId": "4",
-      "assignedAt": "2026-08-08T12:00:22.902Z"
-    },
-    {
-      "id": "2",
-      "courseId": "7",
-      "teacherId": "4",
-      "assignedAt": "2026-08-11T08:34:12.167Z"
-    },
     {
       "id": "3",
       "courseId": "8",
@@ -1435,6 +1445,12 @@
       "courseId": "15",
       "teacherId": "4",
       "assignedAt": "2026-08-19T12:03:45.498Z"
+    },
+    {
+      "id": "11",
+      "courseId": "16",
+      "teacherId": "4",
+      "assignedAt": "2026-08-19T12:26:01.350Z"
     }
   ],
   "courseSections": [
@@ -1445,9 +1461,9 @@
       "description": "Fundamental concepts of distributed systems and microservices.",
       "sectionOrder": 1,
       "isPublished": true,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-08T12:00:22.926Z",
-      "updatedAt": "2026-08-19T04:12:24.908Z"
+      "updatedAt": "2026-08-19T12:30:04.684Z"
     },
     {
       "id": "2",
@@ -1456,9 +1472,9 @@
       "description": "Evaluate your knowledge with automated quizzes and a graded assignment.",
       "sectionOrder": 2,
       "isPublished": true,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-08T12:00:22.961Z",
-      "updatedAt": "2026-08-19T04:12:24.924Z"
+      "updatedAt": "2026-08-19T12:30:04.684Z"
     },
     {
       "id": "3",
@@ -1467,9 +1483,9 @@
       "description": null,
       "sectionOrder": 1,
       "isPublished": true,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-11T08:34:12.001Z",
-      "updatedAt": "2026-08-19T04:12:24.940Z"
+      "updatedAt": "2026-08-19T12:30:10.571Z"
     },
     {
       "id": "4",
@@ -1478,9 +1494,9 @@
       "description": null,
       "sectionOrder": 2,
       "isPublished": true,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-11T08:34:12.102Z",
-      "updatedAt": "2026-08-19T04:12:24.952Z"
+      "updatedAt": "2026-08-19T12:30:10.571Z"
     },
     {
       "id": "5",
@@ -1612,7 +1628,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T09:50:30.367Z",
-      "updatedAt": "2026-08-19T11:50:35.701Z"
+      "updatedAt": "2026-08-19T12:22:53.437Z"
     },
     {
       "id": "19",
@@ -1623,7 +1639,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T09:50:30.429Z",
-      "updatedAt": "2026-08-19T11:50:35.701Z"
+      "updatedAt": "2026-08-19T12:22:53.437Z"
     },
     {
       "id": "20",
@@ -1634,7 +1650,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:25:49.219Z",
-      "updatedAt": "2026-08-19T10:23:50.219Z"
+      "updatedAt": "2026-08-19T12:12:55.569Z"
     },
     {
       "id": "21",
@@ -1645,7 +1661,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:25:49.350Z",
-      "updatedAt": "2026-08-19T10:23:50.219Z"
+      "updatedAt": "2026-08-19T12:12:55.569Z"
     },
     {
       "id": "22",
@@ -1656,7 +1672,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:25:49.396Z",
-      "updatedAt": "2026-08-19T10:23:50.219Z"
+      "updatedAt": "2026-08-19T12:12:55.569Z"
     },
     {
       "id": "23",
@@ -1667,7 +1683,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:26:07.598Z",
-      "updatedAt": "2026-08-19T10:23:50.219Z"
+      "updatedAt": "2026-08-19T12:12:55.569Z"
     },
     {
       "id": "24",
@@ -1678,7 +1694,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:26:07.701Z",
-      "updatedAt": "2026-08-19T10:23:50.219Z"
+      "updatedAt": "2026-08-19T12:12:55.569Z"
     },
     {
       "id": "25",
@@ -1689,7 +1705,7 @@
       "isPublished": true,
       "isActive": false,
       "createdAt": "2026-08-18T12:26:07.739Z",
-      "updatedAt": "2026-08-19T10:23:50.219Z"
+      "updatedAt": "2026-08-19T12:12:55.569Z"
     },
     {
       "id": "26",
@@ -1866,6 +1882,50 @@
       "isActive": true,
       "createdAt": "2026-08-19T12:03:45.409Z",
       "updatedAt": "2026-08-19T12:03:45.409Z"
+    },
+    {
+      "id": "42",
+      "courseId": "16",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 1,
+      "isPublished": false,
+      "isActive": false,
+      "createdAt": "2026-08-19T12:26:01.301Z",
+      "updatedAt": "2026-08-19T12:37:32.421Z"
+    },
+    {
+      "id": "43",
+      "courseId": "16",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-19T12:29:32.365Z",
+      "updatedAt": "2026-08-19T12:37:32.421Z"
+    },
+    {
+      "id": "44",
+      "courseId": "16",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-19T12:37:32.437Z",
+      "updatedAt": "2026-08-19T12:37:32.437Z"
+    },
+    {
+      "id": "45",
+      "courseId": "16",
+      "title": "Section 2: asfh",
+      "description": null,
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-19T12:37:32.478Z",
+      "updatedAt": "2026-08-19T12:37:32.478Z"
     }
   ],
   "learningContents": [
@@ -2922,105 +2982,94 @@
       "assignmentConfigJson": null,
       "createdAt": "2026-08-19T12:03:45.453Z",
       "updatedAt": "2026-08-19T12:03:45.453Z"
+    },
+    {
+      "id": "67",
+      "sectionId": "42",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-19T12:26:01.318Z",
+      "updatedAt": "2026-08-19T12:26:01.318Z"
+    },
+    {
+      "id": "68",
+      "sectionId": "43",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-19T12:29:32.384Z",
+      "updatedAt": "2026-08-19T12:29:32.384Z"
+    },
+    {
+      "id": "69",
+      "sectionId": "44",
+      "title": "End-of-Course Feedback & Evaluation Survey",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"End-of-Course Feedback & Evaluation Survey\",\"description\":\"Please share your review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":2,\"questionText\":\"How well did the practical exercises help reinforce your learning?\",\"questionType\":\"MCQ\",\"options\":[\"Extremely Helpful\",\"Moderately Helpful\",\"Neutral\",\"Not Helpful\"],\"isMandatory\":true},{\"id\":3,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-19T12:37:32.457Z",
+      "updatedAt": "2026-08-19T12:37:32.457Z"
+    },
+    {
+      "id": "70",
+      "sectionId": "45",
+      "title": "asdfg",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"asdfg\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":3,\"totalMarks\":10,\"shuffleQuestions\":true,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":false,\"questions\":[{\"questionText\":\"What does HTML stand for?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Hyper Text Markup Language\",\"High Text Machine Language\",\"Hyper Tabular Markup Language\",\"None of the above\"],\"correctAnswer\":\"Hyper Text Markup Language\"},{\"questionText\":\"CSS is used to structure content on a webpage.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Which of the following are programming languages?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Python\",\"HTML\",\"Java\",\"CSS\"],\"correctAnswer\":[\"Python\",\"Java\"]},{\"questionText\":\"What does API stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Application Programming Interface\"},{\"questionText\":\"What is the time complexity of binary search?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"O(1)\",\"O(n)\",\"O(log n)\",\"O(n^2)\"],\"correctAnswer\":\"O(log n)\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-19T12:37:32.492Z",
+      "updatedAt": "2026-08-19T12:37:32.492Z"
+    },
+    {
+      "id": "71",
+      "sectionId": "45",
+      "title": "asdfh",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": null,
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"asdfh\",\"description\":\"\",\"maxMarks\":50,\"deadline\":\"2026-08-30 23:59\",\"maxAttempts\":1,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":10,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[]}",
+      "createdAt": "2026-08-19T12:37:32.509Z",
+      "updatedAt": "2026-08-19T12:37:32.509Z"
     }
   ],
   "enrollments": [
-    {
-      "id": "1",
-      "userId": "21",
-      "courseId": "6",
-      "enrolledAt": "2026-08-08T12:00:23.005Z",
-      "startDate": null,
-      "completedAt": null,
-      "dueDate": null,
-      "lastActivityAt": null,
-      "status": "IN_PROGRESS",
-      "progress": "0",
-      "timeSpentSeconds": 0,
-      "sessionsCount": 1,
-      "isMandatory": false,
-      "createdAt": "2026-08-08T12:00:23.005Z"
-    },
-    {
-      "id": "2",
-      "userId": "6",
-      "courseId": "4",
-      "enrolledAt": "2026-08-08T12:03:47.881Z",
-      "startDate": null,
-      "completedAt": null,
-      "dueDate": null,
-      "lastActivityAt": null,
-      "status": "IN_PROGRESS",
-      "progress": "0",
-      "timeSpentSeconds": 0,
-      "sessionsCount": 1,
-      "isMandatory": false,
-      "createdAt": "2026-08-08T12:03:47.881Z"
-    },
-    {
-      "id": "3",
-      "userId": "1",
-      "courseId": "6",
-      "enrolledAt": "2026-08-10T04:04:52.744Z",
-      "startDate": null,
-      "completedAt": "2026-08-10T04:11:56.042Z",
-      "dueDate": null,
-      "lastActivityAt": null,
-      "status": "COMPLETED",
-      "progress": "100",
-      "timeSpentSeconds": 20,
-      "sessionsCount": 1,
-      "isMandatory": false,
-      "createdAt": "2026-08-10T04:04:52.744Z"
-    },
-    {
-      "id": "4",
-      "userId": "12",
-      "courseId": "4",
-      "enrolledAt": "2026-08-10T04:18:07.113Z",
-      "startDate": null,
-      "completedAt": null,
-      "dueDate": null,
-      "lastActivityAt": null,
-      "status": "IN_PROGRESS",
-      "progress": "0",
-      "timeSpentSeconds": 0,
-      "sessionsCount": 1,
-      "isMandatory": false,
-      "createdAt": "2026-08-10T04:18:07.113Z"
-    },
-    {
-      "id": "5",
-      "userId": "1",
-      "courseId": "7",
-      "enrolledAt": "2026-08-11T08:34:27.926Z",
-      "startDate": null,
-      "completedAt": null,
-      "dueDate": null,
-      "lastActivityAt": null,
-      "status": "IN_PROGRESS",
-      "progress": "0",
-      "timeSpentSeconds": 915,
-      "sessionsCount": 1,
-      "isMandatory": false,
-      "createdAt": "2026-08-11T08:34:27.926Z"
-    },
-    {
-      "id": "6",
-      "userId": "4",
-      "courseId": "7",
-      "enrolledAt": "2026-08-11T08:37:04.860Z",
-      "startDate": null,
-      "completedAt": null,
-      "dueDate": null,
-      "lastActivityAt": null,
-      "status": "IN_PROGRESS",
-      "progress": "0",
-      "timeSpentSeconds": 465,
-      "sessionsCount": 1,
-      "isMandatory": false,
-      "createdAt": "2026-08-11T08:37:04.860Z"
-    },
     {
       "id": "7",
       "userId": "1",
@@ -3052,22 +3101,6 @@
       "sessionsCount": 1,
       "isMandatory": false,
       "createdAt": "2026-08-17T08:41:57.891Z"
-    },
-    {
-      "id": "9",
-      "userId": "6",
-      "courseId": "7",
-      "enrolledAt": "2026-08-17T08:49:03.177Z",
-      "startDate": null,
-      "completedAt": "2026-08-17T09:00:15.518Z",
-      "dueDate": null,
-      "lastActivityAt": null,
-      "status": "COMPLETED",
-      "progress": "100",
-      "timeSpentSeconds": 115,
-      "sessionsCount": 1,
-      "isMandatory": false,
-      "createdAt": "2026-08-17T08:49:03.177Z"
     },
     {
       "id": "10",
@@ -3200,44 +3233,12 @@
   ],
   "userLessonProgresses": [
     {
-      "id": "2",
-      "userId": "1",
-      "courseId": "6",
-      "contentId": "2",
-      "isCompleted": true,
-      "completedAt": "2026-08-10T04:11:54.378Z"
-    },
-    {
-      "id": "4",
-      "userId": "1",
-      "courseId": "6",
-      "contentId": "4",
-      "isCompleted": true,
-      "completedAt": "2026-08-10T04:11:56.007Z"
-    },
-    {
       "id": "5",
       "userId": "6",
       "courseId": "8",
       "contentId": "10",
       "isCompleted": true,
       "completedAt": "2026-08-17T08:44:19.883Z"
-    },
-    {
-      "id": "11",
-      "userId": "6",
-      "courseId": "7",
-      "contentId": "7",
-      "isCompleted": true,
-      "completedAt": "2026-08-17T09:00:14.622Z"
-    },
-    {
-      "id": "12",
-      "userId": "6",
-      "courseId": "7",
-      "contentId": "8",
-      "isCompleted": true,
-      "completedAt": "2026-08-17T09:00:15.453Z"
     },
     {
       "id": "14",
@@ -3296,14 +3297,6 @@
       "completedAt": "2026-08-17T10:10:14.261Z"
     },
     {
-      "id": "43",
-      "userId": "6",
-      "courseId": "7",
-      "contentId": "999999",
-      "isCompleted": true,
-      "completedAt": "2026-08-17T10:57:01.371Z"
-    },
-    {
       "id": "44",
       "userId": "6",
       "courseId": "9",
@@ -3353,26 +3346,6 @@
     }
   ],
   "assessmentSubmissions": [
-    {
-      "id": "1",
-      "userId": "6",
-      "courseId": "7",
-      "contentId": "999999",
-      "submissionType": "ASSIGNMENT",
-      "answersJson": null,
-      "submissionText": "{\"type\":\"FEEDBACK\",\"title\":\"End-of-Course Feedback Survey\",\"responses\":{\"1\":\"3 - Satisfactory\",\"2\":\"Neutral\",\"3\":\"Very Clear\",\"4\":\"NA\"},\"questions\":[{\"id\":1,\"questionText\":\"How satisfied are you with the overall course content and lesson structure?\"},{\"id\":2,\"questionText\":\"How effective were the practical exercises, quizzes, and learning materials?\"},{\"id\":3,\"questionText\":\"How clear and helpful were the instructor's explanations?\"},{\"id\":4,\"questionText\":\"What key improvements or additional topics would you suggest for this course?\"}]}",
-      "fileUrl": null,
-      "status": "SUBMITTED",
-      "score": 0,
-      "maxScore": 100,
-      "percentage": 0,
-      "grade": null,
-      "feedback": null,
-      "attemptNumber": 1,
-      "gradedBy": null,
-      "gradedAt": null,
-      "submittedAt": "2026-08-17T09:00:30.844Z"
-    },
     {
       "id": "2",
       "userId": "6",
@@ -3475,30 +3448,6 @@
     }
   ],
   "issuedCertificates": [
-    {
-      "id": "1",
-      "certificateCode": "HARB-2026-X3394",
-      "userId": "1",
-      "courseId": "6",
-      "issuedAt": "2026-08-10T04:11:56.104Z",
-      "expiresAt": null,
-      "status": "ACTIVE",
-      "recipientName": "Priyanka Davhare",
-      "courseTitle": "Fullstack System Architecture & Security",
-      "templateSnapshot": null
-    },
-    {
-      "id": "2",
-      "certificateCode": "HARB-2026-X2405",
-      "userId": "6",
-      "courseId": "7",
-      "issuedAt": "2026-08-17T09:00:15.687Z",
-      "expiresAt": null,
-      "status": "ACTIVE",
-      "recipientName": "Employee6 User",
-      "courseTitle": "Java Programming",
-      "templateSnapshot": null
-    },
     {
       "id": "3",
       "certificateCode": "HARB-2026-X9247",
@@ -4788,6 +4737,114 @@
       "departmentName": null,
       "action": "Course Deleted",
       "detail": "Deleted course 'The AI Engineer Course 2026: Complete AI Engineer Bootcamp'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "105",
+      "timestamp": "2026-08-19T12:12:55.669Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Deleted",
+      "detail": "Deleted course 'Java Programming'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "106",
+      "timestamp": "2026-08-19T12:22:15.068Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "107",
+      "timestamp": "2026-08-19T12:22:53.560Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Deleted",
+      "detail": "Deleted course 'Python'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "108",
+      "timestamp": "2026-08-19T12:26:01.403Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Draft Saved",
+      "detail": "Saved draft 'CHAMP July 2026' at step 2",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "109",
+      "timestamp": "2026-08-19T12:29:32.458Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Updated",
+      "detail": "Updated course 'CHAMP July 2026'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "110",
+      "timestamp": "2026-08-19T12:29:57.938Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Deleted",
+      "detail": "Deleted course 'HR Compliance Basics'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "111",
+      "timestamp": "2026-08-19T12:30:05.005Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Deleted",
+      "detail": "Deleted course 'Fullstack System Architecture & Security'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "112",
+      "timestamp": "2026-08-19T12:30:10.722Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Deleted",
+      "detail": "Deleted course 'Java Programming'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "113",
+      "timestamp": "2026-08-19T12:37:32.569Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Updated",
+      "detail": "Updated course 'CHAMP July 2026'",
       "type": "course",
       "ipAddress": "::1"
     }
@@ -14496,6 +14553,1127 @@
       },
       "roleTarget": "TEACHER",
       "createdAt": "2026-08-19T12:03:45.533Z"
+    },
+    {
+      "id": "580",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'CHAMP July 2026'. You can now view and edit its curriculum.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-19T12:26:01.374Z"
+    },
+    {
+      "id": "581",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'CHAMP July 2026'. You can now view and edit its curriculum.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-19T12:29:32.433Z"
+    },
+    {
+      "id": "582",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "583",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "584",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "585",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "586",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "587",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "588",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "589",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "590",
+      "userId": "6",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "591",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "592",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "593",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "594",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "595",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "596",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "597",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "598",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "599",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "600",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "601",
+      "userId": "4",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "602",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "603",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "604",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "605",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "606",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "607",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"CHAMP July 2026\" in course 'CHAMP July 2026'.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "608",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"CHAMP July 2026\" in course 'CHAMP July 2026'.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "609",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"CHAMP July 2026\" in course 'CHAMP July 2026'.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-19T12:29:32.496Z"
+    },
+    {
+      "id": "610",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'CHAMP July 2026'. You can now view and edit its curriculum.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-19T12:37:32.546Z"
+    },
+    {
+      "id": "611",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "612",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "613",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "614",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "615",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "616",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "617",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "618",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "619",
+      "userId": "6",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "620",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "621",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "622",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "623",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "624",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "625",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "626",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "627",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "628",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "629",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "630",
+      "userId": "4",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "631",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "632",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "633",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "634",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "635",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'CHAMP July 2026' was updated by Super Admin priyanka. New content added: CHAMP July 2026 (Course Update).",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "636",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"CHAMP July 2026\" in course 'CHAMP July 2026'.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "637",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"CHAMP July 2026\" in course 'CHAMP July 2026'.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-19T12:37:32.583Z"
+    },
+    {
+      "id": "638",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"CHAMP July 2026\" in course 'CHAMP July 2026'.",
+      "link": "/courses/16/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 16
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-19T12:37:32.583Z"
     }
   ]
 }

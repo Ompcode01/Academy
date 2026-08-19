@@ -49,13 +49,13 @@ export default function CourseFilters({
     { id: 4, departmentCode: "BE", departmentName: "Business Enablers", isActive: true, createdAt: "", updatedAt: "" },
   ]);
 
-  const [catFilter, setCatFilter] = useState<string>("all");
-  const [deptFilter, setDeptFilter] = useState<string>("all");
+  const [catFilter, setCatFilter] = useState<string>("All");
+  const [deptFilter, setDeptFilter] = useState<string>("All");
   const [statusFilter, setStatusFilter] = useState<string>(statusValue || "PUBLISHED");
 
   useEffect(() => {
     if (statusValue !== undefined) {
-      setStatusFilter(statusValue || "all");
+      setStatusFilter(statusValue || "All");
     }
   }, [statusValue]);
 
@@ -87,14 +87,14 @@ export default function CourseFilters({
       title="Course Catalog Search & Filters"
       searchQuery={searchQuery}
       onSearchChange={onSearch}
-      searchPlaceholder="Search courses by name or description..."
+      searchPlaceholder="Search courses..."
       sortValue={sortValue as SortOption}
       onSortChange={(val) => onSortChange?.(val as CourseSortOption)}
       sortOptions={[
-        { label: "Course Title (A-Z)", value: "a_z" },
-        { label: "Course Title (Z-A)", value: "z_a" },
-        { label: "Newest Created", value: "newest" },
-        { label: "Oldest Created", value: "oldest" },
+        { label: "Newest", value: "newest" },
+        { label: "Oldest", value: "oldest" },
+        { label: "Title (A-Z)", value: "a_z" },
+        { label: "Title (Z-A)", value: "z_a" },
       ]}
       startDate={startDate}
       endDate={endDate}
@@ -125,21 +125,21 @@ export default function CourseFilters({
       ]}
       onColumnFilterChange={(key, val) => {
         if (key === "category") {
-          setCatFilter(val || "all");
+          setCatFilter(val || "All");
           onCategoryChange?.(val);
         }
         if (key === "department") {
-          setDeptFilter(val || "all");
+          setDeptFilter(val || "All");
           onDepartmentChange?.(val);
         }
         if (key === "status") {
-          setStatusFilter(val || "all");
+          setStatusFilter(val || "All");
           onStatusChange?.(val);
         }
       }}
       onResetAll={() => {
-        setCatFilter("all");
-        setDeptFilter("all");
+        setCatFilter("All");
+        setDeptFilter("All");
         setStatusFilter("PUBLISHED");
         onCategoryChange?.(null);
         onDepartmentChange?.(null);

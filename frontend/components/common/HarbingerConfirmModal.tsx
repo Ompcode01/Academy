@@ -17,6 +17,7 @@ interface HarbingerConfirmModalProps {
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  showCancelButton?: boolean;
   variant?: "primary" | "success" | "danger" | "amber";
   icon?: React.ReactNode;
   loading?: boolean;
@@ -33,6 +34,7 @@ export default function HarbingerConfirmModal({
   description,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
+  showCancelButton,
   variant = "primary",
   icon,
   loading = false,
@@ -50,6 +52,11 @@ export default function HarbingerConfirmModal({
       return () => clearTimeout(timer);
     }
   }, [open, autoCloseMs, onOpenChange, onAutoClose]);
+
+  const shouldShowCancel =
+    showCancelButton !== undefined
+      ? showCancelButton
+      : variant !== "success" && cancelLabel !== "";
 
   const getVariantStyles = () => {
     switch (variant) {
@@ -84,7 +91,7 @@ export default function HarbingerConfirmModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-0 overflow-hidden rounded-2xl border border-slate-100 shadow-2xl bg-white select-none">
+      <DialogContent showCloseButton={false} className="max-w-md p-0 overflow-hidden rounded-2xl border border-slate-100 shadow-2xl bg-white select-none">
         <DialogTitle className="sr-only">{title}</DialogTitle>
 
         {/* Modal Header with Harbinger Group Logo */}
@@ -128,18 +135,26 @@ export default function HarbingerConfirmModal({
           {/* Modal Footer Actions (only rendered if showButtons is true) */}
           {showButtons && (
             <div className="flex items-center justify-end gap-3 pt-3">
+              {shouldShowCancel && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => onOpenChange(false)}
+                  disabled={loading}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#EBF3F5] hover:bg-[#DDE9EC] text-[#2D3748] border-0 cursor-pointer shadow-none"
+                >
+                  {cancelLabel}
+                </Button>
+              )}
               <Button
                 type="button"
-                variant="ghost"
-                onClick={() => onOpenChange(false)}
-                disabled={loading}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#EBF3F5] hover:bg-[#DDE9EC] text-[#2D3748] border-0 cursor-pointer shadow-none"
-              >
-                {cancelLabel}
-              </Button>
-              <Button
-                type="button"
-                onClick={onConfirm}
+                onClick={() => {
+                  if (onConfirm) {
+                    onConfirm();
+                  } else {
+                    onOpenChange(false);
+                  }
+                }}
                 disabled={loading}
                 className={`px-6 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition-all ${style.buttonBg}`}
               >

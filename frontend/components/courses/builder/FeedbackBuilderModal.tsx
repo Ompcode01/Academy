@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, Plus, Trash2, CheckSquare, AlignLeft, ShieldAlert } from "lucide-react";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 export interface FeedbackQuestion {
   id: number;
@@ -37,6 +38,7 @@ export default function FeedbackBuilderModal({
   const [description, setDescription] = useState(
     "Please share your honest review regarding course structure, content clarity, and instructor support."
   );
+  const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
 
   const [questions, setQuestions] = useState<FeedbackQuestion[]>([
     {
@@ -101,7 +103,14 @@ export default function FeedbackBuilderModal({
   };
 
   const handleSave = () => {
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setValidationModal({
+        open: true,
+        title: "Required Fields Missing",
+        description: "Please fill out the Feedback Form Title before saving.",
+      });
+      return;
+    }
     onSaveFeedback({
       title: title.trim(),
       description: description.trim(),
@@ -111,7 +120,8 @@ export default function FeedbackBuilderModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto bg-card border-border">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold text-foreground flex items-center gap-2">
@@ -296,5 +306,21 @@ export default function FeedbackBuilderModal({
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* Validation Error Popup Modal (No Cancel Button, Red Warning Icon) */}
+    {validationModal && (
+      <HarbingerConfirmModal
+        open={validationModal.open}
+        onOpenChange={(open) => {
+          if (!open) setValidationModal(null);
+        }}
+        title={validationModal.title}
+        description={validationModal.description}
+        confirmLabel="OK"
+        showCancelButton={false}
+        variant="danger"
+      />
+    )}
+  </>
   );
 }

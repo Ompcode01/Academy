@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import CourseFilters from "@/components/courses/CourseFilters";
+import CourseFilters, { CourseSortOption } from "@/components/courses/CourseFilters";
 import CourseTable from "@/components/courses/CourseTable";
 import CourseCards from "@/components/courses/CourseCards";
 import CreateCourseModal from "@/components/courses/CreateCourseModal";
@@ -26,12 +26,14 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [successModal, setSuccessModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
 
   // Filter States
   const [search, setSearch] = useState<string>("");
   const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
   const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
   const [status, setStatus] = useState<string | undefined>("PUBLISHED");
+  const [sortValue, setSortValue] = useState<CourseSortOption>("newest");
 
   const pageSize = 5;
 
@@ -86,6 +88,10 @@ export default function CoursesPage() {
     setCurrentPage(1);
   };
 
+  const handleSortChange = (value: CourseSortOption) => {
+    setSortValue(value);
+  };
+
   const handleEdit = (id: number) => {
     router.push(`/courses/create?id=${id}`);
   };
@@ -93,6 +99,27 @@ export default function CoursesPage() {
   const handleDelete = (id: number) => {
     setDeleteConfirmId(id);
   };
+
+  // Client-side sorting on loaded courses
+  const sortedCourses = [...courses].sort((a, b) => {
+    if (sortValue === "a_z") {
+      return (a.title || "").localeCompare(b.title || "");
+    }
+    if (sortValue === "z_a") {
+      return (b.title || "").localeCompare(a.title || "");
+    }
+    if (sortValue === "newest") {
+      const tsA = a.createdAt ? new Date(a.createdAt).getTime() : Number(a.id);
+      const tsB = b.createdAt ? new Date(b.createdAt).getTime() : Number(b.id);
+      return tsB - tsA;
+    }
+    if (sortValue === "oldest") {
+      const tsA = a.createdAt ? new Date(a.createdAt).getTime() : Number(a.id);
+      const tsB = b.createdAt ? new Date(b.createdAt).getTime() : Number(b.id);
+      return tsA - tsB;
+    }
+    return 0;
+  });
 
   return (
     <div className="p-6 space-y-6 max-w-[100vw] overflow-x-hidden">
@@ -122,6 +149,8 @@ export default function CoursesPage() {
           onCategoryChange={handleCategoryChange}
           onDepartmentChange={handleDepartmentChange}
           onStatusChange={handleStatusChange}
+          onSortChange={handleSortChange}
+          sortValue={sortValue}
           statusValue={status}
         />
       </div>
@@ -133,7 +162,7 @@ export default function CoursesPage() {
         </div>
       ) : user?.role === ROLES.SUPER_ADMIN || user?.role === ROLES.ADMIN ? (
         <CourseTable
-          courses={courses}
+          courses={sortedCourses}
           currentPage={currentPage}
           totalCourses={totalCourses}
           pageSize={pageSize}
@@ -143,7 +172,7 @@ export default function CoursesPage() {
         />
       ) : (
         <CourseCards
-          courses={courses}
+          courses={sortedCourses}
           userEnrollments={userEnrollments}
           currentPage={currentPage}
           totalCourses={totalCourses}
@@ -191,11 +220,13 @@ export default function CoursesPage() {
                 try {
                   const res = await deleteCourse(idToDelete);
                   if (res?.success) {
-                    toast.success(
-                      isArchived
-                        ? "Course permanently deleted"
-                        : "Course archived successfully"
-                    );
+                    setSuccessModal({
+                      open: true,
+                      title: isArchived ? "Course permanently deleted" : "Course archived successfully",
+                      description: isArchived
+                        ? "This course has been permanently removed from the catalog database for all users."
+                        : "This course has been archived and safely stored in the catalog archive.",
+                    });
                     fetchCoursesList();
                   } else {
                     toast.error(res?.message || "Failed to delete course");
@@ -209,6 +240,22 @@ export default function CoursesPage() {
           />
         );
       })()}
+
+      {/* Harbinger Branded Success Popup Modal (No Cancel Button) */}
+      {successModal && (
+        <HarbingerConfirmModal
+          open={successModal.open}
+          onOpenChange={(open) => {
+            if (!open) setSuccessModal(null);
+          }}
+          title={successModal.title}
+          description={successModal.description}
+          confirmLabel="OK"
+          showCancelButton={false}
+          variant="success"
+          autoCloseMs={4000}
+        />
+      )}
     </div>
   );
 }
