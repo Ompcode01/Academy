@@ -30,11 +30,22 @@ type TabCategory = "all" | "courses" | "modules_lessons" | "quizzes_assignments"
 
 const RECENT_SEARCHES_KEY = "dlms_recent_searches_v1";
 
-export default function TopBarSearch() {
+interface TopBarSearchProps {
+  onExpandChange?: (expanded: boolean) => void;
+}
+
+export default function TopBarSearch({ onExpandChange }: TopBarSearchProps) {
   const router = useRouter();
   const { user } = useAuthStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const setExpanded = (expanded: boolean) => {
+    setIsExpanded(expanded);
+    onExpandChange?.(expanded);
+  };
 
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<TabCategory>("all");
@@ -52,7 +63,7 @@ export default function TopBarSearch() {
       if (saved) {
         setRecentSearches(JSON.parse(saved));
       }
-    } catch (_) {}
+    } catch (_) { }
   }, []);
 
   // Global Cmd+K / Ctrl+K keyboard shortcut to focus TopBar search input
@@ -60,24 +71,28 @@ export default function TopBarSearch() {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        inputRef.current?.focus();
+        setExpanded(true);
         setIsOpen(true);
+        setTimeout(() => inputRef.current?.focus(), 50);
       }
     };
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
-  // Close dropdown on click outside
+  // Close dropdown and collapse search on click outside if empty
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
+        if (!query.trim()) {
+          setExpanded(false);
+        }
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [query]);
 
   // Debounced API search
   useEffect(() => {
@@ -94,12 +109,12 @@ export default function TopBarSearch() {
           activeTab === "courses"
             ? "courses"
             : activeTab === "modules_lessons"
-            ? "all"
-            : activeTab === "quizzes_assignments"
-            ? "all"
-            : activeTab === "events_skills"
-            ? "all"
-            : "all";
+              ? "all"
+              : activeTab === "quizzes_assignments"
+                ? "all"
+                : activeTab === "events_skills"
+                  ? "all"
+                  : "all";
 
         const res = await globalSearch(query.trim(), categoryFilter);
         if (res.success) {
@@ -123,19 +138,20 @@ export default function TopBarSearch() {
     setRecentSearches(updated);
     try {
       localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const clearRecentSearches = () => {
     setRecentSearches([]);
     try {
       localStorage.removeItem(RECENT_SEARCHES_KEY);
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const handleSelectResult = (url: string, title: string) => {
     saveRecentSearch(query || title);
     setIsOpen(false);
+    setExpanded(false);
     router.push(url);
   };
 
@@ -166,6 +182,9 @@ export default function TopBarSearch() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       setIsOpen(false);
+      if (!query.trim()) {
+        setExpanded(false);
+      }
       inputRef.current?.blur();
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -180,8 +199,24 @@ export default function TopBarSearch() {
     }
   };
 
+  if (!isExpanded) {
+    return (
+      <button
+        onClick={() => {
+          setExpanded(true);
+          setIsOpen(true);
+          setTimeout(() => inputRef.current?.focus(), 50);
+        }}
+        className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center"
+        title="Search LMS (Ctrl+K)"
+      >
+        <Search className="h-4 w-4 text-[#C82333]" />
+      </button>
+    );
+  }
+
   return (
-    <div className="relative w-48 sm:w-64 md:w-80 lg:w-[420px]" ref={containerRef}>
+    <div className="relative w-48 sm:w-64 md:w-80 lg:w-[360px] animate-in fade-in zoom-in-95 duration-150" ref={containerRef}>
       {/* TopBar Search Input Field */}
       <div className="relative flex items-center w-full">
         <Search className="absolute left-3 h-4 w-4 text-[#C82333] pointer-events-none" />
@@ -189,6 +224,7 @@ export default function TopBarSearch() {
           ref={inputRef}
           type="text"
           value={query}
+          autoFocus
           onFocus={() => setIsOpen(true)}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -196,7 +232,7 @@ export default function TopBarSearch() {
             setSelectedIndex(-1);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Search LMS courses, lessons, quizzes..."
+          placeholder="Search courses, lessons, quizzes, etc"
           className="w-full h-9 pl-9 pr-14 rounded-lg bg-white/10 hover:bg-white/15 focus:bg-white text-xs font-medium text-white focus:text-[#212529] placeholder-slate-300 focus:placeholder-slate-400 border border-white/15 focus:border-slate-300 shadow-inner focus:shadow-md transition-all outline-none"
         />
 
@@ -204,21 +240,27 @@ export default function TopBarSearch() {
           <Loader2 className="absolute right-3 h-4 w-4 text-[#C82333] animate-spin" />
         )}
 
-        {!loading && query && (
+        {!loading && (
           <button
             onClick={() => {
-              setQuery("");
-              setResults(null);
+              if (query) {
+                setQuery("");
+                setResults(null);
+              } else {
+                setIsOpen(false);
+                setExpanded(false);
+              }
             }}
-            className="absolute right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="absolute right-3 text-slate-400 hover:text-slate-200 transition-colors"
+            title="Close search"
           >
             <X className="h-3.5 w-3.5" />
           </button>
         )}
 
         {!loading && !query && (
-          <span className="absolute right-2.5 hidden sm:inline-block text-[9px] font-mono text-slate-300 bg-black/40 px-1.5 py-0.5 rounded border border-white/10 pointer-events-none">
-            ⌘K
+          <span className="absolute right-8 hidden sm:inline-block text-[9px] font-mono text-slate-300 bg-black/40 px-1.5 py-0.5 rounded border border-white/10 pointer-events-none">
+
           </span>
         )}
       </div>
@@ -242,11 +284,10 @@ export default function TopBarSearch() {
                     setActiveTab(tab.id as TabCategory);
                     setSelectedIndex(-1);
                   }}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                    activeTab === tab.id
-                      ? "bg-[#C82333] text-white shadow-sm"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800"
-                  }`}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${activeTab === tab.id
+                    ? "bg-[#C82333] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800"
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -344,11 +385,10 @@ export default function TopBarSearch() {
                           key={`${item.type}-${item.id}-${idx}`}
                           onClick={() => handleSelectResult(item.url, itemTitle)}
                           onMouseEnter={() => setSelectedIndex(idx)}
-                          className={`p-2.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                            isSelected
-                              ? "bg-[#C82333]/10 border-[#C82333]/40 shadow-sm"
-                              : "bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
-                          }`}
+                          className={`p-2.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between gap-3 ${isSelected
+                            ? "bg-[#C82333]/10 border-[#C82333]/40 shadow-sm"
+                            : "bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                            }`}
                         >
                           <div className="flex items-start gap-2.5 min-w-0">
                             <div className="p-1.5 rounded-md shrink-0 mt-0.5 border" style={getBadgeStyle(item.type)}>
