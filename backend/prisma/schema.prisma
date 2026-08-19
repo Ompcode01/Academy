@@ -528,6 +528,3 @@ model GuestAccessGrant {
   @@index([scope])
   @@map("guest_access_grants")
 }
-
-
-
