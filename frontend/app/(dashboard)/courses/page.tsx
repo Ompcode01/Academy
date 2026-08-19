@@ -30,6 +30,7 @@ export default function CoursesPage() {
 
   // Filter States
   const [search, setSearch] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
   const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
   const [status, setStatus] = useState<string | undefined>("PUBLISHED");
@@ -37,12 +38,19 @@ export default function CoursesPage() {
 
   const pageSize = 5;
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const fetchCoursesList = async () => {
     try {
       setLoading(true);
       const [res, myEnrolls] = await Promise.all([
         getCourses({
-          search,
+          search: debouncedSearch,
           categoryId,
           departmentId,
           status,
@@ -66,7 +74,7 @@ export default function CoursesPage() {
 
   useEffect(() => {
     fetchCoursesList();
-  }, [currentPage, search, categoryId, departmentId, status]);
+  }, [currentPage, debouncedSearch, categoryId, departmentId, status]);
 
   const handleSearch = (value: string) => {
     setSearch(value);
@@ -90,6 +98,16 @@ export default function CoursesPage() {
 
   const handleSortChange = (value: CourseSortOption) => {
     setSortValue(value);
+  };
+
+  const handleResetAll = () => {
+    setSearch("");
+    setDebouncedSearch("");
+    setCategoryId(undefined);
+    setDepartmentId(undefined);
+    setStatus("PUBLISHED");
+    setSortValue("newest");
+    setCurrentPage(1);
   };
 
   const handleEdit = (id: number) => {
@@ -145,11 +163,13 @@ export default function CoursesPage() {
       {/* Filters */}
       <div className="bg-card p-4 rounded-xl border border-border">
         <CourseFilters
+          searchQuery={search}
           onSearch={handleSearch}
           onCategoryChange={handleCategoryChange}
           onDepartmentChange={handleDepartmentChange}
           onStatusChange={handleStatusChange}
           onSortChange={handleSortChange}
+          onResetAll={handleResetAll}
           sortValue={sortValue}
           statusValue={status}
         />

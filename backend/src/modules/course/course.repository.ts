@@ -58,15 +58,24 @@ class CourseRepository {
     const where: any = { isActive: true, ...scopeWhere };
 
     if (search) {
-      where.AND = [
-        ...(where.AND || []),
-        {
-          OR: [
-            { title: { contains: search } },
-            { shortDescription: { contains: search } },
-          ],
-        },
-      ];
+      const q = search.trim();
+      if (q) {
+        where.AND = [
+          ...(where.AND || []),
+          {
+            OR: [
+              { title: { contains: q } },
+              { shortDescription: { contains: q } },
+              { description: { contains: q } },
+              { courseCode: { contains: q } },
+              { shortName: { contains: q } },
+              { category: { name: { contains: q } } },
+              { department: { departmentName: { contains: q } } },
+              { department: { departmentCode: { contains: q } } },
+            ],
+          },
+        ];
+      }
     }
     if (categoryId) {
       where.categoryId = BigInt(categoryId);
