@@ -23,6 +23,7 @@ import {
   Clock,
   BookOpen,
   Archive,
+  MessageSquare,
 } from "lucide-react";
 import AddSectionModal from "./AddSectionModal";
 import ContentTypePickerModal, { ContentTypeKey } from "./ContentTypePickerModal";
@@ -189,21 +190,21 @@ export default function CurriculumBuilderView({
         prev.map((s) =>
           s.id === activeSectionId
             ? {
-                ...s,
-                contents: s.contents.map((c) =>
-                  c.id === editingItem.item.id
-                    ? {
-                        ...c,
-                        title: data.title,
-                        contentType: data.contentType as ContentTypeKey,
-                        contentUrl: data.contentUrl,
-                        description: data.description,
-                        fileSize: data.fileSize,
-                        duration: data.duration,
-                      }
-                    : c
-                ),
-              }
+              ...s,
+              contents: s.contents.map((c) =>
+                c.id === editingItem.item.id
+                  ? {
+                    ...c,
+                    title: data.title,
+                    contentType: data.contentType as ContentTypeKey,
+                    contentUrl: data.contentUrl,
+                    description: data.description,
+                    fileSize: data.fileSize,
+                    duration: data.duration,
+                  }
+                  : c
+              ),
+            }
             : s
         )
       );
@@ -237,20 +238,20 @@ export default function CurriculumBuilderView({
         prev.map((s) =>
           s.id === activeSectionId
             ? {
-                ...s,
-                contents: s.contents.map((c) =>
-                  c.id === editingItem.item.id
-                    ? {
-                        ...c,
-                        title: quizData.title,
-                        questionsCount: quizData.questions ? quizData.questions.length : 0,
-                        maxMarks: quizData.totalMarks || 100,
-                        duration: quizData.durationMinutes || 15,
-                        quizConfigJson,
-                      }
-                    : c
-                ),
-              }
+              ...s,
+              contents: s.contents.map((c) =>
+                c.id === editingItem.item.id
+                  ? {
+                    ...c,
+                    title: quizData.title,
+                    questionsCount: quizData.questions ? quizData.questions.length : 0,
+                    maxMarks: quizData.totalMarks || 100,
+                    duration: quizData.durationMinutes || 15,
+                    quizConfigJson,
+                  }
+                  : c
+              ),
+            }
             : s
         )
       );
@@ -284,20 +285,20 @@ export default function CurriculumBuilderView({
         prev.map((s) =>
           s.id === activeSectionId
             ? {
-                ...s,
-                contents: s.contents.map((c) =>
-                  c.id === editingItem.item.id
-                    ? {
-                        ...c,
-                        title: assignmentData.title,
-                        description: assignmentData.instructions || assignmentData.description,
-                        dueDate: assignmentData.deadline,
-                        maxMarks: assignmentData.maxMarks || 100,
-                        assignmentConfigJson,
-                      }
-                    : c
-                ),
-              }
+              ...s,
+              contents: s.contents.map((c) =>
+                c.id === editingItem.item.id
+                  ? {
+                    ...c,
+                    title: assignmentData.title,
+                    description: assignmentData.instructions || assignmentData.description,
+                    dueDate: assignmentData.deadline,
+                    maxMarks: assignmentData.maxMarks || 100,
+                    assignmentConfigJson,
+                  }
+                  : c
+              ),
+            }
             : s
         )
       );
@@ -331,19 +332,19 @@ export default function CurriculumBuilderView({
         prev.map((s) =>
           s.id === activeSectionId
             ? {
-                ...s,
-                contents: s.contents.map((c) =>
-                  c.id === editingItem.item.id
-                    ? {
-                        ...c,
-                        title: feedbackData.title,
-                        description: feedbackData.description,
-                        questionsCount: feedbackData.questions ? feedbackData.questions.length : 0,
-                        quizConfigJson: feedbackConfigJson,
-                      }
-                    : c
-                ),
-              }
+              ...s,
+              contents: s.contents.map((c) =>
+                c.id === editingItem.item.id
+                  ? {
+                    ...c,
+                    title: feedbackData.title,
+                    description: feedbackData.description,
+                    questionsCount: feedbackData.questions ? feedbackData.questions.length : 0,
+                    quizConfigJson: feedbackConfigJson,
+                  }
+                  : c
+              ),
+            }
             : s
         )
       );
@@ -394,6 +395,10 @@ export default function CurriculumBuilderView({
         return <FileCheck className="h-4 w-4 text-blue-500" />;
       case "QUIZ":
         return <HelpCircle className="h-4 w-4 text-indigo-500" />;
+      case "FEEDBACK":
+      case "FEEDBACK_SURVEY":
+      case "SURVEY":
+        return <MessageSquare className="h-4 w-4 text-amber-500" />;
       default:
         return <LinkIcon className="h-4 w-4 text-cyan-500" />;
     }
@@ -413,11 +418,10 @@ export default function CurriculumBuilderView({
                 {getCourseDisplayTitle(courseTitle, shortName)}
               </h2>
               <span
-                className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase ${
-                  status === "Published"
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase ${status === "Published"
                     ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                     : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
-                }`}
+                  }`}
               >
                 {status}
               </span>
@@ -447,143 +451,141 @@ export default function CurriculumBuilderView({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sections List */}
         <div className="lg:col-span-3 space-y-4">
-          {sections
-            .filter((s) => s.title !== "Course Feedback & Evaluation" && !s.contents?.some((c) => c.contentType === "FEEDBACK"))
-            .map((section) => (
-            <div
-              key={section.id}
-              className="rounded-2xl border border-border bg-card overflow-hidden transition-all shadow-sm"
-            >
-              {/* Section Header */}
-              <div className="flex items-center justify-between p-4 bg-muted/20 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => toggleSection(section.id)}
-                    className="p-1 text-muted-foreground hover:text-foreground"
-                  >
-                    {section.expanded ? (
-                      <ChevronDown className="h-5 w-5" />
-                    ) : (
-                      <ChevronRight className="h-5 w-5" />
-                    )}
-                  </button>
-                  <GripVertical className="h-4 w-4 text-muted-foreground/40 cursor-grab" />
-                  <div>
-                    <h3 className="text-sm font-bold text-foreground">
-                      {section.title}
-                    </h3>
-                    {section.description && (
-                      <p className="text-xs text-muted-foreground">
-                        {section.description}
-                      </p>
-                    )}
+          {sections.map((section) => (
+              <div
+                key={section.id}
+                className="rounded-2xl border border-border bg-card overflow-hidden transition-all shadow-sm"
+              >
+                {/* Section Header */}
+                <div className="flex items-center justify-between p-4 bg-muted/20 border-b border-border">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => toggleSection(section.id)}
+                      className="p-1 text-muted-foreground hover:text-foreground"
+                    >
+                      {section.expanded ? (
+                        <ChevronDown className="h-5 w-5" />
+                      ) : (
+                        <ChevronRight className="h-5 w-5" />
+                      )}
+                    </button>
+                    <GripVertical className="h-4 w-4 text-muted-foreground/40 cursor-grab" />
+                    <div>
+                      <h3 className="text-sm font-bold text-foreground">
+                        {section.title}
+                      </h3>
+                      {section.description && (
+                        <p className="text-xs text-muted-foreground">
+                          {section.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-muted-foreground mr-2">
+                      {section.contents.length} items
+                    </span>
+                    <button
+                      onClick={() => {
+                        setEditingSection(section);
+                        setAddSectionOpen(true);
+                      }}
+                      className="text-muted-foreground hover:text-primary p-1 rounded hover:bg-primary/10 transition-colors"
+                      title="Edit Section Title & Description"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteSection(section.id)}
+                      className="text-red-500 hover:text-red-600 p-1 rounded hover:bg-red-500/10 transition-colors"
+                      title="Delete Section"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-muted-foreground mr-2">
-                    {section.contents.length} items
-                  </span>
-                  <button
-                    onClick={() => {
-                      setEditingSection(section);
-                      setAddSectionOpen(true);
-                    }}
-                    className="text-muted-foreground hover:text-primary p-1 rounded hover:bg-primary/10 transition-colors"
-                    title="Edit Section Title & Description"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteSection(section.id)}
-                    className="text-red-500 hover:text-red-600 p-1 rounded hover:bg-red-500/10 transition-colors"
-                    title="Delete Section"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Section Content Items */}
-              {section.expanded && (
-                <div className="p-4 space-y-3">
-                  {section.contents.length === 0 ? (
-                    <div className="text-center py-6 border border-dashed border-border rounded-xl">
-                      <p className="text-xs text-muted-foreground">No content added yet!</p>
-                      <p className="text-[10px] text-muted-foreground/70 mt-1">
-                        Add videos, PDFs, articles, quizzes, or assignments.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {section.contents.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/10 hover:border-primary/40 transition-all text-xs"
-                        >
-                          <div className="flex items-center gap-3 truncate">
-                            <div className="p-2 rounded-lg bg-card border border-border">
-                              {getContentIcon(item.contentType)}
-                            </div>
-                            <div className="truncate">
-                              <span className="font-semibold text-foreground block truncate">
-                                {item.title}
-                              </span>
-                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
-                                {item.duration && <span>{item.duration} Min</span>}
-                                {item.fileSize && <span>{item.fileSize}</span>}
-                                {item.questionsCount && (
-                                  <span>{item.questionsCount} Questions • {item.maxMarks} Marks</span>
-                                )}
-                                {item.dueDate && (
-                                  <span>Due: {item.dueDate} • Max Marks: {item.maxMarks}</span>
-                                )}
+                {/* Section Content Items */}
+                {section.expanded && (
+                  <div className="p-4 space-y-3">
+                    {section.contents.length === 0 ? (
+                      <div className="text-center py-6 border border-dashed border-border rounded-xl">
+                        <p className="text-xs text-muted-foreground">No content added yet!</p>
+                        <p className="text-[10px] text-muted-foreground/70 mt-1">
+                          Add videos, PDFs, articles, quizzes, or assignments.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {section.contents.map((item) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/10 hover:border-primary/40 transition-all text-xs"
+                          >
+                            <div className="flex items-center gap-3 truncate">
+                              <div className="p-2 rounded-lg bg-card border border-border">
+                                {getContentIcon(item.contentType)}
+                              </div>
+                              <div className="truncate">
+                                <span className="font-semibold text-foreground block truncate">
+                                  {item.title}
+                                </span>
+                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
+                                  {item.duration && <span>{item.duration} Min</span>}
+                                  {item.fileSize && <span>{item.fileSize}</span>}
+                                  {item.questionsCount !== undefined && item.questionsCount !== null && (
+                                    <span>{item.questionsCount} Questions{item.maxMarks ? ` • ${item.maxMarks} Marks` : ""}</span>
+                                  )}
+                                  {item.dueDate && (
+                                    <span>Due: {item.dueDate} • Max Marks: {item.maxMarks}</span>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <button
-                              onClick={() => handleEditContent(section.id, item)}
-                              className="text-primary hover:text-primary/80 text-xs font-semibold px-1.5 py-0.5 rounded hover:bg-primary/10"
-                              title="Edit item details"
-                            >
-                              <Edit2 className="h-3.5 w-3.5" />
-                            </button>
-                            {item.contentType === "ASSIGNMENT" && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setSubmissionsReviewOpen(true)}
-                                className="h-7 text-[11px] gap-1 text-blue-500 border-blue-500/30"
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                onClick={() => handleEditContent(section.id, item)}
+                                className="text-primary hover:text-primary/80 text-xs font-semibold px-1.5 py-0.5 rounded hover:bg-primary/10"
+                                title="Edit item details"
                               >
-                                Review Submissions
-                              </Button>
-                            )}
-                            <button
-                              onClick={() => handleDeleteContent(section.id, item.id)}
-                              className="text-red-500 hover:text-red-600 p-1"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                                <Edit2 className="h-3.5 w-3.5" />
+                              </button>
+                              {item.contentType === "ASSIGNMENT" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setSubmissionsReviewOpen(true)}
+                                  className="h-7 text-[11px] gap-1 text-blue-500 border-blue-500/30"
+                                >
+                                  Review Submissions
+                                </Button>
+                              )}
+                              <button
+                                onClick={() => handleDeleteContent(section.id, item.id)}
+                                className="text-red-500 hover:text-red-600 p-1"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
 
-                  {/* Add Content Button */}
-                  <Button
-                    onClick={() => handleOpenPicker(section.id)}
-                    variant="outline"
-                    size="sm"
-                    className="w-full gap-2 border-dashed text-xs text-primary border-primary/40 hover:bg-primary/5 py-2.5"
-                  >
-                    <Plus className="h-4 w-4" /> + Add Content / Lecture
-                  </Button>
-                </div>
-              )}
-            </div>
-          ))}
+                    {/* Add Content Button */}
+                    <Button
+                      onClick={() => handleOpenPicker(section.id)}
+                      variant="outline"
+                      size="sm"
+                      className="w-full gap-2 border-dashed text-xs text-primary border-primary/40 hover:bg-primary/5 py-2.5"
+                    >
+                      <Plus className="h-4 w-4" /> + Add Content / Lecture / Quiz / Assignment
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
 
           {/* Add Section Button */}
           <Button

@@ -27,6 +27,7 @@ import {
 import RoleGate from "@/components/auth/RoleGate";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
+import { formatCourseTitle } from "@/lib/utils";
 import {
   getReportingFilterOptions,
   getEnrollmentReport,
@@ -249,63 +250,91 @@ export default function ReportsPage() {
               {/* Tab 1: Learner Progress */}
               <TabsTrigger
                 value="learner-progress"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                  activeTab === "learner-progress"
+                    ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                }`}
               >
-                <Users className="h-3.5 w-3.5 shrink-0" />
-                <span className="whitespace-nowrap">Learner Progress</span>
+                <Users className={`h-4 w-4 shrink-0 ${activeTab === "learner-progress" ? "text-[#C82333]" : ""}`} />
+                <span className="truncate">Learner Progress</span>
               </TabsTrigger>
 
               {/* Tab 2: Quiz & Assessment */}
               <TabsTrigger
                 value="quiz-assessment"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                  activeTab === "quiz-assessment"
+                    ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                }`}
               >
-                <Award className="h-3.5 w-3.5 shrink-0" />
-                <span className="whitespace-nowrap">Quiz &amp; Assessment</span>
+                <Award className={`h-4 w-4 shrink-0 ${activeTab === "quiz-assessment" ? "text-[#C82333]" : ""}`} />
+                <span className="truncate">Quiz &amp; Assessment</span>
               </TabsTrigger>
 
               {/* Tab 3: Assignment & Submissions */}
               <TabsTrigger
                 value="assignment-submission"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                  activeTab === "assignment-submission"
+                    ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                }`}
               >
-                <FileText className="h-3.5 w-3.5 shrink-0" />
-                <span className="whitespace-nowrap">Assignment &amp; Submissions</span>
+                <FileText className={`h-4 w-4 shrink-0 ${activeTab === "assignment-submission" ? "text-[#C82333]" : ""}`} />
+                <span className="truncate">Assignment &amp; Submissions</span>
               </TabsTrigger>
 
               {/* Tab 4: Completions */}
               <TabsTrigger
                 value="completions"
-                className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                  activeTab === "completions"
+                    ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                }`}
               >
-                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                <span className="whitespace-nowrap">Completions</span>
+                <CheckCircle2 className={`h-4 w-4 shrink-0 ${activeTab === "completions" ? "text-[#C82333]" : ""}`} />
+                <span className="truncate">Completions</span>
               </TabsTrigger>
 
               {!isTeacher && (
                 <>
                   <TabsTrigger
                     value="enrollments"
-                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                    className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                      activeTab === "enrollments"
+                        ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                    }`}
                   >
-                    <Users className="h-3.5 w-3.5 shrink-0" />
-                    <span className="whitespace-nowrap">Enrollments</span>
+                    <Users className={`h-4 w-4 shrink-0 ${activeTab === "enrollments" ? "text-[#C82333]" : ""}`} />
+                    <span className="truncate">Enrollments</span>
                   </TabsTrigger>
 
                   <TabsTrigger
                     value="learner-performance"
-                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                    className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                      activeTab === "learner-performance"
+                        ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                    }`}
                   >
-                    <BookOpen className="h-3.5 w-3.5 shrink-0" />
-                    <span className="whitespace-nowrap">Learner Performance</span>
+                    <BookOpen className={`h-4 w-4 shrink-0 ${activeTab === "learner-performance" ? "text-[#C82333]" : ""}`} />
+                    <span className="truncate">Learner Performance</span>
                   </TabsTrigger>
 
                   <TabsTrigger
                     value="teacher-supervision"
-                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                    className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                      activeTab === "teacher-supervision"
+                        ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                    }`}
                   >
-                    <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
-                    <span className="whitespace-nowrap">Teacher Supervision</span>
+                    <ShieldCheck className={`h-4 w-4 shrink-0 ${activeTab === "teacher-supervision" ? "text-[#C82333]" : ""}`} />
+                    <span className="truncate">Teacher Supervision</span>
                   </TabsTrigger>
                 </>
               )}
@@ -314,19 +343,27 @@ export default function ReportsPage() {
                 <>
                   <TabsTrigger
                     value="department-performance"
-                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                    className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                      activeTab === "department-performance"
+                        ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                    }`}
                   >
-                    <Building2 className="h-3.5 w-3.5 shrink-0" />
-                    <span className="whitespace-nowrap">Business Unit Perf</span>
+                    <Building2 className={`h-4 w-4 shrink-0 ${activeTab === "department-performance" ? "text-[#C82333]" : ""}`} />
+                    <span className="truncate">Business Unit Perf</span>
                   </TabsTrigger>
 
                   <TabsTrigger
                     value="organization-overview"
-                    className="flex items-center justify-center gap-1.5 text-xs h-10 px-3 rounded-xl border border-border bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground font-semibold transition-all duration-150 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary data-[state=active]:shadow-md data-[state=active]:font-bold cursor-pointer"
+                    className={`flex items-center justify-center gap-2 text-xs h-10 px-3 rounded-xl transition-all duration-200 cursor-pointer font-bold ${
+                      activeTab === "organization-overview"
+                        ? "bg-[#C82333]/10 text-[#C82333] border-2 border-[#C82333] ring-2 ring-[#C82333]/20 shadow-sm font-extrabold"
+                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
+                    }`}
                   >
-                    <BarChart3 className="h-3.5 w-3.5 shrink-0" />
-                    <span className="whitespace-nowrap">Organization Overview</span>
-                    <Crown className="h-3 w-3 shrink-0 ml-0.5" />
+                    <BarChart3 className={`h-4 w-4 shrink-0 ${activeTab === "organization-overview" ? "text-[#C82333]" : ""}`} />
+                    <span className="truncate">Organization Overview</span>
+                    <Crown className="h-3 w-3 shrink-0 ml-0.5 text-amber-500" />
                   </TabsTrigger>
                 </>
               )}
@@ -352,7 +389,14 @@ export default function ReportsPage() {
                     </div>
                   ),
                 },
-                { header: "Course Title", accessorKey: "courseTitle" },
+                {
+                  header: "Course Title",
+                  cell: (r: any) => (
+                    <span title={r.courseTitle} className="font-semibold text-foreground">
+                      {formatCourseTitle(r.courseTitle)}
+                    </span>
+                  ),
+                },
                 { header: "Assigned Teacher", cell: (r: any) => <span className="font-semibold text-primary">{r.assignedTeacher}</span> },
                 { header: "Progress %", cell: (r: any) => <span className="font-bold text-primary">{r.progress}%</span> },
                 { header: "Completed Lessons", cell: (r: any) => <Badge variant="outline" className="text-[10px] font-bold">{r.completedLessonsCount}</Badge> },
@@ -385,7 +429,14 @@ export default function ReportsPage() {
                     </div>
                   ),
                 },
-                { header: "Course Title", accessorKey: "courseTitle" },
+                {
+                  header: "Course Title",
+                  cell: (r: any) => (
+                    <span title={r.courseTitle} className="font-semibold text-foreground">
+                      {formatCourseTitle(r.courseTitle)}
+                    </span>
+                  ),
+                },
                 { header: "Quiz Title", accessorKey: "quizTitle" },
                 { header: "Attempt", cell: (r: any) => <Badge variant="outline" className="text-[10px] font-bold">Attempt #{r.attemptNumber}</Badge> },
                 { header: "Score", cell: (r: any) => <span className="font-bold text-foreground">{r.score} / {r.maxScore} ({r.percentage}%)</span> },
@@ -432,8 +483,45 @@ export default function ReportsPage() {
                     </div>
                   ),
                 },
-                { header: "Course Title", accessorKey: "courseTitle" },
+                {
+                  header: "Course Title",
+                  cell: (r: any) => (
+                    <span title={r.courseTitle} className="font-semibold text-foreground">
+                      {formatCourseTitle(r.courseTitle)}
+                    </span>
+                  ),
+                },
                 { header: "Assignment Task", accessorKey: "assignmentTitle" },
+                {
+                  header: "Grade & Score",
+                  cell: (r: any) => {
+                    const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
+                    if (isFb) {
+                      return (
+                        <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 font-bold text-[10px]">
+                          Survey Completed
+                        </Badge>
+                      );
+                    }
+                    if (r.submissionStatus === "GRADED") {
+                      return (
+                        <div className="flex items-center gap-1.5">
+                          <Badge className="bg-emerald-600 text-white font-bold px-2 py-0.5 text-[10px] shadow-2xs">
+                            Grade {r.grade || "A"}
+                          </Badge>
+                          <span className="font-extrabold text-foreground text-xs">
+                            ({r.score} / {r.maxScore})
+                          </span>
+                        </div>
+                      );
+                    }
+                    return (
+                      <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 font-bold text-[10px]">
+                        Pending Grade
+                      </Badge>
+                    );
+                  },
+                },
                 {
                   header: "Status",
                   cell: (r: any) => {
@@ -447,20 +535,6 @@ export default function ReportsPage() {
                 },
                 { header: "Submitted Date", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ""}</span> },
                 {
-                  header: "Marks Awarded",
-                  cell: (r: any) => {
-                    const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
-                    return <span className="font-bold text-foreground">{isFb ? "Feedback Survey" : r.submissionStatus === "GRADED" ? `${r.score} / ${r.maxScore}` : "Pending"}</span>;
-                  },
-                },
-                {
-                  header: "Grade",
-                  cell: (r: any) => {
-                    const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
-                    return <Badge variant="outline" className="font-bold">{isFb ? "COMPLETED" : r.grade}</Badge>;
-                  },
-                },
-                {
                   header: "Feedback Notes",
                   cell: (r: any) => {
                     const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
@@ -471,6 +545,29 @@ export default function ReportsPage() {
                   header: "Actions",
                   cell: (r: any) => {
                     const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
+                    const prevGradedRole = r.gradedByRole || (r.gradedBy?.includes("[SUPER_ADMIN]") || r.gradedBy?.toLowerCase().includes("priyanka") ? "SUPER_ADMIN" : r.gradedBy?.includes("[ADMIN]") ? "ADMIN" : r.gradedBy ? "TEACHER" : null);
+                    
+                    const isLockedForCurrentUser = 
+                      (prevGradedRole === "SUPER_ADMIN" && userRole !== ROLES.SUPER_ADMIN) ||
+                      (prevGradedRole === "ADMIN" && userRole !== ROLES.SUPER_ADMIN && userRole !== ROLES.ADMIN);
+
+                    if (isLockedForCurrentUser && !isFb) {
+                      return (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedSubmission(r);
+                            setEvalModalOpen(true);
+                          }}
+                          className="border-slate-300 text-slate-700 dark:text-slate-200 font-bold text-[11px] h-7 px-2.5 gap-1 shadow-2xs cursor-pointer hover:bg-slate-100"
+                          title="Evaluation finalized by higher authority (Read Only)"
+                        >
+                          <Lock className="h-3 w-3 text-amber-500" /> View Grade
+                        </Button>
+                      );
+                    }
+
                     return (
                       <Button
                         size="sm"
@@ -502,17 +599,7 @@ export default function ReportsPage() {
               <ReportKpiCard title="Completion Rate" value={reportData?.kpis?.completionRate ?? "0%"} icon={Award} variant="purple" loading={loading} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <ChartCard title="Enrollment Status Breakdown" subtitle="Distribution across completed, in progress, and overdue status" loading={loading}>
-                <StatusPieChart data={reportData?.charts?.enrollmentStatus || []} />
-              </ChartCard>
-              <ChartCard title="Top 5 Courses by Enrollment" subtitle="Highest enrolled enterprise courses" loading={loading}>
-                <SimpleBarChart data={reportData?.charts?.topCourses || []} xKey="title" yKey="enrollments" fillColor="#3b82f6" />
-              </ChartCard>
-              <ChartCard title="Enrollment Trend" subtitle="Recent course enrollment trajectory" loading={loading}>
-                <TrendAreaChart data={reportData?.charts?.enrollmentTrend || []} xKey="date" yKey="enrollments" color="#10b981" />
-              </ChartCard>
-            </div>
+
 
             <ReportTable
               columns={[
@@ -529,7 +616,14 @@ export default function ReportsPage() {
                   ),
                 },
                 { header: "Business Unit", accessorKey: "department" },
-                { header: "Course Title", accessorKey: "courseTitle" },
+                {
+                  header: "Course Title",
+                  cell: (r: any) => (
+                    <span title={r.courseTitle} className="font-semibold text-foreground">
+                      {formatCourseTitle(r.courseTitle)}
+                    </span>
+                  ),
+                },
                 { header: "Enrolled Date", cell: (r: any) => new Date(r.enrolledAt).toLocaleDateString() },
                 { header: "Progress %", cell: (r: any) => <span className="font-semibold text-primary">{r.progress}%</span> },
                 { header: "Target Duration", accessorKey: "requiredDurationHours" },
@@ -563,7 +657,7 @@ export default function ReportsPage() {
 
           {/* TAB 2: COURSE COMPLETION REPORT */}
           <TabsContent value="completions" className="space-y-5 pt-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
               <ReportKpiCard title="Completion Rate" value={reportData?.kpis?.completionRate ?? "0%"} icon={Award} variant="emerald" loading={loading} />
               <ReportKpiCard title="Completed Courses" value={reportData?.kpis?.totalCompleted ?? 0} icon={CheckCircle2} variant="blue" loading={loading} />
               <ReportKpiCard title="Avg Completion Time" value={reportData?.kpis?.avgCompletionTime ?? "N/A"} icon={Clock} variant="indigo" loading={loading} />
@@ -572,18 +666,18 @@ export default function ReportsPage() {
               <ReportKpiCard title="Lowest Course" value={reportData?.kpis?.lowestCompletionCourse ?? "N/A"} icon={AlertTriangle} variant="amber" loading={loading} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-              <ChartCard title="Course Completion Comparison" subtitle="Completion rate across active courses" loading={loading}>
-                <SimpleBarChart data={reportData?.charts?.courseComparison || []} xKey="courseTitle" yKey="completionPct" fillColor="#10b981" unit="%" />
-              </ChartCard>
-              <ChartCard title="Completion Rate Trend" subtitle="Quarterly completion percentage progression" loading={loading}>
-                <TrendAreaChart data={reportData?.charts?.completionTrend || []} xKey="month" yKey="rate" color="#3b82f6" />
-              </ChartCard>
-            </div>
+
 
             <ReportTable
               columns={[
-                { header: "Course Title", accessorKey: "courseTitle" },
+                {
+                  header: "Course Title",
+                  cell: (r: any) => (
+                    <span title={r.courseTitle} className="font-semibold text-foreground">
+                      {formatCourseTitle(r.courseTitle)}
+                    </span>
+                  ),
+                },
                 { header: "Category", accessorKey: "category" },
                 { header: "Business Unit", accessorKey: "department" },
                 { header: "Enrolled", accessorKey: "enrolled" },
@@ -618,7 +712,7 @@ export default function ReportsPage() {
 
           {/* TAB 3: LEARNER PERFORMANCE REPORT */}
           <TabsContent value="learner-performance" className="space-y-5 pt-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
               <ReportKpiCard title="Total Learners" value={reportData?.kpis?.totalLearners ?? 0} icon={Users} variant="blue" loading={loading} />
               <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={TrendingUp} variant="emerald" loading={loading} />
               <ReportKpiCard title="Avg Progress %" value={reportData?.kpis?.avgProgress ?? "0%"} icon={Clock} variant="indigo" loading={loading} />
@@ -627,14 +721,7 @@ export default function ReportsPage() {
               <ReportKpiCard title="Needs Attention" value={reportData?.kpis?.learnersNeedingAttention ?? 0} icon={AlertTriangle} variant="rose" loading={loading} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-              <ChartCard title="Assessment Performance Distribution" subtitle="Learner score frequency" loading={loading}>
-                <SimpleBarChart data={reportData?.charts?.performanceDistribution || []} xKey="range" yKey="count" fillColor="#8b5cf6" />
-              </ChartCard>
-              <ChartCard title="Course Progress Distribution" subtitle="Progress bracket analysis" loading={loading}>
-                <SimpleBarChart data={reportData?.charts?.progressDistribution || []} xKey="range" yKey="count" fillColor="#06b6d4" />
-              </ChartCard>
-            </div>
+
 
             <ReportTable
               columns={[
@@ -672,7 +759,7 @@ export default function ReportsPage() {
 
           {/* TAB 4: ASSESSMENT & CERTIFICATION REPORT */}
           <TabsContent value="assessments" className="space-y-5 pt-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
               <ReportKpiCard title="Total Assessments" value={reportData?.kpis?.totalAssessments ?? 0} icon={BookOpen} variant="blue" loading={loading} />
               <ReportKpiCard title="Avg Score" value={reportData?.kpis?.avgScore ?? "N/A"} icon={Award} variant="indigo" loading={loading} />
               <ReportKpiCard title="Pass Rate" value={reportData?.kpis?.passRate ?? "0%"} icon={CheckCircle2} variant="emerald" loading={loading} />
@@ -681,14 +768,7 @@ export default function ReportsPage() {
               <ReportKpiCard title="Expiring Soon" value={reportData?.kpis?.certificatesExpiringSoon ?? 0} icon={Clock} variant="amber" loading={loading} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-              <ChartCard title="Pass vs Fail Ratio" subtitle="Assessment grading breakdown" loading={loading}>
-                <StatusPieChart data={reportData?.charts?.passVsFail || []} />
-              </ChartCard>
-              <ChartCard title="Certificate Status Breakdown" subtitle="Active vs expiring certificate distribution" loading={loading}>
-                <StatusPieChart data={reportData?.charts?.certificateStatus || []} />
-              </ChartCard>
-            </div>
+
 
             {/* Assessment Submissions Table */}
             <div>
@@ -735,7 +815,7 @@ export default function ReportsPage() {
 
           {/* TAB 5: LEARNING ENGAGEMENT REPORT */}
           <TabsContent value="engagement" className="space-y-5 pt-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
               <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={Users} variant="emerald" loading={loading} />
               <ReportKpiCard title="Inactive Learners" value={reportData?.kpis?.inactiveLearners ?? 0} icon={AlertTriangle} variant="rose" loading={loading} />
               <ReportKpiCard title="Avg Learning Hours" value={reportData?.kpis?.avgLearningHours ?? "0"} icon={Clock} variant="indigo" loading={loading} />
@@ -744,14 +824,7 @@ export default function ReportsPage() {
               <ReportKpiCard title="Engagement Rate" value={reportData?.kpis?.engagementRate ?? "0%"} icon={Award} variant="blue" loading={loading} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-              <ChartCard title="Learner Engagement Distribution" subtitle="Active vs Moderately Engaged vs Inactive" loading={loading}>
-                <StatusPieChart data={reportData?.charts?.activityDistribution || []} />
-              </ChartCard>
-              <ChartCard title="Learning Hours Trajectory" subtitle="Aggregated employee time spent" loading={loading}>
-                <TrendAreaChart data={reportData?.charts?.learningHoursTrend || [{ date: "Week 1", hours: 45 }, { date: "Week 2", hours: 78 }, { date: "Week 3", hours: 110 }, { date: "Week 4", hours: 145 }]} xKey="date" yKey="hours" color="#8b5cf6" />
-              </ChartCard>
-            </div>
+
 
             <ReportTable
               columns={[
@@ -783,21 +856,12 @@ export default function ReportsPage() {
           {/* TAB 6: DEPARTMENT PERFORMANCE REPORT (SUPER ADMIN ONLY) */}
           {isSuperAdmin && (
             <TabsContent value="department-performance" className="space-y-5 pt-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
                 <ReportKpiCard title="Total Business Units" value={reportData?.kpis?.totalDepartments ?? 0} icon={Building2} variant="amber" loading={loading} />
                 <ReportKpiCard title="Org Completion Rate" value={reportData?.kpis?.orgCompletionRate ?? "0%"} icon={Award} variant="emerald" loading={loading} />
                 <ReportKpiCard title="Org Avg Score" value={reportData?.kpis?.orgAvgScore ?? "N/A"} icon={CheckCircle2} variant="blue" loading={loading} />
                 <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={Users} variant="indigo" loading={loading} />
                 <ReportKpiCard title="Total Learning Hours" value={reportData?.kpis?.totalLearningHours ?? "0"} icon={Clock} variant="purple" loading={loading} />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <ChartCard title="Business Unit Completion Comparison" subtitle="Business Unit level course completion %" loading={loading}>
-                  <SimpleBarChart data={reportData?.charts?.departmentCompletion || []} xKey="departmentName" yKey="completionPercentage" fillColor="#f59e0b" unit="%" />
-                </ChartCard>
-                <ChartCard title="Business Unit Avg Score Comparison" subtitle="Average assessment score by department" loading={loading}>
-                  <SimpleBarChart data={reportData?.charts?.departmentAvgScore || []} xKey="departmentName" yKey="avgScore" fillColor="#3b82f6" unit="%" />
-                </ChartCard>
               </div>
 
               <ReportTable
@@ -852,7 +916,7 @@ export default function ReportsPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
                 <ReportKpiCard title="Total Employees" value={reportData?.kpis?.totalEmployees ?? 0} icon={Users} variant="blue" loading={loading} />
                 <ReportKpiCard title="Active Learners" value={reportData?.kpis?.activeLearners ?? 0} icon={TrendingUp} variant="emerald" loading={loading} />
                 <ReportKpiCard title="Total Courses" value={reportData?.kpis?.totalCourses ?? 0} icon={BookOpen} variant="indigo" loading={loading} />
@@ -861,15 +925,6 @@ export default function ReportsPage() {
                 <ReportKpiCard title="Avg Score" value={reportData?.kpis?.avgAssessmentScore ?? "N/A"} icon={CheckCircle2} variant="emerald" loading={loading} />
                 <ReportKpiCard title="Total Learning Hours" value={reportData?.kpis?.totalLearningHours ?? "0"} icon={Clock} variant="indigo" loading={loading} />
                 <ReportKpiCard title="Mandatory Compliance" value={reportData?.kpis?.mandatoryTrainingCompliance ?? "0%"} icon={ShieldCheck} variant="amber" loading={loading} />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <ChartCard title="Organization Business Unit Matrix" subtitle="Completion rate vs Avg Score" loading={loading}>
-                  <SimpleBarChart data={reportData?.charts?.departmentPerformance || []} xKey="department" yKey="completion" fillColor="#d97706" unit="%" />
-                </ChartCard>
-                <ChartCard title="Organization Learning Trajectory" subtitle="Overall monthly growth" loading={loading}>
-                  <TrendAreaChart data={[{ month: "Q1", rate: 45 }, { month: "Q2", rate: 58 }, { month: "Q3", rate: 68 }, { month: "Q4", rate: 76 }]} xKey="month" yKey="rate" color="#10b981" />
-                </ChartCard>
               </div>
             </TabsContent>
           )}

@@ -13,6 +13,7 @@ import {
 import { getMyEnrollments, UserEnrollmentItem } from "@/services/api/progress.service";
 import { useEventsStore } from "@/store/events.store";
 import { ROLES } from "@/lib/rbac";
+import { formatCourseTitle } from "@/lib/utils";
 import { List, BookOpen, CheckCircle2, Clock, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EventCalendar from "@/components/events/EventCalendar";
@@ -173,158 +174,151 @@ export default function Dashboard() {
         </div>
 
         {/* Role-tailored Key Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-3 border-t border-[#E0E6ED] text-center">
+        <div className="pt-3 border-t border-[#E0E6ED]">
           {userRole === ROLES.LEARNER && (
-            <>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   Enrolled Courses
                 </span>
-                <span className="text-lg font-extrabold text-[#212529]">
+                <span className="text-2xl font-black text-[#212529]">
                   {enrolledCount}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   Completed Courses
                 </span>
-                <span className="text-lg font-extrabold text-emerald-600">
+                <span className="text-2xl font-black text-emerald-600">
                   {completedCount}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   My Avg Progress
                 </span>
-                <span className="text-lg font-extrabold text-[#C82333]">
+                <span className="text-2xl font-black text-[#C82333]">
                   {learnerAvgProgress}%
                 </span>
               </div>
-            </>
+            </div>
           )}
 
           {userRole === ROLES.TEACHER && (
-            <>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Active Courses
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
+                  Total Active Courses
                 </span>
-                <span className="text-lg font-extrabold text-[#212529]">
+                <span className="text-2xl font-black text-emerald-600">
                   {stats?.publishedCoursesCount || courses.length || 0}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   Enrolled Learners
                 </span>
-                <span className="text-lg font-extrabold text-[#212529]">
+                <span className="text-2xl font-black text-[#212529]">
                   {stats?.activeEnrollments || stats?.employeesCount || 0}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Learner Avg Progress
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
+                  Pending Evaluations
                 </span>
-                <span className="text-lg font-extrabold text-[#C82333]">
-                  {stats?.completionRate ?? 0}%
+                <span className="text-2xl font-black text-amber-600">
+                  {stats?.pendingAssignmentsCount ?? 0}
                 </span>
               </div>
-            </>
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
+                  Approved Evaluations
+                </span>
+                <span className="text-2xl font-black text-blue-600">
+                  {stats?.approvedAssignmentsCount ?? 0}
+                </span>
+              </div>
+            </div>
           )}
 
           {userRole === ROLES.ADMIN && (
-            <>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Dept Learners
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
+                  Total Active Courses
                 </span>
-                <span className="text-lg font-extrabold text-[#212529]">
+                <span className="text-2xl font-black text-emerald-600">
+                  {courses.length}
+                </span>
+              </div>
+
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
+                  Business Unit Learners
+                </span>
+                <span className="text-2xl font-black text-[#212529]">
                   {stats?.employeesCount ?? 0}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Published Courses
-                </span>
-                <span className="text-lg font-extrabold text-[#212529]">
-                  {stats?.publishedCoursesCount ?? courses.length ?? 0}
-                </span>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Dept Avg Progress
-                </span>
-                <span className="text-lg font-extrabold text-[#C82333]">
-                  {stats?.completionRate ?? 0}%
-                </span>
-              </div>
-            </>
+            </div>
           )}
 
           {userRole === ROLES.SUPER_ADMIN && (
-            <>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
+                  Total Active Courses
+                </span>
+                <span className="text-2xl font-black text-emerald-600">
+                  {stats?.publishedCoursesCount ?? courses.length ?? 0}
+                </span>
+              </div>
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   Total Learners
                 </span>
-                <span className="text-lg font-extrabold text-[#212529]">
+                <span className="text-2xl font-black text-[#212529]">
                   {stats?.employeesCount ?? 0}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Total Courses
-                </span>
-                <span className="text-lg font-extrabold text-[#212529]">
-                  {stats?.coursesCount ?? courses.length ?? 0}
-                </span>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   Active Business Units
                 </span>
-                <span className="text-lg font-extrabold text-[#212529]">
+                <span className="text-2xl font-black text-[#212529]">
                   {stats?.departmentsCount ?? 5}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
-                  Global Completion Rate
-                </span>
-                <span className="text-lg font-extrabold text-[#C82333]">
-                  {stats?.completionRate ?? 0}%
-                </span>
-              </div>
-            </>
+            </div>
           )}
 
           {userRole === ROLES.GUEST && (
-            <>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   Catalog Courses
                 </span>
-                <span className="text-lg font-extrabold text-[#212529]">
+                <span className="text-2xl font-black text-[#212529]">
                   {stats?.publishedCoursesCount || courses.length || 0}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   Business Units
                 </span>
-                <span className="text-lg font-extrabold text-[#212529]">
+                <span className="text-2xl font-black text-[#212529]">
                   {stats?.departmentsCount ?? 5}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase text-[#6C757D] block">
+              <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
+                <span className="text-xs font-bold uppercase text-[#6C757D] tracking-wider mb-1">
                   Access Level
                 </span>
-                <span className="text-lg font-extrabold text-[#C82333]">
+                <span className="text-2xl font-black text-[#C82333]">
                   Preview Only
                 </span>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
@@ -398,8 +392,8 @@ export default function Dashboard() {
                   </div>
 
                   <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
-                    <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug">
-                      {prog.title}
+                    <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug" title={prog.title}>
+                      {formatCourseTitle(prog.title)}
                     </h4>
                     {matchedEnrollment && (
                       <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200">
@@ -663,8 +657,8 @@ export default function Dashboard() {
                   </div>
 
                   <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
-                    <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug">
-                      {prog.title}
+                    <h4 className="text-xs font-bold text-[#212529] line-clamp-2 leading-snug" title={prog.title}>
+                      {formatCourseTitle(prog.title)}
                     </h4>
                     {matchedEnrollment && (
                       <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200">

@@ -128,6 +128,26 @@ export default function QuizBuilderModal({
     }
   };
 
+  const handleDownloadCsvTemplate = () => {
+    const csvContent = `QuestionText,Type,Option1,Option2,Option3,Option4,CorrectAnswer
+CSS is used to structure content on a webpage.,TRUE_FALSE,,,,,False
+What does HTML stand for?,MCQ,Hyper Text Markup Language,High Text Machine Language,Hyper Tabular Markup Language,None of the above,Hyper Text Markup Language
+Which of the following are programming languages?,MULTIPLE_SELECT,Python,HTML,Java,CSS,Python;Java
+What does API stand for?,SHORT_ANSWER,,,,,Application Programming Interface
+What is the time complexity of binary search?,MCQ,O(1),O(n),O(log n),O(n^2),O(log n)
+`;
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "bulk_quiz_questions_sample_template.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Downloaded sample bulk quiz CSV template!");
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -402,18 +422,29 @@ export default function QuizBuilderModal({
 
               {/* Add Question Selector Grid */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <Label className="text-xs font-semibold">Add Question by Type:</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="gap-1.5 text-xs text-primary border-primary/30 hover:bg-primary/10 cursor-pointer"
-                  >
-                    <Plus className="h-3.5 w-3.5" /> Bulk Upload (CSV)
-                  </Button>
-                  <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileUpload} />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleDownloadCsvTemplate}
+                      className="gap-1.5 text-xs text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 font-semibold cursor-pointer"
+                    >
+                      <FileUp className="h-3.5 w-3.5" /> Download Sample CSV Template
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="gap-1.5 text-xs text-primary border-primary/30 hover:bg-primary/10 font-semibold cursor-pointer"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Bulk Upload (CSV)
+                    </Button>
+                    <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleFileUpload} />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {[

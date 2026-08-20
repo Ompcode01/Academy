@@ -33,8 +33,6 @@ export const getDashboardStats = async (userContext: UserContext) => {
       courseWhere.OR = [
         { departmentId: deptId },
         { departmentId: null },
-        { creatorId: empId },
-        superAdminOrAdminCreator,
       ];
       break;
     case "TEACHER":
@@ -102,6 +100,37 @@ export const getDashboardStats = async (userContext: UserContext) => {
       ? Math.round((completedEnrollments / enrollmentsCount) * 100 * 10) / 10
       : 0;
 
+  // Calculate total issued certificates from issuedCertificate table
+  const totalCertificatesIssued = await prisma.issuedCertificate.count();
+
+  // For Teacher / Admin assignment evaluation metrics
+  const teacherCourseIds = (
+    await prisma.course.findMany({
+      where: courseWhere,
+      select: { id: true },
+    })
+  ).map((c) => c.id);
+
+  const [
+    pendingAssignmentsCount,
+    approvedAssignmentsCount,
+  ] = await Promise.all([
+    prisma.assessmentSubmission.count({
+      where: {
+        submissionType: { in: ["ASSIGNMENT", "FEEDBACK"] },
+        courseId: { in: teacherCourseIds },
+        status: { in: ["SUBMITTED", "PENDING"] },
+      },
+    }),
+    prisma.assessmentSubmission.count({
+      where: {
+        submissionType: { in: ["ASSIGNMENT", "FEEDBACK"] },
+        courseId: { in: teacherCourseIds },
+        status: { in: ["GRADED", "EVALUATED", "APPROVED", "PASSED"] },
+      },
+    }),
+  ]);
+
   return {
     coursesCount,
     publishedCoursesCount,
@@ -111,5 +140,8 @@ export const getDashboardStats = async (userContext: UserContext) => {
     activeEnrollments: enrollmentsCount,
     completedEnrollments,
     completionRate,
+    totalCertificatesIssued,
+    pendingAssignmentsCount,
+    approvedAssignmentsCount,
   };
 };

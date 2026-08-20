@@ -1,0 +1,511 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest identifier="_5dfevnHliBs" version="1.0" xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+    <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+      <general>
+        <title>
+          <langstring xml:lang="x-none">Hotspot_3d_Model</langstring>
+        </title>
+      </general>
+      <lifecycle>
+        <version>
+          <langstring xml:lang="x-none">1</langstring>
+        </version>
+        <status>
+          <source>
+            <langstring xml:lang="x-none">LOMv1.0</langstring>
+          </source>
+          <value>
+            <langstring xml:lang="x-none">Final</langstring>
+          </value>
+        </status>
+      </lifecycle>
+      <metametadata>
+        <metadatascheme>ADL SCORM 1.2</metadatascheme>
+      </metametadata>
+      <educational>
+        <typicallearningtime>
+          <datetime>PT0H0M0S</datetime>
+        </typicallearningtime>
+      </educational>
+      <rights>
+        <cost>
+          <source>
+            <langstring xml:lang="x-none">LOMv1.0</langstring>
+          </source>
+          <value>
+            <langstring xml:lang="x-none">yes</langstring>
+          </value>
+        </cost>
+        <copyrightandotherrestrictions>
+          <source>
+            <langstring xml:lang="x-none">LOMv1.0</langstring>
+          </source>
+          <value>
+            <langstring xml:lang="x-none">yes</langstring>
+          </value>
+        </copyrightandotherrestrictions>
+      </rights>
+    </lom>
+  </metadata>
+  <organizations default="Hotspot_3d_Model_ORG">
+    <organization identifier="Hotspot_3d_Model_ORG">
+      <title>Hotspot_3d_Model</title>
+      <item identifier="Hotspot_3d_Model_SCO" isvisible="true" identifierref="__5dfevnHliBs_RES">
+        <title>Hotspot_3d_Model</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="__5dfevnHliBs_RES" type="webcontent" href="index_lms.html" adlcp:scormtype="sco">
+      <file href="story_content/thumbnail.jpg" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/index.html" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2.glb" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/data.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/transperent1x1.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/2019_lbworks_bmw_i8_ver.2.gltf" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/license.txt" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/scene.bin" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017BadgeA_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017BadgeA_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017CalliperBadgeA_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017CalliperGloss_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Carbon1_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Carbon1_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Coloured_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Coloured_Material1_metallicRoughness.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017EngineA_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017EngineA_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Grille2A_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Grille2A_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Grille3A_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Grille3A_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Grille4A_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Grille4A_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017InteriorA_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017InteriorA_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017InteriorTillingColourZoneA_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017LightA_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017LightA_Material1_metallicRoughness.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017ManufacturerPlateA_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Paint_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017Paint_Material1_clearcoat.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017_Wheel1A_3D_3DWheel2A_Material1_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017_Wheel1A_3D_3DWheel2A_Material1_metallicRoughness.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bBMW_LBi8RewardRecycled_2017_Wheel1A_3D_3DWheel2A_Material1_normal.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bliver_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/bliver_transmission.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/emis_baseColor.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/emis_emissive.png" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/assets/2019_lbworks_bmw_i8_ver.2/textures/venice_sunset_1k.hdr" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.cjs" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.core.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.core.min.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.module.min.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.tsl.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.tsl.min.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.webgpu.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.webgpu.min.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.webgpu.nodes.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/build/three.webgpu.nodes.min.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/Addons.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/animation/AnimationClipCreator.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/animation/CCDIKSolver.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/capabilities/WebGL.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/capabilities/WebGPU.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/ArcballControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/DragControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/FirstPersonControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/FlyControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/MapControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/OrbitControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/PointerLockControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/TrackballControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/controls/TransformControls.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/csm/CSM.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/csm/CSMFrustum.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/csm/CSMHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/csm/CSMShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/csm/CSMShadowNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/curves/CurveExtras.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/curves/NURBSCurve.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/curves/NURBSSurface.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/curves/NURBSUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/curves/NURBSVolume.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/effects/AnaglyphEffect.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/effects/AsciiEffect.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/effects/OutlineEffect.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/effects/ParallaxBarrierEffect.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/effects/StereoEffect.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/environments/DebugEnvironment.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/environments/RoomEnvironment.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/exporters/DRACOExporter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/exporters/EXRExporter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/exporters/GLTFExporter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/exporters/KTX2Exporter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/exporters/OBJExporter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/exporters/PLYExporter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/exporters/STLExporter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/exporters/USDZExporter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/geometries/BoxLineGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/geometries/ConvexGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/geometries/DecalGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/geometries/ParametricFunctions.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/geometries/ParametricGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/geometries/RoundedBoxGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/geometries/TeapotGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/geometries/TextGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/LightProbeHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/LightProbeHelperGPU.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/OctreeHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/PositionalAudioHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/RapierHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/RectAreaLightHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/TextureHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/TextureHelperGPU.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/VertexNormalsHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/VertexTangentsHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/helpers/ViewHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/interactive/HTMLMesh.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/interactive/InteractiveGroup.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/interactive/SelectionBox.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/interactive/SelectionHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/ammo.wasm.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/ammo.wasm.wasm" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/chevrotain.module.min.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/demuxer_mp4.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/ecsy.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/fflate.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/ktx-parse.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/lil-gui.module.min.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/lottie_canvas.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/meshopt_decoder.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/mikktspace.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/motion-controllers.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/opentype.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/potpack.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/stats.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/surfaceNet.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/tween.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/utif.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/zstddec.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/basis/basis_transcoder.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/basis/basis_transcoder.wasm" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/basis/README.md" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/draco_decoder.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/draco_decoder.wasm" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/draco_encoder.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/draco_wasm_wrapper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/README.md" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/gltf/draco_decoder.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/gltf/draco_decoder.wasm" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/gltf/draco_encoder.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/draco/gltf/draco_wasm_wrapper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/rhino3dm/rhino3dm.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/rhino3dm/rhino3dm.module.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/libs/rhino3dm/rhino3dm.wasm" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lighting/TiledLighting.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lights/LightProbeGenerator.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lights/RectAreaLightTexturesLib.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lights/RectAreaLightUniformsLib.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/Line2.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/LineGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/LineMaterial.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/LineSegments2.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/LineSegmentsGeometry.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/Wireframe.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/WireframeGeometry2.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/webgpu/Line2.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/webgpu/LineSegments2.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/lines/webgpu/Wireframe.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/3DMLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/3MFLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/AMFLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/BVHLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/ColladaLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/DDSLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/DRACOLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/EXRLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/FBXLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/FontLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/GCodeLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/GLTFLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/HDRCubeTextureLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/IESLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/KMZLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/KTX2Loader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/KTXLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/LDrawLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/LottieLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/LUT3dlLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/LUTCubeLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/LUTImageLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/LWOLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/MaterialXLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/MD2Loader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/MDDLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/MTLLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/NRRDLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/OBJLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/PCDLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/PDBLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/PLYLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/PVRLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/RGBELoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/RGBMLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/STLLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/SVGLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/TDSLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/TGALoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/TIFFLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/TTFLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/UltraHDRLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/USDZLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/VOXLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/VRMLLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/VTKLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/XYZLoader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/lwo/IFFParser.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/lwo/LWO2Parser.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/loaders/lwo/LWO3Parser.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/materials/LDrawConditionalLineMaterial.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/materials/LDrawConditionalLineNodeMaterial.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/materials/MeshGouraudMaterial.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/materials/MeshPostProcessingMaterial.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/Capsule.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/ColorConverter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/ColorSpaces.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/ConvexHull.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/ImprovedNoise.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/Lut.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/MeshSurfaceSampler.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/OBB.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/Octree.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/math/SimplexNoise.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/ConvexObjectBreaker.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/GPUComputationRenderer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/Gyroscope.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/MD2Character.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/MD2CharacterComplex.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/MorphAnimMesh.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/MorphBlendMesh.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/ProgressiveLightMap.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/ProgressiveLightMapGPU.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/RollerCoaster.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/Timer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/TubePainter.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/Volume.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/misc/VolumeSlice.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/modifiers/CurveModifier.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/modifiers/CurveModifierGPU.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/modifiers/EdgeSplitModifier.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/modifiers/SimplifyModifier.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/modifiers/TessellateModifier.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/GroundedSkybox.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/Lensflare.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/LensflareMesh.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/MarchingCubes.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/Reflector.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/ReflectorForSSRPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/Refractor.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/ShadowMesh.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/Sky.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/SkyMesh.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/Water.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/Water2.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/Water2Mesh.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/objects/WaterMesh.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/offscreen/jank.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/offscreen/offscreen.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/offscreen/scene.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/physics/AmmoPhysics.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/physics/JoltPhysics.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/physics/RapierPhysics.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/AfterimagePass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/BloomPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/BokehPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/ClearPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/CubeTexturePass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/DotScreenPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/EffectComposer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/FilmPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/FXAAPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/GlitchPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/GTAOPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/HalftonePass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/LUTPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/MaskPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/OutlinePass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/OutputPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/Pass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/RenderPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/RenderPixelatedPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/RenderTransitionPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/SAOPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/SavePass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/ShaderPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/SMAAPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/SSAARenderPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/SSAOPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/SSRPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/TAARenderPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/TexturePass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/postprocessing/UnrealBloomPass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/renderers/CSS2DRenderer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/renderers/CSS3DRenderer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/renderers/Projector.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/renderers/SVGRenderer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/ACESFilmicToneMappingShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/AfterimageShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/BasicShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/BleachBypassShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/BlendShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/BokehShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/BokehShader2.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/BrightnessContrastShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/ColorCorrectionShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/ColorifyShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/ConvolutionShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/CopyShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/DepthLimitedBlurShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/DigitalGlitch.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/DOFMipMapShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/DotScreenShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/ExposureShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/FilmShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/FocusShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/FreiChenShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/FXAAShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/GammaCorrectionShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/GodRaysShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/GTAOShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/HalftoneShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/HorizontalBlurShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/HorizontalTiltShiftShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/HueSaturationShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/KaleidoShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/LuminosityHighPassShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/LuminosityShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/MirrorShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/NormalMapShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/OutputShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/PoissonDenoiseShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/RGBShiftShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/SAOShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/SepiaShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/SMAAShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/SobelOperatorShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/SSAOShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/SSRShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/SubsurfaceScatteringShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/TechnicolorShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/ToonShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/TriangleBlurShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/UnpackDepthRGBAShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/VelocityShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/VerticalBlurShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/VerticalTiltShiftShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/VignetteShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/VolumeShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/shaders/WaterRefractionShader.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/textures/FlakesTexture.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/transpiler/AST.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/transpiler/GLSLDecoder.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/transpiler/ShaderToyDecoder.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/transpiler/Transpiler.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/transpiler/TSLEncoder.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/AfterImageNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/AnaglyphPassNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/AnamorphicNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/BleachBypass.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/BloomNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/DenoiseNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/DepthOfFieldNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/DotScreenNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/FilmNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/FXAANode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/GaussianBlurNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/GTAONode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/hashBlur.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/LensflareNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/Lut3DNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/MotionBlur.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/OutlineNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/ParallaxBarrierPassNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/PixelationPassNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/RGBShiftNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/Sepia.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/SMAANode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/SobelOperatorNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/SSAAPassNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/SSRNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/StereoCompositePassNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/StereoPassNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/TRAAPassNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/display/TransitionNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/lighting/TiledLightsNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/math/Bayer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/shadows/TileShadowNode.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/shadows/TileShadowNodeHelper.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/tsl/utils/Raymarching.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/BufferGeometryUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/CameraUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/GeometryCompressionUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/GeometryUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/LDrawUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/SceneOptimizer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/SceneUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/ShadowMapViewer.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/ShadowMapViewerGPU.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/SkeletonUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/SortUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/UVsDebug.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/WebGLTextureUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/WebGPUTextureUtils.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/utils/WorkerPool.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/ARButton.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/OculusHandModel.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/OculusHandPointerModel.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/Text2D.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/VRButton.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/XRButton.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/XRControllerModelFactory.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/XREstimatedLight.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/XRHandMeshModel.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/XRHandModelFactory.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/XRHandPrimitiveModel.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/libs/three/jsm/webxr/XRPlanes.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/src/scripts.js" />
+      <file href="story_content/WebObjects/6FjroN1EiU6/src/styles.css" />
+      <file href="mobile/6FjroN1EiU65xmfqG1hvZh{Width=700, Height=520}Light.png" />
+      <file href="meta.xml" />
+      <file href="story_content/triggers.js" />
+      <file href="story_content/user.js" />
+      <file href="html5/data/css/output.min.css" />
+      <file href="html5/data/js/60IlF8BdD3t.js" />
+      <file href="html5/data/js/data.js" />
+      <file href="html5/data/js/frame.js" />
+      <file href="html5/data/js/paths.js" />
+      <file href="html5/lib/scripts/bootstrapper.min.js" />
+      <file href="html5/lib/scripts/frame.desktop.min.js" />
+      <file href="html5/lib/scripts/frame.mobile.min.js" />
+      <file href="html5/lib/scripts/slides.min.js" />
+      <file href="html5/lib/stylesheets/desktop.min.css" />
+      <file href="html5/lib/stylesheets/mobile.min.css" />
+      <file href="html5/lib/stylesheets/mobile-fonts/open-sans-bold.woff" />
+      <file href="html5/lib/stylesheets/mobile-fonts/open-sans-light.woff" />
+      <file href="html5/lib/stylesheets/mobile-fonts/open-sans-regular.woff" />
+      <file href="analytics-frame.html" />
+      <file href="story.html" />
+      <file href="index_lms.html" />
+      <file href="lms/AICCComm.html" />
+      <file href="lms/blank.html" />
+      <file href="lms/browsersniff.js" />
+      <file href="lms/goodbye.html" />
+      <file href="lms/scormdriver.js" />
+    </resource>
+  </resources>
+</manifest>

@@ -47,10 +47,10 @@ export const ReportDrilldownModal: React.FC<ReportDrilldownModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2 text-base font-bold text-foreground">
-            <User className="h-5 w-5 text-primary" />
+      <DialogContent className="w-[94vw] sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl max-h-[88vh] overflow-y-auto p-6 sm:p-7 rounded-2xl">
+        <DialogHeader className="space-y-1.5 pr-8">
+          <DialogTitle className="flex items-center space-x-2 text-base sm:text-lg font-extrabold text-foreground pr-6">
+            <User className="h-5 w-5 text-primary shrink-0" />
             <span>Learner Performance &amp; History Drill-down</span>
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">

@@ -100,8 +100,10 @@ export default function ReviewPublishForm({
         const targetCourseId = Number(courseId) || Number(res.data?.id);
         if (targetCourseId && certificate) {
           try {
+            const selectedTemplateId = (certificate as any).templateId || "classic";
             await saveCertificateTemplate(targetCourseId, {
-              templateName: "Harbinger Classic Gold",
+              templateId: selectedTemplateId,
+              templateName: selectedTemplateId === "modern" ? "Modern Wave & Ribbon" : "Classic Ornamental Border",
               headerTitle: certificate.certificateTitle || "CERTIFICATE",
               headerSubtitle: (certificate as any).headerSubtitle || "OF ACHIEVEMENT",
               certifyText: (certificate as any).certifyText || "This is to certify that",
@@ -405,7 +407,7 @@ export default function ReviewPublishForm({
         onOpenChange={setPreviewModalOpen}
         courseTitle={basicInfo.title}
         courseCode={basicInfo.courseCode || (basicInfo as any).code || "CO12"}
-        department={(basicInfo as any).department || "Global"}
+        department={(basicInfo as any).department || "Across BUs"}
         category={(basicInfo as any).category || "General"}
         shortDescription={basicInfo.shortDescription}
         description={basicInfo.description}

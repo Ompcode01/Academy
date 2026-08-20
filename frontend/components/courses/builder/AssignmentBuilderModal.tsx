@@ -140,37 +140,63 @@ export default function AssignmentBuilderModal({
   }, [open, initialData]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-      try {
-        setUploadingFile(true);
-        const uploadRes = await uploadDocumentFile(file);
-        if (uploadRes?.success && uploadRes.data?.fileUrl) {
-          setQuestionFiles((prev) => [
-            ...prev,
-            {
-              name: file.name,
-              size: `${sizeMb} MB`,
-              url: uploadRes.data.fileUrl,
-              extractedZipFiles: uploadRes.data.extractedZipFiles,
-            },
-          ]);
-        } else {
+    const selectedFiles = e.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    if (questionFiles.length >= 5) {
+      setValidationModal({
+        open: true,
+        title: "Maximum File Limit Reached",
+        description: "You can upload a maximum of 5 question/scenario files.",
+      });
+      e.target.value = "";
+      return;
+    }
+
+    const filesToUpload = Array.from(selectedFiles);
+    if (questionFiles.length + filesToUpload.length > 5) {
+      setValidationModal({
+        open: true,
+        title: "File Upload Limit Exceeded",
+        description: `You can only upload up to 5 scenario files in total. You currently have ${questionFiles.length} file(s) and selected ${filesToUpload.length} more.`,
+      });
+      e.target.value = "";
+      return;
+    }
+
+    try {
+      setUploadingFile(true);
+      for (const file of filesToUpload) {
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+        try {
+          const uploadRes = await uploadDocumentFile(file);
+          if (uploadRes?.success && uploadRes.data?.fileUrl) {
+            setQuestionFiles((prev) => [
+              ...prev,
+              {
+                name: file.name,
+                size: `${sizeMb} MB`,
+                url: uploadRes.data.fileUrl,
+                extractedZipFiles: uploadRes.data.extractedZipFiles,
+              },
+            ]);
+          } else {
+            setQuestionFiles((prev) => [
+              ...prev,
+              { name: file.name, size: `${sizeMb} MB`, url: `/storage/uploads/${file.name}` },
+            ]);
+          }
+        } catch (err) {
+          console.error("Upload scenario file error:", err);
           setQuestionFiles((prev) => [
             ...prev,
             { name: file.name, size: `${sizeMb} MB`, url: `/storage/uploads/${file.name}` },
           ]);
         }
-      } catch (err) {
-        console.error("Upload scenario file error:", err);
-        setQuestionFiles((prev) => [
-          ...prev,
-          { name: file.name, size: `${sizeMb} MB`, url: `/storage/uploads/${file.name}` },
-        ]);
-      } finally {
-        setUploadingFile(false);
       }
+    } finally {
+      setUploadingFile(false);
+      e.target.value = "";
     }
   };
 
@@ -377,23 +403,44 @@ export default function AssignmentBuilderModal({
 
                 {/* Question Files Upload */}
                 <div className="space-y-2 pt-2 border-t border-border">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    Upload Question / Scenario Files
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      Upload Question / Scenario Files
+                    </Label>
+                    <span className="text-[11px] font-semibold text-muted-foreground">
+                      ({questionFiles.length}/5 files uploaded)
+                    </span>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Drop zone */}
-                    <div className="relative border-2 border-dashed border-border rounded-xl p-5 flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors">
+                    <div
+                      className={`relative border-2 border-dashed border-border rounded-xl p-5 flex flex-col items-center justify-center transition-colors ${
+                        questionFiles.length >= 5
+                          ? "bg-muted/10 opacity-60 cursor-not-allowed"
+                          : "bg-muted/20 hover:bg-muted/40"
+                      }`}
+                    >
                       <Upload className="h-6 w-6 text-muted-foreground mb-2" />
                       <p className="text-xs font-medium text-foreground text-center">
-                        Drag &amp; drop files here or <span className="text-primary font-bold">Browse</span>
+                        {uploadingFile ? (
+                          <span className="text-primary font-bold animate-pulse">Uploading file...</span>
+                        ) : questionFiles.length >= 5 ? (
+                          <span className="text-muted-foreground font-semibold">Maximum 5 files limit reached</span>
+                        ) : (
+                          <>
+                            Drag &amp; drop files here or <span className="text-primary font-bold">Browse</span>
+                          </>
+                        )}
                       </p>
                       <p className="text-[10px] text-muted-foreground mt-1">
-                        Supported: PDF, DOC, ZIP (Max 50MB)
+                        Supported: PDF, DOC, ZIP (Max 50MB per file, Max 5 files allowed)
                       </p>
                       <input
                         type="file"
+                        multiple
+                        disabled={questionFiles.length >= 5 || uploadingFile}
                         onChange={handleFileUpload}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
                       />
                     </div>
 

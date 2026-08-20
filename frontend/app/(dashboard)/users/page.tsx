@@ -256,15 +256,15 @@ export default function UsersPage() {
           columnFilters={[
             {
               key: "departmentName",
-              label: "Dept",
+              label: "Business Unit",
               value: deptFilter || "all",
-              options: [
-                { label: "Engineering", value: "Engineering" },
-                { label: "Human Resources", value: "Human Resources" },
-                { label: "Management", value: "Management" },
-                { label: "Sales", value: "Sales" },
-                { label: "Marketing", value: "Marketing" },
-              ],
+              options: Array.from(
+                new Set(
+                  employees
+                    .map((e) => e.department?.departmentName || "Engineering")
+                    .filter(Boolean)
+                )
+              ).map((d) => ({ label: d, value: d })),
             },
             {
               key: "employmentStatus",
@@ -317,7 +317,7 @@ export default function UsersPage() {
                   Designation
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Department
+                  Business Unit
                 </TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Role

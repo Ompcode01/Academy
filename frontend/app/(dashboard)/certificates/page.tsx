@@ -21,6 +21,7 @@ import CertificatePreview from "@/components/certificates/CertificatePreview";
 import LearnerCertificateModal from "@/components/certificates/LearnerCertificateModal";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
+import { formatCourseTitle } from "@/lib/utils";
 
 import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
 
@@ -77,13 +78,18 @@ export default function CertificatesPage() {
   };
 
   const filteredCerts = applyDataFilters(
-    certificates.map((c) => ({
-      ...c,
-      issuedDate: c.issuedAt,
-    })),
+    certificates.map((c) => {
+      const buName = c.departmentName || (c as any).user?.department?.departmentName || (c as any).user?.departmentName || "Business Unit";
+      return {
+        ...c,
+        departmentName: buName,
+        businessUnit: buName,
+        issuedDate: c.issuedAt,
+      };
+    }),
     {
       searchQuery,
-      searchFields: ["recipientName", "courseTitle", "certificateCode"],
+      searchFields: ["recipientName", "departmentName", "businessUnit", "courseTitle", "certificateCode"],
       sortValue,
       titleField: "recipientName",
       dateField: "issuedDate",
@@ -141,7 +147,7 @@ export default function CertificatesPage() {
       <DataFilterToolbar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        searchPlaceholder="Search certificates by learner, course, or serial code..."
+        searchPlaceholder="Search certificates by learner, business unit, course, or serial code..."
         sortValue={sortValue}
         onSortChange={setSortValue}
         sortOptions={[
@@ -178,6 +184,7 @@ export default function CertificatesPage() {
               <tr>
                 <th className="px-6 py-3">Serial Code</th>
                 <th className="px-6 py-3">Learner Name</th>
+                <th className="px-6 py-3">Business Unit</th>
                 <th className="px-6 py-3">Course Title</th>
                 <th className="px-6 py-3">Issue Date</th>
                 <th className="px-6 py-3 text-right">Actions</th>
@@ -186,7 +193,7 @@ export default function CertificatesPage() {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
               {filteredCerts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
                     No issued certificates found. Certificates will appear here when learners complete courses.
                   </td>
                 </tr>
@@ -200,7 +207,10 @@ export default function CertificatesPage() {
                       {c.recipientName}
                     </td>
                     <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">
-                      {c.courseTitle}
+                      {c.departmentName || (c as any).user?.department?.departmentName || (c as any).user?.departmentName || "Business Unit"}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200" title={c.courseTitle}>
+                      {formatCourseTitle(c.courseTitle)}
                     </td>
                     <td className="px-6 py-4 text-slate-500">
                       {new Date(c.issuedAt).toLocaleDateString()}

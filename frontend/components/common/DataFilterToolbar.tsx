@@ -66,10 +66,10 @@ export default function DataFilterToolbar({
   sortValue = "newest",
   onSortChange,
   sortOptions = [
-    { label: "Newest", value: "newest" },
-    { label: "Oldest", value: "oldest" },
-    { label: "A-Z", value: "a_z" },
-    { label: "Z-A", value: "z_a" },
+    { label: "Name / Title (A-Z)", value: "a_z" },
+    { label: "Name / Title (Z-A)", value: "z_a" },
+    { label: "Newest First", value: "newest" },
+    { label: "Oldest First", value: "oldest" },
     { label: "Progress (High → Low)", value: "progress_high" },
     { label: "Progress (Low → High)", value: "progress_low" },
   ],
@@ -177,7 +177,9 @@ export default function DataFilterToolbar({
         {columnFilters.map((col) => {
           const isAll = !col.value || col.value === "all" || col.value === "ALL" || col.value === "All";
           const selectedOpt = col.options.find((opt) => String(opt.value) === String(col.value));
-          const displayText = isAll ? "All" : (selectedOpt ? selectedOpt.label : col.value);
+          const isDeptFilter = col.key === "department" || col.key === "departmentId" || col.label.toLowerCase().includes("business unit");
+          const allLabel = isDeptFilter ? "Across BUs" : "All";
+          const displayText = isAll ? allLabel : (selectedOpt ? selectedOpt.label : col.value);
           const normalizedVal = isAll ? "All" : col.value;
 
           return (
@@ -192,7 +194,7 @@ export default function DataFilterToolbar({
                 </SelectTrigger>
                 <SelectContent className="w-auto min-w-[180px] max-w-[380px] whitespace-nowrap bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl">
                   <SelectItem value="All" className="text-xs font-bold text-slate-500">
-                    All
+                    {allLabel}
                   </SelectItem>
                   {col.options.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium">
@@ -246,7 +248,9 @@ export function applyDataFilters<T extends Record<string, any>>(
         result = result.filter((item) => {
           const itemVal = item[key];
           if (itemVal === undefined || itemVal === null) return false;
-          return String(itemVal).toLowerCase() === String(val).toLowerCase();
+          const itemStr = String(itemVal).toLowerCase().trim();
+          const valStr = String(val).toLowerCase().trim();
+          return itemStr === valStr || itemStr.includes(valStr) || valStr.includes(itemStr);
         });
       }
     });

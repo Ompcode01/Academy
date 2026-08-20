@@ -77,6 +77,7 @@ class CourseService {
         return {
           OR: [
             { departmentId: null },
+            { departmentId: BigInt(5) },
             ...(departmentId ? [{ departmentId }] : []),
             ...(employeeId ? [{ creatorId: employeeId }] : []),
             ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
@@ -86,6 +87,9 @@ class CourseService {
       case "TEACHER":
         return {
           OR: [
+            { departmentId: null },
+            { departmentId: BigInt(5) },
+            ...(departmentId ? [{ departmentId }] : []),
             ...(employeeId ? [{ teachers: { some: { teacherId: employeeId } } }] : []),
             ...(employeeId ? [{ creatorId: employeeId }] : []),
           ],
@@ -96,6 +100,7 @@ class CourseService {
           status: "PUBLISHED",
           OR: [
             { departmentId: null },
+            { departmentId: BigInt(5) },
             ...(departmentId ? [{ departmentId }] : []),
             ...(employeeId ? [{ enrollments: { some: { userId: employeeId } } }] : []),
           ],
@@ -106,17 +111,14 @@ class CourseService {
         if (isGlobal) {
           return { status: "PUBLISHED" };
         }
-        if (departmentIds.length > 0) {
-          return {
-            status: "PUBLISHED",
-            OR: [
-              { departmentId: null },
-              { departmentId: { in: departmentIds } },
-            ],
-          };
-        }
-        // No grants active -> 0 courses allowed
-        return { status: "PUBLISHED", id: BigInt(-1) };
+        return {
+          status: "PUBLISHED",
+          OR: [
+            { departmentId: null },
+            { departmentId: BigInt(5) },
+            ...(departmentIds.length > 0 ? [{ departmentId: { in: departmentIds } }] : []),
+          ],
+        };
       }
 
       default:

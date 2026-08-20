@@ -605,6 +605,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
                   <input
                     type="date"
                     required
+                    min={editingEvent ? undefined : new Date().toISOString().split("T")[0]}
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     className="w-full rounded border border-[#E0E6ED] p-2 text-xs font-medium focus:border-[#C82333] outline-none cursor-pointer"

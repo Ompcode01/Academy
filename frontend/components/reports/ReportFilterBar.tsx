@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { ReportFilterParams } from "@/services/api/reporting.service";
 import CustomDateRangePicker from "@/components/common/CustomDateRangePicker";
+import { formatCourseTitle } from "@/lib/utils";
 
 interface FilterOptionsData {
   departments: { id: number; departmentName: string; departmentCode: string }[];
@@ -122,27 +123,40 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
         </div>
       </div>
 
-      {/* Controls Grid without redundant stacked label text */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* 1. Custom Date Range Picker */}
-        <div className="flex-1 min-w-[280px]">
-          <CustomDateRangePicker
-            startDate={filters.startDate || ""}
-            endDate={filters.endDate || ""}
-            onChange={(s, e) => onFilterChange({ startDate: s, endDate: e, preset: "CUSTOM" })}
-            showPresets={false}
+      {/* Controls Grid */}
+      <div className="flex flex-wrap items-center gap-2.5">
+        {/* 1. Search Input */}
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <Input
+            type="text"
+            placeholder="Search Employee, Code, or Email..."
+            value={filters.search || ""}
+            onChange={(e) => onFilterChange({ search: e.target.value })}
+            className="h-9 pl-8 pr-3 text-xs bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 shadow-sm rounded-xl font-medium"
           />
         </div>
 
         {/* 2. Sort Order */}
-        <div className="min-w-[160px]">
+        <div className="flex-1 min-w-[150px] max-w-[180px]">
           <Select
-            value={(filters as any).sortOrder || "desc"}
+            value={(filters as any).sortOrder || "a_z"}
             onValueChange={(val) => onFilterChange({ sortOrder: val } as any)}
           >
-            <SelectTrigger className="h-9.5 w-full bg-white dark:bg-slate-900 text-xs font-bold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
+            <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-bold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
               <ArrowUpDown className="h-3.5 w-3.5 mr-1.5 text-[#C82333] shrink-0" />
-              <SelectValue placeholder="Sort order" />
+              <SelectValue placeholder="Sort order">
+                {
+                  {
+                    a_z: "Name / Title (A-Z)",
+                    z_a: "Name / Title (Z-A)",
+                    newest: "Newest First",
+                    oldest: "Oldest First",
+                    progress_high: "Progress (High → Low)",
+                    progress_low: "Progress (Low → High)",
+                  }[String((filters as any).sortOrder || "a_z")] || "Name / Title (A-Z)"
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="a_z" className="text-xs font-medium">Name / Title (A-Z)</SelectItem>
@@ -156,20 +170,20 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
         </div>
 
         {/* 3. Business Unit Scope */}
-        <div className="min-w-[170px]">
+        <div className="flex-1 min-w-[150px] max-w-[180px]">
           {isSuperAdmin ? (
             <Select
               value={filters.departmentId ? String(filters.departmentId) : "ALL"}
               onValueChange={(val) => onFilterChange({ departmentId: val || "ALL" })}
             >
-              <SelectTrigger className="h-9.5 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
-                <span className="text-slate-400 font-normal mr-1">BU:</span>
+              <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
+                <span className="text-slate-400 font-normal mr-1 shrink-0">BU:</span>
                 <SelectValue>
-                  {selectedDeptObj ? `${selectedDeptObj.departmentName}` : "All BUs"}
+                  {selectedDeptObj ? `${selectedDeptObj.departmentName}` : "Across BUs"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL" className="text-xs font-bold text-slate-500">All Organization Business Units</SelectItem>
+                <SelectItem value="ALL" className="text-xs font-bold text-slate-500">Across BUs</SelectItem>
                 {options?.departments?.map((d) => (
                   <SelectItem key={d.id} value={String(d.id)} className="text-xs font-medium">
                     {d.departmentName} ({d.departmentCode})
@@ -178,7 +192,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
               </SelectContent>
             </Select>
           ) : (
-            <div className="h-9.5 px-3 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-center justify-between text-xs text-amber-700 dark:text-amber-300 font-semibold shadow-sm">
+            <div className="h-9 px-3 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-center justify-between text-xs text-amber-700 dark:text-amber-300 font-semibold shadow-sm">
               <span className="truncate">
                 {options?.departments?.[0]?.departmentName || "Authorized Dept"}
               </span>
@@ -190,20 +204,24 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
         </div>
 
         {/* 4. Course Filter */}
-        <div className="min-w-[160px]">
+        <div className="flex-1 min-w-[140px] max-w-[170px]">
           <Select
             value={filters.courseId ? String(filters.courseId) : "ALL"}
             onValueChange={(val) => onFilterChange({ courseId: val || "ALL" })}
           >
-            <SelectTrigger className="h-9.5 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
-              <span className="text-slate-400 font-normal mr-1">Course:</span>
-              <SelectValue placeholder="All Courses" />
+            <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
+              <span className="text-slate-400 font-normal mr-1 shrink-0">Course:</span>
+              <SelectValue placeholder="ALL">
+                {filters.courseId && filters.courseId !== "ALL"
+                  ? formatCourseTitle(options?.courses?.find((c) => String(c.id) === String(filters.courseId))?.title || String(filters.courseId))
+                  : "ALL"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL" className="text-xs font-bold text-slate-500">All Courses</SelectItem>
+              <SelectItem value="ALL" className="text-xs font-bold text-slate-500">ALL</SelectItem>
               {options?.courses?.map((c) => (
-                <SelectItem key={c.id} value={String(c.id)} className="text-xs font-medium">
-                  {c.title}
+                <SelectItem key={c.id} value={String(c.id)} className="text-xs font-medium" title={c.title}>
+                  {formatCourseTitle(c.title)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -211,17 +229,21 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
         </div>
 
         {/* 5. Category Filter */}
-        <div className="min-w-[150px]">
+        <div className="flex-1 min-w-[140px] max-w-[160px]">
           <Select
             value={filters.categoryId ? String(filters.categoryId) : "ALL"}
             onValueChange={(val) => onFilterChange({ categoryId: val || "ALL" })}
           >
-            <SelectTrigger className="h-9.5 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
-              <span className="text-slate-400 font-normal mr-1">Category:</span>
-              <SelectValue placeholder="All Categories" />
+            <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
+              <span className="text-slate-400 font-normal mr-1 shrink-0">Cat:</span>
+              <SelectValue placeholder="ALL">
+                {filters.categoryId && filters.categoryId !== "ALL"
+                  ? options?.categories?.find((c) => String(c.id) === String(filters.categoryId))?.name || filters.categoryId
+                  : "ALL"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL" className="text-xs font-bold text-slate-500">All Categories</SelectItem>
+              <SelectItem value="ALL" className="text-xs font-bold text-slate-500">ALL</SelectItem>
               {options?.categories?.map((c) => (
                 <SelectItem key={c.id} value={String(c.id)} className="text-xs font-medium">
                   {c.name}
@@ -232,17 +254,17 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
         </div>
 
         {/* 6. Status Filter */}
-        <div className="min-w-[140px]">
+        <div className="flex-1 min-w-[130px] max-w-[150px]">
           <Select
             value={filters.status || "ALL"}
             onValueChange={(val) => onFilterChange({ status: val || "ALL" })}
           >
-            <SelectTrigger className="h-9.5 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
-              <span className="text-slate-400 font-normal mr-1">Status:</span>
-              <SelectValue placeholder="All Statuses" />
+            <SelectTrigger className="h-9 w-full bg-white dark:bg-slate-900 text-xs font-semibold border-slate-200 dark:border-slate-700 shadow-sm rounded-xl">
+              <span className="text-slate-400 font-normal mr-1 shrink-0">Status:</span>
+              <SelectValue placeholder="ALL" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL" className="text-xs font-bold text-slate-500">All Statuses</SelectItem>
+              <SelectItem value="ALL" className="text-xs font-bold text-slate-500">ALL</SelectItem>
               <SelectItem value="COMPLETED" className="text-xs font-medium">Completed</SelectItem>
               <SelectItem value="IN_PROGRESS" className="text-xs font-medium">In Progress</SelectItem>
               <SelectItem value="NOT_STARTED" className="text-xs font-medium">Not Started</SelectItem>
@@ -251,15 +273,13 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
           </Select>
         </div>
 
-        {/* 7. Search Input */}
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          <Input
-            type="text"
-            placeholder="Search by Employee Name, Code, or Email..."
-            value={filters.search || ""}
-            onChange={(e) => onFilterChange({ search: e.target.value })}
-            className="h-9.5 w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-xs pl-8 rounded-xl shadow-sm focus:border-[#C82333]"
+        {/* 7. Custom Date Range Picker */}
+        <div className="shrink-0 min-w-[180px] max-w-[210px]">
+          <CustomDateRangePicker
+            startDate={filters.startDate || ""}
+            endDate={filters.endDate || ""}
+            onChange={(s, e) => onFilterChange({ startDate: s, endDate: e, preset: "CUSTOM" })}
+            showPresets={false}
           />
         </div>
       </div>

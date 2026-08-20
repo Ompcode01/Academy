@@ -46,12 +46,21 @@ export default function AssignmentEvaluationModal({
 
   if (!submission) return null;
 
-  const isSuperAdminGraded =
-    submission?.gradedByRole === "SUPER_ADMIN" ||
-    submission?.gradedBy?.includes("[SUPER_ADMIN]") ||
-    submission?.gradedBy?.toLowerCase().includes("super admin");
-  const isUserSuperAdmin = user?.role === ROLES.SUPER_ADMIN || user?.role === "SUPER_ADMIN";
-  const isGradeLockedForUser = Boolean(isSuperAdminGraded && !isUserSuperAdmin);
+  const gradedByRole =
+    submission?.gradedByRole ||
+    (submission?.gradedBy?.includes("[SUPER_ADMIN]") || submission?.gradedBy?.toLowerCase().includes("priyanka")
+      ? "SUPER_ADMIN"
+      : submission?.gradedBy?.includes("[ADMIN]")
+      ? "ADMIN"
+      : submission?.gradedBy
+      ? "TEACHER"
+      : null);
+
+  const currentUserRole = user?.role || ROLES.GUEST;
+
+  const isLockedBySuperAdmin = gradedByRole === "SUPER_ADMIN" && currentUserRole !== ROLES.SUPER_ADMIN;
+  const isLockedByAdmin = gradedByRole === "ADMIN" && currentUserRole !== ROLES.SUPER_ADMIN && currentUserRole !== ROLES.ADMIN;
+  const isGradeLockedForUser = Boolean(isLockedBySuperAdmin || isLockedByAdmin);
 
   const isFeedback =
     submission.submissionType === "FEEDBACK" ||
@@ -337,7 +346,11 @@ export default function AssignmentEvaluationModal({
                   {isGradeLockedForUser && (
                     <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center gap-2">
                       <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
-                      <span>Graded by Super Admin. Only Super Admin accounts can edit or override this grade.</span>
+                      <span>
+                        {isLockedBySuperAdmin
+                          ? "Graded by Super Admin. Higher authority evaluations are locked for Admin and Teacher accounts."
+                          : "Graded by Business Unit Admin. This evaluation is locked for Teacher accounts."}
+                      </span>
                     </div>
                   )}
 

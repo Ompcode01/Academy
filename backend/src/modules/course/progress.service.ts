@@ -313,6 +313,18 @@ export class ProgressService {
     const courseTitle = course ? course.title : "Course Completion";
     const certCode = `HARB-${new Date().getFullYear()}-X${Math.floor(1000 + Math.random() * 9000)}`;
 
+    const templateSnapshotData = template
+      ? {
+          ...serialize(template),
+          templateId:
+            template.templateName === "modern" ||
+            template.templateName === "Modern Wave & Ribbon" ||
+            template.borderStyle === "MODERN"
+              ? "modern"
+              : "classic",
+        }
+      : { templateId: "classic" };
+
     const createdCert = await prisma.issuedCertificate.create({
       data: {
         certificateCode: certCode,
@@ -321,6 +333,7 @@ export class ProgressService {
         recipientName,
         courseTitle,
         issuedAt: new Date(),
+        templateSnapshot: JSON.stringify(templateSnapshotData),
       },
     });
 

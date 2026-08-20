@@ -15,10 +15,10 @@ import {
   Bookmark,
   Save,
   Sparkles,
-  RotateCcw,
 } from "lucide-react";
 import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 import toast from "react-hot-toast";
+import { useAuthStore } from "@/store/auth.store";
 
 export interface FeedbackQuestion {
   id: number;
@@ -35,9 +35,8 @@ export interface FeedbackTemplate {
   description: string;
   questions: FeedbackQuestion[];
   isCustom?: boolean;
+  userId?: string;
 }
-
-const STORAGE_KEY = "academy_feedback_templates";
 
 const PRESET_TEMPLATES: FeedbackTemplate[] = [
   {
@@ -68,55 +67,6 @@ const PRESET_TEMPLATES: FeedbackTemplate[] = [
       },
     ],
   },
-  {
-    id: "preset-instructor",
-    name: "Instructor Support & Teaching Survey",
-    title: "Instructor Performance & Support Survey",
-    description: "Provide feedback on instructor responsiveness, domain depth, and pacing.",
-    questions: [
-      {
-        id: 201,
-        questionText: "Was the instructor clear in explaining key concepts and answering doubts?",
-        questionType: "MCQ",
-        options: ["Strongly Agree", "Agree", "Neutral", "Disagree"],
-        isMandatory: true,
-      },
-      {
-        id: 202,
-        questionText: "Did the instructor maintain an engaging pace throughout the module?",
-        questionType: "MCQ",
-        options: ["Strongly Agree", "Agree", "Neutral", "Disagree"],
-        isMandatory: true,
-      },
-      {
-        id: 203,
-        questionText: "Any additional comments regarding the instructor's delivery?",
-        questionType: "WRITTEN",
-        isMandatory: false,
-      },
-    ],
-  },
-  {
-    id: "preset-pulse",
-    name: "Quick Module Pulse Check",
-    title: "Quick Module Feedback",
-    description: "A quick 2-question survey to gauge your learning experience.",
-    questions: [
-      {
-        id: 301,
-        questionText: "Did this module meet your overall learning expectations?",
-        questionType: "MCQ",
-        options: ["Yes, Completely", "Mostly", "Partially", "No"],
-        isMandatory: true,
-      },
-      {
-        id: 302,
-        questionText: "Which topic did you find most valuable or challenging?",
-        questionType: "WRITTEN",
-        isMandatory: false,
-      },
-    ],
-  },
 ];
 
 interface FeedbackBuilderModalProps {
@@ -136,6 +86,10 @@ export default function FeedbackBuilderModal({
   onOpenChange,
   onSaveFeedback,
 }: FeedbackBuilderModalProps) {
+  const user = useAuthStore((state) => state.user);
+  const currentUserId = user?.id ? String(user.id) : (user?.email || "guest");
+  const storageKey = `academy_feedback_templates_${currentUserId}`;
+
   const [title, setTitle] = useState("Course Feedback & Evaluation");
   const [description, setDescription] = useState(
     "Please share your honest review regarding course structure, content clarity, and instructor support."
@@ -163,22 +117,26 @@ export default function FeedbackBuilderModal({
   const [saveTemplateDialogOpen, setSaveTemplateDialogOpen] = useState(false);
   const [templateNameInput, setTemplateNameInput] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
-  const [loadMode, setLoadMode] = useState<"REPLACE" | "APPEND">("REPLACE");
 
-  // Load custom templates from localStorage
+  // Toggle for showing the Add Question Form
+  const [showAddQuestionForm, setShowAddQuestionForm] = useState(false);
+
+  // Load user-scoped custom templates from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
           setCustomTemplates(parsed);
         }
+      } else {
+        setCustomTemplates([]);
       }
     } catch (err) {
       console.warn("Failed to load saved feedback templates from localStorage:", err);
     }
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     if (open && initialData) {
@@ -193,7 +151,7 @@ export default function FeedbackBuilderModal({
   // Question editing form state
   const [newQuestionText, setNewQuestionText] = useState("");
   const [newQuestionType, setNewQuestionType] = useState<"MCQ" | "WRITTEN">("MCQ");
-  const [newOptions, setNewOptions] = useState<string[]>(["Strongly Agree", "Agree", "Neutral", "Disagree"]);
+  const [newOptions, setNewOptions] = useState<string[]>(["Excellent", "Good", "Average", "Needs Improvement"]);
   const [newOptionInput, setNewOptionInput] = useState("");
   const [isMandatory, setIsMandatory] = useState(true);
 
@@ -220,6 +178,7 @@ export default function FeedbackBuilderModal({
     setNewQuestionText("");
     setNewOptions(["Excellent", "Good", "Average", "Needs Improvement"]);
     setIsMandatory(true);
+    setShowAddQuestionForm(false);
   };
 
   const handleDeleteQuestion = (id: number) => {
@@ -246,12 +205,13 @@ export default function FeedbackBuilderModal({
       description: description.trim() || "",
       questions: questions.map((q, idx) => ({ ...q, id: Date.now() + idx })),
       isCustom: true,
+      userId: currentUserId,
     };
 
     const updated = [newTmpl, ...customTemplates];
     setCustomTemplates(updated);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(storageKey, JSON.stringify(updated));
     } catch (e) {
       console.error(e);
     }
@@ -267,7 +227,7 @@ export default function FeedbackBuilderModal({
     const updated = customTemplates.filter((t) => t.id !== id);
     setCustomTemplates(updated);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(storageKey, JSON.stringify(updated));
     } catch (e) {
       console.error(e);
     }
@@ -283,17 +243,10 @@ export default function FeedbackBuilderModal({
     const target = allTemplates.find((t) => t.id === tmplId);
     if (!target) return;
 
-    if (loadMode === "REPLACE") {
-      setTitle(target.title);
-      setDescription(target.description);
-      setQuestions(target.questions.map((q, i) => ({ ...q, id: Date.now() + i })));
-      toast.success(`Loaded template: "${target.name}"`);
-    } else {
-      // APPEND
-      const appQuestions = target.questions.map((q, i) => ({ ...q, id: Date.now() + i }));
-      setQuestions((prev) => [...prev, ...appQuestions]);
-      toast.success(`Appended ${target.questions.length} questions from "${target.name}"`);
-    }
+    setTitle(target.title);
+    setDescription(target.description);
+    setQuestions(target.questions.map((q, i) => ({ ...q, id: Date.now() + i })));
+    toast.success(`Loaded template: "${target.name}"`);
     setSelectedTemplateId("");
   };
 
@@ -319,22 +272,9 @@ export default function FeedbackBuilderModal({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-foreground flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-amber-500" />
-                Course Feedback Form Builder
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setSaveTemplateDialogOpen(true)}
-                  className="h-8 text-xs gap-1.5 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/10 font-bold"
-                >
-                  <Bookmark className="h-3.5 w-3.5" /> Save as Template
-                </Button>
-              </div>
+            <DialogTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-amber-500" />
+              Course Feedback Form Builder
             </DialogTitle>
           </DialogHeader>
 
@@ -345,28 +285,6 @@ export default function FeedbackBuilderModal({
                 <span className="text-xs font-bold text-amber-800 dark:text-amber-200 flex items-center gap-1.5">
                   <Sparkles className="h-4 w-4 text-amber-600" /> Load Pre-built or Saved Template
                 </span>
-                <div className="flex items-center gap-3 text-[11px] font-semibold text-muted-foreground">
-                  <label className="flex items-center gap-1 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="loadMode"
-                      checked={loadMode === "REPLACE"}
-                      onChange={() => setLoadMode("REPLACE")}
-                      className="accent-amber-600"
-                    />
-                    Replace Form
-                  </label>
-                  <label className="flex items-center gap-1 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="loadMode"
-                      checked={loadMode === "APPEND"}
-                      onChange={() => setLoadMode("APPEND")}
-                      className="accent-amber-600"
-                    />
-                    Append Questions
-                  </label>
-                </div>
               </div>
 
               <div className="flex items-center gap-2">
@@ -379,7 +297,7 @@ export default function FeedbackBuilderModal({
                   className="w-full h-9 rounded-lg border border-amber-500/30 bg-background px-3 text-xs text-foreground font-medium"
                 >
                   <option value="">-- Choose a Feedback Template to Load --</option>
-                  <optgroup label="✨ Preset Templates">
+                  <optgroup label="✨ Standard Template">
                     {PRESET_TEMPLATES.map((tmpl) => (
                       <option key={tmpl.id} value={tmpl.id}>
                         {tmpl.name} ({tmpl.questions.length} Questions)
@@ -523,93 +441,126 @@ export default function FeedbackBuilderModal({
               ))}
             </div>
 
-            {/* Add New Question Section */}
-            <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-3">
-              <h4 className="text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
-                <Plus className="h-4 w-4" /> Add Feedback Question
-              </h4>
-
-              <div className="space-y-2">
-                <Input
-                  placeholder="Enter feedback question text..."
-                  value={newQuestionText}
-                  onChange={(e) => setNewQuestionText(e.target.value)}
-                  className="text-xs bg-background"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Question Type</Label>
-                  <select
-                    value={newQuestionType}
-                    onChange={(e) => setNewQuestionType(e.target.value as "MCQ" | "WRITTEN")}
-                    className="w-full h-9 rounded-lg border border-input bg-background px-3 text-xs text-foreground"
-                  >
-                    <option value="MCQ">Multiple Choice (MCQ Options)</option>
-                    <option value="WRITTEN">Written Response (Open Text)</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Mandatory Requirement</Label>
-                  <div className="flex items-center gap-2 pt-2">
-                    <input
-                      type="checkbox"
-                      id="mandatoryCheck"
-                      checked={isMandatory}
-                      onChange={(e) => setIsMandatory(e.target.checked)}
-                      className="h-4 w-4 accent-amber-600 rounded cursor-pointer"
-                    />
-                    <label htmlFor="mandatoryCheck" className="text-xs text-foreground font-semibold cursor-pointer">
-                      Mandatory Question
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* MCQ Options list if MCQ */}
-              {newQuestionType === "MCQ" && (
-                <div className="space-y-2 pt-1">
-                  <Label className="text-xs font-semibold">MCQ Response Options</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      placeholder="Add option choice..."
-                      value={newOptionInput}
-                      onChange={(e) => setNewOptionInput(e.target.value)}
-                      className="text-xs bg-background h-8"
-                    />
-                    <Button size="sm" type="button" onClick={handleAddOption} className="h-8 text-xs font-bold">
-                      Add Option
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {newOptions.map((opt, oIdx) => (
-                      <span
-                        key={oIdx}
-                        className="px-2 py-1 rounded bg-background border border-border text-[11px] font-semibold text-foreground flex items-center gap-1"
-                      >
-                        {opt}
-                        <button
-                          onClick={() => handleRemoveOption(oIdx)}
-                          className="text-destructive font-bold hover:text-red-700"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
+            {/* Toggleable Add Question Section */}
+            {!showAddQuestionForm ? (
               <Button
-                onClick={handleAddQuestion}
-                disabled={!newQuestionText.trim()}
-                className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold w-full"
+                type="button"
+                onClick={() => setShowAddQuestionForm(true)}
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold gap-1.5"
               >
-                Append Question to Form
+                <Plus className="h-4 w-4" /> Add Feedback Question
               </Button>
-            </div>
+            ) : (
+              <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                    <Plus className="h-4 w-4" /> Add Feedback Question
+                  </h4>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAddQuestionForm(false)}
+                    className="h-6 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <Input
+                    placeholder="Enter feedback question text..."
+                    value={newQuestionText}
+                    onChange={(e) => setNewQuestionText(e.target.value)}
+                    className="text-xs bg-background"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Question Type</Label>
+                    <select
+                      value={newQuestionType}
+                      onChange={(e) => setNewQuestionType(e.target.value as "MCQ" | "WRITTEN")}
+                      className="w-full h-9 rounded-lg border border-input bg-background px-3 text-xs text-foreground"
+                    >
+                      <option value="MCQ">Multiple Choice (MCQ Options)</option>
+                      <option value="WRITTEN">Written Response (Open Text)</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Mandatory Requirement</Label>
+                    <div className="flex items-center gap-2 pt-2">
+                      <input
+                        type="checkbox"
+                        id="mandatoryCheck"
+                        checked={isMandatory}
+                        onChange={(e) => setIsMandatory(e.target.checked)}
+                        className="h-4 w-4 accent-amber-600 rounded cursor-pointer"
+                      />
+                      <label htmlFor="mandatoryCheck" className="text-xs text-foreground font-semibold cursor-pointer">
+                        Mandatory Question
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* MCQ Options list if MCQ */}
+                {newQuestionType === "MCQ" && (
+                  <div className="space-y-2 pt-1">
+                    <Label className="text-xs font-semibold">MCQ Response Options</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="Add option choice..."
+                        value={newOptionInput}
+                        onChange={(e) => setNewOptionInput(e.target.value)}
+                        className="text-xs bg-background h-8"
+                      />
+                      <Button size="sm" type="button" onClick={handleAddOption} className="h-8 text-xs font-bold">
+                        Add Option
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {newOptions.map((opt, oIdx) => (
+                        <span
+                          key={oIdx}
+                          className="px-2 py-1 rounded bg-background border border-border text-[11px] font-semibold text-foreground flex items-center gap-1"
+                        >
+                          {opt}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveOption(oIdx)}
+                            className="text-destructive font-bold hover:text-red-700"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    type="button"
+                    onClick={handleAddQuestion}
+                    disabled={!newQuestionText.trim()}
+                    className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold"
+                  >
+                    Save Question to Survey
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddQuestionForm(false)}
+                    className="text-xs"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center justify-between pt-3 border-t border-border">
               <Button

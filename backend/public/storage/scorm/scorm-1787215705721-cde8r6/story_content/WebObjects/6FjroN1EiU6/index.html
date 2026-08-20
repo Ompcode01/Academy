@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Car Viewer with Hotspots</title>
+    <link rel="icon" type="image/x-icon" href="./assets/transperent1x1.png">
+    <link rel="stylesheet" href="./src/styles.css">
+</head>
+
+<body>
+    <div id="canvas-container"></div>
+    <div id="info" class="hotspot-label"></div>
+    <div class="title-bar">BMW i8 - Interactive 3D Model</div>
+    <div class="controls-hint">Left click + drag: Rotate | Right click + drag: Pan | Scroll: Zoom</div>
+
+    <script src="assets/data.js"></script>
+    <script type="importmap">{"imports": {"three": "./libs/three/build/three.module.js","three/addons/": "./libs/three/jsm/"}}</script>    
+    <script type="module" src="./src/scripts.js"></script>
+</body>
+
+</html>

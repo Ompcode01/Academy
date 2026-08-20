@@ -174,6 +174,7 @@ class CourseRepository {
             },
           },
         },
+        certificateTemplate: true,
         sections: {
           where: { isActive: true },
           orderBy: { sectionOrder: "asc" },

@@ -27,9 +27,7 @@ export default function LoginPage() {
           <div className="flex flex-col items-center justify-center text-center max-w-lg w-full mx-auto my-auto space-y-6">
             <h1 className="text-4xl font-extrabold tracking-tight leading-tight text-white text-center w-full">
               Empowering Minds, <br />
-              <span className="bg-gradient-to-r from-blue-200 via-cyan-200 to-white bg-clip-text text-transparent">
-                Elevating Enterprise.
-              </span>
+              Elevating Enterprise.
             </h1>
           </div>
 

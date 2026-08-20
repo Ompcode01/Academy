@@ -9,6 +9,7 @@ export interface DashboardStats {
   activeEnrollments: number;
   completedEnrollments: number;
   completionRate: number;
+  totalCertificatesIssued?: number;
 }
 
 export const getDashboardStats = async () => {

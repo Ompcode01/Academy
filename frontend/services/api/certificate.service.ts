@@ -3,6 +3,7 @@ import api from "./auth.service";
 export interface CertificateTemplateData {
   id?: number;
   courseId?: number | null;
+  templateId?: string;
   templateName: string;
   logoUrl?: string | null;
   headerTitle: string;
@@ -26,6 +27,7 @@ export interface IssuedCertificateData {
   courseId: number;
   issuedAt: string;
   recipientName: string;
+  departmentName?: string;
   courseTitle: string;
   templateSnapshot?: string;
 }

@@ -48,16 +48,16 @@ export const ReportKpiCard: React.FC<ReportKpiCardProps> = ({
 
   return (
     <Card className="border border-border/80 bg-card hover:border-primary/40 transition-all duration-200 shadow-sm">
-      <CardContent className="p-4 flex items-center space-x-4">
-        <div className={`p-3 rounded-xl border ${variantStyles[variant]}`}>
+      <CardContent className="p-3.5 flex items-center space-x-3">
+        <div className={`p-2.5 rounded-xl border shrink-0 ${variantStyles[variant]}`}>
           <Icon className="h-5 w-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-muted-foreground truncate">{title}</p>
-          <div className="flex items-baseline space-x-2">
-            <h3 className="text-xl font-bold tracking-tight text-foreground truncate">{value}</h3>
+          <p className="text-[11px] font-semibold text-muted-foreground leading-snug line-clamp-2" title={title}>{title}</p>
+          <div className="mt-1 flex items-baseline">
+            <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-foreground whitespace-nowrap">{value}</h3>
           </div>
-          {subtext && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{subtext}</p>}
+          {subtext && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{subtext}</p>}
         </div>
       </CardContent>
     </Card>

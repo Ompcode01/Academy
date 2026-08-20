@@ -1574,9 +1574,20 @@ export class ReportingService {
         const crs = courseMap.get(en.courseId.toString());
 
         const totalLessons = crs?.sections?.flatMap((s) => s.contents).length || 0;
-        const completedCount = completedProgress.filter(
+        const rawCompleted = completedProgress.filter(
           (p) => p.userId.toString() === en.userId.toString() && p.courseId.toString() === en.courseId.toString()
         ).length;
+
+        const isCompletedStatus = en.status === "COMPLETED" || Number(en.progress) >= 100;
+        const displayCompleted = isCompletedStatus
+          ? (totalLessons > 0 ? totalLessons : Math.max(rawCompleted, 1))
+          : Math.min(rawCompleted, totalLessons);
+
+        const calculatedProgress = isCompletedStatus
+          ? 100
+          : (totalLessons > 0
+              ? Math.min(99, Math.round((displayCompleted / totalLessons) * 100))
+              : Number(en.progress));
 
         const teacherName =
           crs?.teachers?.[0]?.teacher
@@ -1598,9 +1609,9 @@ export class ReportingService {
           courseId: en.courseId,
           courseTitle: crs ? crs.title : `Course #${en.courseId}`,
           assignedTeacher: teacherName,
-          progress: Number(en.progress),
-          completedLessonsCount: `${completedCount} / ${totalLessons}`,
-          status: en.status,
+          progress: calculatedProgress,
+          completedLessonsCount: `${displayCompleted} / ${totalLessons || displayCompleted}`,
+          status: isCompletedStatus ? "COMPLETED" : (calculatedProgress >= 100 ? "COMPLETED" : en.status),
           lastActivity: en.createdAt || en.enrolledAt,
           timeSpentSeconds: en.timeSpentSeconds || 0,
           timeSpentFormatted,
@@ -1855,7 +1866,7 @@ export class ReportingService {
           grade: isFb ? "COMPLETED" : (sub.grade || "N/A"),
           feedback: isFb ? "Survey Completed" : (sub.feedback || ""),
           gradedBy: sub.gradedBy || null,
-          gradedByRole: sub.gradedBy?.includes("[SUPER_ADMIN]") ? "SUPER_ADMIN" : sub.gradedBy?.includes("[ADMIN]") ? "ADMIN" : sub.gradedBy?.includes("[TEACHER]") ? "TEACHER" : null,
+          gradedByRole: (sub.gradedBy?.includes("[SUPER_ADMIN]") || sub.gradedBy?.toLowerCase().includes("priyanka")) ? "SUPER_ADMIN" : sub.gradedBy?.includes("[ADMIN]") ? "ADMIN" : sub.gradedBy ? "TEACHER" : null,
           gradedAt: sub.gradedAt || null,
           attemptNumber: sub.attemptNumber || 1,
         };
@@ -1877,9 +1888,19 @@ export class ReportingService {
     const sub = await prisma.assessmentSubmission.findUnique({ where: { id: subId } });
     if (!sub) throw new Error("Submission not found");
 
+    // Enforce Evaluation Hierarchy Security:
+    const prevGradedBy = sub.gradedBy || "";
+    if (prevGradedBy.includes("[SUPER_ADMIN]") && user.role !== "SUPER_ADMIN") {
+      throw new Error("This evaluation was finalized by a Super Admin and is locked. Higher authority evaluations cannot be modified.");
+    }
+    if (prevGradedBy.includes("[ADMIN]") && user.role !== "SUPER_ADMIN" && user.role !== "ADMIN") {
+      throw new Error("This evaluation was finalized by a Business Unit Admin and is locked for Teachers.");
+    }
+
+    const roleTag = user.role === "SUPER_ADMIN" ? "[SUPER_ADMIN]" : user.role === "ADMIN" ? "[ADMIN]" : "[TEACHER]";
     const evaluatorId = toBigIntSafe(user.userId) || toBigIntSafe(user.employeeId);
     const emp = evaluatorId ? await prisma.employee.findUnique({ where: { id: evaluatorId }, select: { firstName: true, lastName: true } }) : null;
-    const evaluatorName = emp ? `${emp.firstName} ${emp.lastName}` : "Faculty Evaluator";
+    const evaluatorName = emp ? `${emp.firstName} ${emp.lastName} ${roleTag}` : `Faculty Evaluator ${roleTag}`;
 
     const progressService = (await import("../modules/course/progress.service")).default;
     const updated = await progressService.gradeAssessmentSubmission(
@@ -1890,6 +1911,28 @@ export class ReportingService {
       evaluatorName,
       "GRADED"
     );
+
+    // Dispatch targeted notification ONLY to the specific learner
+    try {
+      const notificationService = (await import("../modules/notification/notification.service")).default;
+      const course = await prisma.course.findUnique({ where: { id: sub.courseId }, select: { title: true } });
+      const content = sub.contentId ? await prisma.learningContent.findUnique({ where: { id: sub.contentId }, select: { title: true } }) : null;
+
+      await notificationService.notifySubmissionEvaluation({
+        userId: sub.userId,
+        courseId: sub.courseId,
+        courseTitle: course?.title || "Course",
+        contentTitle: content?.title || "Practical Assignment",
+        teacherName: emp ? `${emp.firstName} ${emp.lastName}` : "Faculty Evaluator",
+        evaluatorRole: user.role,
+        status: "GRADED",
+        grade: data.grade || "A",
+        score: Number(data.score),
+        feedback: data.feedback || "Evaluated by Faculty.",
+      });
+    } catch (nErr) {
+      console.error("Failed to send targeted assignment evaluation notification:", nErr);
+    }
 
     // Record Audit Log
     try {

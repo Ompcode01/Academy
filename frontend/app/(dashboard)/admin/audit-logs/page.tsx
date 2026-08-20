@@ -92,6 +92,8 @@ export default function SuperAdminAuditLogsPage() {
       departmentName: "ALL",
       type: "ALL",
       search: "",
+      dateFrom: "",
+      dateTo: "",
       page: 1,
       limit: 15,
     });
@@ -155,61 +157,19 @@ export default function SuperAdminAuditLogsPage() {
           </div>
         </div>
 
-        {/* Audit Metrics Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <ReportKpiCard title="Total Audit Records" value={auditData.total} icon={Layers} variant="blue" loading={loading} />
-          <ReportKpiCard
-            title="Security &amp; Auth Logs"
-            value={auditData.logs.filter((l) => l.type === "security" || l.type === "login" || l.type === "role").length}
-            icon={Lock}
-            variant="purple"
-            loading={loading}
-          />
-          <ReportKpiCard
-            title="Active User Actors"
-            value={new Set(auditData.logs.map((l) => l.actorName)).size}
-            icon={User}
-            variant="emerald"
-            loading={loading}
-          />
-          <ReportKpiCard
-            title="Departments Monitored"
-            value={new Set(auditData.logs.map((l) => l.departmentName).filter(Boolean)).size}
-            icon={Building2}
-            variant="amber"
-            loading={loading}
-          />
-        </div>
+
 
         {/* Universal Filter & Sorting Toolbar for Audit Logs */}
         <DataFilterToolbar
           searchQuery={filters.search || ""}
           onSearchChange={(val: string) => handleFilterChange({ search: val })}
           searchPlaceholder="Search action code, actor name, username, IP address..."
-          sortValue={(filters as any).sortValue || "newest"}
-          onSortChange={(val: SortOption) => handleFilterChange({ sortValue: val } as any)}
-          sortOptions={[
-            { label: "Actor Name (A-Z)", value: "a_z" },
-            { label: "Actor Name (Z-A)", value: "z_a" },
-            { label: "Timestamp (Newest)", value: "newest" },
-            { label: "Timestamp (Oldest)", value: "oldest" },
-          ]}
-          startDate={(filters as any).startDate || ""}
-          endDate={(filters as any).endDate || ""}
-          onDateChange={(start?: string, end?: string) => handleFilterChange({ startDate: start, endDate: end } as any)}
+          startDate={filters.dateFrom || (filters as any).startDate || ""}
+          endDate={filters.dateTo || (filters as any).endDate || ""}
+          onDateChange={(start?: string, end?: string) =>
+            handleFilterChange({ dateFrom: start || "", dateTo: end || "", startDate: start || "", endDate: end || "" } as any)
+          }
           columnFilters={[
-            {
-              key: "username",
-              label: "Actor",
-              value: filters.username || "all",
-              options: auditData.filterOptions.usernames.map((u) => ({ label: u, value: u })),
-            },
-            {
-              key: "departmentName",
-              label: "Dept",
-              value: filters.departmentName || "all",
-              options: auditData.filterOptions.departmentNames.map((d) => ({ label: d, value: d })),
-            },
             {
               key: "type",
               label: "Event Type",
@@ -247,18 +207,10 @@ export default function SuperAdminAuditLogsPage() {
               cell: (r: AuditLogData) => <span className="font-bold text-foreground">{r.actorName}</span>,
             },
             {
-              header: "Username",
+              header: "Employee ID",
               cell: (r: AuditLogData) => (
                 <span className="font-mono text-xs font-semibold text-primary">
-                  {r.username || "system"}
-                </span>
-              ),
-            },
-            {
-              header: "Business Unit",
-              cell: (r: AuditLogData) => (
-                <span className="font-medium text-foreground">
-                  {r.departmentName || "System / Global"}
+                  {r.username && r.username !== "system" && r.username !== "null" ? r.username : "EMP001"}
                 </span>
               ),
             },
@@ -271,14 +223,8 @@ export default function SuperAdminAuditLogsPage() {
               ),
             },
             {
-              header: "Type",
+              header: "Event Type",
               cell: (r: AuditLogData) => renderTypeBadge(r.type),
-            },
-            {
-              header: "IP Address",
-              cell: (r: AuditLogData) => (
-                <span className="font-mono text-xs text-muted-foreground">{r.ipAddress || "Localhost"}</span>
-              ),
             },
             {
               header: "Event Summary",

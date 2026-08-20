@@ -3,6 +3,7 @@ import { serializeBigInt } from "../../utils/prismaSerializer";
 
 export interface UpsertCertificateTemplateData {
   courseId?: bigint | null;
+  templateId?: string;
   templateName?: string;
   logoUrl?: string | null;
   headerTitle?: string;
@@ -28,7 +29,8 @@ class CertificateService {
     if (!template) {
       // Return default template
       return {
-        templateName: "Harbinger Classic Gold",
+        templateId: "classic",
+        templateName: "Classic Ornamental Border",
         logoUrl: null,
         headerTitle: "CERTIFICATE",
         headerSubtitle: "OF ACHIEVEMENT",
@@ -45,7 +47,18 @@ class CertificateService {
       };
     }
 
-    return serializeBigInt(template);
+    const serialized = serializeBigInt(template);
+    const templateId =
+      template.templateName === "modern" ||
+      template.templateName === "Modern Wave & Ribbon" ||
+      template.borderStyle === "MODERN"
+        ? "modern"
+        : "classic";
+
+    return {
+      ...serialized,
+      templateId,
+    };
   }
 
   async upsertTemplateForCourse(courseId: bigint, data: UpsertCertificateTemplateData) {
@@ -53,11 +66,16 @@ class CertificateService {
       where: { courseId },
     });
 
+    const templateId = data.templateId || (data.templateName === "modern" ? "modern" : "classic");
+    const templateName = templateId === "modern" ? "modern" : "classic";
+    const borderStyle = templateId === "modern" ? "MODERN" : "CLASSIC";
+
     if (existing) {
       const updated = await prisma.certificateTemplate.update({
         where: { courseId },
         data: {
-          templateName: data.templateName ?? existing.templateName,
+          templateName: templateName,
+          borderStyle: borderStyle,
           logoUrl: data.logoUrl !== undefined ? data.logoUrl : existing.logoUrl,
           headerTitle: data.headerTitle ?? existing.headerTitle,
           headerSubtitle: data.headerSubtitle ?? existing.headerSubtitle,
@@ -67,18 +85,18 @@ class CertificateService {
           signatoryTitle: data.signatoryTitle ?? existing.signatoryTitle,
           signatureUrl: data.signatureUrl !== undefined ? data.signatureUrl : existing.signatureUrl,
           customDate: data.customDate !== undefined ? data.customDate : existing.customDate,
-          borderStyle: data.borderStyle ?? existing.borderStyle,
           primaryColor: data.primaryColor ?? existing.primaryColor,
           enableCertificate: data.enableCertificate ?? existing.enableCertificate,
           passingThreshold: data.passingThreshold ?? existing.passingThreshold,
         },
       });
-      return serializeBigInt(updated);
+      return { ...serializeBigInt(updated), templateId };
     } else {
       const created = await prisma.certificateTemplate.create({
         data: {
           courseId,
-          templateName: data.templateName || "Harbinger Classic Gold",
+          templateName: templateName,
+          borderStyle: borderStyle,
           logoUrl: data.logoUrl || null,
           headerTitle: data.headerTitle || "CERTIFICATE",
           headerSubtitle: data.headerSubtitle || "OF ACHIEVEMENT",
@@ -88,13 +106,12 @@ class CertificateService {
           signatoryTitle: data.signatoryTitle || "Authorized Director",
           signatureUrl: data.signatureUrl || null,
           customDate: data.customDate || null,
-          borderStyle: data.borderStyle || "GOLD_DOUBLE_ORNATE",
           primaryColor: data.primaryColor || "#d97706",
           enableCertificate: data.enableCertificate ?? true,
           passingThreshold: data.passingThreshold ?? 70,
         },
       });
-      return serializeBigInt(created);
+      return { ...serializeBigInt(created), templateId };
     }
   }
 
@@ -189,6 +206,7 @@ class CertificateService {
       const crs = courseMap.get(cert.courseId.toString());
       return {
         ...cert,
+        departmentName: emp?.department?.departmentName || "General",
         user: emp || {
           id: cert.userId,
           firstName: cert.recipientName.split(" ")[0] || "Learner",
@@ -212,7 +230,27 @@ class CertificateService {
     const certificates = await prisma.issuedCertificate.findMany({
       orderBy: { issuedAt: "desc" },
     });
-    return serializeBigInt(certificates);
+
+    const userIds = Array.from(new Set(certificates.map((c) => c.userId)));
+    const users = await prisma.employee.findMany({
+      where: { id: { in: userIds } },
+      select: {
+        id: true,
+        department: { select: { departmentName: true } },
+      },
+    });
+
+    const userDeptMap = new Map<string, string>();
+    users.forEach((u) => {
+      userDeptMap.set(String(u.id), u.department?.departmentName || "General");
+    });
+
+    const certsWithDept = certificates.map((c) => ({
+      ...c,
+      departmentName: userDeptMap.get(String(c.userId)) || "General",
+    }));
+
+    return serializeBigInt(certsWithDept);
   }
 
   async verifyCertificate(code: string) {
@@ -220,7 +258,16 @@ class CertificateService {
       where: { certificateCode: code },
     });
     if (!certificate) return null;
-    return serializeBigInt(certificate);
+
+    const user = await prisma.employee.findUnique({
+      where: { id: certificate.userId },
+      select: { department: { select: { departmentName: true } } },
+    });
+
+    return serializeBigInt({
+      ...certificate,
+      departmentName: user?.department?.departmentName || "General",
+    });
   }
 }
 

@@ -166,7 +166,7 @@ function CreateCourseContent() {
             }
 
             // Resume an unfinished course exactly where its author left off.
-            setIsDraftCourse(c.status === "DRAFT");
+            setIsDraftCourse(!c.status || c.status === "DRAFT" || c.status === "Draft");
             if (c.status === "DRAFT" && c.draftStep) {
               setCurrentStep(Math.min(Math.max(Number(c.draftStep), 1), wizardSteps.length));
             }
@@ -455,7 +455,7 @@ function CreateCourseContent() {
             level={wizardState.basicInfo.level}
             category={categoryMap[wizardState.basicInfo.categoryId] || "Development"}
             durationHours={wizardState.basicInfo.duration || 0}
-            status={draftId ? "Published" : "Draft"}
+            status={isDraftCourse ? "Draft" : "Published"}
             onSectionsChange={(newSections) =>
               setWizardState((prev) => ({ ...prev, sections: newSections }))
             }

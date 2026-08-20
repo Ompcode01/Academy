@@ -78,7 +78,14 @@ export default function CourseCards({
               : "Assigned Instructor";
             const initials = getInitials(course.creator?.firstName, course.creator?.lastName);
             const categoryName = course.category?.name || "Uncategorized";
-            const departmentCode = course.department?.departmentCode || "Global";
+            const departmentCode =
+              !course.department ||
+              (course as any).departmentId === 5 ||
+              (course as any).departmentId === null ||
+              course.department?.departmentCode === "Global" ||
+              course.department?.departmentName === "Global"
+                ? "Across BUs"
+                : course.department?.departmentName || course.department?.departmentCode;
             const thumbnail =
               (course as any).thumbnail ||
               "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80";

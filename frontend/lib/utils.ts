@@ -26,3 +26,18 @@ export function getYouTubeEmbedUrl(url: string): string {
     return url;
   }
 }
+
+/**
+ * Smart Course Title Formatter:
+ * Shortens long course titles to 3 words + '...' (e.g. "The AI Engineer..."),
+ * or uses nickname/shortTitle if available.
+ */
+export function formatCourseTitle(title: string | null | undefined, maxWords: number = 3): string {
+  if (!title || typeof title !== "string") return "Untitled Course";
+  const trimmed = title.trim();
+  if (!trimmed) return "Untitled Course";
+
+  const words = trimmed.split(/\s+/);
+  if (words.length <= maxWords) return trimmed;
+  return `${words.slice(0, maxWords).join(" ")}...`;
+}

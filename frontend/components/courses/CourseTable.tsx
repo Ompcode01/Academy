@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Pencil, Trash2, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Pencil, Trash2, Users, ChevronLeft, ChevronRight, Archive, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Course } from "@/services/api/course.service";
 
@@ -39,6 +39,7 @@ interface CourseTableProps {
   onPageChange?: (page: number) => void;
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
+  onToggleStatus?: (id: number, newStatus: "PUBLISHED" | "ARCHIVED") => void;
 }
 
 export default function CourseTable({
@@ -49,6 +50,7 @@ export default function CourseTable({
   onPageChange,
   onEdit,
   onDelete,
+  onToggleStatus,
 }: CourseTableProps) {
   const user = useAuthStore((state) => state.user);
   const userRole = user?.role || ROLES.GUEST;
@@ -77,7 +79,7 @@ export default function CourseTable({
                 Category
               </TableHead>
               <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Department
+                Business Unit
               </TableHead>
               <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Instructor
@@ -109,7 +111,14 @@ export default function CourseTable({
                   : "Assigned Instructor";
                 const initials = getInitials(course.creator?.firstName, course.creator?.lastName);
                 const categoryName = course.category?.name || "Uncategorized";
-                const departmentCode = course.department?.departmentCode || "Global";
+                const departmentCode =
+                  !course.department ||
+                  (course as any).departmentId === 5 ||
+                  (course as any).departmentId === null ||
+                  course.department?.departmentCode === "Global" ||
+                  course.department?.departmentName === "Global"
+                    ? "Across BUs"
+                    : course.department?.departmentName || course.department?.departmentCode;
 
                 return (
                   <TableRow
@@ -166,6 +175,27 @@ export default function CourseTable({
                       <div className="flex items-center gap-1.5">
                         {isAuthorizedToManage ? (
                           <>
+                            {course.status === "PUBLISHED" ? (
+                              <Button
+                                variant="ghost"
+                                size="icon-xs"
+                                onClick={() => onToggleStatus?.(Number(course.id), "ARCHIVED")}
+                                className="text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
+                                title="Archive Course (Mark Inactive)"
+                              >
+                                <Archive className="h-3.5 w-3.5" />
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="icon-xs"
+                                onClick={() => onToggleStatus?.(Number(course.id), "PUBLISHED")}
+                                className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/10"
+                                title="Publish Course (Mark Active)"
+                              >
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
                             <Button
                               variant="ghost"
                               size="icon-xs"

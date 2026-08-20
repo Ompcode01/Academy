@@ -38,8 +38,16 @@ export class AuditService {
     // Date range
     if (filters.dateFrom || filters.dateTo) {
       where.timestamp = {};
-      if (filters.dateFrom) where.timestamp.gte = new Date(filters.dateFrom);
-      if (filters.dateTo) where.timestamp.lte = new Date(filters.dateTo);
+      if (filters.dateFrom) {
+        const dFrom = new Date(filters.dateFrom);
+        dFrom.setHours(0, 0, 0, 0);
+        where.timestamp.gte = dFrom;
+      }
+      if (filters.dateTo) {
+        const dTo = new Date(filters.dateTo);
+        dTo.setHours(23, 59, 59, 999);
+        where.timestamp.lte = dTo;
+      }
     }
 
     // Search query across fields
@@ -123,8 +131,8 @@ export class AuditService {
           include: { userAccount: true, department: true },
         });
         if (emp) {
-          if (!username) username = emp.userAccount?.username || emp.employeeCode;
-          if (!departmentName) departmentName = emp.department.departmentName;
+          username = emp.employeeCode || emp.userAccount?.username || "EMP001";
+          if (!departmentName) departmentName = emp.department?.departmentName || "Global Organization";
         }
       } catch (err) {
         console.error("Audit log user auto-resolution skipped:", err);

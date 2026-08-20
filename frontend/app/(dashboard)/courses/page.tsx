@@ -11,7 +11,7 @@ import CreateCourseModal from "@/components/courses/CreateCourseModal";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
 import RoleGate from "@/components/auth/RoleGate";
-import { getCourses, type Course, deleteCourse } from "@/services/api/course.service";
+import { getCourses, type Course, deleteCourse, updateCourse } from "@/services/api/course.service";
 import { getMyEnrollments, UserEnrollmentItem } from "@/services/api/progress.service";
 import toast from "react-hot-toast";
 import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
@@ -27,6 +27,17 @@ export default function CoursesPage() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successModal, setSuccessModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
+  const [statusCounts, setStatusCounts] = useState<{
+    published: number;
+    draft: number;
+    archived: number;
+    all: number;
+  }>({
+    published: 0,
+    draft: 0,
+    archived: 0,
+    all: 0,
+  });
 
   // Filter States
   const [search, setSearch] = useState<string>("");
@@ -48,7 +59,7 @@ export default function CoursesPage() {
   const fetchCoursesList = async () => {
     try {
       setLoading(true);
-      const [res, myEnrolls] = await Promise.all([
+      const [res, summaryRes, myEnrolls] = await Promise.all([
         getCourses({
           search: debouncedSearch,
           categoryId,
@@ -57,12 +68,22 @@ export default function CoursesPage() {
           page: currentPage,
           limit: pageSize,
         }),
+        getCourses({ limit: 1000 }),
         getMyEnrollments(),
       ]);
 
       if (res?.success) {
         setCourses(res.data.courses || []);
         setTotalCourses(res.data.total || 0);
+      }
+      if (summaryRes?.success && Array.isArray(summaryRes.data.courses)) {
+        const allList: Course[] = summaryRes.data.courses;
+        setStatusCounts({
+          published: allList.filter((c) => c.status === "PUBLISHED").length,
+          draft: allList.filter((c) => c.status === "DRAFT").length,
+          archived: allList.filter((c) => c.status === "ARCHIVED").length,
+          all: allList.length,
+        });
       }
       setUserEnrollments(myEnrolls || []);
     } catch (err) {
@@ -118,6 +139,28 @@ export default function CoursesPage() {
     setDeleteConfirmId(id);
   };
 
+  const handleToggleStatus = async (id: number, newStatus: "PUBLISHED" | "ARCHIVED") => {
+    try {
+      setLoading(true);
+      const res = await updateCourse(id, { status: newStatus });
+      if (res?.success) {
+        toast.success(
+          `Course #${id} marked as ${
+            newStatus === "PUBLISHED" ? "Active (Published)" : "Inactive (Archived)"
+          }!`
+        );
+        await fetchCoursesList();
+      } else {
+        toast.error("Failed to update course status.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error updating course status.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Client-side sorting on loaded courses
   const sortedCourses = [...courses].sort((a, b) => {
     if (sortValue === "a_z") {
@@ -160,6 +203,68 @@ export default function CoursesPage() {
         </RoleGate>
       </div>
 
+      {/* Active, Draft, Inactive, and All Courses Status Tabs with Scores */}
+      <div className="flex flex-wrap items-center gap-2.5 pb-1">
+        <button
+          onClick={() => handleStatusChange("PUBLISHED")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+            status === "PUBLISHED"
+              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 shadow-xs"
+              : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+          }`}
+        >
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+          Active Courses
+          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold ml-1">
+            {statusCounts.published}
+          </span>
+        </button>
+
+        <button
+          onClick={() => handleStatusChange("DRAFT")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+            status === "DRAFT"
+              ? "bg-slate-500/15 text-slate-800 dark:text-slate-200 border border-slate-500/40 shadow-xs"
+              : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+          }`}
+        >
+          <span className="h-2.5 w-2.5 rounded-full bg-slate-400 inline-block" />
+          Draft Courses
+          <span className="px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-700 dark:text-slate-300 text-[10px] font-extrabold ml-1">
+            {statusCounts.draft}
+          </span>
+        </button>
+
+        <button
+          onClick={() => handleStatusChange("ARCHIVED")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+            status === "ARCHIVED"
+              ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 shadow-xs"
+              : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+          }`}
+        >
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-500 inline-block" />
+          Inactive Courses (Archived)
+          <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold ml-1">
+            {statusCounts.archived}
+          </span>
+        </button>
+
+        <button
+          onClick={() => handleStatusChange(null)}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+            !status
+              ? "bg-primary/15 text-primary border border-primary/40 shadow-xs"
+              : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+          }`}
+        >
+          All Courses
+          <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-extrabold ml-1">
+            {statusCounts.all}
+          </span>
+        </button>
+      </div>
+
       {/* Filters */}
       <div className="bg-card p-4 rounded-xl border border-border">
         <CourseFilters
@@ -189,6 +294,7 @@ export default function CoursesPage() {
           onPageChange={setCurrentPage}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onToggleStatus={handleToggleStatus}
         />
       ) : (
         <CourseCards

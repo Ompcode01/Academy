@@ -95,6 +95,12 @@ export default function LearnerCertificateModal({
               courseTitle={activeCert.courseTitle || "Elevate... Go Beyond"}
               completionDate={activeCert.issuedAt}
               certificateCode={activeCert.certificateCode}
+              templateId={
+                template.templateId ||
+                (template.templateName === "modern" || template.templateName === "Modern Wave & Ribbon" || template.borderStyle === "MODERN"
+                  ? "modern"
+                  : "classic")
+              }
             />
           </div>
         </div>

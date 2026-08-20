@@ -424,7 +424,7 @@ export default function CoursePreviewView() {
 
   const departmentLabel =
     (course as any)?.department?.departmentName ||
-    ({ 1: "Engineering (ENG)", 2: "Human Resources (HR)", 3: "Management (MGT)" }[Number((course as any)?.departmentId)] || "Global Organizational Audience");
+    ({ 1: "Tech Services- Core", 2: "Tech Services - DPU", 3: "Content Services", 4: "Business Enablers", 5: "Across BUs" }[Number((course as any)?.departmentId)] || "Across BUs");
 
   const categoryLabel = course?.category?.name || "Technical";
 
@@ -903,18 +903,20 @@ export default function CoursePreviewView() {
             </div>
           </div>
 
-          <Button
-            onClick={handleCertificateClick}
-            size="sm"
-            className={
-              isCourseFullyCompleted
-                ? "bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-1.5 shadow animate-pulse"
-                : "bg-muted border border-border text-foreground hover:bg-accent text-xs gap-1.5 cursor-pointer"
-            }
-          >
-            <Award className={isCourseFullyCompleted ? "h-4 w-4 text-slate-950" : "h-4 w-4 text-amber-500"} />
-            {isCourseFullyCompleted ? "Claim Certificate" : "Certificate (Locked)"}
-          </Button>
+          {((course as any)?.certificateTemplate?.enableCertificate !== false && (course as any)?.certificateTemplate?.templateName !== "none" && (course as any)?.certificateTemplate?.templateId !== "none") && (
+            <Button
+              onClick={handleCertificateClick}
+              size="sm"
+              className={
+                isCourseFullyCompleted
+                  ? "bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs gap-1.5 shadow animate-pulse"
+                  : "bg-muted border border-border text-foreground hover:bg-accent text-xs gap-1.5 cursor-pointer"
+              }
+            >
+              <Award className={isCourseFullyCompleted ? "h-4 w-4 text-slate-950" : "h-4 w-4 text-amber-500"} />
+              {isCourseFullyCompleted ? "Claim Certificate" : "Certificate (Locked)"}
+            </Button>
+          )}
         </div>
       </header>
 

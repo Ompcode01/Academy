@@ -76,24 +76,21 @@ export const createCourse = asyncHandler(
 
     let departmentId: bigint | null = null;
 
-    // Rule: ADMIN department must be fixed to their assigned department
-    if (userRole === "ADMIN") {
-      departmentId = userDepartmentId;
-    } else if (userRole === "SUPER_ADMIN") {
-      // SUPER_ADMIN can pick a specific department OR select "ALL" / global (null)
-      if (
-        req.body.departmentId !== undefined &&
-        req.body.departmentId !== null &&
-        req.body.departmentId !== "global" &&
-        req.body.departmentId !== "ALL" &&
-        req.body.departmentId !== ""
-      ) {
-        departmentId = BigInt(req.body.departmentId);
-      } else {
-        departmentId = null;
-      }
+    // Check if creator explicitly selected Across BUs ("5", "global", "ALL", null, "")
+    const isAcrossBUs =
+      req.body.departmentId === undefined ||
+      req.body.departmentId === null ||
+      req.body.departmentId === "5" ||
+      req.body.departmentId === 5 ||
+      req.body.departmentId === "global" ||
+      req.body.departmentId === "ALL" ||
+      req.body.departmentId === "" ||
+      req.body.departmentId === "null";
+
+    if (isAcrossBUs) {
+      departmentId = null;
     } else {
-      departmentId = userDepartmentId;
+      departmentId = BigInt(req.body.departmentId);
     }
 
     const isDraft = String(req.body.status || "").toUpperCase() === "DRAFT";
@@ -199,6 +196,8 @@ export const updateCourse = asyncHandler(
     if (data.departmentId !== undefined) {
       if (
         data.departmentId === null ||
+        data.departmentId === "5" ||
+        data.departmentId === 5 ||
         data.departmentId === "global" ||
         data.departmentId === "ALL" ||
         data.departmentId === "" ||

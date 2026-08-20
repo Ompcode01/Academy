@@ -118,11 +118,11 @@ export default function BasicInfoForm({
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
   useEffect(() => {
-    // If user is Admin/Teacher, fix department to user's assigned department
-    if (isAdmin && user?.departmentId) {
-      onChange({ departmentId: String(user.departmentId) });
+    // If departmentId is empty, default to user's assigned department or Across BUs
+    if (!data.departmentId) {
+      onChange({ departmentId: user?.departmentId ? String(user.departmentId) : "5" });
     }
-  }, [isAdmin, user?.departmentId]);
+  }, [user?.departmentId]);
 
   const [uploading, setUploading] = useState(false);
   const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
@@ -291,13 +291,12 @@ export default function BasicInfoForm({
                 )}
               </div>
               <Select
-                disabled={isAdmin}
-                value={data.departmentId || (isAdmin && user?.departmentId ? String(user.departmentId) : "")}
-                onValueChange={(val: string | null) => onChange({ departmentId: val || "" })}
+                value={data.departmentId || "5"}
+                onValueChange={(val: string | null) => onChange({ departmentId: val || "5" })}
               >
                 <SelectTrigger className="h-10 text-xs bg-background w-full">
                   <SelectValue placeholder="Select Business Unit">
-                    {departmentNames[data.departmentId || (isAdmin && user?.departmentId ? String(user.departmentId) : "")] || "Select Business Unit"}
+                    {departmentNames[data.departmentId || "5"] || "Across BUs"}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>

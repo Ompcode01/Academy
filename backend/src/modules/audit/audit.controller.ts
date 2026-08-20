@@ -4,15 +4,18 @@ import auditService from "./audit.service";
 
 export const getAuditLogs = async (req: AuthRequest, res: Response) => {
   try {
-    const { username, departmentName, type, search, page, limit, dateFrom, dateTo } = req.query;
+    const { username, departmentName, type, search, page, limit, dateFrom, dateTo, startDate, endDate } = req.query;
+
+    const effectiveDateFrom = (dateFrom || startDate) as string | undefined;
+    const effectiveDateTo = (dateTo || endDate) as string | undefined;
 
     const result = await auditService.getAuditLogs({
       username: username as string,
       departmentName: departmentName as string,
       type: type as string,
       search: search as string,
-      dateFrom: dateFrom as string,
-      dateTo: dateTo as string,
+      dateFrom: effectiveDateFrom,
+      dateTo: effectiveDateTo,
       page: page ? Number(page) : 1,
       limit: limit ? Number(limit) : 20,
     });

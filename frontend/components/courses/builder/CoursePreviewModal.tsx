@@ -122,6 +122,26 @@ export default function CoursePreviewModal({
     }
   }, [displaySections, open]);
 
+  const getFeedbackQuestions = (lesson: any) => {
+    if (!lesson) return [];
+    const raw = lesson.quizConfigJson || lesson.configJson;
+    if (raw) {
+      try {
+        const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+        if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+          return parsed.questions;
+        }
+      } catch {}
+    }
+    if (Array.isArray(lesson.questions) && lesson.questions.length > 0) {
+      return lesson.questions;
+    }
+    if (Array.isArray(feedback?.questions) && feedback.questions.length > 0) {
+      return feedback.questions;
+    }
+    return [];
+  };
+
   const toggleSection = (secId: number) => {
     setExpandedSections((prev) =>
       prev.includes(secId) ? prev.filter((id) => id !== secId) : [...prev, secId]
@@ -263,32 +283,47 @@ export default function CoursePreviewModal({
                       </div>
 
                       {/* Interactive Inline Survey Form Preview */}
-                      <div className="space-y-3.5 text-xs text-left">
-                        <div className="p-3 rounded-xl bg-muted/20 border border-border space-y-1.5">
-                          <span className="font-bold text-foreground block">
-                            1. How satisfied are you with overall course content? <span className="text-rose-500">*</span>
-                          </span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {["5 - Excellent", "4 - Very Good", "3 - Satisfactory", "2 - Needs Improvement"].map((opt, i) => (
-                              <span key={i} className="px-2.5 py-1 rounded bg-background border border-border text-[11px] font-medium text-foreground">
-                                {opt}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
+                      <div className="space-y-3.5 text-xs text-left max-h-[350px] overflow-y-auto pr-1">
+                        {(() => {
+                          const questionsToRender = getFeedbackQuestions(selectedLesson);
+                          if (questionsToRender.length === 0) {
+                            return (
+                              <div className="p-4 rounded-xl bg-muted/20 border border-border text-center text-muted-foreground text-xs">
+                                No questions configured yet for this feedback survey.
+                              </div>
+                            );
+                          }
 
-                        <div className="p-3 rounded-xl bg-muted/20 border border-border space-y-1.5">
-                          <span className="font-bold text-foreground block">
-                            2. How effective were practical exercises &amp; quizzes? <span className="text-rose-500">*</span>
-                          </span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {["Extremely Helpful", "Moderately Helpful", "Neutral"].map((opt, i) => (
-                              <span key={i} className="px-2.5 py-1 rounded bg-background border border-border text-[11px] font-medium text-foreground">
-                                {opt}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
+                          return questionsToRender.map((q: any, qIdx: number) => {
+                            const opts: string[] = q.options && Array.isArray(q.options) && q.options.length > 0
+                              ? q.options
+                              : q.questionType === "MCQ"
+                                ? ["Excellent", "Good", "Average", "Needs Improvement"]
+                                : [];
+
+                            return (
+                              <div key={q.id || qIdx} className="p-3 rounded-xl bg-muted/20 border border-border space-y-1.5">
+                                <span className="font-bold text-foreground block">
+                                  {qIdx + 1}. {q.questionText} {q.isMandatory && <span className="text-rose-500">*</span>}
+                                </span>
+
+                                {q.questionType === "WRITTEN" || opts.length === 0 ? (
+                                  <div className="p-2.5 rounded-lg border border-border bg-background text-[11px] text-muted-foreground italic">
+                                    Written Response Answer Box
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {opts.map((opt: string, i: number) => (
+                                      <span key={i} className="px-2.5 py-1 rounded bg-background border border-border text-[11px] font-medium text-foreground">
+                                        {opt}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
 
                         <div className="pt-2 flex items-center justify-between">
                           <Button
@@ -569,17 +604,7 @@ export default function CoursePreviewModal({
           contentId={selectedLesson?.id || null}
           feedbackTitle={selectedLesson?.title || "Course Evaluation & Feedback Form"}
           description={selectedLesson?.description || "Please share your review regarding course structure, content clarity, and instructor support."}
-          questions={(() => {
-            if (!selectedLesson) return undefined;
-            try {
-              const raw = (selectedLesson as any).quizConfigJson || (selectedLesson as any).configJson;
-              if (raw) {
-                const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
-                if (Array.isArray(parsed.questions) && parsed.questions.length > 0) return parsed.questions;
-              }
-            } catch {}
-            return undefined;
-          })()}
+          questions={getFeedbackQuestions(selectedLesson)}
           onSuccess={() => {
             setIsFeedbackModalOpen(false);
           }}
