@@ -1,5 +1,4 @@
-"use client";
-
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES, canManageCourses } from "@/lib/rbac";
 import {
@@ -12,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Pencil, Trash2, Users, ChevronLeft, ChevronRight, Archive, CheckCircle2 } from "lucide-react";
+import { Pencil, Trash2, Users, ChevronLeft, ChevronRight, Archive, CheckCircle2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Course } from "@/services/api/course.service";
 
@@ -52,6 +51,7 @@ export default function CourseTable({
   onDelete,
   onToggleStatus,
 }: CourseTableProps) {
+  const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const userRole = user?.role || ROLES.GUEST;
   const isAuthorizedToManage = canManageCourses(userRole);
@@ -125,9 +125,12 @@ export default function CourseTable({
                     key={course.id}
                     className="border-border transition-colors hover:bg-muted/20"
                   >
-                    <TableCell className="pl-5">
-                      <div>
-                        <p className="text-sm font-bold text-foreground" title={course.title}>
+                    <TableCell
+                      className="pl-5 cursor-pointer"
+                      onClick={() => router.push(`/courses/${course.id}`)}
+                    >
+                      <div className="group">
+                        <p className="text-sm font-bold text-foreground group-hover:text-primary group-hover:underline transition-colors" title={course.title}>
                           {getCourseDisplayTitle(course.title, (course as any).shortName)}
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -173,6 +176,15 @@ export default function CourseTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5">
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={() => router.push(`/courses/${course.id}`)}
+                          className="text-muted-foreground hover:text-primary"
+                          title="View / Play Course"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </Button>
                         {isAuthorizedToManage ? (
                           <>
                             {course.status === "PUBLISHED" ? (

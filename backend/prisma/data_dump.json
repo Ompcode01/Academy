@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-22T06:23:54.723Z",
+  "exportedAt": "2026-08-22T10:25:32.691Z",
   "departments": [
     {
       "id": "2",
@@ -442,26 +442,26 @@
       "employeeId": "1",
       "username": "priyanka",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-22T05:51:46.184Z",
+      "lastLogin": "2026-08-22T10:02:51.006Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.459Z",
-      "updatedAt": "2026-08-22T05:51:46.185Z"
+      "updatedAt": "2026-08-22T10:02:51.008Z"
     },
     {
       "id": "2",
       "employeeId": "2",
       "username": "omprakash",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-20T15:40:47.318Z",
+      "lastLogin": "2026-08-22T10:06:08.562Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.507Z",
-      "updatedAt": "2026-08-20T15:40:47.320Z"
+      "updatedAt": "2026-08-22T10:06:08.564Z"
     },
     {
       "id": "3",
@@ -494,26 +494,26 @@
       "employeeId": "5",
       "username": "guest",
       "passwordHash": "$2b$10$LqYy4/X/RV3AjDf6hqZttufe0BscfOzf7dJeg9XKDSUALB1myXeeq",
-      "lastLogin": "2026-08-20T07:29:18.730Z",
+      "lastLogin": "2026-08-22T06:32:00.723Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.621Z",
-      "updatedAt": "2026-08-20T07:29:18.732Z"
+      "updatedAt": "2026-08-22T06:32:00.724Z"
     },
     {
       "id": "6",
       "employeeId": "6",
       "username": "employee6",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-22T05:43:10.331Z",
+      "lastLogin": "2026-08-22T06:32:20.652Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.675Z",
-      "updatedAt": "2026-08-22T05:43:10.333Z"
+      "updatedAt": "2026-08-22T06:32:20.654Z"
     },
     {
       "id": "7",
@@ -1517,7 +1517,7 @@
     {
       "id": "21",
       "categoryId": "1",
-      "departmentId": "2",
+      "departmentId": null,
       "creatorId": "1",
       "title": "The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment",
       "shortName": "Enterprise AI & Cloud",
@@ -1528,13 +1528,13 @@
       "duration": 33,
       "level": "Advanced",
       "language": "English",
-      "status": "DRAFT",
-      "draftStep": 7,
+      "status": "PUBLISHED",
+      "draftStep": null,
       "enrollmentType": "SELF",
       "isMandatory": false,
       "isActive": true,
       "createdAt": "2026-08-22T05:59:51.728Z",
-      "updatedAt": "2026-08-22T06:20:16.347Z"
+      "updatedAt": "2026-08-22T06:34:06.805Z"
     }
   ],
   "courseTeachers": [
@@ -2471,7 +2471,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T05:59:51.759Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "84",
@@ -2482,7 +2482,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:06:53.115Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "85",
@@ -2493,7 +2493,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:06:53.166Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "86",
@@ -2504,7 +2504,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:06:53.202Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "87",
@@ -2515,7 +2515,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:06:53.245Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "88",
@@ -2526,7 +2526,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:12.126Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "89",
@@ -2537,7 +2537,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:12.327Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "90",
@@ -2548,7 +2548,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:12.442Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "91",
@@ -2559,7 +2559,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:12.613Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "92",
@@ -2570,7 +2570,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:24.824Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "93",
@@ -2581,7 +2581,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:24.861Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "94",
@@ -2592,7 +2592,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:24.909Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "95",
@@ -2603,7 +2603,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:25.049Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "96",
@@ -2614,7 +2614,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:40.938Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "97",
@@ -2625,7 +2625,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:41.012Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "98",
@@ -2636,7 +2636,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:41.093Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "99",
@@ -2647,7 +2647,7 @@
       "isPublished": false,
       "isActive": false,
       "createdAt": "2026-08-22T06:11:41.437Z",
-      "updatedAt": "2026-08-22T06:20:16.410Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "100",
@@ -2656,9 +2656,9 @@
       "description": null,
       "sectionOrder": 1,
       "isPublished": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-22T06:20:16.439Z",
-      "updatedAt": "2026-08-22T06:20:16.439Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "101",
@@ -2667,9 +2667,9 @@
       "description": null,
       "sectionOrder": 2,
       "isPublished": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-22T06:20:16.538Z",
-      "updatedAt": "2026-08-22T06:20:16.538Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "102",
@@ -2678,9 +2678,9 @@
       "description": null,
       "sectionOrder": 3,
       "isPublished": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-22T06:20:16.642Z",
-      "updatedAt": "2026-08-22T06:20:16.642Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
     },
     {
       "id": "103",
@@ -2689,9 +2689,152 @@
       "description": "End-of-course survey evaluation.",
       "sectionOrder": 4,
       "isPublished": false,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-22T06:20:16.785Z",
-      "updatedAt": "2026-08-22T06:20:16.785Z"
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "104",
+      "courseId": "21",
+      "title": "Section 1: Introduction to Distributed Systems & Cloud-Native Architecture",
+      "description": null,
+      "sectionOrder": 1,
+      "isPublished": false,
+      "isActive": false,
+      "createdAt": "2026-08-22T06:26:20.491Z",
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "105",
+      "courseId": "21",
+      "title": "Section 2: Containerization with Docker & Kubernetes Cluster Management",
+      "description": null,
+      "sectionOrder": 2,
+      "isPublished": false,
+      "isActive": false,
+      "createdAt": "2026-08-22T06:26:21.327Z",
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "106",
+      "courseId": "21",
+      "title": "Section 3: Deploying Autonomous AI Agents in Production Environments",
+      "description": null,
+      "sectionOrder": 3,
+      "isPublished": false,
+      "isActive": false,
+      "createdAt": "2026-08-22T06:26:22.878Z",
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "107",
+      "courseId": "21",
+      "title": "Section 1: Introduction to Distributed Systems & Cloud-Native Architecture",
+      "description": null,
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-22T06:26:23.567Z",
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "108",
+      "courseId": "21",
+      "title": "Section 2: Containerization with Docker & Kubernetes Cluster Management",
+      "description": null,
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-22T06:26:24.235Z",
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "109",
+      "courseId": "21",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 4,
+      "isPublished": false,
+      "isActive": false,
+      "createdAt": "2026-08-22T06:26:24.355Z",
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "110",
+      "courseId": "21",
+      "title": "Section 3: Deploying Autonomous AI Agents in Production Environments",
+      "description": null,
+      "sectionOrder": 3,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-22T06:26:24.631Z",
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "111",
+      "courseId": "21",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 4,
+      "isPublished": true,
+      "isActive": false,
+      "createdAt": "2026-08-22T06:26:25.075Z",
+      "updatedAt": "2026-08-22T06:34:06.914Z"
+    },
+    {
+      "id": "112",
+      "courseId": "21",
+      "title": "Section 1: Introduction to Distributed Systems & Cloud-Native Architecture",
+      "description": null,
+      "sectionOrder": 1,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-22T06:34:06.946Z",
+      "updatedAt": "2026-08-22T06:34:06.946Z"
+    },
+    {
+      "id": "113",
+      "courseId": "21",
+      "title": "Section 2: Containerization with Docker & Kubernetes Cluster Management",
+      "description": null,
+      "sectionOrder": 2,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-22T06:34:07.043Z",
+      "updatedAt": "2026-08-22T06:34:07.043Z"
+    },
+    {
+      "id": "114",
+      "courseId": "21",
+      "title": "Section 3: Deploying Autonomous AI Agents in Production Environments",
+      "description": null,
+      "sectionOrder": 3,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-22T06:34:07.108Z",
+      "updatedAt": "2026-08-22T06:34:07.108Z"
+    },
+    {
+      "id": "115",
+      "courseId": "21",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 4,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-22T06:34:07.264Z",
+      "updatedAt": "2026-08-22T06:34:07.264Z"
+    },
+    {
+      "id": "116",
+      "courseId": "21",
+      "title": "Course Feedback & Evaluation",
+      "description": "End-of-course survey evaluation.",
+      "sectionOrder": 4,
+      "isPublished": true,
+      "isActive": true,
+      "createdAt": "2026-08-22T06:34:07.314Z",
+      "updatedAt": "2026-08-22T06:34:07.314Z"
     }
   ],
   "learningContents": [
@@ -5618,6 +5761,533 @@
       "assignmentConfigJson": null,
       "createdAt": "2026-08-22T06:20:16.804Z",
       "updatedAt": "2026-08-22T06:20:16.804Z"
+    },
+    {
+      "id": "177",
+      "sectionId": "104",
+      "title": "SCORM TESTING",
+      "contentType": "SCORM",
+      "contentUrl": "/storage/scorm/scorm-1787378426859-svgyf4/Etiquette/Course.html",
+      "description": null,
+      "duration": 30,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:20.657Z",
+      "updatedAt": "2026-08-22T06:26:20.657Z"
+    },
+    {
+      "id": "178",
+      "sectionId": "104",
+      "title": "PPT TESTING",
+      "contentType": "PPT",
+      "contentUrl": "/storage/uploads/doc-1787378450669-Deep-Learning-From-Research-to-Production.pptx",
+      "description": "[{\"slideNum\":1,\"tag\":\"Slide 1\",\"heading\":\"Deep Learning: From Research to Production\",\"subheading\":\"A practical journey through the tools, architectures, and pipelines that transform a deep learning experiment into a reliable, scalable production system.\",\"bullets\":[\"DEEP LEARNING\",\"PYTORCH\",\"TRANSFORMERS\",\"MLOPS\",\"DOCKER\"],\"color\":\"from-amber-500/20 to-orange-500/10 border-amber-500/30\"},{\"slideNum\":2,\"tag\":\"Slide 2\",\"heading\":\"Deep Learning Fundamentals\",\"subheading\":\"What is Deep Learning?\",\"bullets\":[\"A subset of machine learning that uses multi-layer neural networks to automatically learn patterns from large volumes of data — without hand-crafted features.\",\"Key insight:\",\"Deep learning automatically learns useful representations from raw data, eliminating manual feature engineering.\",\"Images\",\"Text\",\"Speech\",\"Video\"],\"color\":\"from-blue-500/20 to-indigo-500/10 border-blue-500/30\"},{\"slideNum\":3,\"tag\":\"Slide 3\",\"heading\":\"PyTorch\",\"subheading\":\"PyTorch is the dominant framework for deep learning research and production, offering dynamic computation graphs, seamless GPU support, and a rich ecosystem.\",\"bullets\":[\"Dataset & DataLoaders\",\"Load, transform, and batch data efficiently for training loops.\",\"Model & Loss\",\"Define architectures with\",\"nn.Module\",\"and compute gradients via a loss function.\",\"Backpropagation & Optimizer\",\"Update weights using\",\"loss.backward()\",\"and an optimizer like Adam or SGD.\",\"Trained Model\",\"Export via TorchScript or ONNX for inference serving.\"],\"color\":\"from-emerald-500/20 to-teal-500/10 border-emerald-500/30\"},{\"slideNum\":4,\"tag\":\"Slide 4\",\"heading\":\"Transformers\",\"subheading\":\"What are Transformers?\",\"bullets\":[\"A neural architecture built on\",\"self-attention\",\", enabling models to capture long-range dependencies in sequences with high parallelism.\",\"Self-Attention\",\"Weighs the importance of every token relative to every other.\",\"Parallelizable\",\"Processes entire sequences simultaneously, unlike RNNs.\",\"Foundation Models\",\"GPT, BERT, and T5 all derive from this architecture.\"],\"color\":\"from-purple-500/20 to-pink-500/10 border-purple-500/30\"},{\"slideNum\":5,\"tag\":\"Slide 5\",\"heading\":\"Transfer Learning & Hugging Face\",\"subheading\":\"Instead of training from scratch, start from a pretrained model and fine-tune on your specific task — saving time, data, and compute.\",\"bullets\":[\"Pretrained Model\",\"Learned general features on massive data\",\"Task Model\",\"Ready for deployment with strong baseline\",\"Fine-Tune\",\"Adapt final layers to your dataset\",\"Why Transfer Learning?\",\"Less Data\",\"Faster Training\",\"Lower Compute\",\"Hugging Face Ecosystem\",\"Thousands of pretrained models across NLP, vision, and audio\",\"Unified tokenizers and dataset libraries\",\"Model Hub for sharing and versioning\",\"transformers\",\"and\",\"accelerate\",\"for fine-tuning\"],\"color\":\"from-red-500/20 to-rose-500/10 border-red-500/30\"},{\"slideNum\":6,\"tag\":\"Slide 6\",\"heading\":\"Distributed Training\",\"subheading\":\"Modern models are too large for a single GPU. Distributed strategies split the workload across devices to train faster and at greater scale.\",\"bullets\":[\"Data Parallelism\",\"Split batches across GPUs; each holds a full model copy.\",\"Model Parallelism\",\"Split model layers across GPUs for models that don&apos;t fit in memory.\",\"Pipeline Parallelism\",\"Divide the model into stages processed sequentially across devices.\",\"FSDP / ZeRO\",\"Shard optimizer states and gradients to dramatically reduce memory footprint.\"],\"color\":\"from-amber-500/20 to-yellow-500/10 border-amber-500/30\"},{\"slideNum\":7,\"tag\":\"Slide 7\",\"heading\":\"Model Registry\",\"subheading\":\"What is a Model Registry?\",\"bullets\":[\"A centralized system to\",\"store, version, and govern\",\"ML models throughout their lifecycle — from experiment to production.\",\"Flow:\",\"Train → Evaluate → Register → Approve → Deploy\",\"Version\",\"Track model, dataset, and code commit together.\",\"Metrics\",\"Store evaluation scores, hyperparameters, and owner info.\",\"Governance\",\"Approval workflows, deployment status, and rollback capability.\"],\"color\":\"from-amber-500/20 to-orange-500/10 border-amber-500/30\"},{\"slideNum\":8,\"tag\":\"Slide 8\",\"heading\":\"CI/CD for Machine Learning\",\"subheading\":\"ML pipelines extend traditional CI/CD by adding data validation, model training, and performance gates before any deployment proceeds.\",\"bullets\":[\"Unit Tests\",\"Code and data tests must pass\",\"Performance Eval\",\"Compute accuracy, F1, AUC\",\"Data Validation\",\"Check schema, quality, and drift\",\"Quality Gate\",\"Metrics must meet thresholds\",\"Model Training\",\"Retrain on validated data\",\"Quality Gate Examples\",\"Accuracy ≥ 90%\",\"F1 ≥ 85%\",\"AUC ≥ 90%\",\"Key Difference from Traditional CI/CD\",\"Standard pipelines test code only. ML CI/CD must also validate\",\"data quality\",\"and\",\"model performance\",\"— a failing metric blocks deployment automatically.\"],\"color\":\"from-blue-500/20 to-indigo-500/10 border-blue-500/30\"},{\"slideNum\":9,\"tag\":\"Slide 9\",\"heading\":\"Docker for ML\",\"subheading\":\"Solving &quot;It Works on My Machine&quot;\",\"bullets\":[\"Docker packages your application, Python runtime, PyTorch, dependencies, and model artifacts into a single portable\",\"container\",\"— eliminating environment drift between development and production.\",\"Images are stored in\",\"Docker Hub\",\"Amazon ECR\",\", or a private registry.\",\"01\",\"Write Dockerfile\",\"Define base image, dependencies, and entry point.\",\"02\",\"Build Docker Image\",\"Creates a reproducible snapshot of the environment.\",\"03\",\"Run Container\",\"Deploy consistently across any host or cloud.\"],\"color\":\"from-emerald-500/20 to-teal-500/10 border-emerald-500/30\"},{\"slideNum\":10,\"tag\":\"Slide 10\",\"heading\":\"End-to-End Deep Learning Lifecycle\",\"subheading\":\"Production AI is not a single model — it is an\",\"bullets\":[\"automated, governed lifecycle\",\"connecting every stage from raw data to continuous improvement.\",\"01\",\"Data\",\"Collect, clean, and version datasets.\",\"02\",\"Deep Learning & PyTorch\",\"Design and train neural network models.\",\"03\",\"Transformers\",\"Apply self-attention architectures for NLP, vision, and multimodal tasks.\",\"04\",\"Distributed Training\",\"Scale across multiple GPUs for large models.\",\"05\",\"Model Evaluation\",\"Measure accuracy, F1, AUC, and other metrics.\",\"06\",\"Model Registry\",\"Version, track, and govern model artifacts.\",\"07\",\"CI/CD\",\"Automate testing, quality gates, and deployment pipelines.\",\"08\",\"Docker\",\"Package models into reproducible containers.\",\"09\",\"Deployment\",\"Serve models to production environments.\",\"10\",\"Monitoring & Continuous Improvement\",\"Track drift, retrain, and iterate.\",\"Takeaway:\",\"Every tool in this stack serves a purpose — together they form a reliable, scalable path from experiment to production AI.\"],\"color\":\"from-purple-500/20 to-pink-500/10 border-purple-500/30\"}]",
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:21.005Z",
+      "updatedAt": "2026-08-22T06:26:21.005Z"
+    },
+    {
+      "id": "179",
+      "sectionId": "105",
+      "title": "Kubernet Blog",
+      "contentType": "ARTICLE",
+      "contentUrl": null,
+      "description": "Posts in 2026\nHow to Pretty-Print Your Kubernetes YAML as KYAML and Why You'd Want To\nBy Kashish Verma | Tuesday, August 11, 2026 in Blog\n\nYAML has been the standard way to write Kubernetes manifests for years. Every example, tutorial, and configuration file you come across is written in it. The problem isn't that YAML is a bad format. It's that YAML gives you a lot of choices, and not …\n\nRead more (https://kubernetes.io/docs/home/)\n\nGateway API v1.6: TCPRoute and UDPRoute Graduate to Standard\nBy Beka Modebadze (Google), Ricardo Katz (Red Hat) | Monday, August 03, 2026 in Blog\n\nThe Kubernetes SIG Network community is thrilled to share the release of Gateway API v1.6.0, which was released on June 30th of this year! Gateway API has become the standard for modern, role-oriented, and expressive service networking in …\n\nRead more\n\nKubernetes v1.37 Sneak Peek\nBy Arsh Sharma, Christopher Tineo, Kirti Goyal, Sophia Ugochukwu, Swathi Rao, Troy Connor | Friday, July 31, 2026 in Blog\n\nAs we get closer to the release date for Kubernetes v1.37, the project develops and matures, features may be deprecated, removed, or replaced with better ones for the project's overall health. This blog outlines some of the planned changes for the …\n\nRead more\n\nHow the controller-runtime Cache Actually Works, and Why Your Controller Does Not Crash the API Server\nBy Andrei Kvapil (Ænix), Timofei Larkin (Ænix) | Wednesday, July 29, 2026 in Blog\n\nThis article has been revised since it was first published, to correct several significant technical inaccuracies in the original text. Kubernetes has long been the default platform for distributed workloads, and writing your own controller for it …\n\nRead more\n\nBuilding a Custom Metrics Exporter for Kubernetes\nBy Victor David Effiok | Tuesday, July 14, 2026 in Blog\n\nKubernetes ships with built-in awareness of CPU and memory, but most real-world scaling decisions depend on signals that live entirely outside that narrow window: how many messages are waiting in a queue, how long the last batch job took, how many …\n\nRead more\n\nOperating AI/ML Workloads on Kubernetes: A Headlamp Plugin for Kubeflow\nBy Alok Dangre (independent) | Monday, July 13, 2026 in Blog\n\nKubernetes has quietly become the default platform for AI and machine learning. Whether you run notebook servers for data scientists, schedule distributed training jobs, tune hyperparameters, or orchestrate multi-step ML pipelines, those workloads …\n\nRead more\n\nKubernetes Dashboard to Headlamp: A Step-by-Step Guide\nBy Vincent T. (Microsoft) | Monday, July 13, 2026 in Blog\n\n1. Before you start: know what is changingKubernetes Dashboard and Headlamp both show what is running in a cluster, but they work differently. When Headlamp runs on the desktop, it uses your existing kubeconfig to connect to one or more clusters and …\n\nRead more\n\nAnnouncing etcd v3.7.0\nBy SIG Etcd Leads | Wednesday, July 08, 2026 in Blog\n\nThis article is a mirror of the original announcement Today, SIG etcd is releasing etcd v3.7.0, the latest minor release of the popular distributed key-value store and core Kubernetes component. v3.7 ships the long-requested RangeStream feature, …\n\nRead more\n\nOpen source maintainership in the age of AI\nBy Kevin Hannon (Red Hat) | Friday, June 26, 2026 in Blog\n\nAI has really changed the game around software development. More people are leveraging AI than ever to contribute patches to projects they use. To me, this is a good thing as more folks will contribute patches rather than fork or not fix them. The …\n\nRead more\n\nIntroducing the Cluster API plugin for Headlamp\nBy Chayan Das (independent) | Thursday, June 25, 2026 in Blog\n\nHeadlamp is an open-source, extensible Kubernetes SIG UI project designed to let you explore, manage, and debug cluster resources directly from a browser. Cluster API (CAPI) is a Kubernetes sub-project that brings declarative, Kubernetes-style APIs …",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:21.636Z",
+      "updatedAt": "2026-08-22T06:26:21.636Z"
+    },
+    {
+      "id": "180",
+      "sectionId": "105",
+      "title": "PDF TESTING",
+      "contentType": "PDF",
+      "contentUrl": "/storage/uploads/doc-1787378607637-Deep-Learning-From-Research-to-Production.pdf",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:21.841Z",
+      "updatedAt": "2026-08-22T06:26:21.841Z"
+    },
+    {
+      "id": "181",
+      "sectionId": "106",
+      "title": "Youtube testing",
+      "contentType": "YOUTUBE",
+      "contentUrl": "https://youtu.be/oodOj8jx8ds?si=kcEoXQyedxED28w9",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:23.341Z",
+      "updatedAt": "2026-08-22T06:26:23.341Z"
+    },
+    {
+      "id": "182",
+      "sectionId": "106",
+      "title": "Udemy Testing",
+      "contentType": "UDEMY",
+      "contentUrl": "https://harbingergroup.udemy.com/course/the-complete-agentic-ai-engineering-course/",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:23.553Z",
+      "updatedAt": "2026-08-22T06:26:23.553Z"
+    },
+    {
+      "id": "183",
+      "sectionId": "107",
+      "title": "SCORM TESTING",
+      "contentType": "SCORM",
+      "contentUrl": "/storage/scorm/scorm-1787378426859-svgyf4/Etiquette/Course.html",
+      "description": null,
+      "duration": 30,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:23.848Z",
+      "updatedAt": "2026-08-22T06:26:23.848Z"
+    },
+    {
+      "id": "184",
+      "sectionId": "106",
+      "title": "Kubernet Dcoumentation",
+      "contentType": "EXTERNAL_LINK",
+      "contentUrl": "https://kubernetes.io/docs/home/",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 3,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:23.847Z",
+      "updatedAt": "2026-08-22T06:26:23.847Z"
+    },
+    {
+      "id": "185",
+      "sectionId": "107",
+      "title": "PPT TESTING",
+      "contentType": "PPT",
+      "contentUrl": "/storage/uploads/doc-1787378450669-Deep-Learning-From-Research-to-Production.pptx",
+      "description": "[{\"slideNum\":1,\"tag\":\"Slide 1\",\"heading\":\"Deep Learning: From Research to Production\",\"subheading\":\"A practical journey through the tools, architectures, and pipelines that transform a deep learning experiment into a reliable, scalable production system.\",\"bullets\":[\"DEEP LEARNING\",\"PYTORCH\",\"TRANSFORMERS\",\"MLOPS\",\"DOCKER\"],\"color\":\"from-amber-500/20 to-orange-500/10 border-amber-500/30\"},{\"slideNum\":2,\"tag\":\"Slide 2\",\"heading\":\"Deep Learning Fundamentals\",\"subheading\":\"What is Deep Learning?\",\"bullets\":[\"A subset of machine learning that uses multi-layer neural networks to automatically learn patterns from large volumes of data — without hand-crafted features.\",\"Key insight:\",\"Deep learning automatically learns useful representations from raw data, eliminating manual feature engineering.\",\"Images\",\"Text\",\"Speech\",\"Video\"],\"color\":\"from-blue-500/20 to-indigo-500/10 border-blue-500/30\"},{\"slideNum\":3,\"tag\":\"Slide 3\",\"heading\":\"PyTorch\",\"subheading\":\"PyTorch is the dominant framework for deep learning research and production, offering dynamic computation graphs, seamless GPU support, and a rich ecosystem.\",\"bullets\":[\"Dataset & DataLoaders\",\"Load, transform, and batch data efficiently for training loops.\",\"Model & Loss\",\"Define architectures with\",\"nn.Module\",\"and compute gradients via a loss function.\",\"Backpropagation & Optimizer\",\"Update weights using\",\"loss.backward()\",\"and an optimizer like Adam or SGD.\",\"Trained Model\",\"Export via TorchScript or ONNX for inference serving.\"],\"color\":\"from-emerald-500/20 to-teal-500/10 border-emerald-500/30\"},{\"slideNum\":4,\"tag\":\"Slide 4\",\"heading\":\"Transformers\",\"subheading\":\"What are Transformers?\",\"bullets\":[\"A neural architecture built on\",\"self-attention\",\", enabling models to capture long-range dependencies in sequences with high parallelism.\",\"Self-Attention\",\"Weighs the importance of every token relative to every other.\",\"Parallelizable\",\"Processes entire sequences simultaneously, unlike RNNs.\",\"Foundation Models\",\"GPT, BERT, and T5 all derive from this architecture.\"],\"color\":\"from-purple-500/20 to-pink-500/10 border-purple-500/30\"},{\"slideNum\":5,\"tag\":\"Slide 5\",\"heading\":\"Transfer Learning & Hugging Face\",\"subheading\":\"Instead of training from scratch, start from a pretrained model and fine-tune on your specific task — saving time, data, and compute.\",\"bullets\":[\"Pretrained Model\",\"Learned general features on massive data\",\"Task Model\",\"Ready for deployment with strong baseline\",\"Fine-Tune\",\"Adapt final layers to your dataset\",\"Why Transfer Learning?\",\"Less Data\",\"Faster Training\",\"Lower Compute\",\"Hugging Face Ecosystem\",\"Thousands of pretrained models across NLP, vision, and audio\",\"Unified tokenizers and dataset libraries\",\"Model Hub for sharing and versioning\",\"transformers\",\"and\",\"accelerate\",\"for fine-tuning\"],\"color\":\"from-red-500/20 to-rose-500/10 border-red-500/30\"},{\"slideNum\":6,\"tag\":\"Slide 6\",\"heading\":\"Distributed Training\",\"subheading\":\"Modern models are too large for a single GPU. Distributed strategies split the workload across devices to train faster and at greater scale.\",\"bullets\":[\"Data Parallelism\",\"Split batches across GPUs; each holds a full model copy.\",\"Model Parallelism\",\"Split model layers across GPUs for models that don&apos;t fit in memory.\",\"Pipeline Parallelism\",\"Divide the model into stages processed sequentially across devices.\",\"FSDP / ZeRO\",\"Shard optimizer states and gradients to dramatically reduce memory footprint.\"],\"color\":\"from-amber-500/20 to-yellow-500/10 border-amber-500/30\"},{\"slideNum\":7,\"tag\":\"Slide 7\",\"heading\":\"Model Registry\",\"subheading\":\"What is a Model Registry?\",\"bullets\":[\"A centralized system to\",\"store, version, and govern\",\"ML models throughout their lifecycle — from experiment to production.\",\"Flow:\",\"Train → Evaluate → Register → Approve → Deploy\",\"Version\",\"Track model, dataset, and code commit together.\",\"Metrics\",\"Store evaluation scores, hyperparameters, and owner info.\",\"Governance\",\"Approval workflows, deployment status, and rollback capability.\"],\"color\":\"from-amber-500/20 to-orange-500/10 border-amber-500/30\"},{\"slideNum\":8,\"tag\":\"Slide 8\",\"heading\":\"CI/CD for Machine Learning\",\"subheading\":\"ML pipelines extend traditional CI/CD by adding data validation, model training, and performance gates before any deployment proceeds.\",\"bullets\":[\"Unit Tests\",\"Code and data tests must pass\",\"Performance Eval\",\"Compute accuracy, F1, AUC\",\"Data Validation\",\"Check schema, quality, and drift\",\"Quality Gate\",\"Metrics must meet thresholds\",\"Model Training\",\"Retrain on validated data\",\"Quality Gate Examples\",\"Accuracy ≥ 90%\",\"F1 ≥ 85%\",\"AUC ≥ 90%\",\"Key Difference from Traditional CI/CD\",\"Standard pipelines test code only. ML CI/CD must also validate\",\"data quality\",\"and\",\"model performance\",\"— a failing metric blocks deployment automatically.\"],\"color\":\"from-blue-500/20 to-indigo-500/10 border-blue-500/30\"},{\"slideNum\":9,\"tag\":\"Slide 9\",\"heading\":\"Docker for ML\",\"subheading\":\"Solving &quot;It Works on My Machine&quot;\",\"bullets\":[\"Docker packages your application, Python runtime, PyTorch, dependencies, and model artifacts into a single portable\",\"container\",\"— eliminating environment drift between development and production.\",\"Images are stored in\",\"Docker Hub\",\"Amazon ECR\",\", or a private registry.\",\"01\",\"Write Dockerfile\",\"Define base image, dependencies, and entry point.\",\"02\",\"Build Docker Image\",\"Creates a reproducible snapshot of the environment.\",\"03\",\"Run Container\",\"Deploy consistently across any host or cloud.\"],\"color\":\"from-emerald-500/20 to-teal-500/10 border-emerald-500/30\"},{\"slideNum\":10,\"tag\":\"Slide 10\",\"heading\":\"End-to-End Deep Learning Lifecycle\",\"subheading\":\"Production AI is not a single model — it is an\",\"bullets\":[\"automated, governed lifecycle\",\"connecting every stage from raw data to continuous improvement.\",\"01\",\"Data\",\"Collect, clean, and version datasets.\",\"02\",\"Deep Learning & PyTorch\",\"Design and train neural network models.\",\"03\",\"Transformers\",\"Apply self-attention architectures for NLP, vision, and multimodal tasks.\",\"04\",\"Distributed Training\",\"Scale across multiple GPUs for large models.\",\"05\",\"Model Evaluation\",\"Measure accuracy, F1, AUC, and other metrics.\",\"06\",\"Model Registry\",\"Version, track, and govern model artifacts.\",\"07\",\"CI/CD\",\"Automate testing, quality gates, and deployment pipelines.\",\"08\",\"Docker\",\"Package models into reproducible containers.\",\"09\",\"Deployment\",\"Serve models to production environments.\",\"10\",\"Monitoring & Continuous Improvement\",\"Track drift, retrain, and iterate.\",\"Takeaway:\",\"Every tool in this stack serves a purpose — together they form a reliable, scalable path from experiment to production AI.\"],\"color\":\"from-purple-500/20 to-pink-500/10 border-purple-500/30\"}]",
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:24.005Z",
+      "updatedAt": "2026-08-22T06:26:24.005Z"
+    },
+    {
+      "id": "186",
+      "sectionId": "106",
+      "title": "MiniProject",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Submit your assignment in the required file format.\nEnsure all required questions/tasks are completed.\nUse clear and well-structured code or explanations.\nSubmit your own original work.\nReview your submission before uploading.\nMake sure the file opens correctly before submitting.\nFollow the given deadline and naming conventions.",
+      "duration": 10,
+      "contentOrder": 4,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Complete the assignment based on the concepts covered in this course. Submit your solution before the deadline. Make sure your submission is your own work and follows the requirements provided in the assignment. Review your work carefully before submitting.\",\"maxMarks\":100,\"deadline\":\"2026-08-25 23:59\",\"maxAttempts\":3,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":0,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Submit your assignment in the required file format.\\nEnsure all required questions/tasks are completed.\\nUse clear and well-structured code or explanations.\\nSubmit your own original work.\\nReview your submission before uploading.\\nMake sure the file opens correctly before submitting.\\nFollow the given deadline and naming conventions.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Deep-Learning-From-Research-to-Production.pdf\",\"size\":\"1.9 MB\",\"url\":\"/storage/uploads/doc-1787378947457-Deep-Learning-From-Research-to-Production.pdf\"},{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787378955368-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1787378955386/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]},{\"name\":\"doc-1786436833621-Dickinson_Sample_Slides (1).pptx\",\"size\":\"0.6 MB\",\"url\":\"/storage/uploads/doc-1787378966724-doc-1786436833621-Dickinson_Sample_Slides__1_.pptx\"}]}",
+      "createdAt": "2026-08-22T06:26:24.007Z",
+      "updatedAt": "2026-08-22T06:26:24.007Z"
+    },
+    {
+      "id": "187",
+      "sectionId": "106",
+      "title": "Knowledge Check",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 5,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":3,\"totalMarks\":160,\"shuffleQuestions\":false,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionText\":\"What does HTML stand for?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Hyper Text Markup Language\",\"High Text Machine Language\",\"Hyper Tabular Markup Language\",\"None of the above\"],\"correctAnswer\":\"Hyper Text Markup Language\"},{\"questionText\":\"Which CSS property controls text size?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"font-size\",\"text-style\",\"font-weight\",\"text-size\"],\"correctAnswer\":\"font-size\"},{\"questionText\":\"What is the time complexity of binary search?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"O(1)\",\"O(n)\",\"O(log n)\",\"O(n^2)\"],\"correctAnswer\":\"O(log n)\"},{\"questionText\":\"Which SQL keyword is used to retrieve data from a database?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"GET\",\"SELECT\",\"FETCH\",\"EXTRACT\"],\"correctAnswer\":\"SELECT\"},{\"questionText\":\"Which data structure uses FIFO (First In First Out)?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Stack\",\"Queue\",\"Tree\",\"Graph\"],\"correctAnswer\":\"Queue\"},{\"questionText\":\"What does API stand for in software engineering?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Application Programming Interface\",\"Automated Program Integration\",\"Advanced Processing Interface\",\"Application Process Implementation\"],\"correctAnswer\":\"Application Programming Interface\"},{\"questionText\":\"Which HTTP status code signifies Success?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"200\",\"404\",\"500\",\"301\"],\"correctAnswer\":\"200\"},{\"questionText\":\"In JavaScript\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"MCQ\",\"var\",\"let\",\"global\"],\"correctAnswer\":\"set\"},{\"questionText\":\"Which protocol is secured with TLS/SSL encryption?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"HTTP\",\"HTTPS\",\"FTP\",\"SMTP\"],\"correctAnswer\":\"HTTPS\"},{\"questionText\":\"What is the primary function of a Vector Database in AI?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Storing user credentials\",\"Semantic similarity search on embeddings\",\"Processing relational joins\",\"Hosting static HTML files\"],\"correctAnswer\":\"Semantic similarity search on embeddings\"},{\"questionText\":\"Which Git command is used to record changes in the repository?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"git push\",\"git commit\",\"git checkout\",\"git init\"],\"correctAnswer\":\"git commit\"},{\"questionText\":\"What is the default port number for HTTP servers?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"21\",\"22\",\"80\",\"443\"],\"correctAnswer\":\"80\"},{\"questionText\":\"Which keyword is used in Python to define a function?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"function\",\"func\",\"def\",\"procedure\"],\"correctAnswer\":\"def\"},{\"questionText\":\"What does JSON stand for?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"JavaScript Object Notation\",\"Java Server Object Network\",\"JavaScript Syntax Oriented Node\",\"Java Structured Object Naming\"],\"correctAnswer\":\"JavaScript Object Notation\"},{\"questionText\":\"Which data structure operates on LIFO (Last In First Out)?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Queue\",\"Stack\",\"LinkedList\",\"Heap\"],\"correctAnswer\":\"Stack\"},{\"questionText\":\"What HTTP method is typically used to create a new resource?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"GET\",\"POST\",\"PUT\",\"DELETE\"],\"correctAnswer\":\"POST\"},{\"questionText\":\"Which component in Docker packages an application and its dependencies?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Container\",\"Volume\",\"Network\",\"Swarm\"],\"correctAnswer\":\"Container\"},{\"questionText\":\"In React\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"MCQ\",\"useState\",\"useEffect\",\"useContext\"],\"correctAnswer\":\"useReducer\"},{\"questionText\":\"Which SQL clause is used to filter aggregated records?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"WHERE\",\"HAVING\",\"GROUP BY\",\"ORDER BY\"],\"correctAnswer\":\"HAVING\"},{\"questionText\":\"What does REST stand for in web API architecture?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Representational State Transfer\",\"Remote Execution System Tech\",\"Reliable Storage Technology\",\"Response Endpoint Transfer\"],\"correctAnswer\":\"Representational State Transfer\"},{\"questionText\":\"CSS is used to structure content on a webpage.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Python is a statically typed programming language.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"HTTP is a stateless protocol.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"In SQL\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"TRUE_FALSE\"],\"correctAnswer\":\"\"},{\"questionText\":\"Docker containers share the host machine OS kernel.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"JavaScript executes strictly on single-threaded event loops.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Git is a centralized version control system.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"REST APIs require XML payloads for all request data.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"TypeScript is a typed superset of JavaScript that compiles to plain JS.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Indexing a database table always increases write performance.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"GraphQL APIs allow clients to request exact fields needed.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Microservices architecture requires a single monolithic database.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"JSON supports binary blob data types natively.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Redis is an in-memory key-value data store.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"React components re-render whenever state changes.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"JWT tokens are encrypted by default.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"The DOM represents an HTML document as a tree structure.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"A stack overflow error occurs when call stack limit is exceeded.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Kubernetes is an open-source container orchestration platform.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Agile methodology relies exclusively on rigid upfront waterfall planning.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Which of the following are programming languages?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Python\",\"HTML\",\"Java\",\"CSS\"],\"correctAnswer\":[\"Python\",\"Java\"]},{\"questionText\":\"Which of the following are HTTP request methods?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"GET\",\"POST\",\"FETCH\",\"DELETE\"],\"correctAnswer\":[\"GET\",\"POST\",\"DELETE\"]},{\"questionText\":\"Which of the following are relational database management systems?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"PostgreSQL\",\"MongoDB\",\"MySQL\",\"Redis\"],\"correctAnswer\":[\"PostgreSQL\",\"MySQL\"]},{\"questionText\":\"Which of the following are frontend web technologies?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"React\",\"Vue.js\",\"Node.js\",\"CSS\"],\"correctAnswer\":[\"React\",\"Vue.js\",\"CSS\"]},{\"questionText\":\"Which of the following are Agile development frameworks?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Scrum\",\"Kanban\",\"Waterfall\",\"PRINCE2\"],\"correctAnswer\":[\"Scrum\",\"Kanban\"]},{\"questionText\":\"Which of the following are cloud service providers?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"AWS\",\"Azure\",\"GitHub\",\"GCP\"],\"correctAnswer\":[\"AWS\",\"Azure\",\"GCP\"]},{\"questionText\":\"Which of the following are primitive data types in JavaScript?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"String\",\"Number\",\"Boolean\",\"ArrayList\"],\"correctAnswer\":[\"String\",\"Number\",\"Boolean\"]},{\"questionText\":\"Which of the following are NoSQL databases?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"MongoDB\",\"Cassandra\",\"Oracle\",\"PostgreSQL\"],\"correctAnswer\":[\"MongoDB\",\"Cassandra\"]},{\"questionText\":\"Which of the following are CSS layout modules?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Flexbox\",\"Grid\",\"DOM\",\"Canvas\"],\"correctAnswer\":[\"Flexbox\",\"Grid\"]},{\"questionText\":\"Which of the following are continuous integration tools?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Jenkins\",\"GitHub Actions\",\"Docker\",\"Git\"],\"correctAnswer\":[\"Jenkins\",\"GitHub Actions\"]},{\"questionText\":\"Which of the following are container technologies?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Docker\",\"Podman\",\"Nginx\",\"Apache\"],\"correctAnswer\":[\"Docker\",\"Podman\"]},{\"questionText\":\"Which of the following are valid Linux operating systems?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Ubuntu\",\"Debian\",\"Windows\",\"Fedora\"],\"correctAnswer\":[\"Ubuntu\",\"Debian\",\"Fedora\"]},{\"questionText\":\"Which of the following are HTTP client libraries in JavaScript?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Axios\",\"Fetch API\",\"Express\",\"Prisma\"],\"correctAnswer\":[\"Axios\",\"Fetch API\"]},{\"questionText\":\"Which of the following are web security mechanisms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"CORS\",\"CSRF Tokens\",\"OAuth2\",\"Webpack\"],\"correctAnswer\":[\"CORS\",\"CSRF Tokens\",\"OAuth2\"]},{\"questionText\":\"Which of the following are search algorithms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Binary Search\",\"Linear Search\",\"Bubble Sort\",\"Quick Sort\"],\"correctAnswer\":[\"Binary Search\",\"Linear Search\"]},{\"questionText\":\"Which of the following are caching mechanisms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Redis\",\"Memcached\",\"PostgreSQL\",\"Elasticsearch\"],\"correctAnswer\":[\"Redis\",\"Memcached\"]},{\"questionText\":\"Which of the following are Python web frameworks?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Django\",\"Flask\",\"FastAPI\",\"Angular\"],\"correctAnswer\":[\"Django\",\"Flask\",\"FastAPI\"]},{\"questionText\":\"Which of the following are automated testing types?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Unit Testing\",\"Integration Testing\",\"E2E Testing\",\"Manual Inspection\"],\"correctAnswer\":[\"Unit Testing\",\"Integration Testing\",\"E2E Testing\"]},{\"questionText\":\"Which of the following are version control platforms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"GitHub\",\"GitLab\",\"Bitbucket\",\"Jira\"],\"correctAnswer\":[\"GitHub\",\"GitLab\",\"Bitbucket\"]},{\"questionText\":\"Which of the following are essential components of RAG architecture?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Embeddings\",\"Vector Index\",\"LLM\",\"CSS\"],\"correctAnswer\":[\"Embeddings\",\"Vector Index\",\"LLM\"]},{\"questionText\":\"What does API stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Application Programming Interface\"},{\"questionText\":\"What does SQL stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Structured Query Language\"},{\"questionText\":\"What does URL stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Uniform Resource Locator\"},{\"questionText\":\"What does CSS stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Cascading Style Sheets\"},{\"questionText\":\"What is the capital of France?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Paris\"},{\"questionText\":\"What command is used to clone a Git repository?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"git clone\"},{\"questionText\":\"What command is used to install npm dependencies?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"npm install\"},{\"questionText\":\"What does CPU stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Central Processing Unit\"},{\"questionText\":\"What keyword is used to declare a constant in JavaScript?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"const\"},{\"questionText\":\"What protocol encrypts web communication over port 443?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"HTTPS\"},{\"questionText\":\"What does RAM stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Random Access Memory\"},{\"questionText\":\"What does SDK stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Software Development Kit\"},{\"questionText\":\"What command initializes a new Git repository?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"git init\"},{\"questionText\":\"What does DOM stand for in web browsers?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Document Object Model\"},{\"questionText\":\"What is the standard port for HTTPS connections?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"443\"},{\"questionText\":\"What does DNS stand for in networking?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Domain Name System\"},{\"questionText\":\"What does IP stand for in IP address?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Internet Protocol\"},{\"questionText\":\"What command builds a Docker image from a Dockerfile?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"docker build\"},{\"questionText\":\"What format does JSON use for data exchange?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Text\"},{\"questionText\":\"What keyword handles exceptions in Python try blocks?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"except\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:24.227Z",
+      "updatedAt": "2026-08-22T06:26:24.227Z"
+    },
+    {
+      "id": "188",
+      "sectionId": "108",
+      "title": "Kubernet Blog",
+      "contentType": "ARTICLE",
+      "contentUrl": null,
+      "description": "Posts in 2026\nHow to Pretty-Print Your Kubernetes YAML as KYAML and Why You'd Want To\nBy Kashish Verma | Tuesday, August 11, 2026 in Blog\n\nYAML has been the standard way to write Kubernetes manifests for years. Every example, tutorial, and configuration file you come across is written in it. The problem isn't that YAML is a bad format. It's that YAML gives you a lot of choices, and not …\n\nRead more (https://kubernetes.io/docs/home/)\n\nGateway API v1.6: TCPRoute and UDPRoute Graduate to Standard\nBy Beka Modebadze (Google), Ricardo Katz (Red Hat) | Monday, August 03, 2026 in Blog\n\nThe Kubernetes SIG Network community is thrilled to share the release of Gateway API v1.6.0, which was released on June 30th of this year! Gateway API has become the standard for modern, role-oriented, and expressive service networking in …\n\nRead more\n\nKubernetes v1.37 Sneak Peek\nBy Arsh Sharma, Christopher Tineo, Kirti Goyal, Sophia Ugochukwu, Swathi Rao, Troy Connor | Friday, July 31, 2026 in Blog\n\nAs we get closer to the release date for Kubernetes v1.37, the project develops and matures, features may be deprecated, removed, or replaced with better ones for the project's overall health. This blog outlines some of the planned changes for the …\n\nRead more\n\nHow the controller-runtime Cache Actually Works, and Why Your Controller Does Not Crash the API Server\nBy Andrei Kvapil (Ænix), Timofei Larkin (Ænix) | Wednesday, July 29, 2026 in Blog\n\nThis article has been revised since it was first published, to correct several significant technical inaccuracies in the original text. Kubernetes has long been the default platform for distributed workloads, and writing your own controller for it …\n\nRead more\n\nBuilding a Custom Metrics Exporter for Kubernetes\nBy Victor David Effiok | Tuesday, July 14, 2026 in Blog\n\nKubernetes ships with built-in awareness of CPU and memory, but most real-world scaling decisions depend on signals that live entirely outside that narrow window: how many messages are waiting in a queue, how long the last batch job took, how many …\n\nRead more\n\nOperating AI/ML Workloads on Kubernetes: A Headlamp Plugin for Kubeflow\nBy Alok Dangre (independent) | Monday, July 13, 2026 in Blog\n\nKubernetes has quietly become the default platform for AI and machine learning. Whether you run notebook servers for data scientists, schedule distributed training jobs, tune hyperparameters, or orchestrate multi-step ML pipelines, those workloads …\n\nRead more\n\nKubernetes Dashboard to Headlamp: A Step-by-Step Guide\nBy Vincent T. (Microsoft) | Monday, July 13, 2026 in Blog\n\n1. Before you start: know what is changingKubernetes Dashboard and Headlamp both show what is running in a cluster, but they work differently. When Headlamp runs on the desktop, it uses your existing kubeconfig to connect to one or more clusters and …\n\nRead more\n\nAnnouncing etcd v3.7.0\nBy SIG Etcd Leads | Wednesday, July 08, 2026 in Blog\n\nThis article is a mirror of the original announcement Today, SIG etcd is releasing etcd v3.7.0, the latest minor release of the popular distributed key-value store and core Kubernetes component. v3.7 ships the long-requested RangeStream feature, …\n\nRead more\n\nOpen source maintainership in the age of AI\nBy Kevin Hannon (Red Hat) | Friday, June 26, 2026 in Blog\n\nAI has really changed the game around software development. More people are leveraging AI than ever to contribute patches to projects they use. To me, this is a good thing as more folks will contribute patches rather than fork or not fix them. The …\n\nRead more\n\nIntroducing the Cluster API plugin for Headlamp\nBy Chayan Das (independent) | Thursday, June 25, 2026 in Blog\n\nHeadlamp is an open-source, extensible Kubernetes SIG UI project designed to let you explore, manage, and debug cluster resources directly from a browser. Cluster API (CAPI) is a Kubernetes sub-project that brings declarative, Kubernetes-style APIs …",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:24.355Z",
+      "updatedAt": "2026-08-22T06:26:24.355Z"
+    },
+    {
+      "id": "189",
+      "sectionId": "109",
+      "title": "Course Feedback & Evaluation",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your honest review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": false,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Course Feedback & Evaluation\",\"description\":\"Please share your honest review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1787379097968,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1787379097969,\"questionText\":\"How would you rate the practical relevance of the assignments & materials?\",\"questionType\":\"MCQ\",\"options\":[\"Highly Relevant\",\"Relevant\",\"Somewhat Relevant\",\"Not Relevant\"],\"isMandatory\":true},{\"id\":1787379097970,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1787379097971,\"questionText\":\"How was the training\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1787379097972,\"questionText\":\"Any suggestions\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:24.531Z",
+      "updatedAt": "2026-08-22T06:26:24.531Z"
+    },
+    {
+      "id": "190",
+      "sectionId": "108",
+      "title": "PDF TESTING",
+      "contentType": "PDF",
+      "contentUrl": "/storage/uploads/doc-1787378607637-Deep-Learning-From-Research-to-Production.pdf",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:24.543Z",
+      "updatedAt": "2026-08-22T06:26:24.543Z"
+    },
+    {
+      "id": "191",
+      "sectionId": "110",
+      "title": "Youtube testing",
+      "contentType": "YOUTUBE",
+      "contentUrl": "https://youtu.be/oodOj8jx8ds?si=kcEoXQyedxED28w9",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:24.674Z",
+      "updatedAt": "2026-08-22T06:26:24.674Z"
+    },
+    {
+      "id": "192",
+      "sectionId": "110",
+      "title": "Udemy Testing",
+      "contentType": "UDEMY",
+      "contentUrl": "https://harbingergroup.udemy.com/course/the-complete-agentic-ai-engineering-course/",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:24.742Z",
+      "updatedAt": "2026-08-22T06:26:24.742Z"
+    },
+    {
+      "id": "193",
+      "sectionId": "110",
+      "title": "Kubernet Dcoumentation",
+      "contentType": "EXTERNAL_LINK",
+      "contentUrl": "https://kubernetes.io/docs/home/",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 3,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:24.780Z",
+      "updatedAt": "2026-08-22T06:26:24.780Z"
+    },
+    {
+      "id": "194",
+      "sectionId": "110",
+      "title": "MiniProject",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Submit your assignment in the required file format.\nEnsure all required questions/tasks are completed.\nUse clear and well-structured code or explanations.\nSubmit your own original work.\nReview your submission before uploading.\nMake sure the file opens correctly before submitting.\nFollow the given deadline and naming conventions.",
+      "duration": 10,
+      "contentOrder": 4,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Complete the assignment based on the concepts covered in this course. Submit your solution before the deadline. Make sure your submission is your own work and follows the requirements provided in the assignment. Review your work carefully before submitting.\",\"maxMarks\":100,\"deadline\":\"2026-08-25 23:59\",\"maxAttempts\":3,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":0,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Submit your assignment in the required file format.\\nEnsure all required questions/tasks are completed.\\nUse clear and well-structured code or explanations.\\nSubmit your own original work.\\nReview your submission before uploading.\\nMake sure the file opens correctly before submitting.\\nFollow the given deadline and naming conventions.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Deep-Learning-From-Research-to-Production.pdf\",\"size\":\"1.9 MB\",\"url\":\"/storage/uploads/doc-1787378947457-Deep-Learning-From-Research-to-Production.pdf\"},{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787378955368-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1787378955386/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]},{\"name\":\"doc-1786436833621-Dickinson_Sample_Slides (1).pptx\",\"size\":\"0.6 MB\",\"url\":\"/storage/uploads/doc-1787378966724-doc-1786436833621-Dickinson_Sample_Slides__1_.pptx\"}]}",
+      "createdAt": "2026-08-22T06:26:24.946Z",
+      "updatedAt": "2026-08-22T06:26:24.946Z"
+    },
+    {
+      "id": "195",
+      "sectionId": "110",
+      "title": "Knowledge Check",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 5,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":3,\"totalMarks\":160,\"shuffleQuestions\":false,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionText\":\"What does HTML stand for?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Hyper Text Markup Language\",\"High Text Machine Language\",\"Hyper Tabular Markup Language\",\"None of the above\"],\"correctAnswer\":\"Hyper Text Markup Language\"},{\"questionText\":\"Which CSS property controls text size?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"font-size\",\"text-style\",\"font-weight\",\"text-size\"],\"correctAnswer\":\"font-size\"},{\"questionText\":\"What is the time complexity of binary search?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"O(1)\",\"O(n)\",\"O(log n)\",\"O(n^2)\"],\"correctAnswer\":\"O(log n)\"},{\"questionText\":\"Which SQL keyword is used to retrieve data from a database?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"GET\",\"SELECT\",\"FETCH\",\"EXTRACT\"],\"correctAnswer\":\"SELECT\"},{\"questionText\":\"Which data structure uses FIFO (First In First Out)?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Stack\",\"Queue\",\"Tree\",\"Graph\"],\"correctAnswer\":\"Queue\"},{\"questionText\":\"What does API stand for in software engineering?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Application Programming Interface\",\"Automated Program Integration\",\"Advanced Processing Interface\",\"Application Process Implementation\"],\"correctAnswer\":\"Application Programming Interface\"},{\"questionText\":\"Which HTTP status code signifies Success?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"200\",\"404\",\"500\",\"301\"],\"correctAnswer\":\"200\"},{\"questionText\":\"In JavaScript\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"MCQ\",\"var\",\"let\",\"global\"],\"correctAnswer\":\"set\"},{\"questionText\":\"Which protocol is secured with TLS/SSL encryption?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"HTTP\",\"HTTPS\",\"FTP\",\"SMTP\"],\"correctAnswer\":\"HTTPS\"},{\"questionText\":\"What is the primary function of a Vector Database in AI?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Storing user credentials\",\"Semantic similarity search on embeddings\",\"Processing relational joins\",\"Hosting static HTML files\"],\"correctAnswer\":\"Semantic similarity search on embeddings\"},{\"questionText\":\"Which Git command is used to record changes in the repository?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"git push\",\"git commit\",\"git checkout\",\"git init\"],\"correctAnswer\":\"git commit\"},{\"questionText\":\"What is the default port number for HTTP servers?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"21\",\"22\",\"80\",\"443\"],\"correctAnswer\":\"80\"},{\"questionText\":\"Which keyword is used in Python to define a function?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"function\",\"func\",\"def\",\"procedure\"],\"correctAnswer\":\"def\"},{\"questionText\":\"What does JSON stand for?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"JavaScript Object Notation\",\"Java Server Object Network\",\"JavaScript Syntax Oriented Node\",\"Java Structured Object Naming\"],\"correctAnswer\":\"JavaScript Object Notation\"},{\"questionText\":\"Which data structure operates on LIFO (Last In First Out)?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Queue\",\"Stack\",\"LinkedList\",\"Heap\"],\"correctAnswer\":\"Stack\"},{\"questionText\":\"What HTTP method is typically used to create a new resource?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"GET\",\"POST\",\"PUT\",\"DELETE\"],\"correctAnswer\":\"POST\"},{\"questionText\":\"Which component in Docker packages an application and its dependencies?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Container\",\"Volume\",\"Network\",\"Swarm\"],\"correctAnswer\":\"Container\"},{\"questionText\":\"In React\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"MCQ\",\"useState\",\"useEffect\",\"useContext\"],\"correctAnswer\":\"useReducer\"},{\"questionText\":\"Which SQL clause is used to filter aggregated records?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"WHERE\",\"HAVING\",\"GROUP BY\",\"ORDER BY\"],\"correctAnswer\":\"HAVING\"},{\"questionText\":\"What does REST stand for in web API architecture?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Representational State Transfer\",\"Remote Execution System Tech\",\"Reliable Storage Technology\",\"Response Endpoint Transfer\"],\"correctAnswer\":\"Representational State Transfer\"},{\"questionText\":\"CSS is used to structure content on a webpage.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Python is a statically typed programming language.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"HTTP is a stateless protocol.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"In SQL\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"TRUE_FALSE\"],\"correctAnswer\":\"\"},{\"questionText\":\"Docker containers share the host machine OS kernel.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"JavaScript executes strictly on single-threaded event loops.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Git is a centralized version control system.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"REST APIs require XML payloads for all request data.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"TypeScript is a typed superset of JavaScript that compiles to plain JS.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Indexing a database table always increases write performance.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"GraphQL APIs allow clients to request exact fields needed.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Microservices architecture requires a single monolithic database.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"JSON supports binary blob data types natively.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Redis is an in-memory key-value data store.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"React components re-render whenever state changes.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"JWT tokens are encrypted by default.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"The DOM represents an HTML document as a tree structure.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"A stack overflow error occurs when call stack limit is exceeded.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Kubernetes is an open-source container orchestration platform.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Agile methodology relies exclusively on rigid upfront waterfall planning.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Which of the following are programming languages?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Python\",\"HTML\",\"Java\",\"CSS\"],\"correctAnswer\":[\"Python\",\"Java\"]},{\"questionText\":\"Which of the following are HTTP request methods?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"GET\",\"POST\",\"FETCH\",\"DELETE\"],\"correctAnswer\":[\"GET\",\"POST\",\"DELETE\"]},{\"questionText\":\"Which of the following are relational database management systems?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"PostgreSQL\",\"MongoDB\",\"MySQL\",\"Redis\"],\"correctAnswer\":[\"PostgreSQL\",\"MySQL\"]},{\"questionText\":\"Which of the following are frontend web technologies?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"React\",\"Vue.js\",\"Node.js\",\"CSS\"],\"correctAnswer\":[\"React\",\"Vue.js\",\"CSS\"]},{\"questionText\":\"Which of the following are Agile development frameworks?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Scrum\",\"Kanban\",\"Waterfall\",\"PRINCE2\"],\"correctAnswer\":[\"Scrum\",\"Kanban\"]},{\"questionText\":\"Which of the following are cloud service providers?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"AWS\",\"Azure\",\"GitHub\",\"GCP\"],\"correctAnswer\":[\"AWS\",\"Azure\",\"GCP\"]},{\"questionText\":\"Which of the following are primitive data types in JavaScript?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"String\",\"Number\",\"Boolean\",\"ArrayList\"],\"correctAnswer\":[\"String\",\"Number\",\"Boolean\"]},{\"questionText\":\"Which of the following are NoSQL databases?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"MongoDB\",\"Cassandra\",\"Oracle\",\"PostgreSQL\"],\"correctAnswer\":[\"MongoDB\",\"Cassandra\"]},{\"questionText\":\"Which of the following are CSS layout modules?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Flexbox\",\"Grid\",\"DOM\",\"Canvas\"],\"correctAnswer\":[\"Flexbox\",\"Grid\"]},{\"questionText\":\"Which of the following are continuous integration tools?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Jenkins\",\"GitHub Actions\",\"Docker\",\"Git\"],\"correctAnswer\":[\"Jenkins\",\"GitHub Actions\"]},{\"questionText\":\"Which of the following are container technologies?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Docker\",\"Podman\",\"Nginx\",\"Apache\"],\"correctAnswer\":[\"Docker\",\"Podman\"]},{\"questionText\":\"Which of the following are valid Linux operating systems?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Ubuntu\",\"Debian\",\"Windows\",\"Fedora\"],\"correctAnswer\":[\"Ubuntu\",\"Debian\",\"Fedora\"]},{\"questionText\":\"Which of the following are HTTP client libraries in JavaScript?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Axios\",\"Fetch API\",\"Express\",\"Prisma\"],\"correctAnswer\":[\"Axios\",\"Fetch API\"]},{\"questionText\":\"Which of the following are web security mechanisms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"CORS\",\"CSRF Tokens\",\"OAuth2\",\"Webpack\"],\"correctAnswer\":[\"CORS\",\"CSRF Tokens\",\"OAuth2\"]},{\"questionText\":\"Which of the following are search algorithms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Binary Search\",\"Linear Search\",\"Bubble Sort\",\"Quick Sort\"],\"correctAnswer\":[\"Binary Search\",\"Linear Search\"]},{\"questionText\":\"Which of the following are caching mechanisms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Redis\",\"Memcached\",\"PostgreSQL\",\"Elasticsearch\"],\"correctAnswer\":[\"Redis\",\"Memcached\"]},{\"questionText\":\"Which of the following are Python web frameworks?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Django\",\"Flask\",\"FastAPI\",\"Angular\"],\"correctAnswer\":[\"Django\",\"Flask\",\"FastAPI\"]},{\"questionText\":\"Which of the following are automated testing types?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Unit Testing\",\"Integration Testing\",\"E2E Testing\",\"Manual Inspection\"],\"correctAnswer\":[\"Unit Testing\",\"Integration Testing\",\"E2E Testing\"]},{\"questionText\":\"Which of the following are version control platforms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"GitHub\",\"GitLab\",\"Bitbucket\",\"Jira\"],\"correctAnswer\":[\"GitHub\",\"GitLab\",\"Bitbucket\"]},{\"questionText\":\"Which of the following are essential components of RAG architecture?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Embeddings\",\"Vector Index\",\"LLM\",\"CSS\"],\"correctAnswer\":[\"Embeddings\",\"Vector Index\",\"LLM\"]},{\"questionText\":\"What does API stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Application Programming Interface\"},{\"questionText\":\"What does SQL stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Structured Query Language\"},{\"questionText\":\"What does URL stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Uniform Resource Locator\"},{\"questionText\":\"What does CSS stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Cascading Style Sheets\"},{\"questionText\":\"What is the capital of France?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Paris\"},{\"questionText\":\"What command is used to clone a Git repository?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"git clone\"},{\"questionText\":\"What command is used to install npm dependencies?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"npm install\"},{\"questionText\":\"What does CPU stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Central Processing Unit\"},{\"questionText\":\"What keyword is used to declare a constant in JavaScript?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"const\"},{\"questionText\":\"What protocol encrypts web communication over port 443?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"HTTPS\"},{\"questionText\":\"What does RAM stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Random Access Memory\"},{\"questionText\":\"What does SDK stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Software Development Kit\"},{\"questionText\":\"What command initializes a new Git repository?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"git init\"},{\"questionText\":\"What does DOM stand for in web browsers?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Document Object Model\"},{\"questionText\":\"What is the standard port for HTTPS connections?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"443\"},{\"questionText\":\"What does DNS stand for in networking?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Domain Name System\"},{\"questionText\":\"What does IP stand for in IP address?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Internet Protocol\"},{\"questionText\":\"What command builds a Docker image from a Dockerfile?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"docker build\"},{\"questionText\":\"What format does JSON use for data exchange?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Text\"},{\"questionText\":\"What keyword handles exceptions in Python try blocks?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"except\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:25.007Z",
+      "updatedAt": "2026-08-22T06:26:25.007Z"
+    },
+    {
+      "id": "196",
+      "sectionId": "111",
+      "title": "Course Feedback & Evaluation",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your honest review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Course Feedback & Evaluation\",\"description\":\"Please share your honest review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1787379097968,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1787379097969,\"questionText\":\"How would you rate the practical relevance of the assignments & materials?\",\"questionType\":\"MCQ\",\"options\":[\"Highly Relevant\",\"Relevant\",\"Somewhat Relevant\",\"Not Relevant\"],\"isMandatory\":true},{\"id\":1787379097970,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1787379097971,\"questionText\":\"How was the training\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1787379097972,\"questionText\":\"Any suggestions\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:26:25.116Z",
+      "updatedAt": "2026-08-22T06:26:25.116Z"
+    },
+    {
+      "id": "197",
+      "sectionId": "112",
+      "title": "SCORM TESTING",
+      "contentType": "SCORM",
+      "contentUrl": "/storage/scorm/scorm-1787378426859-svgyf4/Etiquette/Course.html",
+      "description": null,
+      "duration": 30,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:06.972Z",
+      "updatedAt": "2026-08-22T06:34:06.972Z"
+    },
+    {
+      "id": "198",
+      "sectionId": "112",
+      "title": "PPT TESTING",
+      "contentType": "PPT",
+      "contentUrl": "/storage/uploads/doc-1787378450669-Deep-Learning-From-Research-to-Production.pptx",
+      "description": "[{\"slideNum\":1,\"tag\":\"Slide 1\",\"heading\":\"Deep Learning: From Research to Production\",\"subheading\":\"A practical journey through the tools, architectures, and pipelines that transform a deep learning experiment into a reliable, scalable production system.\",\"bullets\":[\"DEEP LEARNING\",\"PYTORCH\",\"TRANSFORMERS\",\"MLOPS\",\"DOCKER\"],\"color\":\"from-amber-500/20 to-orange-500/10 border-amber-500/30\"},{\"slideNum\":2,\"tag\":\"Slide 2\",\"heading\":\"Deep Learning Fundamentals\",\"subheading\":\"What is Deep Learning?\",\"bullets\":[\"A subset of machine learning that uses multi-layer neural networks to automatically learn patterns from large volumes of data — without hand-crafted features.\",\"Key insight:\",\"Deep learning automatically learns useful representations from raw data, eliminating manual feature engineering.\",\"Images\",\"Text\",\"Speech\",\"Video\"],\"color\":\"from-blue-500/20 to-indigo-500/10 border-blue-500/30\"},{\"slideNum\":3,\"tag\":\"Slide 3\",\"heading\":\"PyTorch\",\"subheading\":\"PyTorch is the dominant framework for deep learning research and production, offering dynamic computation graphs, seamless GPU support, and a rich ecosystem.\",\"bullets\":[\"Dataset & DataLoaders\",\"Load, transform, and batch data efficiently for training loops.\",\"Model & Loss\",\"Define architectures with\",\"nn.Module\",\"and compute gradients via a loss function.\",\"Backpropagation & Optimizer\",\"Update weights using\",\"loss.backward()\",\"and an optimizer like Adam or SGD.\",\"Trained Model\",\"Export via TorchScript or ONNX for inference serving.\"],\"color\":\"from-emerald-500/20 to-teal-500/10 border-emerald-500/30\"},{\"slideNum\":4,\"tag\":\"Slide 4\",\"heading\":\"Transformers\",\"subheading\":\"What are Transformers?\",\"bullets\":[\"A neural architecture built on\",\"self-attention\",\", enabling models to capture long-range dependencies in sequences with high parallelism.\",\"Self-Attention\",\"Weighs the importance of every token relative to every other.\",\"Parallelizable\",\"Processes entire sequences simultaneously, unlike RNNs.\",\"Foundation Models\",\"GPT, BERT, and T5 all derive from this architecture.\"],\"color\":\"from-purple-500/20 to-pink-500/10 border-purple-500/30\"},{\"slideNum\":5,\"tag\":\"Slide 5\",\"heading\":\"Transfer Learning & Hugging Face\",\"subheading\":\"Instead of training from scratch, start from a pretrained model and fine-tune on your specific task — saving time, data, and compute.\",\"bullets\":[\"Pretrained Model\",\"Learned general features on massive data\",\"Task Model\",\"Ready for deployment with strong baseline\",\"Fine-Tune\",\"Adapt final layers to your dataset\",\"Why Transfer Learning?\",\"Less Data\",\"Faster Training\",\"Lower Compute\",\"Hugging Face Ecosystem\",\"Thousands of pretrained models across NLP, vision, and audio\",\"Unified tokenizers and dataset libraries\",\"Model Hub for sharing and versioning\",\"transformers\",\"and\",\"accelerate\",\"for fine-tuning\"],\"color\":\"from-red-500/20 to-rose-500/10 border-red-500/30\"},{\"slideNum\":6,\"tag\":\"Slide 6\",\"heading\":\"Distributed Training\",\"subheading\":\"Modern models are too large for a single GPU. Distributed strategies split the workload across devices to train faster and at greater scale.\",\"bullets\":[\"Data Parallelism\",\"Split batches across GPUs; each holds a full model copy.\",\"Model Parallelism\",\"Split model layers across GPUs for models that don&apos;t fit in memory.\",\"Pipeline Parallelism\",\"Divide the model into stages processed sequentially across devices.\",\"FSDP / ZeRO\",\"Shard optimizer states and gradients to dramatically reduce memory footprint.\"],\"color\":\"from-amber-500/20 to-yellow-500/10 border-amber-500/30\"},{\"slideNum\":7,\"tag\":\"Slide 7\",\"heading\":\"Model Registry\",\"subheading\":\"What is a Model Registry?\",\"bullets\":[\"A centralized system to\",\"store, version, and govern\",\"ML models throughout their lifecycle — from experiment to production.\",\"Flow:\",\"Train → Evaluate → Register → Approve → Deploy\",\"Version\",\"Track model, dataset, and code commit together.\",\"Metrics\",\"Store evaluation scores, hyperparameters, and owner info.\",\"Governance\",\"Approval workflows, deployment status, and rollback capability.\"],\"color\":\"from-amber-500/20 to-orange-500/10 border-amber-500/30\"},{\"slideNum\":8,\"tag\":\"Slide 8\",\"heading\":\"CI/CD for Machine Learning\",\"subheading\":\"ML pipelines extend traditional CI/CD by adding data validation, model training, and performance gates before any deployment proceeds.\",\"bullets\":[\"Unit Tests\",\"Code and data tests must pass\",\"Performance Eval\",\"Compute accuracy, F1, AUC\",\"Data Validation\",\"Check schema, quality, and drift\",\"Quality Gate\",\"Metrics must meet thresholds\",\"Model Training\",\"Retrain on validated data\",\"Quality Gate Examples\",\"Accuracy ≥ 90%\",\"F1 ≥ 85%\",\"AUC ≥ 90%\",\"Key Difference from Traditional CI/CD\",\"Standard pipelines test code only. ML CI/CD must also validate\",\"data quality\",\"and\",\"model performance\",\"— a failing metric blocks deployment automatically.\"],\"color\":\"from-blue-500/20 to-indigo-500/10 border-blue-500/30\"},{\"slideNum\":9,\"tag\":\"Slide 9\",\"heading\":\"Docker for ML\",\"subheading\":\"Solving &quot;It Works on My Machine&quot;\",\"bullets\":[\"Docker packages your application, Python runtime, PyTorch, dependencies, and model artifacts into a single portable\",\"container\",\"— eliminating environment drift between development and production.\",\"Images are stored in\",\"Docker Hub\",\"Amazon ECR\",\", or a private registry.\",\"01\",\"Write Dockerfile\",\"Define base image, dependencies, and entry point.\",\"02\",\"Build Docker Image\",\"Creates a reproducible snapshot of the environment.\",\"03\",\"Run Container\",\"Deploy consistently across any host or cloud.\"],\"color\":\"from-emerald-500/20 to-teal-500/10 border-emerald-500/30\"},{\"slideNum\":10,\"tag\":\"Slide 10\",\"heading\":\"End-to-End Deep Learning Lifecycle\",\"subheading\":\"Production AI is not a single model — it is an\",\"bullets\":[\"automated, governed lifecycle\",\"connecting every stage from raw data to continuous improvement.\",\"01\",\"Data\",\"Collect, clean, and version datasets.\",\"02\",\"Deep Learning & PyTorch\",\"Design and train neural network models.\",\"03\",\"Transformers\",\"Apply self-attention architectures for NLP, vision, and multimodal tasks.\",\"04\",\"Distributed Training\",\"Scale across multiple GPUs for large models.\",\"05\",\"Model Evaluation\",\"Measure accuracy, F1, AUC, and other metrics.\",\"06\",\"Model Registry\",\"Version, track, and govern model artifacts.\",\"07\",\"CI/CD\",\"Automate testing, quality gates, and deployment pipelines.\",\"08\",\"Docker\",\"Package models into reproducible containers.\",\"09\",\"Deployment\",\"Serve models to production environments.\",\"10\",\"Monitoring & Continuous Improvement\",\"Track drift, retrain, and iterate.\",\"Takeaway:\",\"Every tool in this stack serves a purpose — together they form a reliable, scalable path from experiment to production AI.\"],\"color\":\"from-purple-500/20 to-pink-500/10 border-purple-500/30\"}]",
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.001Z",
+      "updatedAt": "2026-08-22T06:34:07.001Z"
+    },
+    {
+      "id": "199",
+      "sectionId": "113",
+      "title": "Kubernet Blog",
+      "contentType": "ARTICLE",
+      "contentUrl": null,
+      "description": "Posts in 2026\nHow to Pretty-Print Your Kubernetes YAML as KYAML and Why You'd Want To\nBy Kashish Verma | Tuesday, August 11, 2026 in Blog\n\nYAML has been the standard way to write Kubernetes manifests for years. Every example, tutorial, and configuration file you come across is written in it. The problem isn't that YAML is a bad format. It's that YAML gives you a lot of choices, and not …\n\nRead more (https://kubernetes.io/docs/home/)\n\nGateway API v1.6: TCPRoute and UDPRoute Graduate to Standard\nBy Beka Modebadze (Google), Ricardo Katz (Red Hat) | Monday, August 03, 2026 in Blog\n\nThe Kubernetes SIG Network community is thrilled to share the release of Gateway API v1.6.0, which was released on June 30th of this year! Gateway API has become the standard for modern, role-oriented, and expressive service networking in …\n\nRead more\n\nKubernetes v1.37 Sneak Peek\nBy Arsh Sharma, Christopher Tineo, Kirti Goyal, Sophia Ugochukwu, Swathi Rao, Troy Connor | Friday, July 31, 2026 in Blog\n\nAs we get closer to the release date for Kubernetes v1.37, the project develops and matures, features may be deprecated, removed, or replaced with better ones for the project's overall health. This blog outlines some of the planned changes for the …\n\nRead more\n\nHow the controller-runtime Cache Actually Works, and Why Your Controller Does Not Crash the API Server\nBy Andrei Kvapil (Ænix), Timofei Larkin (Ænix) | Wednesday, July 29, 2026 in Blog\n\nThis article has been revised since it was first published, to correct several significant technical inaccuracies in the original text. Kubernetes has long been the default platform for distributed workloads, and writing your own controller for it …\n\nRead more\n\nBuilding a Custom Metrics Exporter for Kubernetes\nBy Victor David Effiok | Tuesday, July 14, 2026 in Blog\n\nKubernetes ships with built-in awareness of CPU and memory, but most real-world scaling decisions depend on signals that live entirely outside that narrow window: how many messages are waiting in a queue, how long the last batch job took, how many …\n\nRead more\n\nOperating AI/ML Workloads on Kubernetes: A Headlamp Plugin for Kubeflow\nBy Alok Dangre (independent) | Monday, July 13, 2026 in Blog\n\nKubernetes has quietly become the default platform for AI and machine learning. Whether you run notebook servers for data scientists, schedule distributed training jobs, tune hyperparameters, or orchestrate multi-step ML pipelines, those workloads …\n\nRead more\n\nKubernetes Dashboard to Headlamp: A Step-by-Step Guide\nBy Vincent T. (Microsoft) | Monday, July 13, 2026 in Blog\n\n1. Before you start: know what is changingKubernetes Dashboard and Headlamp both show what is running in a cluster, but they work differently. When Headlamp runs on the desktop, it uses your existing kubeconfig to connect to one or more clusters and …\n\nRead more\n\nAnnouncing etcd v3.7.0\nBy SIG Etcd Leads | Wednesday, July 08, 2026 in Blog\n\nThis article is a mirror of the original announcement Today, SIG etcd is releasing etcd v3.7.0, the latest minor release of the popular distributed key-value store and core Kubernetes component. v3.7 ships the long-requested RangeStream feature, …\n\nRead more\n\nOpen source maintainership in the age of AI\nBy Kevin Hannon (Red Hat) | Friday, June 26, 2026 in Blog\n\nAI has really changed the game around software development. More people are leveraging AI than ever to contribute patches to projects they use. To me, this is a good thing as more folks will contribute patches rather than fork or not fix them. The …\n\nRead more\n\nIntroducing the Cluster API plugin for Headlamp\nBy Chayan Das (independent) | Thursday, June 25, 2026 in Blog\n\nHeadlamp is an open-source, extensible Kubernetes SIG UI project designed to let you explore, manage, and debug cluster resources directly from a browser. Cluster API (CAPI) is a Kubernetes sub-project that brings declarative, Kubernetes-style APIs …",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.069Z",
+      "updatedAt": "2026-08-22T06:34:07.069Z"
+    },
+    {
+      "id": "200",
+      "sectionId": "113",
+      "title": "PDF TESTING",
+      "contentType": "PDF",
+      "contentUrl": "/storage/uploads/doc-1787378607637-Deep-Learning-From-Research-to-Production.pdf",
+      "description": null,
+      "duration": 10,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.088Z",
+      "updatedAt": "2026-08-22T06:34:07.088Z"
+    },
+    {
+      "id": "201",
+      "sectionId": "114",
+      "title": "Youtube testing",
+      "contentType": "YOUTUBE",
+      "contentUrl": "https://youtu.be/oodOj8jx8ds?si=kcEoXQyedxED28w9",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.127Z",
+      "updatedAt": "2026-08-22T06:34:07.127Z"
+    },
+    {
+      "id": "202",
+      "sectionId": "114",
+      "title": "Udemy Testing",
+      "contentType": "UDEMY",
+      "contentUrl": "https://harbingergroup.udemy.com/course/the-complete-agentic-ai-engineering-course/",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 2,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.151Z",
+      "updatedAt": "2026-08-22T06:34:07.151Z"
+    },
+    {
+      "id": "203",
+      "sectionId": "114",
+      "title": "Kubernet Dcoumentation",
+      "contentType": "EXTERNAL_LINK",
+      "contentUrl": "https://kubernetes.io/docs/home/",
+      "description": null,
+      "duration": 15,
+      "contentOrder": 3,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.196Z",
+      "updatedAt": "2026-08-22T06:34:07.196Z"
+    },
+    {
+      "id": "204",
+      "sectionId": "114",
+      "title": "MiniProject",
+      "contentType": "ASSIGNMENT",
+      "contentUrl": null,
+      "description": "Submit your assignment in the required file format.\nEnsure all required questions/tasks are completed.\nUse clear and well-structured code or explanations.\nSubmit your own original work.\nReview your submission before uploading.\nMake sure the file opens correctly before submitting.\nFollow the given deadline and naming conventions.",
+      "duration": 10,
+      "contentOrder": 4,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": null,
+      "assignmentConfigJson": "{\"title\":\"MiniProject\",\"description\":\"Complete the assignment based on the concepts covered in this course. Submit your solution before the deadline. Make sure your submission is your own work and follows the requirements provided in the assignment. Review your work carefully before submitting.\",\"maxMarks\":100,\"deadline\":\"2026-08-25 23:59\",\"maxAttempts\":3,\"lateSubmission\":\"ALLOWED\",\"latePenaltyPercent\":0,\"allowedFileTypes\":[\"PDF\",\"DOC\",\"DOCX\",\"ZIP\"],\"maxFileSizeMb\":50,\"maxFilesPerSubmission\":5,\"instructions\":\"Submit your assignment in the required file format.\\nEnsure all required questions/tasks are completed.\\nUse clear and well-structured code or explanations.\\nSubmit your own original work.\\nReview your submission before uploading.\\nMake sure the file opens correctly before submitting.\\nFollow the given deadline and naming conventions.\",\"allowResubmission\":true,\"plagiarismCheck\":true,\"questionFiles\":[{\"name\":\"Deep-Learning-From-Research-to-Production.pdf\",\"size\":\"1.9 MB\",\"url\":\"/storage/uploads/doc-1787378947457-Deep-Learning-From-Research-to-Production.pdf\"},{\"name\":\"TalentSense_AI.zip\",\"size\":\"0.0 MB\",\"url\":\"/storage/uploads/doc-1787378955368-TalentSense_AI.zip\",\"extractedZipFiles\":[{\"name\":\"TalentSense_AI.py\",\"url\":\"/storage/uploads/extracted_1787378955386/TalentSense_AI.py\",\"sizeMb\":\"0.01\"}]},{\"name\":\"doc-1786436833621-Dickinson_Sample_Slides (1).pptx\",\"size\":\"0.6 MB\",\"url\":\"/storage/uploads/doc-1787378966724-doc-1786436833621-Dickinson_Sample_Slides__1_.pptx\"}]}",
+      "createdAt": "2026-08-22T06:34:07.216Z",
+      "updatedAt": "2026-08-22T06:34:07.216Z"
+    },
+    {
+      "id": "205",
+      "sectionId": "114",
+      "title": "Knowledge Check",
+      "contentType": "QUIZ",
+      "contentUrl": null,
+      "description": null,
+      "duration": 20,
+      "contentOrder": 5,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Knowledge Check\",\"description\":\"\",\"durationMinutes\":20,\"passingPercentage\":70,\"maxAttempts\":3,\"totalMarks\":160,\"shuffleQuestions\":false,\"showAnswersAfterSubmit\":true,\"oneQuestionAtATime\":true,\"questions\":[{\"questionText\":\"What does HTML stand for?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Hyper Text Markup Language\",\"High Text Machine Language\",\"Hyper Tabular Markup Language\",\"None of the above\"],\"correctAnswer\":\"Hyper Text Markup Language\"},{\"questionText\":\"Which CSS property controls text size?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"font-size\",\"text-style\",\"font-weight\",\"text-size\"],\"correctAnswer\":\"font-size\"},{\"questionText\":\"What is the time complexity of binary search?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"O(1)\",\"O(n)\",\"O(log n)\",\"O(n^2)\"],\"correctAnswer\":\"O(log n)\"},{\"questionText\":\"Which SQL keyword is used to retrieve data from a database?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"GET\",\"SELECT\",\"FETCH\",\"EXTRACT\"],\"correctAnswer\":\"SELECT\"},{\"questionText\":\"Which data structure uses FIFO (First In First Out)?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Stack\",\"Queue\",\"Tree\",\"Graph\"],\"correctAnswer\":\"Queue\"},{\"questionText\":\"What does API stand for in software engineering?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Application Programming Interface\",\"Automated Program Integration\",\"Advanced Processing Interface\",\"Application Process Implementation\"],\"correctAnswer\":\"Application Programming Interface\"},{\"questionText\":\"Which HTTP status code signifies Success?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"200\",\"404\",\"500\",\"301\"],\"correctAnswer\":\"200\"},{\"questionText\":\"In JavaScript\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"MCQ\",\"var\",\"let\",\"global\"],\"correctAnswer\":\"set\"},{\"questionText\":\"Which protocol is secured with TLS/SSL encryption?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"HTTP\",\"HTTPS\",\"FTP\",\"SMTP\"],\"correctAnswer\":\"HTTPS\"},{\"questionText\":\"What is the primary function of a Vector Database in AI?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Storing user credentials\",\"Semantic similarity search on embeddings\",\"Processing relational joins\",\"Hosting static HTML files\"],\"correctAnswer\":\"Semantic similarity search on embeddings\"},{\"questionText\":\"Which Git command is used to record changes in the repository?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"git push\",\"git commit\",\"git checkout\",\"git init\"],\"correctAnswer\":\"git commit\"},{\"questionText\":\"What is the default port number for HTTP servers?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"21\",\"22\",\"80\",\"443\"],\"correctAnswer\":\"80\"},{\"questionText\":\"Which keyword is used in Python to define a function?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"function\",\"func\",\"def\",\"procedure\"],\"correctAnswer\":\"def\"},{\"questionText\":\"What does JSON stand for?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"JavaScript Object Notation\",\"Java Server Object Network\",\"JavaScript Syntax Oriented Node\",\"Java Structured Object Naming\"],\"correctAnswer\":\"JavaScript Object Notation\"},{\"questionText\":\"Which data structure operates on LIFO (Last In First Out)?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Queue\",\"Stack\",\"LinkedList\",\"Heap\"],\"correctAnswer\":\"Stack\"},{\"questionText\":\"What HTTP method is typically used to create a new resource?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"GET\",\"POST\",\"PUT\",\"DELETE\"],\"correctAnswer\":\"POST\"},{\"questionText\":\"Which component in Docker packages an application and its dependencies?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Container\",\"Volume\",\"Network\",\"Swarm\"],\"correctAnswer\":\"Container\"},{\"questionText\":\"In React\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"MCQ\",\"useState\",\"useEffect\",\"useContext\"],\"correctAnswer\":\"useReducer\"},{\"questionText\":\"Which SQL clause is used to filter aggregated records?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"WHERE\",\"HAVING\",\"GROUP BY\",\"ORDER BY\"],\"correctAnswer\":\"HAVING\"},{\"questionText\":\"What does REST stand for in web API architecture?\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"Representational State Transfer\",\"Remote Execution System Tech\",\"Reliable Storage Technology\",\"Response Endpoint Transfer\"],\"correctAnswer\":\"Representational State Transfer\"},{\"questionText\":\"CSS is used to structure content on a webpage.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Python is a statically typed programming language.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"HTTP is a stateless protocol.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"In SQL\",\"questionType\":\"MCQ\",\"marks\":2,\"options\":[\"TRUE_FALSE\"],\"correctAnswer\":\"\"},{\"questionText\":\"Docker containers share the host machine OS kernel.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"JavaScript executes strictly on single-threaded event loops.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Git is a centralized version control system.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"REST APIs require XML payloads for all request data.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"TypeScript is a typed superset of JavaScript that compiles to plain JS.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Indexing a database table always increases write performance.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"GraphQL APIs allow clients to request exact fields needed.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Microservices architecture requires a single monolithic database.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"JSON supports binary blob data types natively.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Redis is an in-memory key-value data store.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"React components re-render whenever state changes.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"JWT tokens are encrypted by default.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"The DOM represents an HTML document as a tree structure.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"A stack overflow error occurs when call stack limit is exceeded.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Kubernetes is an open-source container orchestration platform.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"True\"},{\"questionText\":\"Agile methodology relies exclusively on rigid upfront waterfall planning.\",\"questionType\":\"TRUE_FALSE\",\"marks\":2,\"correctAnswer\":\"False\"},{\"questionText\":\"Which of the following are programming languages?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Python\",\"HTML\",\"Java\",\"CSS\"],\"correctAnswer\":[\"Python\",\"Java\"]},{\"questionText\":\"Which of the following are HTTP request methods?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"GET\",\"POST\",\"FETCH\",\"DELETE\"],\"correctAnswer\":[\"GET\",\"POST\",\"DELETE\"]},{\"questionText\":\"Which of the following are relational database management systems?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"PostgreSQL\",\"MongoDB\",\"MySQL\",\"Redis\"],\"correctAnswer\":[\"PostgreSQL\",\"MySQL\"]},{\"questionText\":\"Which of the following are frontend web technologies?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"React\",\"Vue.js\",\"Node.js\",\"CSS\"],\"correctAnswer\":[\"React\",\"Vue.js\",\"CSS\"]},{\"questionText\":\"Which of the following are Agile development frameworks?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Scrum\",\"Kanban\",\"Waterfall\",\"PRINCE2\"],\"correctAnswer\":[\"Scrum\",\"Kanban\"]},{\"questionText\":\"Which of the following are cloud service providers?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"AWS\",\"Azure\",\"GitHub\",\"GCP\"],\"correctAnswer\":[\"AWS\",\"Azure\",\"GCP\"]},{\"questionText\":\"Which of the following are primitive data types in JavaScript?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"String\",\"Number\",\"Boolean\",\"ArrayList\"],\"correctAnswer\":[\"String\",\"Number\",\"Boolean\"]},{\"questionText\":\"Which of the following are NoSQL databases?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"MongoDB\",\"Cassandra\",\"Oracle\",\"PostgreSQL\"],\"correctAnswer\":[\"MongoDB\",\"Cassandra\"]},{\"questionText\":\"Which of the following are CSS layout modules?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Flexbox\",\"Grid\",\"DOM\",\"Canvas\"],\"correctAnswer\":[\"Flexbox\",\"Grid\"]},{\"questionText\":\"Which of the following are continuous integration tools?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Jenkins\",\"GitHub Actions\",\"Docker\",\"Git\"],\"correctAnswer\":[\"Jenkins\",\"GitHub Actions\"]},{\"questionText\":\"Which of the following are container technologies?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Docker\",\"Podman\",\"Nginx\",\"Apache\"],\"correctAnswer\":[\"Docker\",\"Podman\"]},{\"questionText\":\"Which of the following are valid Linux operating systems?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Ubuntu\",\"Debian\",\"Windows\",\"Fedora\"],\"correctAnswer\":[\"Ubuntu\",\"Debian\",\"Fedora\"]},{\"questionText\":\"Which of the following are HTTP client libraries in JavaScript?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Axios\",\"Fetch API\",\"Express\",\"Prisma\"],\"correctAnswer\":[\"Axios\",\"Fetch API\"]},{\"questionText\":\"Which of the following are web security mechanisms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"CORS\",\"CSRF Tokens\",\"OAuth2\",\"Webpack\"],\"correctAnswer\":[\"CORS\",\"CSRF Tokens\",\"OAuth2\"]},{\"questionText\":\"Which of the following are search algorithms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Binary Search\",\"Linear Search\",\"Bubble Sort\",\"Quick Sort\"],\"correctAnswer\":[\"Binary Search\",\"Linear Search\"]},{\"questionText\":\"Which of the following are caching mechanisms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Redis\",\"Memcached\",\"PostgreSQL\",\"Elasticsearch\"],\"correctAnswer\":[\"Redis\",\"Memcached\"]},{\"questionText\":\"Which of the following are Python web frameworks?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Django\",\"Flask\",\"FastAPI\",\"Angular\"],\"correctAnswer\":[\"Django\",\"Flask\",\"FastAPI\"]},{\"questionText\":\"Which of the following are automated testing types?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Unit Testing\",\"Integration Testing\",\"E2E Testing\",\"Manual Inspection\"],\"correctAnswer\":[\"Unit Testing\",\"Integration Testing\",\"E2E Testing\"]},{\"questionText\":\"Which of the following are version control platforms?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"GitHub\",\"GitLab\",\"Bitbucket\",\"Jira\"],\"correctAnswer\":[\"GitHub\",\"GitLab\",\"Bitbucket\"]},{\"questionText\":\"Which of the following are essential components of RAG architecture?\",\"questionType\":\"MULTIPLE_SELECT\",\"marks\":2,\"options\":[\"Embeddings\",\"Vector Index\",\"LLM\",\"CSS\"],\"correctAnswer\":[\"Embeddings\",\"Vector Index\",\"LLM\"]},{\"questionText\":\"What does API stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Application Programming Interface\"},{\"questionText\":\"What does SQL stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Structured Query Language\"},{\"questionText\":\"What does URL stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Uniform Resource Locator\"},{\"questionText\":\"What does CSS stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Cascading Style Sheets\"},{\"questionText\":\"What is the capital of France?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Paris\"},{\"questionText\":\"What command is used to clone a Git repository?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"git clone\"},{\"questionText\":\"What command is used to install npm dependencies?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"npm install\"},{\"questionText\":\"What does CPU stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Central Processing Unit\"},{\"questionText\":\"What keyword is used to declare a constant in JavaScript?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"const\"},{\"questionText\":\"What protocol encrypts web communication over port 443?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"HTTPS\"},{\"questionText\":\"What does RAM stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Random Access Memory\"},{\"questionText\":\"What does SDK stand for?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Software Development Kit\"},{\"questionText\":\"What command initializes a new Git repository?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"git init\"},{\"questionText\":\"What does DOM stand for in web browsers?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Document Object Model\"},{\"questionText\":\"What is the standard port for HTTPS connections?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"443\"},{\"questionText\":\"What does DNS stand for in networking?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Domain Name System\"},{\"questionText\":\"What does IP stand for in IP address?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Internet Protocol\"},{\"questionText\":\"What command builds a Docker image from a Dockerfile?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"docker build\"},{\"questionText\":\"What format does JSON use for data exchange?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"Text\"},{\"questionText\":\"What keyword handles exceptions in Python try blocks?\",\"questionType\":\"SHORT_ANSWER\",\"marks\":2,\"correctAnswer\":\"except\"}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.233Z",
+      "updatedAt": "2026-08-22T06:34:07.233Z"
+    },
+    {
+      "id": "206",
+      "sectionId": "115",
+      "title": "Course Feedback & Evaluation",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your honest review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Course Feedback & Evaluation\",\"description\":\"Please share your honest review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1787379097968,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1787379097969,\"questionText\":\"How would you rate the practical relevance of the assignments & materials?\",\"questionType\":\"MCQ\",\"options\":[\"Highly Relevant\",\"Relevant\",\"Somewhat Relevant\",\"Not Relevant\"],\"isMandatory\":true},{\"id\":1787379097970,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1787379097971,\"questionText\":\"How was the training\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1787379097972,\"questionText\":\"Any suggestions\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.286Z",
+      "updatedAt": "2026-08-22T06:34:07.286Z"
+    },
+    {
+      "id": "207",
+      "sectionId": "116",
+      "title": "Course Feedback & Evaluation",
+      "contentType": "FEEDBACK",
+      "contentUrl": null,
+      "description": "Please share your honest review regarding course structure, content clarity, and instructor support.",
+      "duration": 10,
+      "contentOrder": 1,
+      "isMandatory": true,
+      "isPublished": true,
+      "isActive": true,
+      "quizConfigJson": "{\"title\":\"Course Feedback & Evaluation\",\"description\":\"Please share your honest review regarding course structure, content clarity, and instructor support.\",\"questions\":[{\"id\":1787379097968,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1787379097969,\"questionText\":\"How would you rate the practical relevance of the assignments & materials?\",\"questionType\":\"MCQ\",\"options\":[\"Highly Relevant\",\"Relevant\",\"Somewhat Relevant\",\"Not Relevant\"],\"isMandatory\":true},{\"id\":1787379097970,\"questionText\":\"What suggestions do you have for improving this course module?\",\"questionType\":\"WRITTEN\",\"isMandatory\":false},{\"id\":1787379097971,\"questionText\":\"How was the training\",\"questionType\":\"MCQ\",\"options\":[\"Excellent\",\"Good\",\"Average\",\"Needs Improvement\"],\"isMandatory\":true},{\"id\":1787379097972,\"questionText\":\"Any suggestions\",\"questionType\":\"WRITTEN\",\"isMandatory\":true}]}",
+      "assignmentConfigJson": null,
+      "createdAt": "2026-08-22T06:34:07.349Z",
+      "updatedAt": "2026-08-22T06:34:07.349Z"
     }
   ],
   "enrollments": [
@@ -5821,10 +6491,10 @@
       "startDate": null,
       "completedAt": null,
       "dueDate": null,
-      "lastActivityAt": "2026-08-21T08:56:13.652Z",
+      "lastActivityAt": "2026-08-22T06:33:02.943Z",
       "status": "IN_PROGRESS",
-      "progress": "0",
-      "timeSpentSeconds": 245,
+      "progress": "25",
+      "timeSpentSeconds": 275,
       "sessionsCount": 1,
       "isMandatory": false,
       "createdAt": "2026-08-21T08:49:08.359Z"
@@ -5860,6 +6530,22 @@
       "sessionsCount": 1,
       "isMandatory": false,
       "createdAt": "2026-08-21T09:26:41.252Z"
+    },
+    {
+      "id": "29",
+      "userId": "6",
+      "courseId": "21",
+      "enrolledAt": "2026-08-22T06:34:31.986Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": "2026-08-22T09:31:52.653Z",
+      "status": "IN_PROGRESS",
+      "progress": "82",
+      "timeSpentSeconds": 1675,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-08-22T06:34:31.986Z"
     }
   ],
   "userLessonProgresses": [
@@ -5909,7 +6595,7 @@
       "watchedSeconds": 0,
       "activeLearningSeconds": 0,
       "lastPosition": 0,
-      "lastActivityAt": "2026-08-22T05:51:22.816Z"
+      "lastActivityAt": "2026-08-22T09:33:43.378Z"
     },
     {
       "id": "38",
@@ -5933,7 +6619,7 @@
       "watchedSeconds": 0,
       "activeLearningSeconds": 0,
       "lastPosition": 0,
-      "lastActivityAt": "2026-08-22T05:51:22.793Z"
+      "lastActivityAt": "2026-08-22T09:33:43.290Z"
     },
     {
       "id": "45",
@@ -5945,7 +6631,7 @@
       "watchedSeconds": 0,
       "activeLearningSeconds": 0,
       "lastPosition": 0,
-      "lastActivityAt": "2026-08-22T05:51:22.839Z"
+      "lastActivityAt": "2026-08-22T09:33:43.403Z"
     },
     {
       "id": "49",
@@ -6041,7 +6727,7 @@
       "watchedSeconds": 650,
       "activeLearningSeconds": 650,
       "lastPosition": 0,
-      "lastActivityAt": "2026-08-22T05:51:22.889Z"
+      "lastActivityAt": "2026-08-22T09:33:43.445Z"
     },
     {
       "id": "124",
@@ -6053,7 +6739,7 @@
       "watchedSeconds": 40,
       "activeLearningSeconds": 40,
       "lastPosition": 0,
-      "lastActivityAt": "2026-08-22T05:51:22.916Z"
+      "lastActivityAt": "2026-08-22T09:33:43.475Z"
     },
     {
       "id": "125",
@@ -6065,7 +6751,7 @@
       "watchedSeconds": 70,
       "activeLearningSeconds": 70,
       "lastPosition": 0,
-      "lastActivityAt": "2026-08-22T05:51:22.938Z"
+      "lastActivityAt": "2026-08-22T09:33:43.496Z"
     },
     {
       "id": "126",
@@ -6077,7 +6763,7 @@
       "watchedSeconds": 10,
       "activeLearningSeconds": 10,
       "lastPosition": 0,
-      "lastActivityAt": "2026-08-22T05:51:22.971Z"
+      "lastActivityAt": "2026-08-22T09:33:43.516Z"
     },
     {
       "id": "128",
@@ -6161,7 +6847,7 @@
       "watchedSeconds": 340,
       "activeLearningSeconds": 230,
       "lastPosition": 0,
-      "lastActivityAt": "2026-08-22T05:51:23.014Z"
+      "lastActivityAt": "2026-08-22T09:33:43.533Z"
     },
     {
       "id": "135",
@@ -6198,6 +6884,126 @@
       "activeLearningSeconds": 240,
       "lastPosition": 0,
       "lastActivityAt": "2026-08-21T09:37:21.087Z"
+    },
+    {
+      "id": "138",
+      "userId": "6",
+      "courseId": "19",
+      "contentId": "124",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T06:33:03.739Z",
+      "watchedSeconds": 20,
+      "activeLearningSeconds": 20,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T06:33:03.741Z"
+    },
+    {
+      "id": "139",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "197",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T06:49:32.664Z",
+      "watchedSeconds": 980,
+      "activeLearningSeconds": 520,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T07:03:20.191Z"
+    },
+    {
+      "id": "140",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "198",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T06:57:12.942Z",
+      "watchedSeconds": 390,
+      "activeLearningSeconds": 300,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T07:02:53.088Z"
+    },
+    {
+      "id": "141",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "202",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T07:03:41.770Z",
+      "watchedSeconds": 140,
+      "activeLearningSeconds": 10,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T07:12:34.085Z"
+    },
+    {
+      "id": "142",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "199",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T07:12:46.366Z",
+      "watchedSeconds": 10,
+      "activeLearningSeconds": 10,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T07:12:46.366Z"
+    },
+    {
+      "id": "143",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "200",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T07:14:29.860Z",
+      "watchedSeconds": 100,
+      "activeLearningSeconds": 100,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T07:14:29.860Z"
+    },
+    {
+      "id": "144",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "201",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T07:14:46.459Z",
+      "watchedSeconds": 10,
+      "activeLearningSeconds": 10,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T07:14:46.459Z"
+    },
+    {
+      "id": "145",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "203",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T07:15:06.517Z",
+      "watchedSeconds": 80,
+      "activeLearningSeconds": 10,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T07:16:16.471Z"
+    },
+    {
+      "id": "149",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "205",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T07:25:50.779Z",
+      "watchedSeconds": 260,
+      "activeLearningSeconds": 110,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T09:33:43.549Z"
+    },
+    {
+      "id": "150",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "206",
+      "isCompleted": true,
+      "completedAt": "2026-08-22T07:32:30.082Z",
+      "watchedSeconds": 660,
+      "activeLearningSeconds": 320,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-08-22T09:33:43.563Z"
     }
   ],
   "assessmentSubmissions": [
@@ -6380,6 +7186,46 @@
       "gradedBy": "Priyanka Davhare [SUPER_ADMIN]",
       "gradedAt": "2026-08-21T08:54:39.015Z",
       "submittedAt": "2026-08-21T08:52:36.262Z"
+    },
+    {
+      "id": "14",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "205",
+      "submissionType": "QUIZ",
+      "answersJson": "{\"1\":\"Hyper Tabular Markup Language\",\"2\":\"text-style\",\"3\":\"O(1)\",\"4\":\"FETCH\",\"6\":\"Application Programming Interface\"}",
+      "submissionText": null,
+      "fileUrl": null,
+      "status": "SUBMITTED",
+      "score": 1,
+      "maxScore": 100,
+      "percentage": 1,
+      "grade": "F",
+      "feedback": null,
+      "attemptNumber": 1,
+      "gradedBy": null,
+      "gradedAt": null,
+      "submittedAt": "2026-08-22T07:25:40.706Z"
+    },
+    {
+      "id": "15",
+      "userId": "6",
+      "courseId": "21",
+      "contentId": "206",
+      "submissionType": "FEEDBACK",
+      "answersJson": null,
+      "submissionText": "{\"type\":\"FEEDBACK\",\"title\":\"Course Feedback & Evaluation\",\"responses\":{\"1787379097968\":\"Excellent\",\"1787379097969\":\"Not Relevant\",\"1787379097970\":\"\",\"1787379097971\":\"Excellent\",\"1787379097972\":\"NA\"},\"questions\":[{\"id\":1787379097968,\"questionText\":\"How satisfied are you with the course content and instructor explanations?\"},{\"id\":1787379097969,\"questionText\":\"How would you rate the practical relevance of the assignments & materials?\"},{\"id\":1787379097970,\"questionText\":\"What suggestions do you have for improving this course module?\"},{\"id\":1787379097971,\"questionText\":\"How was the training\"},{\"id\":1787379097972,\"questionText\":\"Any suggestions\"}]}",
+      "fileUrl": null,
+      "status": "GRADED",
+      "score": 100,
+      "maxScore": 100,
+      "percentage": 100,
+      "grade": "COMPLETED",
+      "feedback": "Feedback Survey Received",
+      "attemptNumber": 1,
+      "gradedBy": null,
+      "gradedAt": null,
+      "submittedAt": "2026-08-22T07:32:29.976Z"
     }
   ],
   "issuedCertificates": [
@@ -6430,6 +7276,18 @@
       "recipientName": "Priyanka Davhare",
       "courseTitle": "Agentic AI",
       "templateSnapshot": "{\"id\":\"3\",\"courseId\":\"9\",\"templateName\":\"Harbinger Classic Gold\",\"logoUrl\":null,\"headerTitle\":\"Certificate of Completion\",\"headerSubtitle\":\"OF ACHIEVEMENT\",\"certifyText\":\"This is to certify that\",\"completionText\":\"has successfully completed and passed the course\",\"signatoryName\":\"Richard Wilson\",\"signatoryTitle\":\"Authorized Director\",\"signatureUrl\":null,\"customDate\":null,\"borderStyle\":\"GOLD_DOUBLE_ORNATE\",\"primaryColor\":\"#d97706\",\"enableCertificate\":true,\"passingThreshold\":70,\"validityDays\":365,\"createdAt\":\"2026-08-17T09:35:15.661Z\",\"updatedAt\":\"2026-08-17T10:07:41.269Z\",\"templateId\":\"classic\"}"
+    },
+    {
+      "id": "10",
+      "certificateCode": "HARB-2026-X8509",
+      "userId": "6",
+      "courseId": "21",
+      "issuedAt": "2026-08-22T07:19:47.373Z",
+      "expiresAt": null,
+      "status": "ACTIVE",
+      "recipientName": "Employee6 User",
+      "courseTitle": "The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment",
+      "templateSnapshot": "{\"id\":\"12\",\"courseId\":\"21\",\"templateName\":\"classic\",\"logoUrl\":null,\"headerTitle\":\"Certificate of Completion\",\"headerSubtitle\":\"OF ACHIEVEMENT\",\"certifyText\":\"This is to certify that\",\"completionText\":\"has successfully completed and passed the course\",\"signatoryName\":\"Richard Wilson\",\"signatoryTitle\":\"Authorized Director\",\"signatureUrl\":null,\"customDate\":null,\"borderStyle\":\"CLASSIC\",\"primaryColor\":\"#d97706\",\"enableCertificate\":true,\"passingThreshold\":70,\"validityDays\":365,\"createdAt\":\"2026-08-22T06:26:28.548Z\",\"updatedAt\":\"2026-08-22T06:34:07.541Z\",\"templateId\":\"classic\"}"
     }
   ],
   "guestAccessGrants": [
@@ -8761,6 +9619,90 @@
       "detail": "Saved draft 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' at step 7",
       "type": "course",
       "ipAddress": "::1"
+    },
+    {
+      "id": "194",
+      "timestamp": "2026-08-22T06:26:24.953Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Draft Saved",
+      "detail": "Saved draft 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' at step 7",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "195",
+      "timestamp": "2026-08-22T06:26:25.763Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Updated",
+      "detail": "Updated course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "196",
+      "timestamp": "2026-08-22T06:32:00.771Z",
+      "actorId": "5",
+      "actorName": "Employee5 User (GUEST)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "197",
+      "timestamp": "2026-08-22T06:32:20.686Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "198",
+      "timestamp": "2026-08-22T06:34:07.475Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Updated",
+      "detail": "Updated course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "199",
+      "timestamp": "2026-08-22T10:02:51.057Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "200",
+      "timestamp": "2026-08-22T10:06:08.591Z",
+      "actorId": "2",
+      "actorName": "Omprakash Pandey (ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
     }
   ],
   "notifications": [
@@ -23240,6 +24182,747 @@
       },
       "roleTarget": "TEACHER",
       "createdAt": "2026-08-22T06:20:16.841Z"
+    },
+    {
+      "id": "973",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'. You can now view and edit its curriculum.",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-22T06:26:24.778Z"
+    },
+    {
+      "id": "974",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'. You can now view and edit its curriculum.",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-22T06:26:25.511Z"
+    },
+    {
+      "id": "975",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:26:26.043Z"
+    },
+    {
+      "id": "976",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:26:26.043Z"
+    },
+    {
+      "id": "977",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:26:26.043Z"
+    },
+    {
+      "id": "978",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:26:26.043Z"
+    },
+    {
+      "id": "979",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:26:26.043Z"
+    },
+    {
+      "id": "980",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:26:26.043Z"
+    },
+    {
+      "id": "981",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:26:26.043Z"
+    },
+    {
+      "id": "982",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment\" in course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'.",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-22T06:26:26.043Z"
+    },
+    {
+      "id": "983",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'. You can now view and edit its curriculum.",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-08-22T06:34:07.427Z"
+    },
+    {
+      "id": "984",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "985",
+      "userId": "5",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "986",
+      "userId": "9",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "987",
+      "userId": "13",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "988",
+      "userId": "17",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "989",
+      "userId": "21",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "990",
+      "userId": "25",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "991",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "992",
+      "userId": "6",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "993",
+      "userId": "10",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "994",
+      "userId": "14",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "995",
+      "userId": "18",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "996",
+      "userId": "22",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "997",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "998",
+      "userId": "7",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "999",
+      "userId": "11",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1000",
+      "userId": "15",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1001",
+      "userId": "19",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1002",
+      "userId": "23",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1003",
+      "userId": "4",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1004",
+      "userId": "8",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1005",
+      "userId": "12",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1006",
+      "userId": "16",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1007",
+      "userId": "20",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1008",
+      "userId": "24",
+      "actorId": null,
+      "type": "COURSE_UPDATED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Course Content Updated",
+      "message": "Your course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment' was updated by Super Admin priyanka. New content added: The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment (Course Update).",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1009",
+      "userId": "3",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment\" in course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'.",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1010",
+      "userId": "2",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment\" in course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'.",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-22T06:34:07.511Z"
+    },
+    {
+      "id": "1011",
+      "userId": "1",
+      "actorId": null,
+      "type": "COURSE_UPDATED_ADMIN",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Super Admin Updated Course Content",
+      "message": "Super Admin priyanka added/updated content: \"The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment\" in course 'The Complete Enterprise AI & Full-Stack Cloud Architecture Masterclass 2026: From Foundations to Advanced Production Deployment'.",
+      "link": "/courses/21/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 21
+      },
+      "roleTarget": "ADMIN",
+      "createdAt": "2026-08-22T06:34:07.511Z"
     }
   ]
 }

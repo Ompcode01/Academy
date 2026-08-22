@@ -56,7 +56,7 @@ export default function HarbingerConfirmModal({
   const shouldShowCancel =
     showCancelButton !== undefined
       ? showCancelButton
-      : variant !== "success" && cancelLabel !== "";
+      : cancelLabel !== "";
 
   const getVariantStyles = () => {
     switch (variant) {

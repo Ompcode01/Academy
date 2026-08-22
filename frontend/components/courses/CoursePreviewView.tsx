@@ -110,6 +110,7 @@ export default function CoursePreviewView() {
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  const [isEditingFeedback, setIsEditingFeedback] = useState(false);
 
   // Guest restriction modal
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
@@ -259,7 +260,6 @@ export default function CoursePreviewView() {
         if (res?.success && res.data) {
           if (res.data.isLessonCompleted && !completedLessonIds.includes(selectedLesson.id)) {
             setCompletedLessonIds((prev) => Array.from(new Set([...prev, selectedLesson.id])));
-            toast.success(`Lesson Auto-Completed: "${selectedLesson.title}" (90%+ active duration watched!)`);
           }
           if (res.data.calculatedProgress !== undefined) {
             setProgressPercent(Number(res.data.calculatedProgress));
@@ -314,7 +314,7 @@ export default function CoursePreviewView() {
     );
   };
 
-  const handleToggleLessonComplete = async (lessonId: number) => {
+  const handleToggleLessonComplete = async (lessonId: number, forceStatus?: boolean) => {
     if (isGuest) {
       setGuestModalLessonTitle(null);
       setIsGuestModalOpen(true);
@@ -322,10 +322,10 @@ export default function CoursePreviewView() {
     }
     if (!courseId) return;
     const isCurrentlyCompleted = completedLessonIds.includes(lessonId);
-    const newStatus = !isCurrentlyCompleted;
+    const newStatus = forceStatus !== undefined ? forceStatus : !isCurrentlyCompleted;
 
     if (newStatus) {
-      setCompletedLessonIds((prev) => [...prev, lessonId]);
+      setCompletedLessonIds((prev) => Array.from(new Set([...prev, lessonId])));
     } else {
       setCompletedLessonIds((prev) => prev.filter((id) => id !== lessonId));
     }
@@ -921,13 +921,11 @@ export default function CoursePreviewView() {
         </div>
 
         {/* Header Progress & Certificate Action */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden md:block">
-              <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Overall Progress</div>
-              <div className="text-xs font-extrabold text-foreground">{computedProgressPercent}% Completed</div>
-            </div>
-            <div className="w-24 bg-muted h-2 rounded-full overflow-hidden border border-border">
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/60 border border-border text-xs font-semibold whitespace-nowrap shrink-0">
+            <span className="text-muted-foreground text-[11px] font-medium">Progress:</span>
+            <span className="font-bold text-foreground font-mono text-xs">{computedProgressPercent}%</span>
+            <div className="w-16 bg-muted h-1.5 rounded-full overflow-hidden shrink-0 border border-border/40 ml-0.5">
               <div className="bg-emerald-500 h-full transition-all duration-300" style={{ width: `${computedProgressPercent}%` }} />
             </div>
           </div>
@@ -1012,7 +1010,7 @@ export default function CoursePreviewView() {
                           if (courseId) {
                             recordQuizSubmission(courseId, selectedLesson.id, score, maxScore, answersJson).catch(console.error);
                           }
-                          handleToggleLessonComplete(selectedLesson.id);
+                          handleToggleLessonComplete(selectedLesson.id, true);
                         }}
                         onSkip={() => {
                           if (nextLesson) handleOpenLessonContent(nextLesson);
@@ -1051,63 +1049,110 @@ export default function CoursePreviewView() {
                     );
                   })()
                 ) : selectedLesson.contentType?.toUpperCase() === "FEEDBACK" || selectedLesson.contentType?.toUpperCase() === "FEEDBACK_SURVEY" || selectedLesson.contentType?.toUpperCase() === "SURVEY" ? (
-                  <div className="p-6 bg-card border border-amber-500/30 rounded-2xl space-y-5 shadow-md">
-                    <div className="flex items-center gap-3 border-b border-border pb-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center font-bold">
-                        <MessageSquare className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-base font-bold text-foreground">{selectedLesson.title}</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {selectedLesson.description || "Please share your evaluation regarding course content, practical exercises, and instructor support."}
-                        </p>
-                      </div>
-                    </div>
+                  (() => {
+                    const existingFeedbackSub = (progressData?.submissions || []).find(
+                      (s: any) =>
+                        (String(s.contentId) === String(selectedLesson.id) || String(s.contentItem?.id) === String(selectedLesson.id)) &&
+                        (s.submissionType === "FEEDBACK" || s.type === "FEEDBACK" || s.submissionText?.includes('"type":"FEEDBACK"'))
+                    ) || null;
 
-                    {/* Interactive Inline Survey Form */}
-                    {(() => {
-                      let authorQuestions: any[] | null = null;
-                      try {
-                        const raw = selectedLesson.quizConfigJson || (selectedLesson as any).configJson;
-                        if (raw) {
-                          const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
-                          if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
-                            authorQuestions = parsed.questions;
-                          }
-                        }
-                      } catch { }
+                    const isFeedbackDone = isSelectedLessonCompleted || Boolean(existingFeedbackSub);
 
-                      const questionsToRender = authorQuestions || [
-                        {
-                          id: 1,
-                          questionText: "How satisfied are you with the overall course content and lesson structure?",
-                          questionType: "MCQ",
-                          options: ["5 - Excellent", "4 - Very Good", "3 - Satisfactory", "2 - Needs Improvement", "1 - Poor"],
-                          isMandatory: true,
-                        },
-                        {
-                          id: 2,
-                          questionText: "How effective were the practical exercises, quizzes, and learning materials?",
-                          questionType: "MCQ",
-                          options: ["Extremely Helpful", "Moderately Helpful", "Neutral", "Not Helpful"],
-                          isMandatory: true,
-                        },
-                        {
-                          id: 3,
-                          questionText: "How clear and helpful were the instructor's explanations?",
-                          questionType: "MCQ",
-                          options: ["Very Clear", "Somewhat Clear", "Unclear"],
-                          isMandatory: true,
-                        },
-                        {
-                          id: 4,
-                          questionText: "What key improvements or additional topics would you suggest for this course?",
-                          questionType: "WRITTEN",
-                          isMandatory: false,
-                        },
-                      ];
-
+                    if (isFeedbackDone && !isEditingFeedback) {
                       return (
+                        <div className="p-8 bg-card border border-emerald-500/30 rounded-2xl text-center space-y-5 shadow-md animate-in fade-in">
+                          <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+                            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase">
+                              <Sparkles className="h-3.5 w-3.5" /> Feedback Submitted
+                            </div>
+                            <h3 className="text-xl font-extrabold text-foreground">Thank You for Your Feedback!</h3>
+                            <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
+                              Your evaluation response for <strong className="text-foreground">{selectedLesson.title}</strong> has been recorded and submitted to the instructor & course management team.
+                            </p>
+                          </div>
+
+                          <div className="pt-3 flex flex-wrap items-center justify-center gap-3 border-t border-border">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setIsEditingFeedback(true)}
+                              className="text-xs font-bold border-border text-foreground hover:bg-accent gap-2 cursor-pointer"
+                            >
+                              <MessageSquare className="h-4 w-4 text-amber-500" /> Edit / Resubmit Feedback
+                            </Button>
+                            {nextLesson && (
+                              <Button
+                                type="button"
+                                onClick={() => handleOpenLessonContent(nextLesson)}
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 px-5 shadow cursor-pointer"
+                              >
+                                Next Lesson &rarr;
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    let authorQuestions: any[] | null = null;
+                    try {
+                      const raw = selectedLesson.quizConfigJson || (selectedLesson as any).configJson;
+                      if (raw) {
+                        const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+                        if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+                          authorQuestions = parsed.questions;
+                        }
+                      }
+                    } catch { }
+
+                    const questionsToRender = authorQuestions || [
+                      {
+                        id: 1,
+                        questionText: "How satisfied are you with the overall course content and lesson structure?",
+                        questionType: "MCQ",
+                        options: ["5 - Excellent", "4 - Very Good", "3 - Satisfactory", "2 - Needs Improvement", "1 - Poor"],
+                        isMandatory: true,
+                      },
+                      {
+                        id: 2,
+                        questionText: "How effective were the practical exercises, quizzes, and learning materials?",
+                        questionType: "MCQ",
+                        options: ["Extremely Helpful", "Moderately Helpful", "Neutral", "Not Helpful"],
+                        isMandatory: true,
+                      },
+                      {
+                        id: 3,
+                        questionText: "How clear and helpful were the instructor's explanations?",
+                        questionType: "MCQ",
+                        options: ["Very Clear", "Somewhat Clear", "Unclear"],
+                        isMandatory: true,
+                      },
+                      {
+                        id: 4,
+                        questionText: "What key improvements or additional topics would you suggest for this course?",
+                        questionType: "WRITTEN",
+                        isMandatory: false,
+                      },
+                    ];
+
+                    return (
+                      <div className="p-6 bg-card border border-amber-500/30 rounded-2xl space-y-5 shadow-md">
+                        <div className="flex items-center gap-3 border-b border-border pb-3">
+                          <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center font-bold">
+                            <MessageSquare className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <h3 className="text-base font-bold text-foreground">{selectedLesson.title}</h3>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {selectedLesson.description || "Please share your evaluation regarding course content, practical exercises, and instructor support."}
+                            </p>
+                          </div>
+                        </div>
+
                         <div className="space-y-4">
                           {questionsToRender.map((q: any, qIdx: number) => {
                             const ansKey = `_fb_ans_${q.id || qIdx}`;
@@ -1187,7 +1232,9 @@ export default function CoursePreviewView() {
                                     }),
                                   }).catch(console.error);
                                 }
-                                handleToggleLessonComplete(selectedLesson.id);
+                                setIsEditingFeedback(false);
+                                await handleToggleLessonComplete(selectedLesson.id, true);
+                                await loadCourseAndProgress();
                                 toast.success("Thank you! Your feedback survey response has been saved.");
                               }}
                               className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
@@ -1205,9 +1252,9 @@ export default function CoursePreviewView() {
                             </Button>
                           </div>
                         </div>
-                      );
-                    })()}
-                  </div>
+                      </div>
+                    );
+                  })()
                 ) : selectedLesson.contentType?.toUpperCase() === "SCORM" || selectedLesson.contentUrl?.includes("/storage/scorm/") ? (
                   <ScormPlayer
                     key={selectedLesson.id || selectedLesson.title}
@@ -1245,7 +1292,12 @@ export default function CoursePreviewView() {
                       </p>
                     </div>
                     <Button
-                      onClick={() => window.open(getStorageUrl(selectedLesson.contentUrl?.trim()), "_blank", "noopener,noreferrer")}
+                      onClick={() => {
+                        window.open(getStorageUrl(selectedLesson.contentUrl?.trim()), "_blank", "noopener,noreferrer");
+                        if (selectedLesson?.id) {
+                          handleToggleLessonComplete(selectedLesson.id);
+                        }
+                      }}
                       className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
                     >
                       <ExternalLink className="h-4 w-4" /> Launch Content Resource

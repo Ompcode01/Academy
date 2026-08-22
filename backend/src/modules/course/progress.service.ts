@@ -149,17 +149,66 @@ export class ProgressService {
     const newActive = currentActive + actualActiveSeconds;
     const newWatched = currentWatched + actualWatchedSeconds;
 
-    // Fetch content to determine target duration & auto-completion threshold
+    // Fetch content to determine target duration & auto-completion threshold per content type
     const content = await prisma.learningContent.findUnique({
       where: { id: contentId },
-      select: { duration: true, isMandatory: true },
+      select: { contentType: true, duration: true, description: true },
     });
 
-    // Duration stored in minutes in learning_contents, convert to seconds (default to 300s if null/0)
-    const contentDurationSeconds = content?.duration && content.duration > 0 ? content.duration * 60 : 300;
-    const completionThresholdSeconds = Math.floor(contentDurationSeconds * 0.90);
+    const cType = (content?.contentType || "").toUpperCase();
 
-    const shouldAutoComplete = newWatched >= completionThresholdSeconds || newActive >= completionThresholdSeconds;
+    // Determine completion threshold in seconds based on content type rules:
+    // 1. PPT: 10s per slide/page (e.g. 2 pages = 20s, 5 pages = 50s)
+    // 2. PDF: 10s per page (e.g. 1 page = 10s, 3 pages = 30s)
+    // 3. Article: 10s active viewing
+    // 4. SCORM: 1 min (60s) active viewing OR SCORM JS API completion
+    // 5. Udemy / YouTube / External Link: 10s OR on click/launch
+    // 6. Quiz / Assignment / Feedback: MUST be explicitly submitted by learner
+    let completionThresholdSeconds = 60;
+    let requiresExplicitSubmission = false;
+
+    if (
+      cType === "QUIZ" ||
+      cType === "ASSIGNMENT" ||
+      cType === "FEEDBACK" ||
+      cType === "FEEDBACK_SURVEY" ||
+      cType === "SURVEY"
+    ) {
+      requiresExplicitSubmission = true;
+    } else if (cType === "PPT" || cType === "PPTX") {
+      let pageCount = 5;
+      if (content?.duration && content.duration > 0) {
+        pageCount = Math.max(1, Math.min(30, content.duration));
+      } else if (content?.description) {
+        try {
+          const parsed = JSON.parse(content.description);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            pageCount = parsed.length;
+          }
+        } catch {}
+      }
+      completionThresholdSeconds = pageCount * 10;
+    } else if (cType === "PDF" || cType === "DOCUMENT" || cType === "DOCX" || cType === "DOC") {
+      let pageCount = 3;
+      if (content?.duration && content.duration > 0) {
+        pageCount = Math.max(1, Math.min(30, content.duration));
+      }
+      completionThresholdSeconds = pageCount * 10;
+    } else if (cType === "ARTICLE") {
+      completionThresholdSeconds = 10;
+    } else if (cType === "SCORM") {
+      completionThresholdSeconds = 60;
+    } else if (cType === "UDEMY" || cType === "YOUTUBE" || cType === "EXTERNAL_LINK" || cType === "LINK") {
+      completionThresholdSeconds = 10;
+    } else {
+      completionThresholdSeconds = 30;
+    }
+
+    let shouldAutoComplete = false;
+    if (!requiresExplicitSubmission) {
+      shouldAutoComplete = newWatched >= completionThresholdSeconds || newActive >= completionThresholdSeconds;
+    }
+
     const isCompleted = Boolean(existingProgress?.isCompleted) || shouldAutoComplete;
     const completedAt = isCompleted ? existingProgress?.completedAt || new Date() : null;
 

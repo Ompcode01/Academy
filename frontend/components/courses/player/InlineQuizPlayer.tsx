@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 
 interface QuestionItem {
   id: number;
@@ -131,6 +132,7 @@ export default function InlineQuizPlayer({
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(Boolean(existingSubmission));
   const [score, setScore] = useState(0);
+  const [showSubmitConfirmModal, setShowSubmitConfirmModal] = useState(false);
 
   React.useEffect(() => {
     if (existingSubmission) {
@@ -573,34 +575,59 @@ export default function InlineQuizPlayer({
           )}
 
           {/* Question Footer Navigation Controls */}
-          <div className="flex items-center justify-between border-t border-slate-800 pt-4 text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-4 text-xs">
             <Button
               disabled={currentQuestionIdx === 0}
               onClick={() => setCurrentQuestionIdx((prev) => Math.max(0, prev - 1))}
-              variant="outline"
-              className="border-slate-800 text-slate-300 hover:bg-slate-800 text-xs gap-1.5 cursor-pointer"
+              className={
+                currentQuestionIdx === 0
+                  ? "bg-slate-800/50 text-slate-500 border border-slate-800 font-bold text-xs gap-1.5 px-4 h-10 cursor-not-allowed opacity-50"
+                  : "bg-[#C82333] hover:bg-[#a71d2a] text-white font-extrabold text-xs gap-1.5 px-4 h-10 shadow cursor-pointer transition-all"
+              }
             >
               <ChevronLeft className="h-4 w-4" /> Previous
             </Button>
 
-            {currentQuestionIdx < totalQ - 1 ? (
+            <div className="flex items-center gap-2.5">
               <Button
-                onClick={() => setCurrentQuestionIdx((prev) => Math.min(totalQ - 1, prev + 1))}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-1.5 cursor-pointer"
+                onClick={() => setShowSubmitConfirmModal(true)}
+                variant="outline"
+                className="border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white font-extrabold text-xs gap-1.5 px-4 h-10 shadow-sm cursor-pointer transition-all"
+                title="Submit your quiz responses at any time"
               >
-                Next Question <ChevronRight className="h-4 w-4" />
+                <Sparkles className="h-4 w-4" /> Submit Quiz
               </Button>
-            ) : (
-              <Button
-                onClick={handleSubmitQuiz}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs gap-1.5 px-6 h-10 shadow cursor-pointer"
-              >
-                <Sparkles className="h-4 w-4" /> Submit Quiz Assessment
-              </Button>
-            )}
+
+              {currentQuestionIdx < totalQ - 1 && (
+                <Button
+                  onClick={() => setCurrentQuestionIdx((prev) => Math.min(totalQ - 1, prev + 1))}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-1.5 px-5 h-10 shadow cursor-pointer"
+                >
+                  Next Question <ChevronRight className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       )}
+
+      {/* Submit Quiz Confirmation Popup Modal */}
+      <HarbingerConfirmModal
+        open={showSubmitConfirmModal}
+        onOpenChange={setShowSubmitConfirmModal}
+        title="Submit Quiz Assessment?"
+        description={`You have answered ${
+          Object.keys(selectedAnswers).filter((k) => selectedAnswers[Number(k)] && String(selectedAnswers[Number(k)]).trim() !== "").length
+        } of ${baseQuestions.length} questions. Are you sure you want to submit your quiz attempt now?`}
+        confirmLabel="Yes, Submit"
+        cancelLabel="No"
+        showCancelButton={true}
+        variant="success"
+        onConfirm={() => {
+          setShowSubmitConfirmModal(false);
+          handleSubmitQuiz();
+        }}
+      />
     </div>
   );
 }
