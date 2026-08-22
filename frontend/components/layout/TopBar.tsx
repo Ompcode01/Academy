@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
 import { useNotificationStore } from "@/store/notification.store";
-import { Search, Bell, LogOut, ChevronDown, User, Settings } from "lucide-react";
+import { Search, Bell, LogOut, ChevronDown, User, Settings, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import NotificationPanel from "@/components/layout/NotificationPanel";
@@ -151,16 +151,43 @@ export default function TopBar() {
                 <button
                   onClick={() => {
                     setDropdownOpen(false);
+                    router.push("/profile");
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-xs hover:bg-[#F4F7F9] transition-colors text-left"
+                >
+                  <User className="h-3.5 w-3.5 text-[#6C757D]" />
+                  <span>View profile</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    router.push("/messages");
+                  }}
+                  className="flex w-full items-center justify-between px-4 py-2 text-xs hover:bg-[#F4F7F9] transition-colors text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-3.5 w-3.5 text-[#6C757D]" />
+                    <span>Messages</span>
+                  </div>
+                  {unreadCount > 0 && (
+                    <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#C82333] px-1 text-[9px] font-bold text-white leading-none">
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    setDropdownOpen(false);
                     router.push("/settings");
                   }}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-xs hover:bg-[#F4F7F9] transition-colors"
+                  className="flex w-full items-center gap-2 px-4 py-2 text-xs hover:bg-[#F4F7F9] transition-colors text-left"
                 >
                   <Settings className="h-3.5 w-3.5 text-[#6C757D]" />
                   <span>Account Settings</span>
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-xs text-[#C82333] hover:bg-[#F4F7F9] transition-colors"
+                  className="flex w-full items-center gap-2 px-4 py-2 text-xs text-[#C82333] hover:bg-[#F4F7F9] transition-colors border-t border-slate-100 text-left"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   <span>Sign out</span>

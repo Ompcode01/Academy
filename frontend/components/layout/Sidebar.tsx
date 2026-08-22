@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
 import { getCourses, type Course } from "@/services/api/course.service";
-import { X, ChevronDown, ChevronRight, BookOpen, User, GraduationCap, Home, FileText, Award, Eye, EyeOff } from "lucide-react";
+import { X, ChevronDown, ChevronRight, BookOpen, User, GraduationCap, Home, FileText, Award, Eye, EyeOff, MessageSquare } from "lucide-react";
 import { useEventsStore } from "@/store/events.store";
 
 const fullNameMap: Record<string, string> = {
@@ -135,6 +135,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               >
                 <Home className="h-3.5 w-3.5" />
                 <span>Dashboard</span>
+              </Link>
+
+              {/* Messages Link */}
+              <Link
+                href="/messages"
+                className={`flex items-center gap-2 rounded px-2 py-1 transition-all ${
+                  pathname.startsWith("/messages")
+                    ? "bg-[#C82333]/10 font-bold text-[#C82333]"
+                    : "text-[#212529] hover:bg-slate-200"
+                }`}
+              >
+                <MessageSquare className="h-3.5 w-3.5" />
+                <span>Messages &amp; Chat</span>
               </Link>
 
               {/* Site Home Link */}
