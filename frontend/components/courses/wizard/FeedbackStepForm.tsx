@@ -93,7 +93,7 @@ export default function FeedbackStepForm({
   onCancel,
 }: FeedbackStepFormProps) {
   const user = useAuthStore((state) => state.user);
-  const currentUserId = user?.id ? String(user.id) : (user?.email || "guest");
+  const currentUserId = user?.id ? String(user.id) : ((user as any)?.email || "guest");
   const storageKey = `academy_feedback_templates_${currentUserId}`;
 
   const [enableFeedback, setEnableFeedback] = useState<boolean>(data?.enableFeedback ?? true);

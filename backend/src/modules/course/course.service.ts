@@ -509,28 +509,24 @@ class CourseService {
   }
 
   async deleteCourse(id: bigint) {
-    const course = await prisma.course.findUnique({ where: { id } });
-    if (!course) throw new Error("Course not found");
-
-    if (course.status === "ARCHIVED") {
-      // Permanent deletion: clean up related records and delete course row
-      await prisma.courseTeacher.deleteMany({ where: { courseId: id } });
-      await prisma.enrollment.deleteMany({ where: { courseId: id } });
-      await prisma.certificateTemplate.deleteMany({ where: { courseId: id } });
-      const sections = await prisma.courseSection.findMany({ where: { courseId: id }, select: { id: true } });
-      const secIds = sections.map((s) => s.id);
-      if (secIds.length > 0) {
-        await prisma.courseContent.deleteMany({ where: { sectionId: { in: secIds } } });
-        await prisma.courseSection.deleteMany({ where: { courseId: id } });
-      }
-      return prisma.course.delete({ where: { id } });
-    } else {
-      // Soft deletion: update status to ARCHIVED
-      return prisma.course.update({
-        where: { id },
-        data: { status: "ARCHIVED" },
-      });
+    const existing = await prisma.course.findUnique({ where: { id } });
+    if (!existing) {
+      throw new Error("Course not found or already deleted");
     }
+
+    // Cascading deletion of all course data across all tables and all users
+    await prisma.$transaction([
+      prisma.enrollment.deleteMany({ where: { courseId: id } }),
+      prisma.userLessonProgress.deleteMany({ where: { courseId: id } }),
+      prisma.assessmentSubmission.deleteMany({ where: { courseId: id } }),
+      prisma.issuedCertificate.deleteMany({ where: { courseId: id } }),
+      prisma.courseTeacher.deleteMany({ where: { courseId: id } }),
+      prisma.certificateTemplate.deleteMany({ where: { courseId: id } }),
+      prisma.courseSection.updateMany({ where: { courseId: id }, data: { isActive: false } }),
+      prisma.course.update({ where: { id }, data: { isActive: false } }),
+    ]);
+
+    return { id: id.toString(), deleted: true };
   }
 
   async assignTeachers(courseId: bigint, teacherIdStrs: string[]) {
@@ -698,27 +694,6 @@ class CourseService {
       enrolledUsers,
       failedUsers,
     };
-  }
-
-  async deleteCourse(id: bigint) {
-    const existing = await prisma.course.findUnique({ where: { id } });
-    if (!existing) {
-      throw new Error("Course not found or already deleted");
-    }
-
-    // Cascading deletion of all course data across all tables and all users
-    await prisma.$transaction([
-      prisma.enrollment.deleteMany({ where: { courseId: id } }),
-      prisma.userLessonProgress.deleteMany({ where: { courseId: id } }),
-      prisma.assessmentSubmission.deleteMany({ where: { courseId: id } }),
-      prisma.issuedCertificate.deleteMany({ where: { courseId: id } }),
-      prisma.courseTeacher.deleteMany({ where: { courseId: id } }),
-      prisma.certificateTemplate.deleteMany({ where: { courseId: id } }),
-      prisma.courseSection.updateMany({ where: { courseId: id }, data: { isActive: false } }),
-      prisma.course.update({ where: { id }, data: { isActive: false } }),
-    ]);
-
-    return { id: id.toString(), deleted: true };
   }
 
   // Enrollment Operations

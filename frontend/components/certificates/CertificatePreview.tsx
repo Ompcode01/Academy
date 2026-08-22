@@ -45,6 +45,28 @@ export default function CertificatePreview({
 
   const isModern = templateId === "modern";
 
+  const getCourseTitleClasses = (title: string) => {
+    const len = title.trim().length;
+    if (len > 80) {
+      return "text-[9px] sm:text-xs md:text-sm leading-snug line-clamp-2 font-bold tracking-normal max-w-[92%]";
+    }
+    if (len > 45) {
+      return "text-[11px] sm:text-sm md:text-base leading-snug line-clamp-2 font-extrabold tracking-tight max-w-[92%]";
+    }
+    return "text-xs sm:text-base md:text-xl leading-tight font-extrabold tracking-tight max-w-[92%]";
+  };
+
+  const getRecipientNameClasses = (name: string) => {
+    const len = name.trim().length;
+    if (len > 35) {
+      return "text-xs sm:text-lg md:text-xl font-extrabold tracking-tight leading-none px-2 truncate max-w-full";
+    }
+    if (len > 22) {
+      return "text-sm sm:text-xl md:text-2xl font-extrabold tracking-tight leading-none px-2 truncate max-w-full";
+    }
+    return "text-base sm:text-2xl md:text-3xl font-extrabold tracking-tight leading-none px-2 truncate max-w-full";
+  };
+
   return (
     <div className="w-full overflow-hidden rounded-xl bg-white shadow-2xl p-1 sm:p-2 print:p-0 print:shadow-none text-slate-800 border border-slate-200">
       {/* Outer Certificate Aspect Ratio Box */}
@@ -80,28 +102,28 @@ export default function CertificatePreview({
 
             {/* Dynamic Recipient Name + Accent Line */}
             <div className="absolute top-[52.5%] left-[39%] w-[54%] flex flex-col items-center justify-center">
-              <span className="text-base sm:text-2xl md:text-3xl font-extrabold text-[#0088D4] font-sans tracking-tight leading-none px-4 truncate max-w-full">
+              <span className={`text-[#0088D4] font-sans ${getRecipientNameClasses(recipientName)}`}>
                 {recipientName}
               </span>
               <div className="w-[75%] h-[1.5px] bg-[#0088D4]/60 mt-1.5 rounded-full" />
             </div>
 
             {/* Completion Statement */}
-            <div className="absolute top-[67%] left-[39%] w-[54%] flex items-center justify-center">
+            <div className="absolute top-[66.5%] left-[39%] w-[54%] flex items-center justify-center">
               <span className="text-[10px] sm:text-xs md:text-sm text-[#334155] font-sans font-medium">
                 has successfully completed
               </span>
             </div>
 
             {/* Dynamic Course Title */}
-            <div className="absolute top-[72.5%] left-[39%] w-[54%] flex items-center justify-center px-4">
-              <span className="text-xs sm:text-base md:text-xl font-extrabold text-[#0F2849] font-sans tracking-tight leading-tight line-clamp-2">
+            <div className="absolute top-[71.5%] left-[39%] w-[54%] min-h-[8%] flex items-center justify-center px-2">
+              <span className={`text-[#0F2849] font-sans text-center ${getCourseTitleClasses(courseTitle)}`}>
                 {courseTitle}
               </span>
             </div>
 
             {/* Dynamic Course Completion Date Line */}
-            <div className="absolute top-[80.5%] left-[39%] w-[54%] flex items-center justify-center">
+            <div className="absolute top-[82%] left-[39%] w-[54%] flex items-center justify-center">
               <span className="text-[10px] sm:text-xs md:text-sm text-[#334155] font-sans font-medium">
                 course on <strong className="font-semibold text-[#0F2849]">{formattedDate}</strong>
               </span>
@@ -118,21 +140,21 @@ export default function CertificatePreview({
           /* Template 1: Classic Ornamental Border Template */
           <div className="absolute inset-0 pointer-events-none flex flex-col justify-between items-center text-center p-4 sm:p-8">
             {/* Dynamic Recipient Name */}
-            <div className="absolute top-[54.5%] w-[80%] flex items-center justify-center">
-              <span className="text-base sm:text-2xl md:text-3xl font-extrabold text-[#0072CE] font-sans tracking-tight leading-none">
+            <div className="absolute top-[54%] w-[82%] flex items-center justify-center">
+              <span className={`text-[#0072CE] font-sans ${getRecipientNameClasses(recipientName)}`}>
                 {recipientName}
               </span>
             </div>
 
             {/* Dynamic Course Title */}
-            <div className="absolute top-[70%] w-[80%] flex items-center justify-center">
-              <span className="text-xs sm:text-base md:text-xl font-extrabold text-[#1E293B] font-sans tracking-tight leading-tight">
+            <div className="absolute top-[68.5%] w-[82%] min-h-[8%] flex items-center justify-center px-2">
+              <span className={`text-[#1E293B] font-sans text-center ${getCourseTitleClasses(courseTitle)}`}>
                 {courseTitle}
               </span>
             </div>
 
             {/* Dynamic Course Completion Date Line */}
-            <div className="absolute top-[75.8%] w-[80%] flex items-center justify-center">
+            <div className="absolute top-[80.5%] w-[82%] flex items-center justify-center">
               <span className="text-[10px] sm:text-xs md:text-sm text-[#334155] font-sans font-medium">
                 course on <strong className="font-semibold text-slate-900">{formattedDate}</strong>
               </span>

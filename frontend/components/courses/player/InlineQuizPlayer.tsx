@@ -163,7 +163,14 @@ export default function InlineQuizPlayer({
 
   const isAttemptsExhausted = !isUnlimitedAttempts && (currentAttempt > maxAttempts || (isSubmitted && currentAttempt >= maxAttempts) || (attemptNumber >= maxAttempts && isSubmitted));
   const isFinalAttempt = isUnlimitedAttempts ? false : (currentAttempt >= maxAttempts || maxAttempts === 1);
-  const shouldShowAnswers = isPreview ? true : (showAnswersAfterSubmitSetting || isFinalAttempt || isSubmitted);
+  const passingPercentage = parsedConfig.passingPercentage !== undefined ? Number(parsedConfig.passingPercentage) : 70;
+  const isPassed = score >= passingPercentage || score === 100;
+
+  // Reveal correct answers ONLY when:
+  // 1. Viewing in Course Builder preview mode (isPreview)
+  // 2. Learner has passed the quiz (isPassed)
+  // 3. Learner has completed their final attempt / exhausted attempts (isFinalAttempt || isAttemptsExhausted)
+  const shouldShowAnswers = isPreview ? true : isPassed ? true : (isFinalAttempt || isAttemptsExhausted);
 
   const handleReset = () => {
     setCurrentAttempt((prev) => prev + 1);
@@ -475,7 +482,7 @@ export default function InlineQuizPlayer({
             </div>
           ) : (
             <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-amber-400 max-w-md mx-auto italic font-medium">
-              Your responses for Attempt #{attemptNumber} of {maxAttempts} have been saved. Answer keys will be revealed after your final attempt.
+              Your responses for Attempt #{currentAttempt} of {isUnlimitedAttempts ? "Unlimited" : maxAttempts} have been saved. Correct answer keys and explanations will be revealed after you pass the quiz or complete your final attempt.
             </div>
           )}
 

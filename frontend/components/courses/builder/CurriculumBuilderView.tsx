@@ -380,7 +380,7 @@ export default function CurriculumBuilderView({
   };
 
   const getContentIcon = (type: ContentTypeKey) => {
-    switch (type) {
+    switch (type as string) {
       case "SCORM":
         return <Archive className="h-4 w-4 text-violet-500" />;
       case "YOUTUBE":
@@ -483,8 +483,8 @@ export default function CurriculumBuilderView({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-muted-foreground mr-2">
-                      {section.contents.length} items
+                    <span className="text-xs font-semibold text-muted-foreground mr-2 font-mono">
+                      {section.contents.length}/{section.contents.length}
                     </span>
                     <button
                       onClick={() => {

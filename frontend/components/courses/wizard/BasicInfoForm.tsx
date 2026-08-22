@@ -118,7 +118,7 @@ export default function BasicInfoForm({
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
   useEffect(() => {
-    // If departmentId is empty, default to user's assigned department or Across BUs
+    // Default departmentId to user's assigned department or Across BUs ("5") if empty
     if (!data.departmentId) {
       onChange({ departmentId: user?.departmentId ? String(user.departmentId) : "5" });
     }
@@ -280,16 +280,9 @@ export default function BasicInfoForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Business Unit */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-bold text-foreground">
-                  Business Unit <span className="text-destructive">*</span>
-                </Label>
-                {isAdmin && (
-                  <span className="text-[10px] text-amber-600 font-bold flex items-center gap-1">
-                    <Lock className="h-3 w-3" /> Fixed (Your BU)
-                  </span>
-                )}
-              </div>
+              <Label className="text-xs font-bold text-foreground">
+                Business Unit <span className="text-destructive">*</span>
+              </Label>
               <Select
                 value={data.departmentId || "5"}
                 onValueChange={(val: string | null) => onChange({ departmentId: val || "5" })}
@@ -307,11 +300,6 @@ export default function BasicInfoForm({
                   <SelectItem value="5">Across BUs</SelectItem>
                 </SelectContent>
               </Select>
-              {isAdmin && (
-                <p className="text-[10px] text-muted-foreground">
-                  As an Admin, courses created are restricted to your assigned business unit.
-                </p>
-              )}
             </div>
 
             {/* Category */}

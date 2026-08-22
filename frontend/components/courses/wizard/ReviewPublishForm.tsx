@@ -203,7 +203,7 @@ export default function ReviewPublishForm({
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Total Lectures &amp; Activities:</span>
-              <span className="font-bold text-foreground">{totalContentCount} Items</span>
+              <span className="font-bold text-foreground font-mono">{totalContentCount}/{totalContentCount}</span>
             </div>
           </div>
         </div>

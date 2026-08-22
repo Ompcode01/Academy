@@ -54,10 +54,10 @@ export class ProgressService {
           },
         });
 
-        const calculatedProgress = Math.min(100, Math.round((completedCount / totalLessons) * 100));
-        const isNowCompleted = calculatedProgress >= 100;
-        const newStatus = isNowCompleted ? "COMPLETED" : (en.status === "COMPLETED" ? "COMPLETED" : en.status);
-        const finalProgress = isNowCompleted ? 100 : Math.max(Number(en.progress || 0), calculatedProgress);
+        const calculatedProgress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0;
+        const isNowCompleted = totalLessons > 0 && completedCount >= totalLessons;
+        const newStatus = isNowCompleted ? "COMPLETED" : "IN_PROGRESS";
+        const finalProgress = calculatedProgress;
 
         if (finalProgress !== Number(en.progress) || newStatus !== en.status) {
           await prisma.enrollment.update({
@@ -65,7 +65,7 @@ export class ProgressService {
             data: {
               progress: finalProgress,
               status: newStatus,
-              completedAt: isNowCompleted ? (en.completedAt || new Date()) : en.completedAt,
+              completedAt: isNowCompleted ? (en.completedAt || new Date()) : null,
             },
           });
         }
@@ -84,12 +84,27 @@ export class ProgressService {
       where: { userId_courseId: { userId, courseId } },
     });
 
-    // 2. Get completed lessons
-    const completedLessons = await prisma.userLessonProgress.findMany({
-      where: { userId, courseId, isCompleted: true },
-      select: { contentId: true },
+    // 2. Get detailed lesson progress records
+    const lessonProgressRecords = await prisma.userLessonProgress.findMany({
+      where: { userId, courseId },
     });
-    const completedLessonIds = completedLessons.map((l) => Number(l.contentId));
+
+    const completedLessonIds = lessonProgressRecords
+      .filter((l) => l.isCompleted)
+      .map((l) => Number(l.contentId));
+
+    const lessonProgressMap: Record<string, any> = {};
+    lessonProgressRecords.forEach((lp) => {
+      lessonProgressMap[lp.contentId.toString()] = {
+        contentId: Number(lp.contentId),
+        isCompleted: lp.isCompleted,
+        completedAt: lp.completedAt,
+        watchedSeconds: lp.watchedSeconds || 0,
+        activeLearningSeconds: lp.activeLearningSeconds || 0,
+        lastPosition: lp.lastPosition || 0,
+        lastActivityAt: lp.lastActivityAt,
+      };
+    });
 
     // 3. Get quiz/assessment submissions
     const submissions = await prisma.assessmentSubmission.findMany({
@@ -105,9 +120,175 @@ export class ProgressService {
     return serialize({
       enrollment,
       completedLessonIds,
+      lessonProgressMap,
       submissions,
       certificate,
     });
+  }
+
+  async recordHeartbeat(
+    userId: bigint,
+    courseId: bigint,
+    contentId: bigint,
+    deltaActiveSeconds: number = 0,
+    deltaWatchedSeconds: number = 0,
+    lastPosition: number = 0,
+    isPlaying: boolean = true,
+    isTabActive: boolean = true
+  ) {
+    const actualActiveSeconds = isTabActive && isPlaying ? Math.max(0, Math.min(30, deltaActiveSeconds)) : 0;
+    const actualWatchedSeconds = isPlaying ? Math.max(0, Math.min(30, deltaWatchedSeconds)) : 0;
+
+    // 1. Get or create UserLessonProgress
+    const existingProgress = await prisma.userLessonProgress.findUnique({
+      where: { userId_contentId: { userId, contentId } },
+    });
+
+    const currentActive = existingProgress?.activeLearningSeconds || 0;
+    const currentWatched = existingProgress?.watchedSeconds || 0;
+    const newActive = currentActive + actualActiveSeconds;
+    const newWatched = currentWatched + actualWatchedSeconds;
+
+    // Fetch content to determine target duration & auto-completion threshold
+    const content = await prisma.learningContent.findUnique({
+      where: { id: contentId },
+      select: { duration: true, isMandatory: true },
+    });
+
+    // Duration stored in minutes in learning_contents, convert to seconds (default to 300s if null/0)
+    const contentDurationSeconds = content?.duration && content.duration > 0 ? content.duration * 60 : 300;
+    const completionThresholdSeconds = Math.floor(contentDurationSeconds * 0.90);
+
+    const shouldAutoComplete = newWatched >= completionThresholdSeconds || newActive >= completionThresholdSeconds;
+    const isCompleted = Boolean(existingProgress?.isCompleted) || shouldAutoComplete;
+    const completedAt = isCompleted ? existingProgress?.completedAt || new Date() : null;
+
+    const updatedLessonProgress = await prisma.userLessonProgress.upsert({
+      where: { userId_contentId: { userId, contentId } },
+      update: {
+        activeLearningSeconds: newActive,
+        watchedSeconds: newWatched,
+        lastPosition: lastPosition > 0 ? lastPosition : existingProgress?.lastPosition || 0,
+        isCompleted,
+        completedAt,
+        lastActivityAt: new Date(),
+      },
+      create: {
+        userId,
+        courseId,
+        contentId,
+        activeLearningSeconds: newActive,
+        watchedSeconds: newWatched,
+        lastPosition: lastPosition > 0 ? lastPosition : 0,
+        isCompleted,
+        completedAt,
+        lastActivityAt: new Date(),
+      },
+    });
+
+    // 2. Update Enrollment active learning time & progress
+    const sections = await prisma.courseSection.findMany({
+      where: { courseId, isActive: true },
+      include: { contents: { where: { isActive: true } } },
+    });
+    const activeContentIds = sections.flatMap((sec) => sec.contents.map((c) => c.id));
+    const totalLessons = activeContentIds.length;
+
+    const completedCount = await prisma.userLessonProgress.count({
+      where: {
+        userId,
+        courseId,
+        isCompleted: true,
+        contentId: { in: activeContentIds },
+      },
+    });
+
+    const calculatedProgress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0;
+
+    let enrollment = await prisma.enrollment.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+    });
+
+    const isNowCompleted = totalLessons > 0 && completedCount >= totalLessons;
+    const finalProgress = calculatedProgress;
+    const updatedStatus = isNowCompleted ? "COMPLETED" : "IN_PROGRESS";
+    const completedAtDate = isNowCompleted ? enrollment?.completedAt || new Date() : null;
+
+    enrollment = await prisma.enrollment.upsert({
+      where: { userId_courseId: { userId, courseId } },
+      update: {
+        progress: finalProgress,
+        status: updatedStatus,
+        completedAt: completedAtDate,
+        lastActivityAt: new Date(),
+        timeSpentSeconds: { increment: actualActiveSeconds },
+      },
+      create: {
+        userId,
+        courseId,
+        progress: finalProgress,
+        status: updatedStatus,
+        completedAt: completedAtDate,
+        lastActivityAt: new Date(),
+        timeSpentSeconds: actualActiveSeconds,
+      },
+    });
+
+    let issuedCert = null;
+    let autoSkill = null;
+    if (isNowCompleted) {
+      issuedCert = await this.checkAndIssueCertificate(userId, courseId);
+      autoSkill = await this.checkAndCreateSkillCloudEntry(userId, courseId);
+    }
+
+    return serialize({
+      enrollment,
+      calculatedProgress,
+      isLessonCompleted: isCompleted,
+      shouldAutoComplete,
+      watchedSeconds: newWatched,
+      activeLearningSeconds: newActive,
+      updatedLessonProgress,
+      issuedCert,
+      autoSkill,
+    });
+  }
+
+  async markSectionComplete(userId: bigint, courseId: bigint, sectionId: bigint) {
+    const contents = await prisma.learningContent.findMany({
+      where: { sectionId, isActive: true },
+      select: { id: true, duration: true },
+    });
+
+    for (const cnt of contents) {
+      const contentDuration = cnt.duration && cnt.duration > 0 ? cnt.duration * 60 : 300;
+      await prisma.userLessonProgress.upsert({
+        where: { userId_contentId: { userId, contentId: cnt.id } },
+        update: {
+          isCompleted: true,
+          completedAt: new Date(),
+          activeLearningSeconds: contentDuration,
+          watchedSeconds: contentDuration,
+          lastActivityAt: new Date(),
+        },
+        create: {
+          userId,
+          courseId,
+          contentId: cnt.id,
+          isCompleted: true,
+          completedAt: new Date(),
+          activeLearningSeconds: contentDuration,
+          watchedSeconds: contentDuration,
+          lastActivityAt: new Date(),
+        },
+      });
+    }
+
+    const lastContentId = contents[0]?.id;
+    if (lastContentId) {
+      return await this.updateLessonProgress(userId, courseId, lastContentId, true, 0);
+    }
+    return await this.getLearnerCourseProgress(userId, courseId);
   }
 
   async getMyEnrollments(userId: bigint) {
@@ -174,27 +355,17 @@ export class ProgressService {
       },
     });
 
-    const calculatedProgress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 100;
+    const calculatedProgress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0;
 
-    // 3. Update Enrollment using High-Water Mark rule & 100% Permanence
     let enrollment = await prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
     });
 
-    const currentProgress = Number(enrollment?.progress || 0);
-    const currentStatus = enrollment?.status;
-
-    // High-Water Mark: Progress can ONLY increase, never decrease!
-    // Once 100% or COMPLETED, lock at 100% permanently.
-    const isCompletedBefore = currentStatus === "COMPLETED" || currentProgress >= 100;
-    const finalProgress = isCompletedBefore ? 100 : Math.max(currentProgress, calculatedProgress);
-
-    const isNowCompleted = finalProgress >= 100;
-    const updatedStatus = isNowCompleted ? "COMPLETED" : (currentStatus || "IN_PROGRESS");
+    const isNowCompleted = totalLessons > 0 && completedCount >= totalLessons;
+    const finalProgress = calculatedProgress;
+    const updatedStatus = isNowCompleted ? "COMPLETED" : "IN_PROGRESS";
     const completedAtDate = isNowCompleted ? (enrollment?.completedAt || new Date()) : null;
-
-    // Don't accumulate duplicate timeSpentSeconds if course is already completed
-    const timeDelta = isCompletedBefore ? 0 : Math.max(0, additionalSeconds);
+    const timeDelta = Math.max(0, additionalSeconds);
 
     enrollment = await prisma.enrollment.upsert({
       where: { userId_courseId: { userId, courseId } },
@@ -415,13 +586,25 @@ export class ProgressService {
     }
   }
 
-  // Admin Progress Reports & Analytics
-  async getAdminLearnerProgressMatrix() {
+  // Admin / Teacher Progress Reports & Analytics
+  async getAdminLearnerProgressMatrix(userContext?: any) {
+    let courseWhereClause: any = { isActive: true };
+
+    if (userContext?.role === "TEACHER" || userContext?.role === "INSTRUCTOR") {
+      const empId = userContext.employeeId ? BigInt(userContext.employeeId) : undefined;
+      const deptId = userContext.departmentId ? BigInt(userContext.departmentId) : undefined;
+      courseWhereClause.OR = [
+        ...(empId ? [{ creatorId: empId }] : []),
+        ...(empId ? [{ teachers: { some: { teacherId: empId } } }] : []),
+        ...(deptId ? [{ departmentId: deptId }] : []),
+        { departmentId: BigInt(5) },
+        { departmentId: null },
+      ];
+    }
+
     const enrollments = await prisma.enrollment.findMany({
       where: {
-        course: {
-          isActive: true,
-        },
+        course: courseWhereClause,
       },
       orderBy: { createdAt: "desc" },
     });

@@ -547,9 +547,10 @@ export default function ReportsPage() {
                     const isFb = r.submissionType === "FEEDBACK" || r.assignmentTitle?.includes("(Feedback)") || r.submissionText?.includes('"type":"FEEDBACK"');
                     const prevGradedRole = r.gradedByRole || (r.gradedBy?.includes("[SUPER_ADMIN]") || r.gradedBy?.toLowerCase().includes("priyanka") ? "SUPER_ADMIN" : r.gradedBy?.includes("[ADMIN]") ? "ADMIN" : r.gradedBy ? "TEACHER" : null);
                     
+                    const currentUserRole = user?.role;
                     const isLockedForCurrentUser = 
-                      (prevGradedRole === "SUPER_ADMIN" && userRole !== ROLES.SUPER_ADMIN) ||
-                      (prevGradedRole === "ADMIN" && userRole !== ROLES.SUPER_ADMIN && userRole !== ROLES.ADMIN);
+                      (prevGradedRole === "SUPER_ADMIN" && currentUserRole !== ROLES.SUPER_ADMIN) ||
+                      (prevGradedRole === "ADMIN" && currentUserRole !== ROLES.SUPER_ADMIN && currentUserRole !== ROLES.ADMIN);
 
                     if (isLockedForCurrentUser && !isFb) {
                       return (

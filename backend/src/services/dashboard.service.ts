@@ -38,8 +38,10 @@ export const getDashboardStats = async (userContext: UserContext) => {
     case "TEACHER":
       courseWhere.OR = [
         { creatorId: empId },
+        { teachers: { some: { teacherId: empId } } },
         { departmentId: deptId },
         { departmentId: null },
+        { departmentId: BigInt(5) },
         superAdminOrAdminCreator,
       ];
       break;

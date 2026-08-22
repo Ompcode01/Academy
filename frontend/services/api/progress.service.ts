@@ -1,5 +1,15 @@
 import api from "./auth.service";
 
+export interface LessonProgressItem {
+  contentId: number;
+  isCompleted: boolean;
+  completedAt?: string | null;
+  watchedSeconds: number;
+  activeLearningSeconds: number;
+  lastPosition: number;
+  lastActivityAt?: string;
+}
+
 export interface LearnerProgressData {
   enrollment: {
     id: number;
@@ -12,6 +22,7 @@ export interface LearnerProgressData {
     completedAt?: string | null;
   };
   completedLessonIds: number[];
+  lessonProgressMap?: Record<string, LessonProgressItem>;
   submissions: Array<{
     id: number;
     submissionType: string;
@@ -112,6 +123,35 @@ export async function updateLessonProgress(
     return res.data;
   } catch (err) {
     console.error("Failed to update lesson progress:", err);
+    return null;
+  }
+}
+
+export async function recordHeartbeat(
+  courseId: number,
+  payload: {
+    contentId: number;
+    deltaActiveSeconds: number;
+    deltaWatchedSeconds: number;
+    lastPosition?: number;
+    isPlaying?: boolean;
+    isTabActive?: boolean;
+  }
+) {
+  try {
+    const res = await api.post(`/courses/${courseId}/progress/heartbeat`, payload);
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+}
+
+export async function markSectionComplete(courseId: number, sectionId: number) {
+  try {
+    const res = await api.post(`/courses/${courseId}/sections/${sectionId}/complete`);
+    return res.data;
+  } catch (err) {
+    console.error("Failed to mark section as completed:", err);
     return null;
   }
 }

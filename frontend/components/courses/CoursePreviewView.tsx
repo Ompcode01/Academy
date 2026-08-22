@@ -37,9 +37,12 @@ import { getCourseById, selfEnrollCourse, type Course, getStorageUrl } from "@/s
 import {
   getLearnerCourseProgress,
   updateLessonProgress,
+  recordHeartbeat,
+  markSectionComplete,
   recordQuizSubmission,
   submitAssignment,
   LearnerProgressData,
+  LessonProgressItem,
 } from "@/services/api/progress.service";
 import { useAuthStore } from "@/store/auth.store";
 import { recordRecentCourseAccess } from "@/services/api/recentAccess.service";
@@ -158,27 +161,6 @@ export default function CoursePreviewView() {
               })),
             };
           });
-          // Ensure Course Feedback survey item is present
-          const hasFeedbackLesson = parsed.some((m) => m.lessons.some((l) => l.contentType?.toUpperCase() === "FEEDBACK"));
-          if (!hasFeedbackLesson) {
-            const fbModule: ModuleItem = {
-              id: 999999,
-              title: "Course Feedback & Evaluation",
-              completedCount: 0,
-              totalCount: 1,
-              lessons: [
-                {
-                  id: 999999,
-                  title: "End-of-Course Feedback Survey",
-                  contentType: "FEEDBACK",
-                  description: "Please share your review regarding course structure, content clarity, and instructor support.",
-                  completed: false,
-                },
-              ],
-            };
-            parsed.push(fbModule);
-            expandedIds.push(999999);
-          }
 
           setModules(parsed);
           setExpandedModules(expandedIds);
@@ -214,24 +196,9 @@ export default function CoursePreviewView() {
             setSelectedLesson(null);
           }
         } else {
-          const defaultFbModule: ModuleItem = {
-            id: 999999,
-            title: "Course Feedback & Evaluation",
-            completedCount: 0,
-            totalCount: 1,
-            lessons: [
-              {
-                id: 999999,
-                title: "End-of-Course Feedback Survey",
-                contentType: "FEEDBACK",
-                description: "Please share your review regarding course structure, content clarity, and instructor support.",
-                completed: false,
-              },
-            ],
-          };
-          setModules([defaultFbModule]);
-          setExpandedModules([999999]);
-          setSelectedLesson(defaultFbModule.lessons[0]);
+          setModules([]);
+          setExpandedModules([]);
+          setSelectedLesson(null);
         }
       }
 
@@ -247,20 +214,77 @@ export default function CoursePreviewView() {
     }
   };
 
+  const formatTimeSpent = (seconds: number) => {
+    if (!seconds || seconds <= 0) return "0m";
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hrs > 0) return `${hrs}h ${mins}m`;
+    if (mins > 0) return `${mins}m ${secs}s`;
+    return `${secs}s`;
+  };
+
   useEffect(() => {
     loadCourseAndProgress();
   }, [courseId]);
 
-  // Active player time-spent heartbeat (pings backend every 15s to increment timeSpentSeconds in DB)
+  // Tab visibility listener (Pause active learning tracking when tab is inactive/hidden)
+  const [isTabActive, setIsTabActive] = useState<boolean>(true);
   useEffect(() => {
-    if (viewMode !== "player" || !courseId || !selectedLesson) return;
+    const handleVisibilityChange = () => {
+      setIsTabActive(document.visibilityState === "visible");
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
-    const interval = setInterval(() => {
-      updateLessonProgress(courseId, selectedLesson.id, false, 15).catch(() => { });
-    }, 15000);
+  // Udemy-like Active Player Heartbeat (pings backend every 10s only when tab is active & playing)
+  useEffect(() => {
+    if (viewMode !== "player" || !courseId || !selectedLesson || isGuest) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const isVisible = document.visibilityState === "visible";
+        const delta = 10;
+        const res = await recordHeartbeat(courseId, {
+          contentId: selectedLesson.id,
+          deltaActiveSeconds: isVisible ? delta : 0,
+          deltaWatchedSeconds: delta,
+          isTabActive: isVisible,
+          isPlaying: true,
+        });
+
+        if (res?.success && res.data) {
+          if (res.data.isLessonCompleted && !completedLessonIds.includes(selectedLesson.id)) {
+            setCompletedLessonIds((prev) => Array.from(new Set([...prev, selectedLesson.id])));
+            toast.success(`Lesson Auto-Completed: "${selectedLesson.title}" (90%+ active duration watched!)`);
+          }
+          if (res.data.calculatedProgress !== undefined) {
+            setProgressPercent(Number(res.data.calculatedProgress));
+          }
+          // Update enrollment timeSpentSeconds state locally
+          if (res.data.enrollment?.timeSpentSeconds !== undefined) {
+            setProgressData((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                enrollment: {
+                  ...prev.enrollment,
+                  timeSpentSeconds: res.data.enrollment.timeSpentSeconds,
+                },
+              };
+            });
+          }
+        }
+      } catch {
+        // Silently swallow background heartbeat network errors
+      }
+    }, 10000);
 
     return () => clearInterval(interval);
-  }, [viewMode, courseId, selectedLesson]);
+  }, [viewMode, courseId, selectedLesson, completedLessonIds, isGuest]);
 
   // Handle explicit self enrollment
   const handleEnrollNow = async () => {
@@ -327,24 +351,34 @@ export default function CoursePreviewView() {
     }
     if (!courseId || module.lessons.length === 0) return;
 
-    const uncompletedLessons = module.lessons.filter(
-      (l) => !completedLessonIds.includes(l.id)
-    );
+    try {
+      const uncompletedLessons = module.lessons.filter(
+        (l) => !completedLessonIds.includes(l.id)
+      );
 
-    if (uncompletedLessons.length === 0) {
-      const lessonIds = module.lessons.map((l) => l.id);
-      setCompletedLessonIds((prev) => prev.filter((id) => !lessonIds.includes(id)));
-      for (const les of module.lessons) {
-        await updateLessonProgress(courseId, les.id, false, 2).catch(() => { });
+      if (uncompletedLessons.length === 0) {
+        const lessonIds = module.lessons.map((l) => l.id);
+        setCompletedLessonIds((prev) => prev.filter((id) => !lessonIds.includes(id)));
+        for (const les of module.lessons) {
+          await updateLessonProgress(courseId, les.id, false, 0).catch(() => { });
+        }
+        toast.success(`Section "${module.title}" unmarked.`);
+      } else {
+        if (module.id !== 999999) {
+          await markSectionComplete(courseId, module.id);
+        } else {
+          for (const les of uncompletedLessons) {
+            await updateLessonProgress(courseId, les.id, true, 0).catch(() => { });
+          }
+        }
+        const newIds = module.lessons.map((l) => l.id);
+        setCompletedLessonIds((prev) => Array.from(new Set([...prev, ...newIds])));
+        toast.success(`Section "${module.title}" marked as completed!`);
       }
-    } else {
-      const newIds = uncompletedLessons.map((l) => l.id);
-      setCompletedLessonIds((prev) => Array.from(new Set([...prev, ...newIds])));
-      for (const les of uncompletedLessons) {
-        await updateLessonProgress(courseId, les.id, true, 5).catch(() => { });
-      }
+      await loadCourseAndProgress();
+    } catch (err) {
+      console.error("Failed to complete section:", err);
     }
-    await loadCourseAndProgress();
   };
 
   const handleCertificateClick = () => {
@@ -374,11 +408,6 @@ export default function CoursePreviewView() {
     }
 
     setSelectedLesson(lesson);
-
-    // Auto-mark lesson as completed upon viewing/watching content
-    if (!completedLessonIds.includes(lesson.id)) {
-      handleToggleLessonComplete(lesson.id);
-    }
   };
 
   // Helper variables & computed metrics
@@ -437,8 +466,8 @@ export default function CoursePreviewView() {
   const isSelectedLessonCompleted = selectedLesson ? completedLessonIds.includes(selectedLesson.id) : false;
   const computedProgressPercent = totalContentsCount > 0
     ? Math.min(100, Math.round((completedLessonIds.length / totalContentsCount) * 100))
-    : progressPercent;
-  const isCourseFullyCompleted = computedProgressPercent >= 100 || Boolean(progressData?.certificate);
+    : 0;
+  const isCourseFullyCompleted = totalContentsCount > 0 && completedLessonIds.length >= totalContentsCount;
 
   if (loading) {
     return (
@@ -535,8 +564,8 @@ export default function CoursePreviewView() {
                   <span>
                     Created by <strong className="text-white font-semibold">{course.creatorInfo?.creatorName || creatorName}</strong>
                     <span className={`ml-1.5 px-1.5 py-0.5 text-[9px] font-extrabold rounded border uppercase ${course.creatorInfo?.creatorRole === "SUPER_ADMIN"
-                        ? "bg-red-500/20 text-red-400 border-red-500/30"
-                        : "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                      ? "bg-red-500/20 text-red-400 border-red-500/30"
+                      : "bg-blue-500/20 text-blue-400 border-blue-500/30"
                       }`}>
                       {course.creatorInfo?.creatorRole === "SUPER_ADMIN" ? "Super Admin" : "Admin"}
                     </span>
@@ -1117,8 +1146,8 @@ export default function CoursePreviewView() {
                                           setCourse((prev) => (prev ? { ...prev } : prev));
                                         }}
                                         className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${currentAns === opt
-                                            ? "bg-amber-500 text-slate-950 border-amber-500 font-extrabold shadow-sm"
-                                            : "bg-background border-border text-foreground hover:bg-muted"
+                                          ? "bg-amber-500 text-slate-950 border-amber-500 font-extrabold shadow-sm"
+                                          : "bg-background border-border text-foreground hover:bg-muted"
                                           }`}
                                       >
                                         {opt}
@@ -1438,8 +1467,8 @@ export default function CoursePreviewView() {
                         <div className="flex flex-wrap items-center justify-between gap-2 font-bold">
                           <span className="text-foreground flex items-center gap-2">
                             <Badge className={`text-[10px] ${sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"')
-                                ? "bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30"
-                                : "bg-primary/20 text-primary border-primary/30"
+                              ? "bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                              : "bg-primary/20 text-primary border-primary/30"
                               }`}>
                               {sub.submissionType === "FEEDBACK" || sub.submissionText?.includes('"type":"FEEDBACK"')
                                 ? "FEEDBACK EVALUATION"
@@ -1555,105 +1584,112 @@ export default function CoursePreviewView() {
             <span className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-primary" /> Course Content
             </span>
-            <span className="text-muted-foreground font-mono text-[11px]">{totalContentsCount} items</span>
+            <span className="text-muted-foreground font-mono text-[11px]">
+              {completedLessonIds.length}/{totalContentsCount} completed
+            </span>
           </div>
 
           <div className="divide-y divide-border flex-1">
-            {modules.map((mod, idx) => (
-              <div key={mod.id} className="bg-card">
-                <div
-                  onClick={() => toggleModule(mod.id)}
-                  className="px-4 py-3 bg-muted/30 hover:bg-muted/60 flex items-center justify-between cursor-pointer select-none"
-                >
-                  <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-                    {expandedModules.includes(mod.id) ? (
-                      <ChevronDown className="h-3.5 w-3.5 text-primary" />
-                    ) : (
-                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-                    )}
-                    <span className="truncate max-w-[130px]">Section {idx + 1}: {mod.title}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {isEnrolled && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleMarkModuleComplete(mod);
-                        }}
-                        className="h-6 px-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
-                      >
-                        <CheckCircle2 className="h-3 w-3" />
-                        {mod.lessons.length > 0 && mod.lessons.every((l) => completedLessonIds.includes(l.id))
-                          ? "Done"
-                          : "Mark Section"}
-                      </Button>
-                    )}
-                    <span className="text-[10px] text-muted-foreground font-semibold">{mod.lessons.length}</span>
-                  </div>
-                </div>
-
-                {expandedModules.includes(mod.id) && (
-                  <div className="divide-y divide-border">
-                    {mod.lessons.map((les) => {
-                      const isCompleted = completedLessonIds.includes(les.id);
-                      const isSelected = selectedLesson?.id === les.id;
-
-                      return (
-                        <div
-                          key={les.id}
-                          onClick={() => handleOpenLessonContent(les)}
-                          className={
-                            isSelected
-                              ? "px-4 py-3 bg-primary/10 border-l-4 border-primary flex items-center justify-between text-xs cursor-pointer transition-colors"
-                              : "px-4 py-3 hover:bg-muted/40 flex items-center justify-between text-xs cursor-pointer transition-colors"
-                          }
+            {modules.map((mod, idx) => {
+              const secCompletedCount = mod.lessons.filter((l) => completedLessonIds.includes(l.id)).length;
+              return (
+                <div key={mod.id} className="bg-card">
+                  <div
+                    onClick={() => toggleModule(mod.id)}
+                    className="px-4 py-3 bg-muted/30 hover:bg-muted/60 flex items-center justify-between cursor-pointer select-none"
+                  >
+                    <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+                      {expandedModules.includes(mod.id) ? (
+                        <ChevronDown className="h-3.5 w-3.5 text-primary" />
+                      ) : (
+                        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                      )}
+                      <span className="truncate max-w-[130px]">Section {idx + 1}: {mod.title}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isEnrolled && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMarkModuleComplete(mod);
+                          }}
+                          className="h-6 px-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
                         >
-                          <div className="flex items-center gap-2.5">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleToggleLessonComplete(les.id);
-                              }}
-                              className="p-0.5 rounded-full hover:bg-muted/80 transition-transform cursor-pointer shrink-0"
-                              title={isCompleted ? "Click to mark as uncompleted" : "Click to mark as completed"}
-                            >
-                              {isCompleted ? (
-                                <CheckCircle2 className="h-4 w-4 text-emerald-500 hover:scale-110 transition-transform" />
-                              ) : (
-                                <Circle className="h-4 w-4 text-muted-foreground hover:text-emerald-500 hover:scale-110 transition-transform" />
-                              )}
-                            </button>
-                            <span className={isSelected ? "font-bold text-primary" : "text-foreground font-medium"}>
-                              {les.title}
-                            </span>
-                            {les.contentType === "PPT" ? (
-                              <Badge className="bg-amber-500 text-slate-950 font-extrabold text-[9px] px-1.5 py-0">PPT</Badge>
-                            ) : les.contentType === "PDF" ? (
-                              <Badge className="bg-red-500 text-white font-extrabold text-[9px] px-1.5 py-0">PDF</Badge>
-                            ) : les.contentType === "SCORM" ? (
-                              <Badge className="bg-violet-600 text-white font-extrabold text-[9px] px-1.5 py-0">SCORM</Badge>
-                            ) : les.contentType === "YOUTUBE" ? (
-                              <Badge className="bg-red-600 text-white font-extrabold text-[9px] px-1.5 py-0">YouTube</Badge>
-                            ) : les.contentType === "QUIZ" ? (
-                              <Badge className="bg-amber-600 text-white font-extrabold text-[9px] px-1.5 py-0">Quiz</Badge>
-                            ) : les.contentType === "ASSIGNMENT" ? (
-                              <Badge className="bg-purple-600 text-white font-extrabold text-[9px] px-1.5 py-0">Assignment</Badge>
-                            ) : les.contentType === "FEEDBACK" ? (
-                              <Badge className="bg-amber-600 text-white font-extrabold text-[9px] px-1.5 py-0">Feedback</Badge>
-                            ) : (
-                              <Badge className="bg-muted text-muted-foreground font-bold text-[9px] px-1.5 py-0">{les.contentType}</Badge>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
+                          <CheckCircle2 className="h-3 w-3" />
+                          {mod.lessons.length > 0 && mod.lessons.every((l) => completedLessonIds.includes(l.id))
+                            ? "Done"
+                            : "Mark Section"}
+                        </Button>
+                      )}
+                      <span className="text-[10px] text-muted-foreground font-semibold font-mono">
+                        {secCompletedCount}/{mod.lessons.length}
+                      </span>
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {expandedModules.includes(mod.id) && (
+                    <div className="divide-y divide-border">
+                      {mod.lessons.map((les) => {
+                        const isCompleted = completedLessonIds.includes(les.id);
+                        const isSelected = selectedLesson?.id === les.id;
+
+                        return (
+                          <div
+                            key={les.id}
+                            onClick={() => handleOpenLessonContent(les)}
+                            className={
+                              isSelected
+                                ? "px-4 py-3 bg-primary/10 border-l-4 border-primary flex items-center justify-between text-xs cursor-pointer transition-colors"
+                                : "px-4 py-3 hover:bg-muted/40 flex items-center justify-between text-xs cursor-pointer transition-colors"
+                            }
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleLessonComplete(les.id);
+                                }}
+                                className="p-0.5 rounded-full hover:bg-muted/80 transition-transform cursor-pointer shrink-0"
+                                title={isCompleted ? "Click to mark as uncompleted" : "Click to mark as completed"}
+                              >
+                                {isCompleted ? (
+                                  <CheckCircle2 className="h-4 w-4 text-emerald-500 hover:scale-110 transition-transform" />
+                                ) : (
+                                  <Circle className="h-4 w-4 text-muted-foreground hover:text-emerald-500 hover:scale-110 transition-transform" />
+                                )}
+                              </button>
+                              <span className={isSelected ? "font-bold text-primary" : "text-foreground font-medium"}>
+                                {les.title}
+                              </span>
+                              {les.contentType === "PPT" ? (
+                                <Badge className="bg-amber-500 text-slate-950 font-extrabold text-[9px] px-1.5 py-0">PPT</Badge>
+                              ) : les.contentType === "PDF" ? (
+                                <Badge className="bg-red-500 text-white font-extrabold text-[9px] px-1.5 py-0">PDF</Badge>
+                              ) : les.contentType === "SCORM" ? (
+                                <Badge className="bg-violet-600 text-white font-extrabold text-[9px] px-1.5 py-0">SCORM</Badge>
+                              ) : les.contentType === "YOUTUBE" ? (
+                                <Badge className="bg-red-600 text-white font-extrabold text-[9px] px-1.5 py-0">YouTube</Badge>
+                              ) : les.contentType === "QUIZ" ? (
+                                <Badge className="bg-amber-600 text-white font-extrabold text-[9px] px-1.5 py-0">Quiz</Badge>
+                              ) : les.contentType === "ASSIGNMENT" ? (
+                                <Badge className="bg-purple-600 text-white font-extrabold text-[9px] px-1.5 py-0">Assignment</Badge>
+                              ) : les.contentType === "FEEDBACK" ? (
+                                <Badge className="bg-amber-600 text-white font-extrabold text-[9px] px-1.5 py-0">Feedback</Badge>
+                              ) : (
+                                <Badge className="bg-muted text-muted-foreground font-bold text-[9px] px-1.5 py-0">{les.contentType}</Badge>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </aside>
       </div>

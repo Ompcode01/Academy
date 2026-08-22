@@ -522,8 +522,8 @@ export default function CoursePreviewModal({
                           Section {sIdx + 1}: {section.title.replace(/^Section \d+:\s*/, "")}
                         </span>
                       </div>
-                      <span className="text-[10px] font-semibold text-muted-foreground shrink-0">
-                        {section.contents?.length || 0} items
+                      <span className="text-[10px] font-semibold text-muted-foreground shrink-0 font-mono">
+                        {section.contents?.length || 0}/{section.contents?.length || 0}
                       </span>
                     </div>
 

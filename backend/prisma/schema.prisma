@@ -269,12 +269,16 @@ model Enrollment {
 }
 
 model UserLessonProgress {
-  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  userId      BigInt
-  courseId    BigInt   @db.UnsignedBigInt
-  contentId   BigInt   @db.UnsignedBigInt
-  isCompleted Boolean  @default(true)
-  completedAt DateTime @default(now())
+  id                    BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId                BigInt
+  courseId              BigInt    @db.UnsignedBigInt
+  contentId             BigInt    @db.UnsignedBigInt
+  isCompleted           Boolean   @default(false)
+  completedAt           DateTime?
+  watchedSeconds        Int       @default(0)
+  activeLearningSeconds Int       @default(0)
+  lastPosition          Float     @default(0)
+  lastActivityAt        DateTime  @default(now()) @updatedAt
 
   @@unique([userId, contentId])
   @@index([userId, courseId])

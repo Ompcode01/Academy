@@ -25,6 +25,8 @@ import {
   getLearnerProgress,
   getMyEnrollments,
   updateLessonProgress,
+  recordHeartbeat,
+  markSectionComplete,
   recordQuizSubmission,
   recordAssignmentSubmission,
   getAdminLearnerProgressMatrix,
@@ -70,6 +72,8 @@ router.post("/admin/grade-submission/:submissionId", authenticate, authorizeRole
 
 router.get("/:id/my-progress", authenticate, getLearnerProgress);
 router.post("/:id/progress", authenticate, updateLessonProgress);
+router.post("/:id/progress/heartbeat", authenticate, recordHeartbeat);
+router.post("/:id/sections/:sectionId/complete", authenticate, markSectionComplete);
 router.post("/:id/quiz/submit", authenticate, recordQuizSubmission);
 router.post("/:id/assignment/submit", authenticate, recordAssignmentSubmission);
 

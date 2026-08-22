@@ -40,6 +40,53 @@ export const getMyEnrollments = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const recordHeartbeat = async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role === "GUEST") {
+      return res.status(403).json({ success: false, message: "Guest accounts cannot track lesson completion or progress." });
+    }
+    const courseId = BigInt(String(req.params.id));
+    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const { contentId, deltaActiveSeconds, deltaWatchedSeconds, lastPosition, isPlaying, isTabActive } = req.body;
+
+    if (!contentId) {
+      return res.status(400).json({ success: false, message: "contentId is required" });
+    }
+
+    const data = await progressService.recordHeartbeat(
+      userId,
+      courseId,
+      BigInt(contentId),
+      Number(deltaActiveSeconds) || 0,
+      Number(deltaWatchedSeconds) || 0,
+      Number(lastPosition) || 0,
+      isPlaying !== undefined ? Boolean(isPlaying) : true,
+      isTabActive !== undefined ? Boolean(isTabActive) : true
+    );
+
+    res.json({ success: true, data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const markSectionComplete = async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user?.role === "GUEST") {
+      return res.status(403).json({ success: false, message: "Guest accounts cannot track lesson completion or progress." });
+    }
+    const courseId = BigInt(String(req.params.id));
+    const sectionId = BigInt(String(req.params.sectionId));
+    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+
+    const data = await progressService.markSectionComplete(userId, courseId, sectionId);
+
+    res.json({ success: true, message: "Section marked as completed successfully", data });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const updateLessonProgress = async (req: AuthRequest, res: Response) => {
   try {
     if (req.user?.role === "GUEST") {
@@ -93,7 +140,7 @@ export const recordQuizSubmission = async (req: AuthRequest, res: Response) => {
 
 export const getAdminLearnerProgressMatrix = async (req: AuthRequest, res: Response) => {
   try {
-    const matrix = await progressService.getAdminLearnerProgressMatrix();
+    const matrix = await progressService.getAdminLearnerProgressMatrix(req.user);
     res.json({ success: true, data: matrix });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });

@@ -171,9 +171,13 @@ export class ReportingService {
     const courseWhere: any = { isActive: true };
     if (deptScope) courseWhere.departmentId = deptScope;
     if ((user.role === "TEACHER" || user.role === "INSTRUCTOR") && teacherId !== undefined) {
+      const teacherDeptId = toBigIntSafe(user.departmentId);
       courseWhere.OR = [
         { creatorId: teacherId },
         { teachers: { some: { teacherId } } },
+        ...(teacherDeptId ? [{ departmentId: teacherDeptId }] : []),
+        { departmentId: BigInt(5) },
+        { departmentId: null },
       ];
     }
 
@@ -216,9 +220,14 @@ export class ReportingService {
     if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
       const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
       if (tId !== undefined) {
+        const teacherDeptId = toBigIntSafe(user.departmentId);
+        where.course = where.course || {};
         where.course.OR = [
           { creatorId: tId },
           { teachers: { some: { teacherId: tId } } },
+          ...(teacherDeptId ? [{ departmentId: teacherDeptId }] : []),
+          { departmentId: BigInt(5) },
+          { departmentId: null },
         ];
       }
     }
@@ -406,9 +415,13 @@ export class ReportingService {
     if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
       const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
       if (tId !== undefined) {
+        const teacherDeptId = toBigIntSafe(user.departmentId);
         courseWhere.OR = [
           { creatorId: tId },
           { teachers: { some: { teacherId: tId } } },
+          ...(teacherDeptId ? [{ departmentId: teacherDeptId }] : []),
+          { departmentId: BigInt(5) },
+          { departmentId: null },
         ];
       }
     }
@@ -713,18 +726,32 @@ export class ReportingService {
     }
 
     const subWhere: any = {};
-    if (matchingEmpIds) {
-      subWhere.userId = { in: matchingEmpIds };
-    }
-    if (filters.courseId && filters.courseId !== "ALL") {
-      subWhere.courseId = BigInt(filters.courseId);
+    const certWhere: any = {};
+
+    if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
+      const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+      if (tId !== undefined) {
+        const teacherDeptId = toBigIntSafe(user.departmentId);
+        const teacherCourseFilter = {
+          OR: [
+            { creatorId: tId },
+            { teachers: { some: { teacherId: tId } } },
+            ...(teacherDeptId ? [{ departmentId: teacherDeptId }] : []),
+            { departmentId: BigInt(5) },
+            { departmentId: null },
+          ],
+        };
+        subWhere.course = teacherCourseFilter;
+        certWhere.course = teacherCourseFilter;
+      }
     }
 
-    const certWhere: any = {};
     if (matchingEmpIds) {
+      subWhere.userId = { in: matchingEmpIds };
       certWhere.userId = { in: matchingEmpIds };
     }
     if (filters.courseId && filters.courseId !== "ALL") {
+      subWhere.courseId = BigInt(filters.courseId);
       certWhere.courseId = BigInt(filters.courseId);
     }
 
@@ -1918,7 +1945,7 @@ export class ReportingService {
       const course = await prisma.course.findUnique({ where: { id: sub.courseId }, select: { title: true } });
       const content = sub.contentId ? await prisma.learningContent.findUnique({ where: { id: sub.contentId }, select: { title: true } }) : null;
 
-      await notificationService.notifySubmissionEvaluation({
+      await notificationService.notifySubmissionEvaluated({
         userId: sub.userId,
         courseId: sub.courseId,
         courseTitle: course?.title || "Course",

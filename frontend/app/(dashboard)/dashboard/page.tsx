@@ -227,7 +227,7 @@ export default function Dashboard() {
                   Pending Evaluations
                 </span>
                 <span className="text-2xl font-black text-amber-600">
-                  {stats?.pendingAssignmentsCount ?? 0}
+                  {(stats as any)?.pendingAssignmentsCount ?? 0}
                 </span>
               </div>
               <div className="bg-slate-50/80 border border-slate-200/90 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-2xs">
@@ -235,7 +235,7 @@ export default function Dashboard() {
                   Approved Evaluations
                 </span>
                 <span className="text-2xl font-black text-blue-600">
-                  {stats?.approvedAssignmentsCount ?? 0}
+                  {(stats as any)?.approvedAssignmentsCount ?? 0}
                 </span>
               </div>
             </div>

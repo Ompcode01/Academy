@@ -212,7 +212,7 @@ async function main() {
   const hr = tsd;
   const mgt = cs;
   const sales = be;
-  const mkt = abu;
+  const mkt = be;
 
   // 5 Dedicated Learners for testing across different departments
   const dummyLearners = [

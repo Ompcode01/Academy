@@ -205,38 +205,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           )}
         </div>
-
-        <hr className="border-[#E0E6ED]" />
-
-        {/* Section 3: Latest Badges */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C757D]">
-            <Award className="h-3.5 w-3.5 text-[#C82333]" />
-            <span>Latest badges</span>
-          </div>
-          <p className="text-xs text-[#6C757D] pl-1 font-medium">
-            You have no badges to display
-          </p>
-        </div>
-
-        <hr className="border-[#E0E6ED]" />
-
-        {/* Section 4: Online Users */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6C757D]">
-            <User className="h-3.5 w-3.5 text-[#C82333]" />
-            <span>Online users</span>
-          </div>
-          <div className="pl-1 space-y-1.5">
-            <p className="text-[11px] text-[#6C757D] font-medium">
-              1 online user (last 5 minutes)
-            </p>
-            <div className="flex items-center gap-1.5 text-xs text-[#212529] font-medium">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
-              <span>{fullName}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </aside>
   );
