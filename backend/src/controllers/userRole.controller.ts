@@ -45,6 +45,26 @@ export const assignRole = async (
       return;
     }
 
+    // Super Admin role protection: No user can change or remove the role of a current SuperAdmin
+    const targetEmployeeId = BigInt(req.body.employeeId);
+    const existingSuperAdminRole = await prisma.userRole.findFirst({
+      where: {
+        employeeId: targetEmployeeId,
+        isActive: true,
+        role: {
+          roleCode: "SUPER_ADMIN",
+        },
+      },
+    });
+
+    if (existingSuperAdminRole && targetRole.roleCode !== "SUPER_ADMIN") {
+      res.status(403).json({
+        success: false,
+        message: "The SuperAdmin role cannot be removed or changed.",
+      });
+      return;
+    }
+
     const userRole =
       await userRoleService.assignRole({
 
@@ -169,6 +189,14 @@ export const deleteUserRole = async (
 
     const id = BigInt(String(req.params.id));
     const existingUserRole = await userRoleService.getUserRoleById(id);
+
+    if (existingUserRole && existingUserRole.role.roleCode === "SUPER_ADMIN") {
+      res.status(403).json({
+        success: false,
+        message: "The SuperAdmin role cannot be removed or changed.",
+      });
+      return;
+    }
 
     await userRoleService.deleteUserRole(id);
 

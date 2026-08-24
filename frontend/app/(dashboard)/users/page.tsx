@@ -92,9 +92,13 @@ export default function UsersPage() {
   };
 
   const handleRoleChange = async (employeeId: number, newRoleId: number) => {
+    const emp = employees.find((e) => e.id === employeeId);
+    if (emp && getPrimaryRole(emp) === "SUPER_ADMIN") {
+      toast.error("The Super Admin role cannot be removed or changed.");
+      return;
+    }
     try {
       setChangingRole(employeeId);
-      const emp = employees.find((e) => e.id === employeeId);
       if (emp?.assignedRoles && emp.assignedRoles.length > 0) {
         await removeUserRole(emp.assignedRoles[0].id);
       }
@@ -115,6 +119,11 @@ export default function UsersPage() {
   };
 
   const handleDelete = async (id: number) => {
+    const emp = employees.find((e) => e.id === id);
+    if (emp && getPrimaryRole(emp) === "SUPER_ADMIN") {
+      toast.error("The Super Admin account cannot be deleted.");
+      return;
+    }
     try {
       await deleteEmployee(id);
       setConfirmDelete(null);
@@ -353,14 +362,15 @@ export default function UsersPage() {
                   const isRoleChanging = changingRole === emp.id;
                   const isDeleting = confirmDelete === emp.id;
 
-                  // Can the current user change this employee's role?
+                  // Can the current user change this employee's role? (Super Admin role is protected)
                   const canChangeRole =
-                    isSuperAdmin || // Super Admin can change any role
-                    (!["SUPER_ADMIN", "ADMIN"].includes(primaryRole)); // Admin can only change non-admin roles
+                    primaryRole !== "SUPER_ADMIN" &&
+                    (isSuperAdmin || (!["SUPER_ADMIN", "ADMIN"].includes(primaryRole)));
 
+                  // Can the current user delete this employee? (Super Admin account is protected)
                   const canDelete =
-                    isSuperAdmin || // Super Admin can delete anyone
-                    (!["SUPER_ADMIN", "ADMIN"].includes(primaryRole)); // Admin cannot delete admin-level
+                    primaryRole !== "SUPER_ADMIN" &&
+                    (isSuperAdmin || (!["SUPER_ADMIN", "ADMIN"].includes(primaryRole)));
 
                   return (
                     <TableRow key={emp.id} className="border-border transition-colors hover:bg-muted/20">

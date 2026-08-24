@@ -120,7 +120,18 @@ export const deleteEmployee = async (
     });
 
     const targetRoleCodes = targetRoles.map((r) => r.role.roleCode);
-    const targetIsAdmin = targetRoleCodes.includes("ADMIN") || targetRoleCodes.includes("SUPER_ADMIN");
+    const targetIsSuperAdmin = targetRoleCodes.includes("SUPER_ADMIN");
+
+    // Super Admin protection: Super Admin accounts cannot be deleted by anyone
+    if (targetIsSuperAdmin) {
+      res.status(403).json({
+        success: false,
+        message: "The SuperAdmin account cannot be deleted.",
+      });
+      return;
+    }
+
+    const targetIsAdmin = targetRoleCodes.includes("ADMIN");
 
     // Only SUPER_ADMIN can delete admin-level employees
     if (targetIsAdmin && callerRole !== "SUPER_ADMIN") {

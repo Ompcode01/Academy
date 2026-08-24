@@ -133,6 +133,21 @@ export const deleteUserAccount = async (
     const id = BigInt(String(req.params.id));
     const existingAccount = await userAccountService.getUserAccountById(id);
 
+    if (existingAccount) {
+      const userRoles = await prisma.userRole.findMany({
+        where: { employeeId: existingAccount.employeeId, isActive: true },
+        include: { role: true },
+      });
+      const isSuperAdmin = userRoles.some((ur) => ur.role.roleCode === "SUPER_ADMIN");
+      if (isSuperAdmin) {
+        res.status(403).json({
+          success: false,
+          message: "The SuperAdmin user account cannot be deleted.",
+        });
+        return;
+      }
+    }
+
     await userAccountService.deleteUserAccount(id);
 
     // Record Audit Log
