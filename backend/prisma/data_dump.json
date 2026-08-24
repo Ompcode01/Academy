@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-24T08:50:46.055Z",
+  "exportedAt": "2026-08-24T17:46:36.113Z",
   "departments": [
     {
       "id": "1",
@@ -194,13 +194,13 @@
       "employeeId": "1",
       "username": "priyanka",
       "passwordHash": "$2b$10$CA.kRxKeClerkSEClnq7teQ5OeezLDlLddBkmEREvnTCJtDS17/b.",
-      "lastLogin": "2026-08-24T05:09:30.760Z",
+      "lastLogin": "2026-08-24T12:36:08.841Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T07:49:23.350Z",
-      "updatedAt": "2026-08-24T05:09:30.762Z"
+      "updatedAt": "2026-08-24T12:36:08.844Z"
     },
     {
       "id": "2",
@@ -7920,6 +7920,42 @@
       "timestamp": "2026-08-24T06:53:03.321Z",
       "actorId": "3",
       "actorName": "Rahul Sharma (ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "105",
+      "timestamp": "2026-08-24T12:30:10.375Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "106",
+      "timestamp": "2026-08-24T12:33:42.747Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "107",
+      "timestamp": "2026-08-24T12:36:08.934Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
       "username": null,
       "departmentName": null,
       "action": "Login Success",
