@@ -85,8 +85,17 @@ export const login = async (
     throw new Error("Invalid username or password");
   }
 
-  if (!account.isActive) {
-    throw new Error("Account is inactive");
+  // Check soft delete status & employment status
+  if ((account.employee?.employmentStatus as string) === "DELETED") {
+    throw new Error("Your account has been deleted. Please contact system administrator to restore your account.");
+  }
+
+  if ((account.employee?.employmentStatus as string) === "RESIGNED") {
+    throw new Error("Your account status is marked as Resigned. Access to the platform is restricted.");
+  }
+
+  if (!account.isActive || (account.employee?.employmentStatus as string) === "INACTIVE") {
+    throw new Error("Your account is currently inactive. Please contact your system administrator.");
   }
 
   const passwordMatched = await comparePassword(

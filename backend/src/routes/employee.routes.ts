@@ -7,6 +7,7 @@ import {
   getEmployeeById,
   updateEmployee,
   deleteEmployee,
+  restoreEmployee,
 } from "../controllers/employee.controller";
 
 const router = Router();
@@ -47,6 +48,13 @@ router.delete(
   authenticate,
   authorizeRoles("SUPER_ADMIN", "ADMIN"),
   deleteEmployee
+);
+
+router.post(
+  "/:id/restore",
+  authenticate,
+  authorizeRoles("SUPER_ADMIN", "ADMIN"),
+  restoreEmployee
 );
 
 export default router;

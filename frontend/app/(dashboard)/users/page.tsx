@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getEmployees, getRoles, assignRole, removeUserRole, deleteEmployee, Employee, Role } from "@/services/api/org.service";
+import { getEmployees, getRoles, assignRole, removeUserRole, deleteEmployee, restoreEmployee, Employee, Role } from "@/services/api/org.service";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal, RefreshCw, Mail, Calendar, ShieldCheck, Shield, Trash2, UserCog, AlertTriangle } from "lucide-react";
+import { SlidersHorizontal, RefreshCw, Mail, Calendar, ShieldCheck, Shield, Trash2, UserCog, AlertTriangle, RotateCcw } from "lucide-react";
 import RoleGate from "@/components/auth/RoleGate";
 import { useAuthStore } from "@/store/auth.store";
 import { ROLES } from "@/lib/rbac";
@@ -80,6 +80,8 @@ export default function UsersPage() {
       case "INACTIVE":
         return "bg-slate-100 text-slate-500 border-slate-200";
       case "RESIGNED":
+        return "bg-amber-100 text-amber-800 border-amber-200";
+      case "DELETED":
         return "bg-red-100 text-red-700 border-red-200";
       default:
         return "bg-slate-100 text-slate-500 border-slate-200";
@@ -129,14 +131,29 @@ export default function UsersPage() {
       setConfirmDelete(null);
       setSuccessModal({
         open: true,
-        title: "User Account Deleted",
-        description: "The user record has been permanently removed from the system directory.",
+        title: "User Account Soft-Deleted",
+        description: "The user account has been soft-deleted and deactivated. You can view or restore soft-deleted users at any time.",
       });
       await fetchData();
     } catch (err: any) {
       console.error("Failed to delete employee:", err);
       toast.error(err?.response?.data?.message || "Failed to delete employee. You may not have permission.");
       setConfirmDelete(null);
+    }
+  };
+
+  const handleRestore = async (id: number) => {
+    try {
+      await restoreEmployee(id);
+      setSuccessModal({
+        open: true,
+        title: "User Restored Successfully",
+        description: "The user account has been restored and reactivated in the platform directory.",
+      });
+      await fetchData();
+    } catch (err: any) {
+      console.error("Failed to restore employee:", err);
+      toast.error(err?.response?.data?.message || "Failed to restore user account.");
     }
   };
 
@@ -211,13 +228,13 @@ export default function UsersPage() {
           </div>
         </div>
 
-        {/* Role Filter Chips */}
+        {/* Role & Status Filter Chips */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-1">Filter by role:</span>
           <button
             onClick={() => setRoleFilter(null)}
             className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
-              !roleFilter
+              !roleFilter && statusFilter !== "DELETED"
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-card text-muted-foreground border-border hover:border-primary/40"
             }`}
@@ -230,9 +247,12 @@ export default function UsersPage() {
             return (
               <button
                 key={rc}
-                onClick={() => setRoleFilter(roleFilter === rc ? null : rc)}
+                onClick={() => {
+                  setRoleFilter(roleFilter === rc ? null : rc);
+                  if (statusFilter === "DELETED") setStatusFilter(null);
+                }}
                 className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
-                  roleFilter === rc
+                  roleFilter === rc && statusFilter !== "DELETED"
                     ? "bg-primary text-primary-foreground border-primary"
                     : `${ROLE_COLORS[rc]} hover:opacity-80`
                 }`}
@@ -241,6 +261,33 @@ export default function UsersPage() {
               </button>
             );
           })}
+
+          <div className="h-4 w-px bg-border mx-1" />
+
+          {/* Dedicated Soft-Deleted / Trash Bin Filter Chip */}
+          {(() => {
+            const deletedCount = employees.filter((e) => e.employmentStatus === "DELETED").length;
+            return (
+              <button
+                onClick={() => {
+                  if (statusFilter === "DELETED") {
+                    setStatusFilter(null);
+                  } else {
+                    setStatusFilter("DELETED");
+                    setRoleFilter(null);
+                  }
+                }}
+                className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                  statusFilter === "DELETED"
+                    ? "bg-red-600 text-white border-red-600 shadow-sm"
+                    : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+                }`}
+              >
+                <Trash2 className="h-3 w-3" />
+                Deleted Trash Bin ({deletedCount})
+              </button>
+            );
+          })()}
         </div>
 
         {/* Universal Filter & Sorting Toolbar */}
@@ -283,6 +330,7 @@ export default function UsersPage() {
                 { label: "Active", value: "ACTIVE" },
                 { label: "Inactive", value: "INACTIVE" },
                 { label: "Resigned", value: "RESIGNED" },
+                { label: "Soft-Deleted", value: "DELETED" },
               ],
             },
           ]}
@@ -301,15 +349,69 @@ export default function UsersPage() {
           }}
         />
 
-        {/* Results Counter & Refresh Action */}
+        {/* Results Counter & Actions Bar */}
         <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
           <div>
             Showing <strong className="text-foreground font-bold">{filteredEmployees.length}</strong> of <strong className="text-foreground">{employees.length}</strong> users
           </div>
-          <Button variant="outline" size="sm" onClick={fetchData} className="h-8 text-xs gap-1.5 font-semibold">
-            <RefreshCw className="h-3.5 w-3.5" /> Refresh List
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Quick Toggle for Deleted Users */}
+            {(() => {
+              const deletedCount = employees.filter((e) => e.employmentStatus === "DELETED").length;
+              return (
+                <Button
+                  variant={statusFilter === "DELETED" ? "destructive" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    if (statusFilter === "DELETED") {
+                      setStatusFilter(null);
+                    } else {
+                      setStatusFilter("DELETED");
+                      setRoleFilter(null);
+                    }
+                  }}
+                  className={`h-8 text-xs gap-1.5 font-semibold transition-all ${
+                    statusFilter === "DELETED"
+                      ? "bg-red-600 text-white hover:bg-red-700 shadow-sm"
+                      : "border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                  }`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {statusFilter === "DELETED" ? "Showing Deleted Users" : `Deleted Users (${deletedCount})`}
+                </Button>
+              );
+            })()}
+
+            <Button variant="outline" size="sm" onClick={fetchData} className="h-8 text-xs gap-1.5 font-semibold">
+              <RefreshCw className="h-3.5 w-3.5" /> Refresh List
+            </Button>
+          </div>
         </div>
+
+        {/* Soft-Deleted Users Archive Banner */}
+        {statusFilter === "DELETED" && (
+          <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-center justify-between shadow-sm animate-in fade-in duration-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-red-100 text-red-700">
+                <Trash2 className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-red-900">Soft-Deleted Users Archive</h3>
+                <p className="text-xs text-red-700 mt-0.5">
+                  Viewing soft-deleted user accounts. Click <strong className="font-bold text-emerald-800">"Restore User"</strong> on any row to immediately reactivate their platform access.
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setStatusFilter(null)}
+              className="h-8 text-xs font-semibold bg-white border-red-300 text-red-700 hover:bg-red-100 cursor-pointer"
+            >
+              Back to All Users
+            </Button>
+          </div>
+        )}
 
         {/* Table listing */}
         <div className="rounded-xl border border-border bg-card overflow-hidden">
@@ -451,53 +553,67 @@ export default function UsersPage() {
                       </TableCell>
                       <TableCell className="text-right pr-5">
                         <div className="flex items-center justify-end gap-1">
-                          {canChangeRole && (
+                          {emp.employmentStatus === "DELETED" ? (
                             <Button
-                              variant="ghost"
-                              size="icon-xs"
-                              className="h-7 w-7 text-muted-foreground hover:text-primary"
-                              title="Change Role"
-                              onClick={() => setChangingRole(emp.id)}
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs px-2.5 gap-1.5 bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100 font-semibold cursor-pointer"
+                              title="Restore User Account"
+                              onClick={() => handleRestore(emp.id)}
                             >
-                              <UserCog className="h-3.5 w-3.5" />
+                              <RotateCcw className="h-3.5 w-3.5 text-emerald-600" /> Restore User
                             </Button>
-                          )}
-                          {canDelete && (
+                          ) : (
                             <>
-                              {isDeleting ? (
-                                <div className="flex items-center gap-1">
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    className="h-7 text-xs px-2"
-                                    onClick={() => handleDelete(emp.id)}
-                                  >
-                                    Confirm
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-7 text-xs px-2"
-                                    onClick={() => setConfirmDelete(null)}
-                                  >
-                                    Cancel
-                                  </Button>
-                                </div>
-                              ) : (
+                              {canChangeRole && (
                                 <Button
                                   variant="ghost"
                                   size="icon-xs"
-                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                  title="Delete User"
-                                  onClick={() => setConfirmDelete(emp.id)}
+                                  className="h-7 w-7 text-muted-foreground hover:text-primary"
+                                  title="Change Role"
+                                  onClick={() => setChangingRole(emp.id)}
                                 >
-                                  <Trash2 className="h-3.5 w-3.5" />
+                                  <UserCog className="h-3.5 w-3.5" />
                                 </Button>
                               )}
+                              {canDelete && (
+                                <>
+                                  {isDeleting ? (
+                                    <div className="flex items-center gap-1">
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        className="h-7 text-xs px-2"
+                                        onClick={() => handleDelete(emp.id)}
+                                      >
+                                        Confirm
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 text-xs px-2"
+                                        onClick={() => setConfirmDelete(null)}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon-xs"
+                                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                      title="Delete User"
+                                      onClick={() => setConfirmDelete(emp.id)}
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  )}
+                                </>
+                              )}
+                              {!canChangeRole && !canDelete && (
+                                <span className="text-[10px] text-muted-foreground italic">Protected</span>
+                              )}
                             </>
-                          )}
-                          {!canChangeRole && !canDelete && (
-                            <span className="text-[10px] text-muted-foreground italic">Protected</span>
                           )}
                         </div>
                       </TableCell>

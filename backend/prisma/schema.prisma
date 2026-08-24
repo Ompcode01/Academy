@@ -314,6 +314,7 @@ enum EmploymentStatus {
   ACTIVE
   INACTIVE
   RESIGNED
+  DELETED
 }
 
 enum ApprovalStatus {

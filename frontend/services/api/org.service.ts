@@ -37,7 +37,7 @@ export interface Employee {
   managerId?: number;
   joiningDate: string;
   profileImage?: string;
-  employmentStatus: "ACTIVE" | "INACTIVE" | "RESIGNED";
+  employmentStatus: "ACTIVE" | "INACTIVE" | "RESIGNED" | "DELETED";
   department?: Department;
   manager?: Employee;
   assignedRoles?: UserRole[];
@@ -80,6 +80,11 @@ export const updateEmployee = async (id: number, data: Partial<Employee>) => {
 
 export const deleteEmployee = async (id: number) => {
   const response = await api.delete(`/employees/${id}`);
+  return response.data;
+};
+
+export const restoreEmployee = async (id: number) => {
+  const response = await api.post(`/employees/${id}/restore`);
   return response.data;
 };
 

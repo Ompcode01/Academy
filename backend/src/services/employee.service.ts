@@ -66,7 +66,40 @@ export const updateEmployee = async (
 };
 
 export const deleteEmployee = async (id: bigint) => {
-  return prisma.employee.delete({
-    where: { id },
+  // Ensure MySQL ENUM column includes DELETED option
+  try {
+    await prisma.$executeRawUnsafe(
+      "ALTER TABLE employees MODIFY COLUMN employmentStatus ENUM('ACTIVE', 'INACTIVE', 'RESIGNED', 'DELETED') NOT NULL DEFAULT 'ACTIVE'"
+    );
+  } catch (err) {
+    // Column already modified or alter unsupported in transaction
+  }
+
+  // Soft delete employee status via raw SQL to bypass strict Prisma client enum validation
+  await prisma.$executeRawUnsafe(
+    "UPDATE employees SET employmentStatus = 'DELETED' WHERE id = ?",
+    id
+  );
+
+  // Deactivate user account
+  await prisma.userAccount.updateMany({
+    where: { employeeId: id },
+    data: { isActive: false },
   });
+
+  return true;
+};
+
+export const restoreEmployee = async (id: bigint) => {
+  await prisma.$executeRawUnsafe(
+    "UPDATE employees SET employmentStatus = 'ACTIVE' WHERE id = ?",
+    id
+  );
+
+  await prisma.userAccount.updateMany({
+    where: { employeeId: id },
+    data: { isActive: true },
+  });
+
+  return true;
 };

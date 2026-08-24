@@ -10,13 +10,14 @@ import { useAuthStore } from "@/store/auth.store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, User } from "lucide-react";
+import { Lock, User, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const loginStore = useAuthStore((state) => state.login);
 
   const {
@@ -31,6 +32,7 @@ export default function LoginForm() {
   const onSubmit = useCallback(async (data: LoginFormData) => {
     try {
       setLoading(true);
+      setLoginError(null);
       console.log("Submitting login form:", data);
       const response = await login(data);
       console.log("API Response:", response);
@@ -50,10 +52,9 @@ export default function LoginForm() {
       router.push("/dashboard");
     } catch (error: any) {
       console.error(error);
-      toast.error(
-        error?.response?.data?.message ||
-          "Unable to login. Please verify your credentials."
-      );
+      const msg = error?.response?.data?.message || "Unable to login. Please verify your credentials.";
+      setLoginError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -83,6 +84,13 @@ export default function LoginForm() {
           Sign In
         </h2>
       </div>
+
+      {loginError && (
+        <div className="p-3.5 rounded-lg bg-red-950/90 border border-red-700/80 text-red-100 text-xs font-semibold flex items-start gap-2.5 shadow-lg animate-in fade-in duration-200">
+          <AlertTriangle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+          <span className="leading-tight">{loginError}</span>
+        </div>
+      )}
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

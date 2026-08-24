@@ -142,16 +142,81 @@ export const deleteEmployee = async (
       return;
     }
 
+    const targetEmployee = await prisma.employee.findUnique({ where: { id: targetId } });
     await employeeService.deleteEmployee(targetId);
+
+    // Audit Log for Soft Delete
+    const actorName = req.user
+      ? `${req.user.username} (${req.user.role || 'USER'})`
+      : "System Admin";
+    const targetName = targetEmployee ? `${targetEmployee.firstName} ${targetEmployee.lastName}` : `Employee #${targetId}`;
+
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "User Soft Deleted",
+        detail: `Soft-deleted user '${targetName}' (${targetEmployee?.employeeCode || targetId})`,
+        type: "user",
+        ipAddress: req.ip || "Internal",
+      },
+    });
 
     res.json({
       success: true,
-      message: "Employee deleted successfully",
+      message: "Employee deleted successfully (Soft Deleted)",
     });
-  } catch {
+  } catch (error: any) {
+    console.error("Error in deleteEmployee:", error);
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
+      message: error?.message || "Something went wrong",
+    });
+  }
+};
+
+export const restoreEmployee = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    const callerRole = req.user?.role;
+    const targetId = BigInt(String(req.params.id));
+
+    if (callerRole !== "SUPER_ADMIN" && callerRole !== "ADMIN") {
+      res.status(403).json({
+        success: false,
+        message: "Forbidden: Only Admins can restore deleted users.",
+      });
+      return;
+    }
+
+    const targetEmployee = await prisma.employee.findUnique({ where: { id: targetId } });
+    await employeeService.restoreEmployee(targetId);
+
+    // Audit Log for Restore
+    const actorName = req.user
+      ? `${req.user.username} (${req.user.role || 'USER'})`
+      : "System Admin";
+    const targetName = targetEmployee ? `${targetEmployee.firstName} ${targetEmployee.lastName}` : `Employee #${targetId}`;
+
+    await prisma.auditLog.create({
+      data: {
+        actorName,
+        action: "User Restored",
+        detail: `Restored soft-deleted user '${targetName}' (${targetEmployee?.employeeCode || targetId})`,
+        type: "user",
+        ipAddress: req.ip || "Internal",
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Employee restored successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error?.message || "Something went wrong",
     });
   }
 };
