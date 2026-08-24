@@ -14,7 +14,7 @@ import { getCourseById, createCourse, updateCourse } from "@/services/api/course
 import { buildCoursePayload, hasDraftWorthSaving } from "@/lib/courseWizardPayload";
 import { useAuthStore } from "@/store/auth.store";
 import { getBaseURL } from "@/services/api/auth.service";
-import { ROLES } from "@/lib/rbac";
+import { ROLES, canUserEditCourse } from "@/lib/rbac";
 import toast from "react-hot-toast";
 import { getCourseDisplayTitle, generateAutoCourseCode } from "@/lib/courseTitleHelper";
 import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
@@ -137,6 +137,13 @@ function CreateCourseContent() {
         .then((res) => {
           if (res?.success && res.data) {
             const c = res.data;
+
+            // Teacher ownership authorization check
+            if (isTeacher && !canUserEditCourse(user, c)) {
+              toast.error("Forbidden: You can only edit courses assigned to you as an instructor.");
+              router.replace("/courses");
+              return;
+            }
             
             // Extract feedback questions from sections if present
             let extractedFbQuestions: any[] = [];

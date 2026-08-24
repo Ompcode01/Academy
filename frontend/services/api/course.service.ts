@@ -136,6 +136,11 @@ export const deleteCourse = async (id: number) => {
 };
 
 // Section API
+export const getCourseLearnersProgress = async (courseId: number) => {
+  const response = await api.get(`/courses/${courseId}/learners`);
+  return response.data;
+};
+
 export const createSection = async (
   courseId: number,
   data: Partial<CourseSection>

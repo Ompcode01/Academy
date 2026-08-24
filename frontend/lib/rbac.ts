@@ -72,3 +72,28 @@ export function isSuperAdmin(role: string | undefined): boolean {
   return hasRole(role, ROLES.SUPER_ADMIN);
 }
 
+/**
+ * Helper to check whether a specific user can edit a specific course.
+ * Super Admin & Admin can edit any course.
+ * Teachers can only edit courses where they are the creator or an assigned teacher.
+ */
+export function canUserEditCourse(
+  user: { role?: string; employeeId?: number | string | bigint } | null | undefined,
+  course: any
+): boolean {
+  if (!user || !user.role) return false;
+  if (user.role === ROLES.SUPER_ADMIN || user.role === ROLES.ADMIN) return true;
+  if (user.role === ROLES.TEACHER) {
+    if (!course) return false;
+    const empId = user.employeeId ? Number(user.employeeId) : null;
+    if (!empId) return false;
+
+    const isCreator = course.creatorId ? Number(course.creatorId) === empId : false;
+    const isAssignedTeacher = (course.teachers || []).some(
+      (t: any) => Number(t.teacherId || t.teacher?.id || t.id) === empId
+    );
+    return isCreator || isAssignedTeacher;
+  }
+  return false;
+}
+

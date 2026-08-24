@@ -626,3 +626,18 @@ export const uploadDocumentFile = asyncHandler(
     );
   }
 );
+
+// GET /api/courses/:id/learners
+export const getCourseLearnersProgress = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const id = BigInt(req.params.id as string);
+    const userContext = {
+      role: req.user?.role || "GUEST",
+      employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
+    };
+
+    const learnersProgress = await courseService.getCourseLearnersProgress(id, userContext);
+
+    return successResponse(res, learnersProgress, "Course learners progress retrieved successfully");
+  }
+);

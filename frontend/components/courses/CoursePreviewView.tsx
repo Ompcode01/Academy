@@ -6,6 +6,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   ArrowLeft,
   ChevronDown,
@@ -32,8 +33,11 @@ import {
   Check,
   RefreshCw,
   Archive,
+  Users,
+  BarChart2,
+  Search,
 } from "lucide-react";
-import { getCourseById, selfEnrollCourse, type Course, getStorageUrl } from "@/services/api/course.service";
+import { getCourseById, selfEnrollCourse, getCourseLearnersProgress, type Course, getStorageUrl } from "@/services/api/course.service";
 import {
   getLearnerCourseProgress,
   updateLessonProgress,
@@ -45,6 +49,8 @@ import {
   LessonProgressItem,
 } from "@/services/api/progress.service";
 import { useAuthStore } from "@/store/auth.store";
+import { canUserEditCourse } from "@/lib/rbac";
+import TeacherLearnerSummaryModal, { LearnerProgressSummary } from "@/components/courses/teacher/TeacherLearnerSummaryModal";
 import { recordRecentCourseAccess } from "@/services/api/recentAccess.service";
 import LearnerQuizModal from "@/components/courses/learner/LearnerQuizModal";
 import LearnerAssignmentModal from "@/components/courses/learner/LearnerAssignmentModal";
@@ -116,6 +122,12 @@ export default function CoursePreviewView() {
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
   const [guestModalLessonTitle, setGuestModalLessonTitle] = useState<string | null>(null);
 
+  // Teacher / Admin Enrolled Learners State
+  const [learnersProgress, setLearnersProgress] = useState<LearnerProgressSummary[]>([]);
+  const [selectedLearnerSummary, setSelectedLearnerSummary] = useState<LearnerProgressSummary | null>(null);
+  const [isLearnerModalOpen, setIsLearnerModalOpen] = useState(false);
+  const [learnerSearch, setLearnerSearch] = useState("");
+
   // Load course details & learner progress strictly from DB
   const loadCourseAndProgress = async () => {
     if (!courseId) return;
@@ -129,6 +141,16 @@ export default function CoursePreviewView() {
       if (courseRes?.success && courseRes.data) {
         const c = courseRes.data;
         setCourse(c);
+
+        if (canUserEditCourse(user, c)) {
+          getCourseLearnersProgress(courseId)
+            .then((lRes) => {
+              if (lRes?.success && Array.isArray(lRes.data)) {
+                setLearnersProgress(lRes.data);
+              }
+            })
+            .catch((err) => console.error("Error loading learners progress:", err));
+        }
 
         recordRecentCourseAccess(user?.username || "guest", {
           id: Number(c.id),
@@ -525,10 +547,10 @@ export default function CoursePreviewView() {
 
         {/* Hero Banner Section */}
         <div className="bg-slate-900 text-white px-6 py-10 border-b border-slate-800">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="max-w-[95%] w-[95%] mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
 
-            {/* Left 2 Columns: Course Hero Details */}
-            <div className="lg:col-span-2 space-y-4">
+            {/* Left 3 Columns (75% width of 95% container): Course Hero Details */}
+            <div className="lg:col-span-3 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className="bg-[#C82333] text-white font-bold text-[10px] uppercase tracking-wider">
                   Code: {course.code || `CO${course.id}`}
@@ -582,8 +604,8 @@ export default function CoursePreviewView() {
               </div>
             </div>
 
-            {/* Right Column: Sticky Action Card */}
-            <div className="bg-background dark:bg-slate-900 border border-border rounded-2xl shadow-xl overflow-hidden text-foreground">
+            {/* Right 1 Column (25% width): Sticky Action Card */}
+            <div className="lg:col-span-1 bg-background dark:bg-slate-900 border border-border rounded-2xl shadow-xl overflow-hidden text-foreground">
               {/* Media Thumbnail */}
               <div className="h-44 w-full relative bg-slate-950">
                 <img
@@ -693,9 +715,9 @@ export default function CoursePreviewView() {
         </div>
 
         {/* Main Details Body */}
-        <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left 2 Columns: Tabs & Curriculum Breakdown */}
-          <div className="lg:col-span-2 space-y-8">
+        <div className="max-w-[95%] w-[95%] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Left 3 Columns (75% width): Details & Analytics Breakdown */}
+          <div className="lg:col-span-3 space-y-8">
 
             {/* 1. Course Identity & Classification Card */}
             <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
@@ -765,12 +787,137 @@ export default function CoursePreviewView() {
               </div>
             </div>
 
-            {/* Curriculum Structure (Section Accordions) */}
-            <div className="bg-background rounded-2xl border border-border p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
+            {/* 3. Assigned Instructor Enrolled Learners & Analytics Card */}
+            {canUserEditCourse(user, course) && (
+              <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4 max-w-full overflow-hidden">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+                  <div>
+                    <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
+                      <Users className="h-5 w-5 text-primary" />
+                      3. Assigned Learners &amp; Progress Analytics
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Track active learners enrolled in your assigned course, view progress %, active time spent, and performance summaries.
+                    </p>
+                  </div>
+                  <Badge className="bg-primary text-primary-foreground font-bold text-xs shrink-0 self-start sm:self-center">
+                    {learnersProgress.length} Enrolled Learners
+                  </Badge>
+                </div>
+
+                {/* Filter / Search Bar */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={learnerSearch}
+                    onChange={(e) => setLearnerSearch(e.target.value)}
+                    placeholder="Search enrolled learners by name, code, or email..."
+                    className="w-full pl-9 pr-4 py-1.5 text-xs bg-muted/30 border border-border rounded-xl focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                {/* Learners List Table */}
+                {learnersProgress.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-muted-foreground border border-dashed rounded-xl bg-muted/20">
+                    No learners are currently enrolled in this course.
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-border overflow-x-auto max-w-full bg-card">
+                    <table className="w-full text-left text-xs min-w-[450px]">
+                      <thead className="bg-muted/60 text-muted-foreground uppercase text-[10px] font-bold tracking-wider border-b border-border">
+                        <tr>
+                          <th className="py-2.5 px-3">Learner</th>
+                          <th className="py-2.5 px-3">Business Unit</th>
+                          <th className="py-2.5 px-3">Progress</th>
+                          <th className="py-2.5 px-3">Time Spent</th>
+                          <th className="py-2.5 px-3 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {learnersProgress
+                          .filter((l) => {
+                            if (!learnerSearch.trim()) return true;
+                            const q = learnerSearch.toLowerCase();
+                            return (
+                              l.firstName.toLowerCase().includes(q) ||
+                              l.lastName.toLowerCase().includes(q) ||
+                              l.employeeCode.toLowerCase().includes(q) ||
+                              l.officialEmail.toLowerCase().includes(q)
+                            );
+                          })
+                          .map((l) => (
+                            <tr key={l.employeeId} className="hover:bg-muted/30 transition-colors">
+                              <td className="py-2.5 px-3">
+                                <div className="flex items-center gap-2">
+                                  <Avatar className="h-7 w-7 shrink-0">
+                                    {l.profileImage ? (
+                                      <AvatarImage src={l.profileImage} alt={l.firstName} />
+                                    ) : (
+                                      <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px]">
+                                        {l.firstName[0]}
+                                        {l.lastName[0]}
+                                      </AvatarFallback>
+                                    )}
+                                  </Avatar>
+                                  <div className="min-w-0">
+                                    <p className="font-bold text-foreground text-xs truncate max-w-[130px]">
+                                      {l.firstName} {l.lastName}
+                                    </p>
+                                    <p className="text-[10px] text-muted-foreground font-mono truncate max-w-[130px]">
+                                      {l.employeeCode} • {l.designation || "Learner"}
+                                    </p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-2.5 px-3 text-muted-foreground font-medium text-xs truncate max-w-[100px]">
+                                {l.departmentName}
+                              </td>
+                              <td className="py-2.5 px-3">
+                                <div className="space-y-1 w-24">
+                                  <div className="flex items-center justify-between text-[10px] font-bold">
+                                    <span className={l.progress === 100 ? "text-emerald-600" : "text-primary"}>
+                                      {l.progress}%
+                                    </span>
+                                    <span className="text-muted-foreground text-[9px]">
+                                      {l.completedLessonsCount}/{l.totalLessonsCount}
+                                    </span>
+                                  </div>
+                                  <Progress value={l.progress} className="h-1.5 bg-muted" />
+                                </div>
+                              </td>
+                              <td className="py-2.5 px-3 text-muted-foreground font-mono text-xs font-semibold whitespace-nowrap">
+                                {l.formattedTimeSpent}
+                              </td>
+                              <td className="py-2.5 px-3 text-right">
+                                <Button
+                                  variant="outline"
+                                  size="xs"
+                                  onClick={() => {
+                                    setSelectedLearnerSummary(l);
+                                    setIsLearnerModalOpen(true);
+                                  }}
+                                  className="h-7 text-[11px] font-bold gap-1 text-primary border-primary/30 hover:bg-primary hover:text-white cursor-pointer shrink-0"
+                                >
+                                  <BarChart2 className="h-3 w-3" /> Summary
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 4. Curriculum Structure (Section Accordions) */}
+            <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
-                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                    <Layers className="h-5 w-5 text-primary" /> Course Content / Curriculum
+                  <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
+                    <Layers className="h-5 w-5 text-primary" />
+                    4. Course Content / Curriculum
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {totalSectionsCount} sections • {totalContentsCount} items • {course.duration || 15} total hours
@@ -1856,6 +2003,14 @@ export default function CoursePreviewView() {
           </div>
         </div>
       )}
+
+      {/* Teacher / Instructor Enrolled Learner Summary Modal */}
+      <TeacherLearnerSummaryModal
+        open={isLearnerModalOpen}
+        onOpenChange={setIsLearnerModalOpen}
+        learner={selectedLearnerSummary}
+        courseTitle={course?.title}
+      />
     </div>
   );
 }

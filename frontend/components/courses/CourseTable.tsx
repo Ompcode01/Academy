@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
-import { ROLES, canManageCourses } from "@/lib/rbac";
+import { ROLES, canManageCourses, canUserEditCourse } from "@/lib/rbac";
 import {
   Table,
   TableBody,
@@ -90,11 +90,9 @@ export default function CourseTable({
               <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Status
               </TableHead>
-              {isAuthorizedToManage && (
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Actions
-                </TableHead>
-              )}
+              <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -175,68 +173,79 @@ export default function CourseTable({
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1.5">
-                        <Button
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => router.push(`/courses/${course.id}`)}
-                          className="text-muted-foreground hover:text-primary"
-                          title="View / Play Course"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                        </Button>
-                        {isAuthorizedToManage ? (
-                          <>
-                            {course.status === "PUBLISHED" ? (
+                      {(() => {
+                        const canEdit = canUserEditCourse(user, course);
+                        const canDeleteOrPublish = userRole === ROLES.SUPER_ADMIN || userRole === ROLES.ADMIN;
+                        return (
+                          <div className="flex items-center gap-1.5">
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={() => router.push(`/courses/${course.id}`)}
+                              className="text-muted-foreground hover:text-primary"
+                              title="View / Play Course"
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                            </Button>
+                            {canDeleteOrPublish && (
+                              <>
+                                {course.status === "PUBLISHED" ? (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    onClick={() => onToggleStatus?.(Number(course.id), "ARCHIVED")}
+                                    className="text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
+                                    title="Archive Course (Mark Inactive)"
+                                  >
+                                    <Archive className="h-3.5 w-3.5" />
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    onClick={() => onToggleStatus?.(Number(course.id), "PUBLISHED")}
+                                    className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/10"
+                                    title="Publish Course (Mark Active)"
+                                  >
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                  </Button>
+                                )}
+                              </>
+                            )}
+                            {canEdit && (
                               <Button
                                 variant="ghost"
                                 size="icon-xs"
-                                onClick={() => onToggleStatus?.(Number(course.id), "ARCHIVED")}
-                                className="text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
-                                title="Archive Course (Mark Inactive)"
+                                onClick={() => onEdit?.(Number(course.id))}
+                                className="text-muted-foreground hover:text-primary"
+                                title="Edit Course"
                               >
-                                <Archive className="h-3.5 w-3.5" />
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="ghost"
-                                size="icon-xs"
-                                onClick={() => onToggleStatus?.(Number(course.id), "PUBLISHED")}
-                                className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/10"
-                                title="Publish Course (Mark Active)"
-                              >
-                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                <Pencil className="h-3.5 w-3.5" />
                               </Button>
                             )}
-                            <Button
-                              variant="ghost"
-                              size="icon-xs"
-                              onClick={() => onEdit?.(Number(course.id))}
-                              className="text-muted-foreground hover:text-primary"
-                              title="Edit Course"
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon-xs"
-                              onClick={() => onDelete?.(Number(course.id))}
-                              className="text-muted-foreground hover:text-destructive"
-                              title="Delete Course"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </>
-                        ) : (
-                          <Button
-                            size="xs"
-                            onClick={() => window.location.href = `/courses/${course.id}/preview`}
-                            className="text-[11px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors"
-                          >
-                            View &amp; Enroll &rarr;
-                          </Button>
-                        )}
-                      </div>
+                            {canDeleteOrPublish && (
+                              <Button
+                                variant="ghost"
+                                size="icon-xs"
+                                onClick={() => onDelete?.(Number(course.id))}
+                                className="text-muted-foreground hover:text-destructive"
+                                title="Delete Course"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            {!canEdit && (
+                              <Button
+                                size="xs"
+                                onClick={() => router.push(`/courses/${course.id}/preview`)}
+                                className="text-[11px] font-semibold bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors"
+                              >
+                                View &amp; Enroll &rarr;
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </TableCell>
                   </TableRow>
                 );

@@ -19,6 +19,7 @@ import {
   verifyBulkFile,
   uploadScormPackage,
   uploadDocumentFile,
+  getCourseLearnersProgress,
 } from "./course.controller";
 
 import {
@@ -81,6 +82,8 @@ router.post("/:id/assignment/submit", authenticate, recordAssignmentSubmission);
 router.post("/:id/enroll", authenticate, selfEnrollCourse);
 router.post("/:id/admin-enroll", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), adminEnrollUser);
 router.post("/:id/bulk-enroll", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), bulkEnrollUsers);
+
+router.get("/:id/learners", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), getCourseLearnersProgress);
 
 // Course CRUD — all routes require authentication
 // GET is accessible to all authenticated users (scoping happens in the service layer)

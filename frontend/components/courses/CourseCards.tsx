@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/store/auth.store";
-import { ROLES, canManageCourses } from "@/lib/rbac";
+import { ROLES, canManageCourses, canUserEditCourse } from "@/lib/rbac";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
@@ -196,7 +196,7 @@ export default function CourseCards({
 
                     {/* Actions */}
                     <div className="flex items-center gap-1 shrink-0">
-                      {isAuthorizedToManage ? (
+                      {canUserEditCourse(user, course) ? (
                         <>
                           <Button
                             variant="ghost"
@@ -210,18 +210,20 @@ export default function CourseCards({
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon-xs"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDelete?.(Number(course.id));
-                            }}
-                            className="text-muted-foreground hover:text-destructive"
-                            title="Delete Course"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                          {(userRole === ROLES.SUPER_ADMIN || userRole === ROLES.ADMIN) && (
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete?.(Number(course.id));
+                              }}
+                              className="text-muted-foreground hover:text-destructive"
+                              title="Delete Course"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </>
                       ) : (
                         <span className="text-primary text-[11px] font-bold group-hover:translate-x-0.5 transition-transform">

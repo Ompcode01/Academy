@@ -413,8 +413,18 @@ class CourseService {
     const existing = await this.getCourseById(id);
     const existingSections = (existing as any)?.sections || [];
 
-    // Rule 11: Teacher MUST NOT be able to modify department, audience, enrollment config, ownership, teacher assignment
+    // Rule 11 & Teacher Assignment Guard: Teachers can ONLY edit assigned or created courses
     if (userContext?.role === "TEACHER") {
+      const teacherEmpId = userContext.employeeId ? BigInt(userContext.employeeId) : null;
+      const isCreator = existing?.creatorId && teacherEmpId ? existing.creatorId === teacherEmpId : false;
+      const isAssignedTeacher = (existing?.teachers || []).some(
+        (t: any) => (t.teacherId ? BigInt(t.teacherId) === teacherEmpId : BigInt(t.teacher?.id || t.id) === teacherEmpId)
+      );
+
+      if (!isCreator && !isAssignedTeacher) {
+        throw new Error("Forbidden: You can only edit courses assigned to you as a teacher.");
+      }
+
       delete data.departmentId;
       delete data.enrolledUserIds;
       delete data.teacherIds;
@@ -990,6 +1000,139 @@ class CourseService {
 
   async deleteContent(contentId: bigint) {
     return courseRepository.deleteContent(contentId);
+  }
+
+  async getCourseLearnersProgress(
+    courseId: bigint,
+    userContext?: { role?: string; employeeId?: bigint }
+  ) {
+    const course = await this.getCourseById(courseId);
+    if (!course) {
+      throw new Error("Course not found");
+    }
+
+    if (userContext?.role === "TEACHER") {
+      const teacherEmpId = userContext.employeeId ? BigInt(userContext.employeeId) : null;
+      const isCreator = course.creatorId && teacherEmpId ? course.creatorId === teacherEmpId : false;
+      const isAssignedTeacher = (course.teachers || []).some(
+        (t: any) => (t.teacherId ? BigInt(t.teacherId) === teacherEmpId : BigInt(t.teacher?.id || t.id) === teacherEmpId)
+      );
+
+      if (!isCreator && !isAssignedTeacher) {
+        throw new Error("Forbidden: You can only view analytics for courses assigned to you as a teacher.");
+      }
+    }
+
+    const contents: any[] = [];
+    (course.sections || []).forEach((sec: any) => {
+      (sec.contents || []).forEach((cnt: any) => {
+        contents.push({
+          id: cnt.id,
+          title: cnt.title,
+          contentType: cnt.contentType,
+          sectionTitle: sec.title,
+        });
+      });
+    });
+
+    const enrollments = await prisma.enrollment.findMany({
+      where: { courseId },
+      include: {
+        user: {
+          include: {
+            department: true,
+            userAccount: {
+              select: { lastLogin: true },
+            },
+          },
+        },
+      },
+      orderBy: { enrolledAt: "desc" },
+    });
+
+    const result = await Promise.all(
+      enrollments.map(async (en) => {
+        const uId = en.userId;
+        const [lessonProgresses, submissions] = await Promise.all([
+          prisma.userLessonProgress.findMany({
+            where: { courseId, userId: uId },
+          }),
+          prisma.assessmentSubmission.findMany({
+            where: { courseId, userId: uId },
+            orderBy: { submittedAt: "desc" },
+          }),
+        ]);
+
+        const completedLessonsCount = lessonProgresses.filter((lp) => lp.isCompleted).length;
+        const totalActiveSec = lessonProgresses.reduce(
+          (acc, curr) => acc + (curr.activeLearningSeconds || curr.watchedSeconds || 0),
+          0
+        );
+
+        const activeSec = Math.max(totalActiveSec, en.timeSpentSeconds || 0);
+        const hours = Math.floor(activeSec / 3600);
+        const minutes = Math.floor((activeSec % 3600) / 60);
+        const seconds = activeSec % 60;
+        const formattedTimeSpent =
+          hours > 0
+            ? `${hours}h ${minutes}m ${seconds}s`
+            : minutes > 0
+            ? `${minutes}m ${seconds}s`
+            : `${seconds}s`;
+
+        const lastActivityDate = lessonProgresses
+          .map((lp) => lp.lastActivityAt)
+          .concat([en.lastActivityAt as any])
+          .filter(Boolean)
+          .sort((a: any, b: any) => new Date(b).getTime() - new Date(a).getTime())[0];
+
+        return {
+          employeeId: Number(en.user.id),
+          employeeCode: en.user.employeeCode,
+          firstName: en.user.firstName,
+          lastName: en.user.lastName,
+          officialEmail: en.user.officialEmail,
+          designation: en.user.designation,
+          departmentName: en.user.department?.departmentName || "Engineering",
+          profileImage: en.user.profileImage,
+          enrolledAt: en.enrolledAt,
+          progress: Number(en.progress || 0),
+          status: en.status || "IN_PROGRESS",
+          completedAt: en.completedAt,
+          timeSpentSeconds: activeSec,
+          formattedTimeSpent,
+          completedLessonsCount,
+          totalLessonsCount: contents.length,
+          lastActivityAt: lastActivityDate || en.user.userAccount?.lastLogin || en.enrolledAt,
+          lessonsProgress: lessonProgresses.map((lp) => {
+            const cntInfo = contents.find((c) => String(c.id) === String(lp.contentId));
+            return {
+              contentId: Number(lp.contentId),
+              title: cntInfo?.title || `Content #${lp.contentId}`,
+              contentType: cntInfo?.contentType || "LESSON",
+              sectionTitle: cntInfo?.sectionTitle || "Module",
+              isCompleted: lp.isCompleted,
+              completedAt: lp.completedAt,
+              activeLearningSeconds: lp.activeLearningSeconds || lp.watchedSeconds || 0,
+              lastPosition: lp.lastPosition || 0,
+            };
+          }),
+          submissions: submissions.map((sub) => ({
+            id: Number(sub.id),
+            submissionType: sub.submissionType,
+            status: sub.status,
+            score: sub.score,
+            maxScore: sub.maxScore,
+            percentage: sub.percentage,
+            submittedAt: sub.submittedAt,
+            feedbackNotes: sub.feedback,
+            gradedBy: sub.gradedBy,
+          })),
+        };
+      })
+    );
+
+    return result;
   }
 }
 
