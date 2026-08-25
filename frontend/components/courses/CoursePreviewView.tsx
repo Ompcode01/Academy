@@ -520,37 +520,39 @@ export default function CoursePreviewView() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-foreground pb-12 select-none">
         {/* Header Breadcrumb */}
-        <div className="border-b border-border bg-background px-6 py-3.5 flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-3">
-            <Link href="/courses">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-3.5 w-3.5" /> Back to Catalog
-              </Button>
-            </Link>
-            <span className="text-border">|</span>
-            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-              <span>{categoryLabel}</span>
-              <span>&rsaquo;</span>
-              <span className="text-foreground truncate max-w-xs">{course.title}</span>
+        <div className="border-b border-border bg-background shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link href="/courses">
+                <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+                  <ArrowLeft className="h-3.5 w-3.5" /> Back to Catalog
+                </Button>
+              </Link>
+              <span className="text-border">|</span>
+              <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                <span>{categoryLabel}</span>
+                <span>&rsaquo;</span>
+                <span className="text-foreground truncate max-w-xs">{course.title}</span>
+              </div>
             </div>
-          </div>
 
-          {isEnrolled && (
-            <Button
-              onClick={() => setViewMode("player")}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-1.5 shadow"
-            >
-              <Play className="h-3.5 w-3.5 fill-current" /> Go to Course Player
-            </Button>
-          )}
+            {isEnrolled && (
+              <Button
+                onClick={() => setViewMode("player")}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-1.5 shadow"
+              >
+                <Play className="h-3.5 w-3.5 fill-current" /> Go to Course Player
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Hero Banner Section */}
-        <div className="bg-slate-900 text-white px-6 py-10 border-b border-slate-800">
-          <div className="max-w-[95%] w-[95%] mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+        <div className="bg-slate-900 text-white px-4 sm:px-6 lg:px-8 py-10 border-b border-slate-800">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-            {/* Left 3 Columns (75% width of 95% container): Course Hero Details */}
-            <div className="lg:col-span-3 space-y-4">
+            {/* Left 2 Columns (66% width): Course Hero Details */}
+            <div className="lg:col-span-2 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className="bg-[#C82333] text-white font-bold text-[10px] uppercase tracking-wider">
                   Code: {course.code || `CO${course.id}`}
@@ -604,10 +606,10 @@ export default function CoursePreviewView() {
               </div>
             </div>
 
-            {/* Right 1 Column (25% width): Sticky Action Card */}
+            {/* Right 1 Column (33% width): Sticky Action Card */}
             <div className="lg:col-span-1 bg-background dark:bg-slate-900 border border-border rounded-2xl shadow-xl overflow-hidden text-foreground">
               {/* Media Thumbnail */}
-              <div className="h-44 w-full relative bg-slate-950">
+              <div className="h-48 w-full relative bg-slate-950">
                 <img
                   src={course.thumbnail || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80"}
                   alt={course.title}
@@ -633,7 +635,7 @@ export default function CoursePreviewView() {
                     </p>
                     <Button
                       onClick={() => router.push("/login")}
-                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold h-10 text-xs shadow-md cursor-pointer"
+                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-extrabold h-10 text-xs shadow-md cursor-pointer flex items-center justify-center rounded-xl"
                     >
                       Sign In as Learner to Enroll
                     </Button>
@@ -642,9 +644,10 @@ export default function CoursePreviewView() {
                   <div className="space-y-3">
                     <Button
                       onClick={() => setViewMode("player")}
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold h-11 text-sm gap-2 shadow-lg"
+                      className="w-full bg-[#C82333] hover:bg-[#a71d2a] text-white font-extrabold h-11 text-sm gap-2 shadow-lg flex items-center justify-center rounded-xl cursor-pointer px-4"
                     >
-                      <Play className="h-4 w-4 fill-current" /> Continue Learning
+                      <Play className="h-4 w-4 fill-current shrink-0" />
+                      <span className="truncate">Continue Learning</span>
                     </Button>
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-xs font-semibold">
@@ -659,15 +662,17 @@ export default function CoursePreviewView() {
                     <Button
                       onClick={handleEnrollNow}
                       disabled={enrolling}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold h-11 text-sm gap-2 shadow-lg"
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold h-11 text-sm gap-2 shadow-lg flex items-center justify-center rounded-xl cursor-pointer px-4"
                     >
                       {enrolling ? (
                         <>
-                          <RefreshCw className="h-4 w-4 animate-spin" /> Enrolling...
+                          <RefreshCw className="h-4 w-4 animate-spin shrink-0" />
+                          <span className="truncate">Enrolling...</span>
                         </>
                       ) : (
                         <>
-                          <Sparkles className="h-4 w-4" /> Enroll Now (Free)
+                          <Sparkles className="h-4 w-4 shrink-0" />
+                          <span className="truncate">Enroll Now (Free)</span>
                         </>
                       )}
                     </Button>
@@ -690,22 +695,34 @@ export default function CoursePreviewView() {
                 {/* Dynamic Curriculum Metrics */}
                 <div className="pt-3 border-t border-border space-y-2.5 text-xs text-muted-foreground">
                   <div className="font-bold text-foreground text-xs">This course includes:</div>
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="flex items-center gap-2">
-                      <Layers className="h-3.5 w-3.5 text-primary" />
-                      <span><strong>{totalSectionsCount}</strong> Sections</span>
+                  <div className="grid grid-cols-2 gap-2.5 text-xs">
+                    <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/20 border border-border">
+                      <Layers className="h-4 w-4 text-primary shrink-0" />
+                      <div>
+                        <span className="font-extrabold text-foreground block text-sm">{totalSectionsCount}</span>
+                        <span className="text-[10px] text-muted-foreground font-medium">Sections</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-3.5 w-3.5 text-blue-500" />
-                      <span><strong>{totalContentsCount}</strong> Lessons</span>
+                    <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/20 border border-border">
+                      <FileText className="h-4 w-4 text-blue-500 shrink-0" />
+                      <div>
+                        <span className="font-extrabold text-foreground block text-sm">{totalContentsCount}</span>
+                        <span className="text-[10px] text-muted-foreground font-medium">Lessons</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <HelpCircle className="h-3.5 w-3.5 text-amber-500" />
-                      <span><strong>{totalQuizzesCount}</strong> Quizzes</span>
+                    <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/20 border border-border">
+                      <HelpCircle className="h-4 w-4 text-amber-500 shrink-0" />
+                      <div>
+                        <span className="font-extrabold text-foreground block text-sm">{totalQuizzesCount}</span>
+                        <span className="text-[10px] text-muted-foreground font-medium">Quizzes</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <FileCheck2 className="h-3.5 w-3.5 text-purple-500" />
-                      <span><strong>{totalAssignmentsCount}</strong> Assignments</span>
+                    <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/20 border border-border">
+                      <FileCheck2 className="h-4 w-4 text-purple-500 shrink-0" />
+                      <div>
+                        <span className="font-extrabold text-foreground block text-sm">{totalAssignmentsCount}</span>
+                        <span className="text-[10px] text-muted-foreground font-medium">Assignments</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -715,9 +732,9 @@ export default function CoursePreviewView() {
         </div>
 
         {/* Main Details Body */}
-        <div className="max-w-[95%] w-[95%] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Left 3 Columns (75% width): Details & Analytics Breakdown */}
-          <div className="lg:col-span-3 space-y-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left 2 Columns (66% width): Details & Analytics Breakdown */}
+          <div className="lg:col-span-2 space-y-8">
 
             {/* 1. Course Identity & Classification Card */}
             <div className="bg-card rounded-2xl border border-border p-6 shadow-sm space-y-4">
@@ -1035,6 +1052,14 @@ export default function CoursePreviewView() {
             </div>
           </div>
         </div>
+
+        {/* Teacher / Instructor Enrolled Learner Summary Modal */}
+        <TeacherLearnerSummaryModal
+          open={isLearnerModalOpen}
+          onOpenChange={setIsLearnerModalOpen}
+          learner={selectedLearnerSummary}
+          courseTitle={course?.title}
+        />
       </div>
     );
   }

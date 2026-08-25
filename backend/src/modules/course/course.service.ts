@@ -1104,17 +1104,17 @@ class CourseService {
           completedLessonsCount,
           totalLessonsCount: contents.length,
           lastActivityAt: lastActivityDate || en.user.userAccount?.lastLogin || en.enrolledAt,
-          lessonsProgress: lessonProgresses.map((lp) => {
-            const cntInfo = contents.find((c) => String(c.id) === String(lp.contentId));
+          lessonsProgress: contents.map((cnt) => {
+            const lp = lessonProgresses.find((p) => String(p.contentId) === String(cnt.id));
             return {
-              contentId: Number(lp.contentId),
-              title: cntInfo?.title || `Content #${lp.contentId}`,
-              contentType: cntInfo?.contentType || "LESSON",
-              sectionTitle: cntInfo?.sectionTitle || "Module",
-              isCompleted: lp.isCompleted,
-              completedAt: lp.completedAt,
-              activeLearningSeconds: lp.activeLearningSeconds || lp.watchedSeconds || 0,
-              lastPosition: lp.lastPosition || 0,
+              contentId: Number(cnt.id),
+              title: cnt.title,
+              contentType: cnt.contentType || "LESSON",
+              sectionTitle: cnt.sectionTitle || "Module",
+              isCompleted: lp ? Boolean(lp.isCompleted) : false,
+              completedAt: lp?.completedAt || undefined,
+              activeLearningSeconds: lp ? (lp.activeLearningSeconds || lp.watchedSeconds || 0) : 0,
+              lastPosition: lp?.lastPosition || 0,
             };
           }),
           submissions: submissions.map((sub) => ({

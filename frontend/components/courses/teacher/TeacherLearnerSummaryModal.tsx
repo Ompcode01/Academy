@@ -15,6 +15,7 @@ import {
   User,
   Clock,
   CheckCircle2,
+  Circle,
   BookOpen,
   Award,
   Calendar,
@@ -113,7 +114,7 @@ export default function TeacherLearnerSummaryModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-card border-border shadow-2xl">
+      <DialogContent className="w-[70vw] max-w-[70vw] sm:max-w-[70vw] max-h-[90vh] flex flex-col p-0 overflow-hidden bg-card border-border shadow-2xl">
         {/* Modal Header */}
         <DialogHeader className="p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white shrink-0">
           <div className="flex items-start justify-between">
@@ -274,9 +275,15 @@ export default function TeacherLearnerSummaryModal({
                                   <CheckCircle2 className="h-3.5 w-3.5" />
                                   Completed
                                 </span>
-                              ) : (
+                              ) : lp.activeLearningSeconds > 0 ? (
                                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                                  <Clock className="h-3.5 w-3.5" />
                                   In Progress
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                                  <Circle className="h-3.5 w-3.5" />
+                                  Not Started
                                 </span>
                               )}
                             </td>
