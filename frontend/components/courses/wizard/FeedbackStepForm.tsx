@@ -16,6 +16,7 @@ import {
   Sparkles,
   Bookmark,
   Save,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import toast from "react-hot-toast";
@@ -662,14 +663,14 @@ export default function FeedbackStepForm({
 
         {/* Stepper Footer */}
         <div className="flex items-center justify-between border-t border-border pt-5">
-          <Button variant="outline" type="button" onClick={onCancel}>
-            Cancel
+          <Button variant="outline" type="button" onClick={onCancel} className="gap-2 text-xs font-semibold cursor-pointer">
+            <ArrowLeft className="h-4 w-4" /> Back to Courses
           </Button>
           <div className="flex items-center gap-3">
-            <Button variant="secondary" type="button" onClick={onBack}>
-              &larr; Back
+            <Button variant="secondary" type="button" onClick={onBack} className="gap-1.5 text-xs font-semibold cursor-pointer">
+              <ArrowLeft className="h-4 w-4" /> Previous Step
             </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-6">
+            <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs px-6 cursor-pointer">
               Continue to Certificate &rarr;
             </Button>
           </div>

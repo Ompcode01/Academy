@@ -29,6 +29,7 @@ import {
   FileText,
   Layers,
   Lock,
+  ArrowLeft,
 } from "lucide-react";
 import { generateAutoCourseCode, generateAutoShortName } from "@/lib/courseTitleHelper";
 
@@ -530,10 +531,10 @@ export default function BasicInfoForm({
 
       {/* Stepper Footer */}
       <div className="flex items-center justify-between border-t border-border pt-6">
-        <Button variant="outline" onClick={onCancel} className="px-6">
-          Cancel
+        <Button variant="outline" onClick={onCancel} className="gap-2 px-5 font-semibold text-xs border-border hover:bg-muted cursor-pointer">
+          <ArrowLeft className="h-4 w-4" /> Back to Courses
         </Button>
-        <Button onClick={handleNextClick} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 shadow-sm">
+        <Button onClick={handleNextClick} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 shadow-sm text-xs cursor-pointer">
           Save &amp; Next &rarr;
         </Button>
       </div>

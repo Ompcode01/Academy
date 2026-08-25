@@ -9,6 +9,7 @@ import {
   Plus,
   Trash2,
   Award,
+  ArrowLeft,
 } from "lucide-react";
 import QuizBuilderModal from "../builder/QuizBuilderModal";
 import AssignmentBuilderModal from "../builder/AssignmentBuilderModal";
@@ -368,14 +369,14 @@ export default function AssessmentsForm({
 
       {/* Stepper Footer */}
       <div className="flex items-center justify-between border-t border-border pt-5">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
+        <Button variant="outline" onClick={onCancel} className="gap-2 text-xs font-semibold cursor-pointer">
+          <ArrowLeft className="h-4 w-4" /> Back to Courses
         </Button>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" onClick={onBack}>
-            &larr; Back
+          <Button variant="secondary" onClick={onBack} className="gap-1.5 text-xs font-semibold cursor-pointer">
+            <ArrowLeft className="h-4 w-4" /> Previous Step
           </Button>
-          <Button onClick={onNext} className="bg-primary text-primary-foreground">
+          <Button onClick={onNext} className="bg-primary text-primary-foreground font-bold text-xs cursor-pointer">
             Save &amp; Next &rarr;
           </Button>
         </div>

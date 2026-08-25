@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ArrowLeft, Eye } from "lucide-react";
 import WizardStepper from "@/components/courses/wizard/WizardStepper";
 import BasicInfoForm, { BasicInfoData } from "@/components/courses/wizard/BasicInfoForm";
 import ModulesForm from "@/components/courses/wizard/ModulesForm";
@@ -18,6 +19,7 @@ import { ROLES, canUserEditCourse } from "@/lib/rbac";
 import toast from "react-hot-toast";
 import { getCourseDisplayTitle, generateAutoCourseCode } from "@/lib/courseTitleHelper";
 import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
+import { Button } from "@/components/ui/button";
 
 const wizardSteps = [
   { number: 1, label: "Basic Info" },
@@ -532,15 +534,47 @@ function CreateCourseContent() {
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">
-          {courseId
-            ? `Edit Course: ${getCourseDisplayTitle(wizardState.basicInfo.title, wizardState.basicInfo.shortName) || "Course"}`
-            : "Create New Course"}
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Configure basic details, curriculum, assessments, enrollment, certificate, and publish to learner dashboard.
-        </p>
+      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary transition-colors mb-2 cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Courses
+          </button>
+          <h1 className="text-2xl font-bold text-foreground">
+            {courseId
+              ? `Edit Course: ${getCourseDisplayTitle(wizardState.basicInfo.title, wizardState.basicInfo.shortName) || "Course"}`
+              : "Create New Course"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Configure basic details, curriculum, assessments, enrollment, certificate, and publish to learner dashboard.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2.5 shrink-0 self-start md:self-auto">
+          {courseId && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/courses/${courseId}`)}
+              className="gap-2 text-xs font-bold border-border hover:bg-muted cursor-pointer"
+            >
+              <Eye className="h-4 w-4 text-primary" /> View Course Preview
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleCancel}
+            className="gap-2 text-xs font-bold border-border hover:bg-muted cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Courses
+          </Button>
+        </div>
       </div>
 
       {/* Stepper Header */}

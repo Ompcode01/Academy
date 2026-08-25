@@ -19,6 +19,7 @@ import {
   Globe,
   Lock,
   MessageSquare,
+  ArrowLeft,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import CoursePreviewModal from "../builder/CoursePreviewModal";
@@ -338,18 +339,18 @@ export default function ReviewPublishForm({
 
       {/* Stepper Footer */}
       <div className="flex items-center justify-between border-t border-border pt-5">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
+        <Button variant="outline" onClick={onCancel} className="gap-2 text-xs font-semibold cursor-pointer">
+          <ArrowLeft className="h-4 w-4" /> Back to Courses
         </Button>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" onClick={onBack}>
-            &larr; Back
+          <Button variant="secondary" onClick={onBack} className="gap-1.5 text-xs font-semibold cursor-pointer">
+            <ArrowLeft className="h-4 w-4" /> Previous Step
           </Button>
           <Button
             type="button"
             onClick={() => setConfirmModalOpen(true)}
             disabled={loading}
-            className={`gap-2 font-bold text-white ${
+            className={`gap-2 font-bold text-xs text-white cursor-pointer ${
               status === "PUBLISHED"
                 ? "bg-emerald-600 hover:bg-emerald-700"
                 : "bg-primary hover:bg-primary/90"

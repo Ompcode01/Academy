@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Award, Sparkles, CheckCircle2, Ban, ShieldCheck } from "lucide-react";
+import { Award, Sparkles, CheckCircle2, Ban, ShieldCheck, ArrowLeft } from "lucide-react";
 import CertificatePreview from "@/components/certificates/CertificatePreview";
 
 export interface CertificateRuleData {
@@ -227,14 +227,14 @@ export default function CertificateForm({
 
       {/* Stepper Footer Controls */}
       <div className="flex items-center justify-between border-t border-border pt-5">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
+        <Button variant="outline" onClick={onCancel} className="gap-2 text-xs font-semibold cursor-pointer">
+          <ArrowLeft className="h-4 w-4" /> Back to Courses
         </Button>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" onClick={onBack}>
-            &larr; Back
+          <Button variant="secondary" onClick={onBack} className="gap-1.5 text-xs font-semibold cursor-pointer">
+            <ArrowLeft className="h-4 w-4" /> Previous Step
           </Button>
-          <Button onClick={onNext} className="bg-primary text-primary-foreground font-bold px-6">
+          <Button onClick={onNext} className="bg-primary text-primary-foreground font-bold text-xs px-6 cursor-pointer">
             Save &amp; Ready for Review &rarr;
           </Button>
         </div>
