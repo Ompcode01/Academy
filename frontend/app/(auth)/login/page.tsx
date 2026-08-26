@@ -2,14 +2,13 @@ import { Suspense } from "react";
 import LoginForm from "@/components/auth/login-form";
 import Footer from "@/components/layout/Footer";
 import SakshamLogo from "@/components/common/SakshamLogo";
+import LiveBackground from "@/components/common/LiveBackground";
 
 export default function LoginPage() {
   return (
     <main className="flex min-h-screen flex-col justify-between bg-gradient-to-br from-[#050B18] via-[#0B1E3D] to-[#002855] text-white relative overflow-hidden">
-      {/* Seamless Ambient Blue & Cyan Glow Effects across the entire page */}
-      <div className="absolute -left-20 -top-20 h-[500px] w-[500px] rounded-full bg-blue-600/20 blur-[130px] pointer-events-none" />
-      <div className="absolute right-0 bottom-0 h-[500px] w-[500px] rounded-full bg-cyan-500/15 blur-[130px] pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-indigo-500/10 blur-[150px] pointer-events-none" />
+      {/* Dynamic Live Background with interactive particle constellation and glowing ambient mesh */}
+      <LiveBackground />
 
       <div className="flex flex-1 w-full flex-col lg:flex-row relative z-10">
         {/* Left side: Clean Branding Panel */}
