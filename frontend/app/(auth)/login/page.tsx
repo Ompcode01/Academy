@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import LoginForm from "@/components/auth/login-form";
 import Footer from "@/components/layout/Footer";
-import HarbingerLogoIcon from "@/components/common/HarbingerLogoIcon";
+import SakshamLogo from "@/components/common/SakshamLogo";
 
 export default function LoginPage() {
   return (
@@ -15,12 +15,8 @@ export default function LoginPage() {
         {/* Left side: Clean Branding Panel */}
         <div className="relative hidden w-1/2 flex-col justify-between p-16 text-white lg:flex">
           {/* Logo - Top Left Corner */}
-          <div className="flex items-center gap-3.5">
-            <HarbingerLogoIcon size={44} color="#E33446" />
-            <div className="flex flex-col font-extrabold leading-none tracking-tight text-white">
-              <span className="text-xl font-black tracking-tight text-white">Harbinger</span>
-              <span className="text-xl font-black tracking-tight text-white">Group</span>
-            </div>
+          <div className="flex items-center">
+            <SakshamLogo variant="horizontal" height={44} />
           </div>
 
           {/* Headline Text - Centered */}
@@ -38,12 +34,8 @@ export default function LoginPage() {
         {/* Right side: Login Form Container */}
         <div className="flex w-full min-h-[85vh] lg:min-h-0 flex-col justify-center items-center p-8 lg:w-1/2 relative">
           {/* Mobile Header */}
-          <div className="absolute top-8 left-8 flex items-center gap-3 lg:hidden">
-            <HarbingerLogoIcon size={32} color="#E33446" />
-            <div className="flex flex-col font-extrabold leading-none tracking-tight text-white">
-              <span className="text-sm font-black tracking-tight text-white">Harbinger</span>
-              <span className="text-sm font-black tracking-tight text-white">Group</span>
-            </div>
+          <div className="absolute top-8 left-8 flex items-center lg:hidden">
+            <SakshamLogo variant="horizontal" height={32} />
           </div>
 
           <div className="w-full max-w-md space-y-6 flex flex-col items-center justify-center">

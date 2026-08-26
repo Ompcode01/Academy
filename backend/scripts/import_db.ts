@@ -304,7 +304,12 @@ async function importDatabase() {
     if (dump.enrollments?.length > 0) {
       for (const en of dump.enrollments) {
         await prisma.enrollment.upsert({
-          where: { id: toBigInt(en.id) },
+          where: {
+            userId_courseId: {
+              userId: toBigInt(en.userId),
+              courseId: toBigInt(en.courseId),
+            },
+          },
           update: {
             progress: en.progress,
             status: en.status,
