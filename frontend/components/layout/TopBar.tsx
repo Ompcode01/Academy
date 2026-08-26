@@ -12,6 +12,7 @@ import GuestBanner from "@/components/layout/GuestBanner";
 import TopBarSearch from "@/components/layout/TopBarSearch";
 import HarbingerLogoIcon from "@/components/common/HarbingerLogoIcon";
 import CapDevLogo from "@/components/common/CapDevLogo";
+import SakshamLogo from "@/components/common/SakshamLogo";
 
 const fullNameMap: Record<string, string> = {
   omprakash: "Omprakash Pandey",
@@ -68,25 +69,21 @@ export default function TopBar() {
             </div>
           </div>
 
-          {/* When search expands, shift Elevate... Go Beyond and CapDev logo to the left side next to logo */}
+          {/* When search expands, shift Saksham logo and CapDev logo to the left side next to logo */}
           {isSearchExpanded && (
             <div className="hidden lg:flex items-center gap-3 animate-in fade-in slide-in-from-left-4 duration-200">
               <div className="h-4 w-px bg-white/20" />
-              <span className="text-xs font-medium text-slate-300 whitespace-nowrap">
-                Elevate... Go Beyond
-              </span>
+              <SakshamLogo height={24} />
               <div className="h-4 w-px bg-white/20" />
               <CapDevLogo height={20} />
             </div>
           )}
         </div>
 
-        {/* Center Tagline: Elevate... Go Beyond (Shown only when search is collapsed) */}
+        {/* Center Logo: Saksham Logo (Shown only when search is collapsed) */}
         {!isSearchExpanded && (
-          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center pointer-events-none transition-all">
-            <span className="text-xs sm:text-sm font-medium tracking-wide text-slate-300">
-              Elevate... Go Beyond
-            </span>
+          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center pointer-events-auto transition-all hover:scale-105 duration-200">
+            <SakshamLogo height={38} variant="horizontal" />
           </div>
         )}
 

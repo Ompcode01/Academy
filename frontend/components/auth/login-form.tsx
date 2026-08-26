@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, User, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
+import SakshamLogo from "@/components/common/SakshamLogo";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -78,9 +79,14 @@ export default function LoginForm() {
 
   return (
     <div className="space-y-6 w-full max-w-sm bg-slate-900/40 p-8 rounded-xl border border-slate-800 backdrop-blur-sm shadow-xl">
+      {/* Brand Header Logo */}
+      <div className="flex flex-col items-center justify-center pb-4 border-b border-slate-800/80">
+        <SakshamLogo variant="vertical" height={48} />
+      </div>
+
       {/* Title */}
-      <div className="text-center lg:text-left">
-        <h2 className="text-2xl font-extrabold tracking-tight text-white">
+      <div className="text-center">
+        <h2 className="text-xl font-bold tracking-tight text-white">
           Sign In
         </h2>
       </div>
