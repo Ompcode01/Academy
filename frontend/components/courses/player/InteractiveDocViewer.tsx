@@ -22,6 +22,7 @@ interface InteractiveDocViewerProps {
   contentUrl?: string;
   description?: string;
   configJson?: string;
+  onScrollToEnd?: () => void;
 }
 
 /**
@@ -56,6 +57,7 @@ export default function InteractiveDocViewer({
   contentUrl,
   description,
   configJson,
+  onScrollToEnd,
 }: InteractiveDocViewerProps) {
   const hasCustomUrl = Boolean(contentUrl && contentUrl.trim() !== "");
   const [pdfCheckState, setPdfCheckState] = React.useState<"loading" | "found" | "notfound">("loading");
@@ -465,9 +467,17 @@ export default function InteractiveDocViewer({
 
         {/* Only show Admin Lesson Notes if the description is actual text, not JSON slide data */}
         {plainDescription && (
-          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 space-y-1">
-            <strong className="text-white block font-bold">Admin Lesson Notes:</strong>
-            <p className="leading-relaxed">{plainDescription}</p>
+          <div
+            onScroll={(e) => {
+              const target = e.currentTarget;
+              if (target.scrollTop + target.clientHeight >= target.scrollHeight - 30) {
+                onScrollToEnd?.();
+              }
+            }}
+            className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 space-y-1 max-h-[300px] overflow-y-auto"
+          >
+            <strong className="text-white block font-bold">Article Content / Lesson Notes:</strong>
+            <p className="leading-relaxed whitespace-pre-line">{plainDescription}</p>
           </div>
         )}
       </div>

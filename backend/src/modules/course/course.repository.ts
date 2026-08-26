@@ -20,6 +20,8 @@ interface CreateCourseData {
   description?: string;
   thumbnail?: string;
   duration?: number;
+  targetDurationMinutes?: number | null;
+  exactDurationSeconds?: number;
   level?: string;
   language?: string;
   status?: string;
@@ -35,6 +37,8 @@ interface CreateSectionData {
   title: string;
   description?: string;
   sectionOrder: number;
+  targetDurationMinutes?: number | null;
+  exactDurationSeconds?: number;
   isPublished?: boolean;
 }
 
@@ -45,6 +49,9 @@ interface CreateContentData {
   contentUrl?: string;
   description?: string;
   duration?: number;
+  exactDurationSeconds?: number;
+  durationSource?: string;
+  durationMetadata?: string;
   contentOrder: number;
   isMandatory?: boolean;
   isPublished?: boolean;
@@ -296,6 +303,8 @@ class CourseRepository {
         title: data.title,
         description: data.description,
         sectionOrder: data.sectionOrder,
+        targetDurationMinutes: data.targetDurationMinutes,
+        exactDurationSeconds: data.exactDurationSeconds ?? 0,
         isPublished: data.isPublished ?? false,
       },
     });
@@ -328,6 +337,9 @@ class CourseRepository {
         contentUrl: data.contentUrl,
         description: data.description,
         duration: data.duration,
+        exactDurationSeconds: data.exactDurationSeconds ?? 0,
+        durationSource: data.durationSource || "CALCULATED",
+        durationMetadata: data.durationMetadata || null,
         contentOrder: data.contentOrder,
         isMandatory: data.isMandatory ?? false,
         isPublished: data.isPublished ?? false,

@@ -33,6 +33,8 @@ import AssignmentBuilderModal from "./AssignmentBuilderModal";
 import FeedbackBuilderModal from "./FeedbackBuilderModal";
 import AdminSubmissionsReview from "./AdminSubmissionsReview";
 import CoursePreviewModal from "./CoursePreviewModal";
+import { getCourseDisplayTitle } from "@/lib/courseTitleHelper";
+import { calculateFrontendDuration, formatFrontendDuration } from "@/lib/durationHelper";
 
 export interface SectionItem {
   id: number;
@@ -57,8 +59,6 @@ export interface ContentItem {
   quizConfigJson?: string;
   assignmentConfigJson?: string;
 }
-
-import { getCourseDisplayTitle } from "@/lib/courseTitleHelper";
 
 interface CurriculumBuilderViewProps {
   courseTitle?: string;
@@ -165,6 +165,7 @@ export default function CurriculumBuilderView({
   const handleEditContent = (secId: number, item: ContentItem) => {
     setActiveSectionId(secId);
     setEditingItem({ secId, item });
+    setSelectedContentType(item.contentType as ContentTypeKey);
     if (item.contentType === "QUIZ") {
       setQuizBuilderOpen(true);
     } else if (item.contentType === "ASSIGNMENT") {
@@ -294,6 +295,7 @@ export default function CurriculumBuilderView({
                     description: assignmentData.instructions || assignmentData.description,
                     dueDate: assignmentData.deadline,
                     maxMarks: assignmentData.maxMarks || 100,
+                    duration: assignmentData.durationMinutes || assignmentData.duration || 30,
                     assignmentConfigJson,
                   }
                   : c
@@ -310,6 +312,7 @@ export default function CurriculumBuilderView({
         description: assignmentData.instructions || assignmentData.description,
         dueDate: assignmentData.deadline,
         maxMarks: assignmentData.maxMarks || 100,
+        duration: assignmentData.durationMinutes || assignmentData.duration || 30,
         assignmentConfigJson,
         status: "Draft",
       };
@@ -404,6 +407,58 @@ export default function CurriculumBuilderView({
     }
   };
 
+  // Calculate cumulative duration totals for sections and course
+  let courseTotalSeconds = 0;
+  const sectionDurationsMap: Record<number, { exactSeconds: number; displayFormatted: string; roundedHours: number; udemyWarning?: string; blocked?: boolean; blockReason?: string }> = {};
+
+  sections.forEach((sec) => {
+    let secSecs = 0;
+    let otherSecs = 0;
+    const nonUdemyContents = (sec.contents || []).filter((c) => c.contentType !== "UDEMY" && (c.contentType as string) !== "EXTERNAL");
+    const udemyContents = (sec.contents || []).filter((c) => c.contentType === "UDEMY" || (c.contentType as string) === "EXTERNAL");
+
+    nonUdemyContents.forEach((cnt) => {
+      const calc = calculateFrontendDuration({
+        contentType: cnt.contentType,
+        description: cnt.description,
+        durationMinutes: cnt.duration,
+        quizConfigJson: cnt.quizConfigJson,
+      });
+      secSecs += calc.exactDurationSeconds;
+      otherSecs += calc.exactDurationSeconds;
+    });
+
+    let secWarning: string | undefined = undefined;
+    let secBlocked = false;
+    let secBlockReason: string | undefined = undefined;
+
+    udemyContents.forEach((cnt) => {
+      const calc = calculateFrontendDuration({
+        contentType: cnt.contentType,
+        durationMinutes: cnt.duration,
+      });
+      secSecs += calc.exactDurationSeconds;
+      if (calc.warning) secWarning = calc.warning;
+      if (calc.blocked) {
+        secBlocked = true;
+        secBlockReason = calc.blockReason;
+      }
+    });
+
+    courseTotalSeconds += secSecs;
+    const formatted = formatFrontendDuration(secSecs);
+    sectionDurationsMap[sec.id] = {
+      exactSeconds: secSecs,
+      displayFormatted: formatted.displayString,
+      roundedHours: formatted.roundedHours,
+      udemyWarning: secWarning,
+      blocked: secBlocked,
+      blockReason: secBlockReason,
+    };
+  });
+
+  const courseFormatted = formatFrontendDuration(courseTotalSeconds);
+
   return (
     <div className="space-y-6">
       {/* Header Banner */}
@@ -426,12 +481,21 @@ export default function CurriculumBuilderView({
                 {status}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-3">
+            <p className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center gap-3">
               <span>Level: <strong>{level}</strong></span>
               <span>•</span>
               <span>Category: <strong>{category}</strong></span>
+              {durationHours && durationHours > 0 ? (
+                <>
+                  <span>•</span>
+                  <span>Target Duration: <strong>{durationHours} Hours</strong></span>
+                </>
+              ) : null}
               <span>•</span>
-              <span>Duration: <strong>{durationHours} Hours</strong></span>
+              <span className="text-primary font-bold">
+                {durationHours && durationHours > 0 ? "Calculated: " : "Course Total Duration: "}
+                <strong>{courseFormatted.displayString}</strong> ({courseFormatted.roundedHours}h display)
+              </span>
             </p>
           </div>
         </div>
@@ -451,11 +515,27 @@ export default function CurriculumBuilderView({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sections List */}
         <div className="lg:col-span-3 space-y-4">
-          {sections.map((section) => (
+          {sections.map((section) => {
+            const secInfo = sectionDurationsMap[section.id] || { displayFormatted: "0m", roundedHours: 0 };
+            return (
               <div
                 key={section.id}
                 className="rounded-2xl border border-border bg-card overflow-hidden transition-all shadow-sm"
               >
+                {/* Udemy Warning or Blocker Alert Banner */}
+                {secInfo.blocked && (
+                  <div className="p-3 bg-red-500/10 border-b border-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                    🚨 {secInfo.blockReason}
+                  </div>
+                )}
+                {secInfo.udemyWarning && !secInfo.blocked && (
+                  <div className="p-3 bg-amber-500/10 border-b border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-semibold flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-amber-500 shrink-0" />
+                    ⚠️ {secInfo.udemyWarning}
+                  </div>
+                )}
+
                 {/* Section Header */}
                 <div className="flex items-center justify-between p-4 bg-muted/20 border-b border-border">
                   <div className="flex items-center gap-3">
@@ -532,7 +612,15 @@ export default function CurriculumBuilderView({
                                   {item.title}
                                 </span>
                                 <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
-                                  {item.duration && <span>{item.duration} Min</span>}
+                                  {(() => {
+                                    const calc = calculateFrontendDuration({
+                                      contentType: item.contentType,
+                                      description: item.description,
+                                      durationMinutes: item.duration,
+                                      quizConfigJson: item.quizConfigJson,
+                                    });
+                                    return <span className="font-semibold text-primary">{calc.displayFormatted}</span>;
+                                  })()}
                                   {item.fileSize && <span>{item.fileSize}</span>}
                                   {item.questionsCount !== undefined && item.questionsCount !== null && (
                                     <span>{item.questionsCount} Questions{item.maxMarks ? ` • ${item.maxMarks} Marks` : ""}</span>
@@ -585,7 +673,8 @@ export default function CurriculumBuilderView({
                   </div>
                 )}
               </div>
-            ))}
+            );
+          })}
 
           {/* Add Section Button */}
           <Button
@@ -648,27 +737,40 @@ export default function CurriculumBuilderView({
       <AddContentModal
         open={addContentOpen}
         type={selectedContentType}
-        onOpenChange={setAddContentOpen}
+        initialData={editingItem?.item}
+        onOpenChange={(op) => {
+          setAddContentOpen(op);
+          if (!op) setEditingItem(null);
+        }}
         onSaveContent={handleSaveGeneralContent}
       />
 
       <QuizBuilderModal
         open={quizBuilderOpen}
-        onOpenChange={setQuizBuilderOpen}
+        onOpenChange={(op) => {
+          setQuizBuilderOpen(op);
+          if (!op) setEditingItem(null);
+        }}
         initialData={editingItem?.item?.quizConfigJson ? (typeof editingItem.item.quizConfigJson === "string" ? JSON.parse(editingItem.item.quizConfigJson) : editingItem.item.quizConfigJson) : editingItem?.item}
         onSaveQuiz={handleSaveQuiz}
       />
 
       <AssignmentBuilderModal
         open={assignmentBuilderOpen}
-        onOpenChange={setAssignmentBuilderOpen}
+        onOpenChange={(op) => {
+          setAssignmentBuilderOpen(op);
+          if (!op) setEditingItem(null);
+        }}
         initialData={editingItem?.item?.assignmentConfigJson ? (typeof editingItem.item.assignmentConfigJson === "string" ? JSON.parse(editingItem.item.assignmentConfigJson) : editingItem.item.assignmentConfigJson) : editingItem?.item}
         onSaveAssignment={handleSaveAssignment}
       />
 
       <FeedbackBuilderModal
         open={feedbackBuilderOpen}
-        onOpenChange={setFeedbackBuilderOpen}
+        onOpenChange={(op) => {
+          setFeedbackBuilderOpen(op);
+          if (!op) setEditingItem(null);
+        }}
         initialData={editingItem?.item?.quizConfigJson ? (typeof editingItem.item.quizConfigJson === "string" ? JSON.parse(editingItem.item.quizConfigJson) : editingItem.item.quizConfigJson) : editingItem?.item}
         onSaveFeedback={handleSaveFeedback}
       />

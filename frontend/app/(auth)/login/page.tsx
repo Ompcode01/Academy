@@ -15,7 +15,7 @@ export default function LoginPage() {
         <div className="relative hidden w-1/2 flex-col justify-between p-16 text-white lg:flex">
           {/* Logo - Top Left Corner */}
           <div className="flex items-center">
-            <SakshamLogo variant="horizontal" height={44} />
+            <SakshamLogo height={44} className="hover:scale-105 transition-transform" />
           </div>
 
           {/* Headline Text - Centered */}
@@ -34,7 +34,7 @@ export default function LoginPage() {
         <div className="flex w-full min-h-[85vh] lg:min-h-0 flex-col justify-center items-center p-8 lg:w-1/2 relative">
           {/* Mobile Header */}
           <div className="absolute top-8 left-8 flex items-center lg:hidden">
-            <SakshamLogo variant="horizontal" height={32} />
+            <SakshamLogo height={36} />
           </div>
 
           <div className="w-full max-w-md space-y-6 flex flex-col items-center justify-center">

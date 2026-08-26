@@ -72,6 +72,29 @@ export default function QuizBuilderModal({
 
   const [questions, setQuestions] = useState<QuestionData[]>([]);
 
+  // Automatically recalculate quiz duration whenever questions are modified
+  useEffect(() => {
+    if (questions && questions.length > 0) {
+      let totalSecs = 0;
+      for (const q of questions) {
+        // @ts-ignore
+        const qType = (q.questionType || q.type || q.category || "MCQ").toUpperCase();
+        if (qType.includes("TRUE") || qType.includes("FALSE") || qType === "TF" || qType === "BOOLEAN") {
+          totalSecs += 15;
+        } else if (qType.includes("SHORT") || qType.includes("ESSAY") || qType === "SHORT_ANSWER") {
+          totalSecs += 60;
+        } else if (qType.includes("CODING") || qType.includes("CODE") || qType === "PROGRAMMING") {
+          totalSecs += 180;
+        } else if (qType.includes("FEEDBACK") || qType.includes("RATING") || qType === "SCALE") {
+          totalSecs += 15;
+        } else {
+          totalSecs += 30; // MCQ default
+        }
+      }
+      setDurationMinutes(Math.ceil(totalSecs / 60) || 1);
+    }
+  }, [questions]);
+
   useEffect(() => {
     if (open) {
       if (initialData) {
@@ -87,14 +110,15 @@ export default function QuizBuilderModal({
       } else {
         setTitle("");
         setDescription("");
-        setDurationMinutes(20);
+        setDurationMinutes(5);
         setPassingPercentage(70);
-        setMaxAttempts(3);
+        setMaxAttempts(1);
         setShuffleQuestions(true);
         setShowAnswers(true);
         setOneQuestionAtTime(false);
         setQuestions([]);
       }
+      setActiveStep("DETAILS");
     }
   }, [open, initialData]);
 
@@ -309,12 +333,14 @@ What is the time complexity of binary search?,MCQ,O(1),O(n),O(log n),O(n^2),O(lo
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold">Duration (Minutes)</Label>
+                  <Label className="text-xs font-semibold">Quiz Duration (Minutes)</Label>
                   <Input
                     type="number"
+                    min={1}
+                    max={10080}
                     value={durationMinutes || ""}
-                    placeholder="Optional (e.g. 20)"
-                    onChange={(e) => setDurationMinutes(e.target.value ? Number(e.target.value) : 0)}
+                    placeholder="e.g. 15 (Enter duration in minutes)"
+                    onChange={(e) => setDurationMinutes(e.target.value ? Number(e.target.value) : 1)}
                   />
                 </div>
                 <div className="space-y-1.5">

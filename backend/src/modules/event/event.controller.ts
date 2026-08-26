@@ -26,6 +26,42 @@ export const createEvent = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ success: false, message: "Title and Event Date are required." });
     }
 
+    // Past date & time validation
+    const inputDateStr = new Date(eventDate).toISOString().split("T")[0];
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    if (inputDateStr < todayStr) {
+      return res.status(400).json({ success: false, message: "Event date cannot be in the past." });
+    }
+
+    if (inputDateStr === todayStr && eventTime) {
+      const trimmed = String(eventTime).trim();
+      let hrs = -1;
+      let mins = -1;
+      const match24 = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+      const match12 = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+      if (match24) {
+        hrs = parseInt(match24[1], 10);
+        mins = parseInt(match24[2], 10);
+      } else if (match12) {
+        hrs = parseInt(match12[1], 10);
+        mins = parseInt(match12[2], 10);
+        const mod = match12[3].toUpperCase();
+        if (mod === "PM" && hrs < 12) hrs += 12;
+        if (mod === "AM" && hrs === 12) hrs = 0;
+      }
+
+      if (hrs !== -1 && mins !== -1) {
+        const now = new Date();
+        const currentMinsTotal = now.getHours() * 60 + now.getMinutes();
+        const inputMinsTotal = hrs * 60 + mins;
+        if (inputMinsTotal < currentMinsTotal) {
+          return res.status(400).json({ success: false, message: "Event time cannot be in the past for today's date." });
+        }
+      }
+    }
+
     const creatorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
     const creatorId = req.user?.employeeId ? BigInt(req.user.employeeId) : null;
 
@@ -60,6 +96,44 @@ export const updateEvent = async (req: AuthRequest, res: Response) => {
   try {
     const id = BigInt(String(req.params.id));
     const { title, description, eventDate, eventTime, url, eventType } = req.body;
+
+    if (eventDate) {
+      const inputDateStr = new Date(eventDate).toISOString().split("T")[0];
+      const todayStr = new Date().toISOString().split("T")[0];
+
+      if (inputDateStr < todayStr) {
+        return res.status(400).json({ success: false, message: "Event date cannot be in the past." });
+      }
+
+      if (inputDateStr === todayStr && eventTime) {
+        const trimmed = String(eventTime).trim();
+        let hrs = -1;
+        let mins = -1;
+        const match24 = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+        const match12 = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+        if (match24) {
+          hrs = parseInt(match24[1], 10);
+          mins = parseInt(match24[2], 10);
+        } else if (match12) {
+          hrs = parseInt(match12[1], 10);
+          mins = parseInt(match12[2], 10);
+          const mod = match12[3].toUpperCase();
+          if (mod === "PM" && hrs < 12) hrs += 12;
+          if (mod === "AM" && hrs === 12) hrs = 0;
+        }
+
+        if (hrs !== -1 && mins !== -1) {
+          const now = new Date();
+          const currentMinsTotal = now.getHours() * 60 + now.getMinutes();
+          const inputMinsTotal = hrs * 60 + mins;
+          if (inputMinsTotal < currentMinsTotal) {
+            return res.status(400).json({ success: false, message: "Event time cannot be in the past for today's date." });
+          }
+        }
+      }
+    }
+
     const actorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
 
     const updated = await eventService.updateEvent(

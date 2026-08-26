@@ -151,9 +151,13 @@ export default function InlineQuizPlayer({
           }
         } catch {}
       }
-    } else if (attemptNumber >= maxAttempts && !isUnlimitedAttempts) {
+    } else if (attemptNumber > maxAttempts && !isUnlimitedAttempts) {
       setHasStartedQuiz(true);
       setIsSubmitted(true);
+    } else {
+      setHasStartedQuiz(false);
+      setIsSubmitted(false);
+      setScore(0);
     }
   }, [existingSubmission, attemptNumber, maxAttempts, isUnlimitedAttempts]);
 
@@ -163,16 +167,19 @@ export default function InlineQuizPlayer({
     }
   }, [attemptNumber]);
 
-  const isAttemptsExhausted = !isUnlimitedAttempts && (currentAttempt > maxAttempts || (isSubmitted && currentAttempt >= maxAttempts) || (attemptNumber >= maxAttempts && isSubmitted));
-  const isFinalAttempt = isUnlimitedAttempts ? false : (currentAttempt >= maxAttempts || maxAttempts === 1);
-  const passingPercentage = parsedConfig.passingPercentage !== undefined ? Number(parsedConfig.passingPercentage) : 70;
-  const isPassed = score >= passingPercentage || score === 100;
+  const totalAllowedAttempts = maxAttempts > 0 ? maxAttempts : 3;
+  const isFirstAttempt = currentAttempt === 1 || attemptNumber === 1;
+  const isAttemptsExhausted = !isUnlimitedAttempts && currentAttempt > totalAllowedAttempts;
 
-  // Reveal correct answers ONLY when:
+  // Reveal correct answer keys ONLY when:
   // 1. Viewing in Course Builder preview mode (isPreview)
-  // 2. Learner has passed the quiz (isPassed)
-  // 3. Learner has completed their final attempt / exhausted attempts (isFinalAttempt || isAttemptsExhausted)
-  const shouldShowAnswers = isPreview ? true : isPassed ? true : (isFinalAttempt || isAttemptsExhausted);
+  // 2. NEVER on 1st attempt (isFirstAttempt === false)
+  // 3. Learner has completed all allowed attempts (currentAttempt >= totalAllowedAttempts)
+  const shouldRevealCorrectKey = isPreview
+    ? true
+    : isFirstAttempt
+    ? false
+    : (currentAttempt >= totalAllowedAttempts || isAttemptsExhausted);
 
   const handleReset = () => {
     setCurrentAttempt((prev) => prev + 1);
@@ -436,66 +443,78 @@ export default function InlineQuizPlayer({
               <div className="text-2xl font-black text-emerald-400">{score} / 100</div>
               <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">Overall Grade Result</div>
             </div>
+
+            {/* Retake Quiz CTA Button at Top */}
+            {(currentAttempt < totalAllowedAttempts || isUnlimitedAttempts) && (
+              <div className="pt-2">
+                <Button
+                  onClick={handleReset}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs gap-2 px-6 h-10 shadow-lg cursor-pointer animate-pulse"
+                >
+                  <RotateCcw className="h-4 w-4" /> Retake Quiz (Start Attempt #{currentAttempt + 1} of {totalAllowedAttempts})
+                </Button>
+              </div>
+            )}
           </div>
 
-          {/* Question Breakdown */}
-          {shouldShowAnswers ? (
-            <div className="space-y-3 text-left max-w-xl mx-auto pt-4 border-t border-slate-800">
-              {activeQuestions.map((q, idx) => {
-                const userAnsStr = getSafeAnswerString(selectedAnswers[q.id]);
-                const correctAnsStr = getSafeAnswerString(q.correctAnswer);
-                const isMulti = isQuestionMultiSelect(q);
+          {/* Question Breakdown with Scrollbar */}
+          <div className="space-y-3 text-left max-w-xl mx-auto pt-4 border-t border-slate-800 max-h-[380px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
+            {activeQuestions.map((q, idx) => {
+              const userAnsStr = getSafeAnswerString(selectedAnswers[q.id]);
+              const correctAnsStr = getSafeAnswerString(q.correctAnswer);
+              const isMulti = isQuestionMultiSelect(q);
 
-                let isCorrect = false;
-                if (userAnsStr && correctAnsStr) {
-                  if (isMulti) {
-                    const userItems = userAnsStr.split(",").map((s) => s.trim().toLowerCase()).sort();
-                    const correctItems = correctAnsStr.split(",").map((s) => s.trim().toLowerCase()).sort();
-                    isCorrect = userItems.length === correctItems.length && userItems.every((val, i) => val === correctItems[i]);
-                  } else {
-                    isCorrect = userAnsStr.toLowerCase() === correctAnsStr.toLowerCase();
-                  }
+              let isCorrect = false;
+              if (userAnsStr && correctAnsStr) {
+                if (isMulti) {
+                  const userItems = userAnsStr.split(",").map((s) => s.trim().toLowerCase()).sort();
+                  const correctItems = correctAnsStr.split(",").map((s) => s.trim().toLowerCase()).sort();
+                  isCorrect = userItems.length === correctItems.length && userItems.every((val, i) => val === correctItems[i]);
+                } else {
+                  isCorrect = userAnsStr.toLowerCase() === correctAnsStr.toLowerCase();
                 }
+              }
 
-                return (
-                  <div key={q.id} className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1">
-                    <div className="flex items-center justify-between font-bold">
-                      <span className="text-white">Q{idx + 1}: {q.questionText}</span>
-                      <Badge className={isCorrect ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-700 text-slate-300"}>
-                        {isCorrect ? "Correct" : "Recorded"}
-                      </Badge>
-                    </div>
-                    <div className="text-slate-400">
-                      Your Answer: <strong className={isCorrect ? "text-emerald-400" : "text-amber-300"}>{userAnsStr || "Not answered"}</strong>
-                    </div>
-                    {!isCorrect && correctAnsStr && (
-                      <div className="text-emerald-400 text-[11px] pt-1">
-                        Correct Answer: {correctAnsStr}
-                      </div>
-                    )}
-                    {q.explanation && (
-                      <div className="text-slate-400 italic text-[11px] pt-1">
-                        Note: {q.explanation}
-                      </div>
-                    )}
+              return (
+                <div key={q.id} className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1">
+                  <div className="flex items-center justify-between font-bold">
+                    <span className="text-white">Q{idx + 1}: {q.questionText}</span>
+                    <Badge className={shouldRevealCorrectKey ? (isCorrect ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400") : "bg-slate-700 text-slate-300"}>
+                      {shouldRevealCorrectKey ? (isCorrect ? "Correct" : "Incorrect") : "Recorded"}
+                    </Badge>
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-amber-400 max-w-md mx-auto italic font-medium">
-              Your responses for Attempt #{currentAttempt} of {isUnlimitedAttempts ? "Unlimited" : maxAttempts} have been saved. Correct answer keys and explanations will be revealed after you pass the quiz or complete your final attempt.
+                  <div className="text-slate-400">
+                    Your Answer: <strong className={shouldRevealCorrectKey ? (isCorrect ? "text-emerald-400" : "text-amber-300") : "text-slate-200"}>{userAnsStr || "Not answered"}</strong>
+                  </div>
+                  {!isCorrect && correctAnsStr && shouldRevealCorrectKey && (
+                    <div className="text-emerald-400 font-semibold text-[11px] pt-1">
+                      Correct Answer: {correctAnsStr}
+                    </div>
+                  )}
+                  {q.explanation && shouldRevealCorrectKey && (
+                    <div className="text-slate-400 italic text-[11px] pt-1">
+                      Note: {q.explanation}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {!shouldRevealCorrectKey && (
+            <div className="p-4 rounded-xl bg-slate-900 border border-amber-500/30 text-xs text-amber-400 max-w-md mx-auto italic font-medium">
+              💡 Correct answer keys and explanations are hidden while retake attempts remain. Click &quot;Retake Quiz&quot; to start Attempt #{currentAttempt + 1}.
             </div>
           )}
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            {(currentAttempt < maxAttempts || isUnlimitedAttempts) && (
+            {(currentAttempt < totalAllowedAttempts || isUnlimitedAttempts) && (
               <Button
                 onClick={handleReset}
                 variant="outline"
-                className="border-slate-700 text-slate-300 hover:bg-slate-800 font-extrabold text-xs gap-2 px-5 h-10 shadow cursor-pointer"
+                className="border-slate-700 text-slate-200 hover:bg-slate-800 font-extrabold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
               >
-                <RotateCcw className="h-4 w-4" /> Retake Assessment (Attempt #{currentAttempt + 1} of {isUnlimitedAttempts ? "Unlimited" : maxAttempts})
+                <RotateCcw className="h-4 w-4" /> Retake Quiz (Attempt #{currentAttempt + 1} of {totalAllowedAttempts})
               </Button>
             )}
 

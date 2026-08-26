@@ -611,6 +611,20 @@ export const uploadDocumentFile = asyncHandler(
       }
     }
 
+    let pdfPageCount: number | undefined;
+    if (originalName.toLowerCase().endsWith(".pdf")) {
+      try {
+        const rawContent = req.file.buffer.toString("binary");
+        const pageMatches = rawContent.match(/\/Type\s*\/Page\b/g);
+        pdfPageCount = pageMatches && pageMatches.length > 0 ? pageMatches.length : 1;
+      } catch (pdfCntErr) {
+        console.error("PDF page count extraction error:", pdfCntErr);
+        pdfPageCount = 1;
+      }
+    }
+
+    const detectedSlideCount = extractedSlides.length > 0 ? extractedSlides.length : undefined;
+
     return successResponse(
       res,
       {
@@ -618,6 +632,8 @@ export const uploadDocumentFile = asyncHandler(
         fileName: originalName,
         fileSize: `${sizeMb} MB`,
         convertedPdfUrl,
+        pageCount: pdfPageCount,
+        slideCount: detectedSlideCount,
         extractedZipFiles: extractedZipFiles.length > 0 ? extractedZipFiles : undefined,
         extractedSlides: extractedSlides.length > 0 ? extractedSlides : undefined,
         slidesConfigJson: extractedSlides.length > 0 ? JSON.stringify(extractedSlides) : undefined,

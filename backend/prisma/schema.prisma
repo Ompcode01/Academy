@@ -162,7 +162,9 @@ model Course {
   shortDescription String?         @db.VarChar(500)
   description      String?         @db.Text
   thumbnail        String?         @db.VarChar(255)
-  duration         Int?
+  duration             Int?
+  targetDurationMinutes Int?
+  exactDurationSeconds  Int             @default(0)
   level            String?         @db.VarChar(50)
   language         String?         @db.VarChar(50)
   status           CourseStatus    @default(DRAFT)
@@ -205,17 +207,19 @@ model CourseTeacher {
 }
 
 model CourseSection {
-  id           BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
-  courseId     BigInt            @db.UnsignedBigInt
-  title        String            @db.VarChar(200)
-  description  String?           @db.VarChar(500)
-  sectionOrder Int
-  isPublished  Boolean           @default(false)
-  isActive     Boolean           @default(true)
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  contents     LearningContent[]
+  id                    BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  courseId              BigInt            @db.UnsignedBigInt
+  title                 String            @db.VarChar(200)
+  description           String?           @db.VarChar(500)
+  sectionOrder          Int
+  targetDurationMinutes Int?
+  exactDurationSeconds  Int               @default(0)
+  isPublished           Boolean           @default(false)
+  isActive              Boolean           @default(true)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  course                Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  contents              LearningContent[]
 
   @@index([courseId])
   @@map("course_sections")
@@ -229,6 +233,9 @@ model LearningContent {
   contentUrl           String?       @db.VarChar(500)
   description          String?       @db.Text
   duration             Int?
+  exactDurationSeconds Int           @default(0)
+  durationSource       String        @default("CALCULATED") @db.VarChar(50)
+  durationMetadata     String?       @db.Text
   contentOrder         Int
   isMandatory          Boolean       @default(false)
   isPublished          Boolean       @default(false)

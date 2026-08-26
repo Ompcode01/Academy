@@ -3,6 +3,7 @@ import prisma from "../../config/prisma";
 import * as XLSX from "xlsx";
 import notificationService from "../notification/notification.service";
 import guestGrantService from "../../services/guestGrant.service";
+import { calculateContentDuration, formatRoundedDuration } from "../../utils/durationCalculator";
 
 interface CourseFilters {
   search?: string;
@@ -203,6 +204,8 @@ class CourseService {
     creatorId: bigint;
     departmentId?: bigint | null;
     title: string;
+    shortName?: string | null;
+    courseCode?: string | null;
     shortDescription?: string;
     description?: string;
     thumbnail?: string;
@@ -218,6 +221,18 @@ class CourseService {
   }) {
     const isDraft = String(data.status || "").toUpperCase() === "DRAFT";
     const { teacherIds, enrolledUserIds, sections, ...createFields } = data;
+
+    if (createFields.courseCode) {
+      createFields.courseCode = createFields.courseCode.trim().toUpperCase();
+      const existingWithCode = await prisma.course.findFirst({
+        where: { courseCode: createFields.courseCode },
+      });
+      if (existingWithCode) {
+        // If code conflict, append a unique suffix
+        createFields.courseCode = `${createFields.courseCode}-${Date.now().toString().slice(-3)}`;
+      }
+    }
+
     const course = await courseRepository.create(createFields);
 
     if (sections && Array.isArray(sections) && sections.length > 0) {
@@ -302,9 +317,12 @@ class CourseService {
       });
     }
 
+    let courseTotalExactSecs = 0;
+
     for (let sIdx = 0; sIdx < sections.length; sIdx++) {
       const secData = sections[sIdx];
       const sectionTitle = secData.title || `Module ${sIdx + 1}`;
+      const targetSecMins = secData.targetDurationMinutes || secData.targetDuration || (secData.durationHours ? secData.durationHours * 60 : null);
 
       const section = await prisma.courseSection.create({
         data: {
@@ -312,80 +330,178 @@ class CourseService {
           title: sectionTitle,
           description: secData.description || null,
           sectionOrder: secData.sectionOrder || sIdx + 1,
+          targetDurationMinutes: targetSecMins ? Number(targetSecMins) : null,
           isPublished: !isDraft,
         },
       });
 
-      if (secData.contents && Array.isArray(secData.contents)) {
-        for (let cIdx = 0; cIdx < secData.contents.length; cIdx++) {
-          const cntData = secData.contents[cIdx];
-          const cntTitleKey = (cntData.title || "").trim().toLowerCase();
-          const existingCnt = existingContentMap.get(cntTitleKey);
+      const contentsList: any[] = (secData.contents && Array.isArray(secData.contents)) ? secData.contents : [];
+      let sectionExactSecs = 0;
 
-          // 1. Resolve quizConfigJson
-          let quizJson: string | null = null;
-          if (typeof cntData.quizConfigJson === "object" && cntData.quizConfigJson !== null) {
-            quizJson = JSON.stringify(cntData.quizConfigJson);
-          } else if (typeof cntData.quizConfigJson === "string" && cntData.quizConfigJson.trim() !== "") {
-            quizJson = cntData.quizConfigJson.trim();
-          } else if (typeof cntData.feedbackConfigJson === "object" && cntData.feedbackConfigJson !== null) {
-            quizJson = JSON.stringify(cntData.feedbackConfigJson);
-          } else if (typeof cntData.feedbackConfigJson === "string" && cntData.feedbackConfigJson.trim() !== "") {
-            quizJson = cntData.feedbackConfigJson.trim();
-          } else if (typeof cntData.feedbackConfig === "object" && cntData.feedbackConfig !== null) {
-            quizJson = JSON.stringify(cntData.feedbackConfig);
-          } else if (typeof cntData.quizConfig === "object" && cntData.quizConfig !== null) {
-            quizJson = JSON.stringify(cntData.quizConfig);
-          } else if (cntData.questions && Array.isArray(cntData.questions) && cntData.questions.length > 0) {
-            quizJson = JSON.stringify({
-              title: cntData.title || "Quiz Assessment",
-              questions: cntData.questions,
-              totalMarks: cntData.maxMarks || cntData.totalMarks || 100,
-              durationMinutes: cntData.duration || 15,
-              passingPercentage: cntData.passingPercentage || 70,
-            });
-          } else if (existingCnt && existingCnt.quizConfigJson) {
-            quizJson = typeof existingCnt.quizConfigJson === "string" ? existingCnt.quizConfigJson : JSON.stringify(existingCnt.quizConfigJson);
-          }
-
-          // 2. Resolve assignmentConfigJson
-          let assignmentJson: string | null = null;
-          if (typeof cntData.assignmentConfigJson === "object" && cntData.assignmentConfigJson !== null) {
-            assignmentJson = JSON.stringify(cntData.assignmentConfigJson);
-          } else if (typeof cntData.assignmentConfigJson === "string" && cntData.assignmentConfigJson.trim() !== "") {
-            assignmentJson = cntData.assignmentConfigJson.trim();
-          } else if (typeof cntData.assignmentConfig === "object" && cntData.assignmentConfig !== null) {
-            assignmentJson = JSON.stringify(cntData.assignmentConfig);
-          } else if (existingCnt && existingCnt.assignmentConfigJson) {
-            assignmentJson = typeof existingCnt.assignmentConfigJson === "string" ? existingCnt.assignmentConfigJson : JSON.stringify(existingCnt.assignmentConfigJson);
-          } else if (cntData.contentType === "ASSIGNMENT") {
-            assignmentJson = JSON.stringify({
-              title: cntData.title || "Practical Assignment",
-              instructions: cntData.description || cntData.instructions || "Complete practical assignment.",
-              maxMarks: cntData.maxMarks || cntData.maxScore || 100,
-              deadline: cntData.deadline || cntData.dueDate || "",
-              allowedFileTypes: cntData.allowedFileTypes || ["PDF", "DOC", "DOCX", "ZIP"],
-            });
-          }
-
-          await prisma.learningContent.create({
-            data: {
-              sectionId: section.id,
-              title: cntData.title || `Content ${cIdx + 1}`,
-              contentType: cntData.contentType || "LESSON",
-              contentUrl: cntData.contentUrl || cntData.videoUrl || null,
-              description: cntData.description || cntData.instructions || null,
-              duration: cntData.duration || 10,
-              contentOrder: cntData.contentOrder || cIdx + 1,
-              isMandatory: true,
-              isPublished: !isDraft,
-              quizConfigJson: quizJson,
-              assignmentConfigJson: assignmentJson,
-            },
-          });
+      // Pass 1: Partition into non-Udemy and Udemy contents
+      const nonUdemyContents: any[] = [];
+      const udemyContents: any[] = [];
+      for (const cnt of contentsList) {
+        const cType = (cnt.contentType || "LESSON").toUpperCase().trim();
+        if (cType === "UDEMY" || cType === "EXTERNAL") {
+          udemyContents.push(cnt);
+        } else {
+          nonUdemyContents.push(cnt);
         }
       }
+
+      let otherContentsSumSeconds = 0;
+      const contentsToInsert: any[] = [];
+
+      for (let cIdx = 0; cIdx < nonUdemyContents.length; cIdx++) {
+        const cntData = nonUdemyContents[cIdx];
+        const cntTitleKey = (cntData.title || "").trim().toLowerCase();
+        const existingCnt = existingContentMap.get(cntTitleKey);
+
+        // 1. Resolve quizConfigJson
+        let quizJson: string | null = null;
+        if (typeof cntData.quizConfigJson === "object" && cntData.quizConfigJson !== null) {
+          quizJson = JSON.stringify(cntData.quizConfigJson);
+        } else if (typeof cntData.quizConfigJson === "string" && cntData.quizConfigJson.trim() !== "") {
+          quizJson = cntData.quizConfigJson.trim();
+        } else if (typeof cntData.feedbackConfigJson === "object" && cntData.feedbackConfigJson !== null) {
+          quizJson = JSON.stringify(cntData.feedbackConfigJson);
+        } else if (typeof cntData.feedbackConfigJson === "string" && cntData.feedbackConfigJson.trim() !== "") {
+          quizJson = cntData.feedbackConfigJson.trim();
+        } else if (typeof cntData.feedbackConfig === "object" && cntData.feedbackConfig !== null) {
+          quizJson = JSON.stringify(cntData.feedbackConfig);
+        } else if (typeof cntData.quizConfig === "object" && cntData.quizConfig !== null) {
+          quizJson = JSON.stringify(cntData.quizConfig);
+        } else if (cntData.questions && Array.isArray(cntData.questions) && cntData.questions.length > 0) {
+          quizJson = JSON.stringify({
+            title: cntData.title || "Quiz Assessment",
+            questions: cntData.questions,
+            totalMarks: cntData.maxMarks || cntData.totalMarks || 100,
+            durationMinutes: cntData.duration || 15,
+            passingPercentage: cntData.passingPercentage || 70,
+          });
+        } else if (existingCnt && existingCnt.quizConfigJson) {
+          quizJson = typeof existingCnt.quizConfigJson === "string" ? existingCnt.quizConfigJson : JSON.stringify(existingCnt.quizConfigJson);
+        }
+
+        // 2. Resolve assignmentConfigJson
+        let assignmentJson: string | null = null;
+        if (typeof cntData.assignmentConfigJson === "object" && cntData.assignmentConfigJson !== null) {
+          assignmentJson = JSON.stringify(cntData.assignmentConfigJson);
+        } else if (typeof cntData.assignmentConfigJson === "string" && cntData.assignmentConfigJson.trim() !== "") {
+          assignmentJson = cntData.assignmentConfigJson.trim();
+        } else if (typeof cntData.assignmentConfig === "object" && cntData.assignmentConfig !== null) {
+          assignmentJson = JSON.stringify(cntData.assignmentConfig);
+        } else if (existingCnt && existingCnt.assignmentConfigJson) {
+          assignmentJson = typeof existingCnt.assignmentConfigJson === "string" ? existingCnt.assignmentConfigJson : JSON.stringify(existingCnt.assignmentConfigJson);
+        } else if (cntData.contentType === "ASSIGNMENT") {
+          assignmentJson = JSON.stringify({
+            title: cntData.title || "Practical Assignment",
+            instructions: cntData.description || cntData.instructions || "Complete practical assignment.",
+            maxMarks: cntData.maxMarks || cntData.maxScore || 100,
+            deadline: cntData.deadline || cntData.dueDate || "",
+            allowedFileTypes: cntData.allowedFileTypes || ["PDF", "DOC", "DOCX", "ZIP"],
+          });
+        }
+
+        let customDurationMins = cntData.duration || cntData.durationMinutes || null;
+        if (!customDurationMins && assignmentJson) {
+          try {
+            const p = JSON.parse(assignmentJson);
+            if (p && (p.durationMinutes || p.duration)) {
+              customDurationMins = Number(p.durationMinutes || p.duration);
+            }
+          } catch (_) {}
+        }
+
+        const calcRes = calculateContentDuration({
+          contentType: cntData.contentType || "LESSON",
+          contentUrl: cntData.contentUrl || cntData.videoUrl || null,
+          description: cntData.description || cntData.instructions || null,
+          durationMinutes: customDurationMins,
+          pageCount: cntData.pageCount || cntData.pages || null,
+          slideCount: cntData.slideCount || cntData.slides || null,
+          wordCount: cntData.wordCount || cntData.words || null,
+          questions: cntData.questions || null,
+          quizConfigJson: quizJson,
+          assignmentConfigJson: assignmentJson,
+        });
+
+        otherContentsSumSeconds += calcRes.exactDurationSeconds;
+
+        contentsToInsert.push({
+          sectionId: section.id,
+          title: cntData.title || `Content ${cIdx + 1}`,
+          contentType: cntData.contentType || "LESSON",
+          contentUrl: cntData.contentUrl || cntData.videoUrl || null,
+          description: cntData.description || cntData.instructions || null,
+          duration: calcRes.durationMinutes,
+          exactDurationSeconds: calcRes.exactDurationSeconds,
+          durationSource: calcRes.durationSource,
+          durationMetadata: JSON.stringify(calcRes.metadata),
+          contentOrder: cntData.contentOrder || cIdx + 1,
+          isMandatory: true,
+          isPublished: !isDraft,
+          quizConfigJson: quizJson,
+          assignmentConfigJson: assignmentJson,
+        });
+      }
+
+      // Pass 2: Calculate Udemy contents with provisional time allocation
+      for (let cIdx = 0; cIdx < udemyContents.length; cIdx++) {
+        const cntData = udemyContents[cIdx];
+        const calcRes = calculateContentDuration({
+          contentType: cntData.contentType || "UDEMY",
+          contentUrl: cntData.contentUrl || cntData.videoUrl || null,
+          description: cntData.description || cntData.instructions || null,
+          durationMinutes: cntData.duration || cntData.durationMinutes || null,
+          targetSectionMinutes: targetSecMins ? Number(targetSecMins) : 60,
+          otherContentsSumSeconds,
+        });
+
+        if (calcRes.blocked) {
+          throw new Error(calcRes.blockReason || "Target section duration exceeded. Cannot allocate time for Udemy content.");
+        }
+
+        contentsToInsert.push({
+          sectionId: section.id,
+          title: cntData.title || `Udemy Content`,
+          contentType: cntData.contentType || "UDEMY",
+          contentUrl: cntData.contentUrl || cntData.videoUrl || null,
+          description: cntData.description || cntData.instructions || null,
+          duration: calcRes.durationMinutes,
+          exactDurationSeconds: calcRes.exactDurationSeconds,
+          durationSource: calcRes.durationSource,
+          durationMetadata: JSON.stringify({ ...calcRes.metadata, warning: calcRes.warning }),
+          contentOrder: cntData.contentOrder || nonUdemyContents.length + cIdx + 1,
+          isMandatory: true,
+          isPublished: !isDraft,
+          quizConfigJson: null,
+          assignmentConfigJson: null,
+        });
+      }
+
+      for (const itemData of contentsToInsert) {
+        await prisma.learningContent.create({ data: itemData });
+        sectionExactSecs += itemData.exactDurationSeconds;
+      }
+
+      await prisma.courseSection.update({
+        where: { id: section.id },
+        data: { exactDurationSeconds: sectionExactSecs },
+      });
+
+      courseTotalExactSecs += sectionExactSecs;
     }
+
+    const rounded = formatRoundedDuration(courseTotalExactSecs);
+    await prisma.course.update({
+      where: { id: courseId },
+      data: {
+        exactDurationSeconds: courseTotalExactSecs,
+        duration: rounded.roundedHours,
+      },
+    });
   }
 
   async updateCourse(
@@ -394,6 +510,8 @@ class CourseService {
       categoryId?: bigint;
       departmentId?: bigint | null;
       title?: string;
+      shortName?: string | null;
+      courseCode?: string | null;
       shortDescription?: string;
       description?: string;
       thumbnail?: string;
@@ -411,6 +529,20 @@ class CourseService {
   ) {
     const isDraft = String(data.status || "").toUpperCase() === "DRAFT";
     const existing = await this.getCourseById(id);
+
+    if (data.courseCode) {
+      data.courseCode = data.courseCode.trim().toUpperCase();
+      const existingWithCode = await prisma.course.findFirst({
+        where: {
+          courseCode: data.courseCode,
+          id: { not: id },
+        },
+      });
+      if (existingWithCode) {
+        // Append suffix if conflict with another course
+        data.courseCode = `${data.courseCode}-${Date.now().toString().slice(-3)}`;
+      }
+    }
     const existingSections = (existing as any)?.sections || [];
 
     // Rule 11 & Teacher Assignment Guard: Teachers can ONLY edit assigned or created courses

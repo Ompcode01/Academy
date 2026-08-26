@@ -83,7 +83,7 @@ export default function TopBar() {
         {/* Center Logo: Saksham Logo (Shown only when search is collapsed) */}
         {!isSearchExpanded && (
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center pointer-events-auto transition-all hover:scale-105 duration-200">
-            <SakshamLogo height={38} variant="horizontal" />
+            <SakshamLogo height={24} />
           </div>
         )}
 

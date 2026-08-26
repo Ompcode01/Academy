@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, FileText, Link as LinkIcon, Video, GraduationCap, Archive, RefreshCw } from "lucide-react";
+import { Upload, FileText, Link as LinkIcon, Video, GraduationCap, Archive, RefreshCw, Sparkles } from "lucide-react";
 import { ContentTypeKey } from "./ContentTypePickerModal";
 import { uploadScormPackage, uploadDocumentFile } from "@/services/api/course.service";
 import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
@@ -14,6 +14,7 @@ import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
 interface AddContentModalProps {
   open: boolean;
   type: ContentTypeKey | null;
+  initialData?: any;
   onOpenChange: (open: boolean) => void;
   onSaveContent: (data: {
     title: string;
@@ -28,6 +29,7 @@ interface AddContentModalProps {
 export default function AddContentModal({
   open,
   type,
+  initialData,
   onOpenChange,
   onSaveContent,
 }: AddContentModalProps) {
@@ -41,12 +43,43 @@ export default function AddContentModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
 
+  const [detectedPageCount, setDetectedPageCount] = useState<number>(1);
+  const [detectedSlideCount, setDetectedSlideCount] = useState<number>(1);
+  const [estimatedDurationMins, setEstimatedDurationMins] = useState<number>(15);
+  const [customDurationMins, setCustomDurationMins] = useState<string>("");
+
+  useEffect(() => {
+    if (open) {
+      if (initialData) {
+        setTitle(initialData.title || "");
+        setUrl(initialData.contentUrl || "");
+        setDescription(initialData.description || "");
+        setFileName(initialData.contentUrl ? initialData.contentUrl.split("/").pop() || null : null);
+        setFileSize(initialData.fileSize || "1.2 MB");
+        setCustomDurationMins(initialData.duration ? String(initialData.duration) : "");
+      } else {
+        setTitle("");
+        setUrl("");
+        setDescription("");
+        setFileName(null);
+        setFileSize("1.2 MB");
+        setSelectedFile(null);
+        setCustomDurationMins("");
+      }
+    }
+  }, [open, initialData]);
+
   if (!type) return null;
 
   const isLink = ["YOUTUBE", "UDEMY", "EXTERNAL_LINK"].includes(type);
   const isDocument = ["PDF", "PPT"].includes(type);
   const isArticle = type === "ARTICLE";
   const isScorm = type === "SCORM";
+
+  // Auto-calculated article word count from written article text body
+  const currentWordCount = isArticle
+    ? Math.max(1, description.trim().split(/\s+/).filter(Boolean).length)
+    : 0;
 
   const getTypeTitle = () => {
     switch (type) {
@@ -69,7 +102,7 @@ export default function AddContentModal({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMessage(null);
     const file = e.target.files?.[0];
     if (file) {
@@ -92,6 +125,25 @@ export default function AddContentModal({
       setFileSize(`${sizeMb} MB`);
       if (!title) {
         setTitle(file.name.replace(/\.[^/.]+$/, ""));
+      }
+
+      // Auto-detect page count or slide count on file selection if document
+      if (isDocument) {
+        try {
+          const uploadRes = await uploadDocumentFile(file);
+          if (uploadRes?.success && uploadRes.data) {
+            if (uploadRes.data.pageCount) {
+              setDetectedPageCount(uploadRes.data.pageCount);
+            }
+            if (uploadRes.data.slideCount) {
+              setDetectedSlideCount(uploadRes.data.slideCount);
+            }
+          }
+        } catch (_) {
+          // Fallback estimations
+          if (type === "PDF") setDetectedPageCount(Math.max(1, Math.round(file.size / 50000)));
+          if (type === "PPT") setDetectedSlideCount(Math.max(1, Math.round(file.size / 150000)));
+        }
       }
     }
   };
@@ -148,6 +200,8 @@ export default function AddContentModal({
           if (uploadRes?.success && uploadRes.data?.fileUrl) {
             finalContentUrl = uploadRes.data.fileUrl;
             finalFileSize = uploadRes.data.fileSize || fileSize;
+            if (uploadRes.data.pageCount) setDetectedPageCount(uploadRes.data.pageCount);
+            if (uploadRes.data.slideCount) setDetectedSlideCount(uploadRes.data.slideCount);
             if (type === "PPT" && uploadRes.data.slidesConfigJson) {
               finalDescription = uploadRes.data.slidesConfigJson;
             }
@@ -166,14 +220,30 @@ export default function AddContentModal({
       }
     }
 
+    const calcPageCount = type === "PDF" ? detectedPageCount : undefined;
+    const calcSlideCount = type === "PPT" ? detectedSlideCount : undefined;
+    const calcWordCount = isArticle ? currentWordCount : undefined;
+
+    let finalDuration = estimatedDurationMins;
+    if (customDurationMins && parseInt(customDurationMins, 10) > 0) {
+      finalDuration = parseInt(customDurationMins, 10);
+    } else {
+      if (type === "PDF") finalDuration = Math.ceil((detectedPageCount * 30) / 60);
+      if (type === "PPT") finalDuration = Math.ceil((detectedSlideCount * 30) / 60);
+      if (isArticle) finalDuration = Math.ceil(((currentWordCount / 250) * 60) / 60);
+    }
+
     onSaveContent({
       title: title.trim(),
       contentType: type,
       contentUrl: finalContentUrl,
       description: finalDescription,
       fileSize: finalFileSize,
-      duration: isLink ? 15 : isArticle ? 10 : isScorm ? 30 : undefined,
-    });
+      duration: finalDuration,
+      pageCount: calcPageCount,
+      slideCount: calcSlideCount,
+      wordCount: calcWordCount,
+    } as any);
 
     setTitle("");
     setUrl("");
@@ -266,6 +336,33 @@ export default function AddContentModal({
                 required={isArticle}
                 className={isArticle ? "min-h-[260px] text-sm leading-relaxed" : "min-h-[90px] resize-none text-xs"}
               />
+            </div>
+
+            {/* Duration / Completion Time Input */}
+            <div className="space-y-1.5">
+              <Label htmlFor="customDurationMins" className="text-xs font-semibold flex items-center justify-between">
+                <span>Duration / Completion Time (Minutes)</span>
+                {customDurationMins ? (
+                  <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">Custom Duration</span>
+                ) : (
+                  <span className="text-[11px] text-muted-foreground">Auto-calculated if left blank</span>
+                )}
+              </Label>
+              <div className="relative">
+                <Input
+                  id="customDurationMins"
+                  type="number"
+                  min="1"
+                  max="10080"
+                  placeholder="Enter duration in minutes"
+                  value={customDurationMins}
+                  onChange={(e) => setCustomDurationMins(e.target.value)}
+                  className="h-10 text-xs font-medium pr-14"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">
+                  Mins
+                </span>
+              </div>
             </div>
 
             {/* Document Upload Drop Area */}

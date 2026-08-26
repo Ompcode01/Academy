@@ -140,7 +140,8 @@ export default function BasicInfoForm({
 
   const handleTitleChange = (newTitle: string) => {
     const derivedShort = !isCustomShortName ? generateAutoShortName(newTitle) : data.shortName;
-    const autoCode = generateAutoCourseCode(newTitle, derivedShort);
+    const shouldGenCode = !data.courseCode || data.courseCode.trim() === "";
+    const autoCode = shouldGenCode ? generateAutoCourseCode(newTitle, derivedShort) : undefined;
     const updates: Partial<BasicInfoData> = {
       title: newTitle,
       ...(!isCustomShortName ? { shortName: derivedShort } : {}),
@@ -154,12 +155,21 @@ export default function BasicInfoForm({
 
   const handleShortNameChange = (newShortName: string) => {
     setIsCustomShortName(true);
-    const autoCode = generateAutoCourseCode(data.title, newShortName);
+    const shouldGenCode = !data.courseCode || data.courseCode.trim() === "";
+    const autoCode = shouldGenCode ? generateAutoCourseCode(data.title, newShortName) : undefined;
     const updates: Partial<BasicInfoData> = {
       shortName: newShortName,
       ...(autoCode ? { courseCode: autoCode } : {}),
     };
     onChange(updates);
+  };
+
+  const handleGenerateCode = () => {
+    const code = generateAutoCourseCode(data.title || "", data.shortName);
+    if (code) {
+      onChange({ courseCode: code });
+      toast.success(`Generated Course Code: ${code}`);
+    }
   };
 
   const handleNextClick = () => {
@@ -265,13 +275,23 @@ export default function BasicInfoForm({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-foreground">
-                Course Code
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-bold text-foreground">
+                  Course Code <span className="text-[10px] text-muted-foreground font-normal">(Editable)</span>
+                </Label>
+                <button
+                  type="button"
+                  onClick={handleGenerateCode}
+                  className="text-[10px] text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                  title="Auto-generate a unique course code based on title"
+                >
+                  <Wand2 className="h-3 w-3" /> Auto-Generate
+                </button>
+              </div>
               <Input
-                placeholder="e.g. AI47"
+                placeholder="e.g. CO23"
                 value={data.courseCode}
-                onChange={(e) => onChange({ courseCode: e.target.value })}
+                onChange={(e) => onChange({ courseCode: e.target.value.toUpperCase() })}
                 className="h-10 text-xs font-mono uppercase bg-background font-bold tracking-wider"
               />
             </div>

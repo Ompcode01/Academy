@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
 import HarbingerConfirmModal from "@/components/common/HarbingerConfirmModal";
+import toast from "react-hot-toast";
 
 interface EventCalendarProps {
   compact?: boolean;
@@ -224,10 +225,47 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
     setShowModal(true);
   };
 
+  // Helper for local date string YYYY-MM-DD
+  const getLocalTodayStr = () => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = (now.getMonth() + 1).toString().padStart(2, "0");
+    const d = now.getDate().toString().padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
   // Handle Form Submit (Create / Edit)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !date) return;
+
+    const todayStr = getLocalTodayStr();
+
+    // 1. Past Date Check
+    if (date < todayStr) {
+      toast.error(`Past Date Not Allowed: Event date cannot be in the past (${date}). Please select today (${todayStr}) or a future date.`);
+      return;
+    }
+
+    // 2. Past Time Check (when event date is today)
+    if (date === todayStr && time && time.trim() !== "") {
+      const formattedTime = formatTimeForInput(time);
+      const [inputHours, inputMins] = formattedTime.split(":").map((n) => parseInt(n, 10));
+      if (!isNaN(inputHours) && !isNaN(inputMins)) {
+        const now = new Date();
+        const currentHours = now.getHours();
+        const currentMins = now.getMinutes();
+
+        const selectedMinsTotal = inputHours * 60 + inputMins;
+        const currentMinsTotal = currentHours * 60 + currentMins;
+
+        if (selectedMinsTotal < currentMinsTotal) {
+          const currentTimeFormatted = formatTimeForDisplay(`${currentHours.toString().padStart(2, "0")}:${currentMins.toString().padStart(2, "0")}`);
+          toast.error(`Past Time Not Allowed: You cannot schedule an event for ${formatTimeForDisplay(formattedTime)} as current local time is ${currentTimeFormatted}.`);
+          return;
+        }
+      }
+    }
 
     setSubmitting(true);
     try {
@@ -239,6 +277,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
           description: description || undefined,
           url: url || undefined,
         });
+        toast.success("Event updated successfully!");
       } else {
         await addEvent({
           title,
@@ -249,10 +288,12 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
           type: "site",
           departmentId: targetDeptId !== "all" ? Number(targetDeptId) : undefined,
         });
+        toast.success("Event created successfully!");
       }
       setShowModal(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error saving event:", err);
+      toast.error(err.message || "Failed to save event. Please check parameters.");
     } finally {
       setSubmitting(false);
     }
@@ -605,7 +646,7 @@ export default function EventCalendar({ compact = false }: EventCalendarProps) {
                   <input
                     type="date"
                     required
-                    min={editingEvent ? undefined : new Date().toISOString().split("T")[0]}
+                    min={getLocalTodayStr()}
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     className="w-full rounded border border-[#E0E6ED] p-2 text-xs font-medium focus:border-[#C82333] outline-none cursor-pointer"

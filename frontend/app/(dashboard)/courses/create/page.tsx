@@ -190,7 +190,7 @@ function CreateCourseContent() {
                 level: c.level || "Beginner",
                 shortDescription: c.shortDescription || "",
                 language: c.language || "English",
-                duration: c.duration || 20,
+                duration: c.targetDurationMinutes ? Math.ceil(c.targetDurationMinutes / 60) : (c.duration ? c.duration : undefined),
                 description: c.description || "",
                 categoryId: c.categoryId ? String(c.categoryId) : "1",
               },

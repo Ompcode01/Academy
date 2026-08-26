@@ -111,6 +111,26 @@ export default function CoursePreviewView() {
   const [progressPercent, setProgressPercent] = useState(0);
   const [selectedLesson, setSelectedLesson] = useState<LessonItem | null>(null);
 
+  // Handwritten Notebook Learner Completion Verification State
+  const [itemTimeSpent, setItemTimeSpent] = useState<number>(0);
+  const [hasScrolledToEnd, setHasScrolledToEnd] = useState<boolean>(false);
+  const [hasClickedExternalLink, setHasClickedExternalLink] = useState<boolean>(false);
+  const [hasPlayedMedia, setHasPlayedMedia] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!selectedLesson) return;
+    setItemTimeSpent(0);
+    setHasScrolledToEnd(false);
+    setHasClickedExternalLink(false);
+    setHasPlayedMedia(false);
+
+    const timer = setInterval(() => {
+      setItemTimeSpent((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [selectedLesson?.id]);
+
   // Modals
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
@@ -336,6 +356,55 @@ export default function CoursePreviewView() {
     );
   };
 
+  const validateLearnerCompletion = (lesson: LessonItem): { eligible: boolean; reason?: string } => {
+    const type = (lesson.contentType || "").toUpperCase().trim();
+
+    switch (type) {
+      case "QUIZ":
+      case "ASSESSMENT": {
+        const hasSub = (progressData?.submissions || []).some(
+          (s: any) => (s.submissionType === "QUIZ" || s.type === "QUIZ") &&
+            ((s.contentId && String(s.contentId) === String(lesson.id)) || (s.contentItem?.id && String(s.contentItem.id) === String(lesson.id)))
+        );
+        if (!hasSub) {
+          return { eligible: false, reason: `Please complete and submit your quiz answers before marking complete.` };
+        }
+        break;
+      }
+
+      case "ASSIGNMENT":
+      case "PROJECT":
+      case "MINI_PROJECT": {
+        const hasSub = (progressData?.submissions || []).some(
+          (s: any) => (s.submissionType === "ASSIGNMENT" || s.type === "ASSIGNMENT") &&
+            ((s.contentId && String(s.contentId) === String(lesson.id)) || (s.contentItem?.id && String(s.contentItem.id) === String(lesson.id)))
+        );
+        if (!hasSub) {
+          return { eligible: false, reason: `Please submit your assignment work before marking complete.` };
+        }
+        break;
+      }
+
+      case "FEEDBACK":
+      case "SURVEY": {
+        const hasSub = (progressData?.submissions || []).some(
+          (s: any) => (s.submissionType === "FEEDBACK" || s.type === "FEEDBACK") &&
+            ((s.contentId && String(s.contentId) === String(lesson.id)) || (s.contentItem?.id && String(s.contentItem.id) === String(lesson.id)))
+        );
+        if (!hasSub) {
+          return { eligible: false, reason: `Please submit the feedback survey before marking complete.` };
+        }
+        break;
+      }
+
+      default:
+        // No time restrictions for SCORM, PPT, PDF, Articles, Udemy, YouTube, or External Links
+        break;
+    }
+
+    return { eligible: true };
+  };
+
   const handleToggleLessonComplete = async (lessonId: number, forceStatus?: boolean) => {
     if (isGuest) {
       setGuestModalLessonTitle(null);
@@ -345,6 +414,27 @@ export default function CoursePreviewView() {
     if (!courseId) return;
     const isCurrentlyCompleted = completedLessonIds.includes(lessonId);
     const newStatus = forceStatus !== undefined ? forceStatus : !isCurrentlyCompleted;
+
+    // Enforce notebook rules when marking complete (if not forced by explicit submission)
+    if (newStatus && forceStatus === undefined) {
+      let targetLesson = selectedLesson && selectedLesson.id === lessonId ? selectedLesson : undefined;
+      if (!targetLesson) {
+        for (const mod of modules) {
+          const found = mod.lessons.find((l) => l.id === lessonId);
+          if (found) {
+            targetLesson = found;
+            break;
+          }
+        }
+      }
+      if (targetLesson) {
+        const check = validateLearnerCompletion(targetLesson);
+        if (!check.eligible) {
+          toast.error(check.reason || "Completion rules not satisfied.");
+          return;
+        }
+      }
+    }
 
     if (newStatus) {
       setCompletedLessonIds((prev) => Array.from(new Set([...prev, lessonId])));
@@ -486,10 +576,24 @@ export default function CoursePreviewView() {
   const nextLesson = currentLessonIndex < allLessonsFlat.length - 1 ? allLessonsFlat[currentLessonIndex + 1] : null;
 
   const isSelectedLessonCompleted = selectedLesson ? completedLessonIds.includes(selectedLesson.id) : false;
-  const computedProgressPercent = totalContentsCount > 0
-    ? Math.min(100, Math.round((completedLessonIds.length / totalContentsCount) * 100))
-    : 0;
-  const isCourseFullyCompleted = totalContentsCount > 0 && completedLessonIds.length >= totalContentsCount;
+
+  // Grandfathered / Retained Completion check for learners who already completed or hold an issued certificate
+  const isEnrollmentAlreadyCompleted =
+    progressData?.enrollment?.status === "COMPLETED" ||
+    Boolean(progressData?.enrollment?.completedAt) ||
+    Number(progressData?.enrollment?.progress || 0) >= 100 ||
+    Boolean((progressData as any)?.issuedCert) ||
+    Boolean((progressData as any)?.issuedCertificate);
+
+  const isCourseFullyCompleted =
+    isEnrollmentAlreadyCompleted ||
+    (totalContentsCount > 0 && completedLessonIds.length >= totalContentsCount);
+
+  const computedProgressPercent = isCourseFullyCompleted
+    ? 100
+    : (totalContentsCount > 0
+        ? Math.min(100, Math.round((completedLessonIds.length / totalContentsCount) * 100))
+        : 0);
 
   if (loading) {
     return (
@@ -555,7 +659,7 @@ export default function CoursePreviewView() {
             <div className="lg:col-span-2 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className="bg-[#C82333] text-white font-bold text-[10px] uppercase tracking-wider">
-                  Code: {course.code || `CO${course.id}`}
+                  Code: {(course as any).courseCode || course.code || `CO${course.id}`}
                 </Badge>
                 <Badge className="bg-primary text-primary-foreground font-bold text-[10px] uppercase tracking-wider">
                   {categoryLabel}
@@ -1168,7 +1272,8 @@ export default function CoursePreviewView() {
                     const quizSubmissions = (progressData?.submissions || []).filter(
                       (s: any) =>
                         (s.submissionType === "QUIZ" || s.type === "QUIZ") &&
-                        (!s.contentId || !selectedLesson.id || String(s.contentId) === String(selectedLesson.id) || String(s.contentItem?.id) === String(selectedLesson.id))
+                        ((s.contentId && String(s.contentId) === String(selectedLesson.id)) ||
+                         (s.contentItem?.id && String(s.contentItem.id) === String(selectedLesson.id)))
                     );
                     const lastQuizSubmission = quizSubmissions.length > 0 ? quizSubmissions[quizSubmissions.length - 1] : null;
 
@@ -1436,13 +1541,18 @@ export default function CoursePreviewView() {
                   />
                 ) : selectedLesson.contentType?.toUpperCase() === "YOUTUBE" && selectedLesson.contentUrl ? (
                   <div className="w-full space-y-2">
-                    <div className="w-full h-[480px] bg-black rounded-xl overflow-hidden border border-border shadow-md">
+                    <div
+                      onMouseEnter={() => setHasPlayedMedia(true)}
+                      onClick={() => setHasPlayedMedia(true)}
+                      className="w-full h-[480px] bg-black rounded-xl overflow-hidden border border-border shadow-md"
+                    >
                       <iframe
                         src={getYouTubeEmbedUrl(selectedLesson.contentUrl)}
                         className="w-full h-full border-0"
                         title={selectedLesson.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
+                        onLoad={() => setHasPlayedMedia(true)}
                       />
                     </div>
                   </div>
@@ -1453,6 +1563,7 @@ export default function CoursePreviewView() {
                     contentType={selectedLesson.contentType}
                     contentUrl={selectedLesson.contentUrl}
                     description={selectedLesson.description}
+                    onScrollToEnd={() => setHasScrolledToEnd(true)}
                   />
                 ) : selectedLesson.contentUrl && selectedLesson.contentUrl.trim() !== "" ? (
                   <div className="p-8 bg-card border border-border rounded-xl text-center space-y-4">
@@ -1465,10 +1576,8 @@ export default function CoursePreviewView() {
                     </div>
                     <Button
                       onClick={() => {
+                        setHasClickedExternalLink(true);
                         window.open(getStorageUrl(selectedLesson.contentUrl?.trim()), "_blank", "noopener,noreferrer");
-                        if (selectedLesson?.id) {
-                          handleToggleLessonComplete(selectedLesson.id);
-                        }
                       }}
                       className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 px-6 h-10 shadow cursor-pointer"
                     >
@@ -1476,7 +1585,15 @@ export default function CoursePreviewView() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="p-6 bg-card border border-border rounded-xl text-xs text-foreground leading-relaxed whitespace-pre-line">
+                  <div
+                    onScroll={(e) => {
+                      const target = e.currentTarget;
+                      if (target.scrollTop + target.clientHeight >= target.scrollHeight - 20) {
+                        setHasScrolledToEnd(true);
+                      }
+                    }}
+                    className="p-6 bg-card border border-border rounded-xl text-xs text-foreground leading-relaxed whitespace-pre-line max-h-[400px] overflow-y-auto"
+                  >
                     {selectedLesson.description || "No additional text content provided for this lesson."}
                   </div>
                 )}
@@ -1809,7 +1926,7 @@ export default function CoursePreviewView() {
               <Layers className="h-4 w-4 text-primary" /> Course Content
             </span>
             <span className="text-muted-foreground font-mono text-[11px]">
-              {completedLessonIds.length}/{totalContentsCount} completed
+              {isCourseFullyCompleted ? totalContentsCount : completedLessonIds.length}/{totalContentsCount} completed
             </span>
           </div>
 

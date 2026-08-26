@@ -34,6 +34,7 @@ interface AssignmentBuilderModalProps {
     instructions?: string;
     maxMarks?: number;
     deadline?: string;
+    durationMinutes?: number;
     maxAttempts?: number;
     allowedFileTypes?: string[];
     questionFiles?: UploadedFileItem[];
@@ -44,6 +45,7 @@ interface AssignmentBuilderModalProps {
     description: string;
     maxMarks: number;
     deadline: string;
+    durationMinutes: number;
     maxAttempts: number;
     lateSubmission: string;
     latePenaltyPercent: number;
@@ -67,6 +69,7 @@ export default function AssignmentBuilderModal({
   const [validationModal, setValidationModal] = useState<{ open: boolean; title: string; description: string } | null>(null);
   const [title, setTitle] = useState("");
   const [maxMarks, setMaxMarks] = useState(100);
+  const [durationMinutes, setDurationMinutes] = useState<number>(30);
   const [deadlineDate, setDeadlineDate] = useState("");
   const [deadlineTime, setDeadlineTime] = useState("23:59");
   const [description, setDescription] = useState("");
@@ -109,6 +112,7 @@ export default function AssignmentBuilderModal({
         setDescription(initialData.description || "");
         setInstructions(initialData.instructions || initialData.description || "");
         setMaxMarks(initialData.maxMarks || 100);
+        setDurationMinutes(initialData.durationMinutes || (initialData as any).duration || 30);
         setMaxAttempts(initialData.maxAttempts !== undefined && initialData.maxAttempts !== null ? Number(initialData.maxAttempts) : 3);
         if (initialData.allowedFileTypes) setAllowedTypes(initialData.allowedFileTypes);
         if ((initialData as any).latePenaltyPercent !== undefined && (initialData as any).latePenaltyPercent !== null) {
@@ -129,6 +133,7 @@ export default function AssignmentBuilderModal({
         setDescription("");
         setInstructions("");
         setMaxMarks(100);
+        setDurationMinutes(30);
         setMaxAttempts(3);
         setLateSubmission("ALLOWED");
         setLatePenaltyPercent(0);
@@ -256,6 +261,7 @@ export default function AssignmentBuilderModal({
       description,
       maxMarks: Number(maxMarks),
       deadline: deadlineDate ? `${deadlineDate} ${deadlineTime}` : "",
+      durationMinutes: Number(durationMinutes) || 30,
       maxAttempts: Number(maxAttempts),
       lateSubmission,
       latePenaltyPercent: Number(latePenaltyPercent),
@@ -328,8 +334,18 @@ export default function AssignmentBuilderModal({
                   </div>
                 </div>
 
-                {/* Deadline & Attempts */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Estimated Duration (Minutes)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={10080}
+                      value={durationMinutes || ""}
+                      placeholder="e.g. 30 (Duration in minutes)"
+                      onChange={(e) => setDurationMinutes(e.target.value ? Number(e.target.value) : 30)}
+                    />
+                  </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs font-semibold">Submission Deadline Date</Label>
                     <Input
@@ -340,25 +356,12 @@ export default function AssignmentBuilderModal({
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">Time</Label>
+                    <Label className="text-xs font-semibold">Deadline Time</Label>
                     <Input
                       type="time"
                       value={deadlineTime}
                       onChange={(e) => setDeadlineTime(e.target.value)}
                     />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold">Maximum Attempts</Label>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={maxAttempts !== undefined && maxAttempts !== null ? maxAttempts : 3}
-                      placeholder="Enter attempts (e.g. 1, 3, 5, or 0 for Unlimited)"
-                      onChange={(e) => setMaxAttempts(e.target.value !== "" ? Number(e.target.value) : 3)}
-                    />
-                    <span className="text-[10px] text-muted-foreground block">
-                      {maxAttempts === 0 ? "0 = Unlimited attempts allowed for learners" : `Learners get ${maxAttempts} attempt(s)`}
-                    </span>
                   </div>
                 </div>
 

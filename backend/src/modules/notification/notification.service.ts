@@ -199,14 +199,39 @@ const notificationService = {
         roleLabel = "Teacher";
       }
 
-      // 1. Gather all Learner IDs: enrolled users + department employees
+      // 1. Gather Learner IDs: active/in-progress learners ONLY (Exclude learners who already completed 100% / received certificate)
       const recipientLearnerIds = new Set<bigint>();
 
+      // Fetch IDs of learners who ALREADY completed this course
+      const completedLearnerIds = new Set(
+        (await prisma.enrollment.findMany({
+          where: {
+            courseId: data.courseId,
+            OR: [
+              { status: "COMPLETED" },
+              { completedAt: { not: null } },
+              { progress: { gte: 100 } },
+            ],
+          },
+          select: { userId: true },
+        })).map((e) => e.userId.toString())
+      );
+
+      // Add only in-progress / non-completed enrolled users
       const enrollments = await prisma.enrollment.findMany({
-        where: { courseId: data.courseId },
+        where: {
+          courseId: data.courseId,
+          status: { not: "COMPLETED" },
+          completedAt: null,
+          progress: { lt: 100 },
+        },
         select: { userId: true },
       });
-      enrollments.forEach((e) => recipientLearnerIds.add(e.userId));
+      enrollments.forEach((e) => {
+        if (!completedLearnerIds.has(e.userId.toString())) {
+          recipientLearnerIds.add(e.userId);
+        }
+      });
 
       const deptWhere: any = {};
       if (course?.departmentId) {
@@ -216,7 +241,11 @@ const notificationService = {
         where: deptWhere,
         select: { id: true },
       });
-      deptEmployees.forEach((emp) => recipientLearnerIds.add(emp.id));
+      deptEmployees.forEach((emp) => {
+        if (!completedLearnerIds.has(emp.id.toString())) {
+          recipientLearnerIds.add(emp.id);
+        }
+      });
 
       const typeLabel = data.contentType ? ` (${data.contentType})` : "";
       const notifications: CreateNotificationInput[] = Array.from(recipientLearnerIds).map((learnerId) => ({

@@ -54,10 +54,11 @@ export class ProgressService {
           },
         });
 
-        const calculatedProgress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0;
-        const isNowCompleted = totalLessons > 0 && completedCount >= totalLessons;
+        const wasAlreadyCompleted = en.status === "COMPLETED" || en.completedAt !== null || Number(en.progress) >= 100;
+        const calculatedProgress = wasAlreadyCompleted ? 100 : (totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0);
+        const isNowCompleted = wasAlreadyCompleted || (totalLessons > 0 && completedCount >= totalLessons);
         const newStatus = isNowCompleted ? "COMPLETED" : "IN_PROGRESS";
-        const finalProgress = calculatedProgress;
+        const finalProgress = wasAlreadyCompleted ? 100 : calculatedProgress;
 
         if (finalProgress !== Number(en.progress) || newStatus !== en.status) {
           await prisma.enrollment.update({
@@ -252,14 +253,14 @@ export class ProgressService {
       },
     });
 
-    const calculatedProgress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0;
-
     let enrollment = await prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
     });
 
-    const isNowCompleted = totalLessons > 0 && completedCount >= totalLessons;
-    const finalProgress = calculatedProgress;
+    const wasAlreadyCompleted = enrollment?.status === "COMPLETED" || enrollment?.completedAt !== null || Number(enrollment?.progress || 0) >= 100;
+    const calculatedProgress = wasAlreadyCompleted ? 100 : (totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0);
+    const isNowCompleted = wasAlreadyCompleted || (totalLessons > 0 && completedCount >= totalLessons);
+    const finalProgress = wasAlreadyCompleted ? 100 : calculatedProgress;
     const updatedStatus = isNowCompleted ? "COMPLETED" : "IN_PROGRESS";
     const completedAtDate = isNowCompleted ? enrollment?.completedAt || new Date() : null;
 
@@ -404,14 +405,14 @@ export class ProgressService {
       },
     });
 
-    const calculatedProgress = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0;
-
     let enrollment = await prisma.enrollment.findUnique({
       where: { userId_courseId: { userId, courseId } },
     });
 
-    const isNowCompleted = totalLessons > 0 && completedCount >= totalLessons;
-    const finalProgress = calculatedProgress;
+    const wasAlreadyCompleted = enrollment?.status === "COMPLETED" || enrollment?.completedAt !== null || Number(enrollment?.progress || 0) >= 100;
+    const calculatedProgress = wasAlreadyCompleted ? 100 : (totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0);
+    const isNowCompleted = wasAlreadyCompleted || (totalLessons > 0 && completedCount >= totalLessons);
+    const finalProgress = wasAlreadyCompleted ? 100 : calculatedProgress;
     const updatedStatus = isNowCompleted ? "COMPLETED" : "IN_PROGRESS";
     const completedAtDate = isNowCompleted ? (enrollment?.completedAt || new Date()) : null;
     const timeDelta = Math.max(0, additionalSeconds);
