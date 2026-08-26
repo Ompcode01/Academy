@@ -105,14 +105,47 @@ docker compose down
 
 ---
 
+## Database Snapshot & Git Workflow (`git pull` & `git push`)
+
+To keep database data (courses, users, sections, learning contents, enrollments) synchronized across all developer environments, follow these steps during `git push` and `git pull`:
+
+### 1. BEFORE PUSHING CHANGES (`git push`)
+If you created or modified any courses, sections, contents, or user data locally, export the latest database snapshot before pushing:
+```bash
+cd backend
+npm run db:export
+git add prisma/data_dump.json
+git commit -m "Export latest database snapshot"
+git push
+```
+> **What this does**: `npm run db:export` exports all database tables into `backend/prisma/data_dump.json`.
+
+---
+
+### 2. AFTER PULLING CHANGES (`git pull`)
+Whenever you pull code from GitHub, import the updated snapshot into your local database:
+```bash
+git pull
+cd backend
+npm run db:import
+```
+> **What this does**: `npm run db:import` automatically cleans local stale records and restores the exact database snapshot from `data_dump.json`.
+
+---
+
 ## Troubleshooting
+
+### Windows Prisma File Lock (`EPERM: operation not permitted`)
+If `npx prisma generate`, `npx prisma db push`, or `npm run db:import` fails with `EPERM: operation not permitted`, stop your running backend server process (`npm run dev`) first. On Windows, active Node processes lock Prisma's query engine DLL file (`query_engine-windows.dll.node`).
 
 ### Docker Database Issues
 If you encounter port binding errors, ensure no other service is using port `3307`. You can change the mapped host port in `docker-compose.yml` and update the corresponding `DATABASE_URL` port in your `backend/.env`.
 
-### Prisma Database Sync
-If you modify the database models in `backend/prisma/schema.prisma`, sync the database again using:
+### Prisma Schema Modifications
+If you modify database models in `backend/prisma/schema.prisma`:
 ```bash
+# 1. Stop backend dev server if running
+# 2. Push schema to database
 npx prisma db push
 npx prisma generate
 ```

@@ -34,6 +34,35 @@ async function importDatabase() {
   const dump = JSON.parse(raw);
 
   try {
+    console.log("Cleaning target database before snapshot import...");
+    await prisma.$executeRawUnsafe(`SET FOREIGN_KEY_CHECKS = 0;`);
+    const tables = [
+      "audit_logs",
+      "notifications",
+      "events",
+      "guest_access_grants",
+      "issued_certificates",
+      "assessment_submissions",
+      "user_lesson_progress",
+      "enrollments",
+      "learning_contents",
+      "course_sections",
+      "course_teachers",
+      "courses",
+      "categories",
+      "role_permissions",
+      "user_roles",
+      "permissions",
+      "roles",
+      "user_accounts",
+      "employees",
+      "departments",
+    ];
+    for (const table of tables) {
+      await prisma.$executeRawUnsafe(`TRUNCATE TABLE \`${table}\`;`);
+    }
+    await prisma.$executeRawUnsafe(`SET FOREIGN_KEY_CHECKS = 1;`);
+    console.log("✓ Database cleaned successfully.\n");
     // 1. Departments
     if (dump.departments?.length > 0) {
       for (const d of dump.departments) {
@@ -304,13 +333,10 @@ async function importDatabase() {
     if (dump.enrollments?.length > 0) {
       for (const en of dump.enrollments) {
         await prisma.enrollment.upsert({
-          where: {
-            userId_courseId: {
-              userId: toBigInt(en.userId),
-              courseId: toBigInt(en.courseId),
-            },
-          },
+          where: { id: toBigInt(en.id) },
           update: {
+            userId: toBigInt(en.userId),
+            courseId: toBigInt(en.courseId),
             progress: en.progress,
             status: en.status,
             completedAt: toDateNullable(en.completedAt),
