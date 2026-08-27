@@ -28,9 +28,27 @@ import fs from "fs";
 
 const app = express();
 
+// Global BigInt JSON serializer fallback to prevent 500 errors during JSON.stringify
+(BigInt.prototype as any).toJSON = function () {
+  const num = Number(this);
+  return Number.isSafeInteger(num) ? num : this.toString();
+};
+
 app.use(cors());
 
 app.use(express.json());
+
+// Log any 500 response automatically for rapid diagnostic visibility
+app.use((req, res, next) => {
+  const originalJson = res.json;
+  res.json = function (body: any) {
+    if (res.statusCode >= 500) {
+      console.error(`🚨 [500 SERVER ERROR] ${req.method} ${req.originalUrl}:`, body);
+    }
+    return originalJson.call(this, body);
+  };
+  next();
+});
 
 app.use(express.urlencoded({
     extended: true,

@@ -2,6 +2,34 @@ import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import progressService from "./progress.service";
 
+function parseUserId(req: AuthRequest): bigint {
+  const candidate = req.user?.employeeId || req.user?.userId || req.user?.id;
+  if (!candidate || candidate === "undefined" || candidate === "null") {
+    return BigInt(1);
+  }
+  try {
+    const str = String(candidate).trim();
+    if (!str || isNaN(Number(str))) return BigInt(1);
+    return BigInt(str);
+  } catch {
+    return BigInt(1);
+  }
+}
+
+function parseTeacherId(req: AuthRequest): bigint | undefined {
+  const candidate = req.user?.employeeId || req.user?.userId || req.user?.id;
+  if (!candidate || candidate === "undefined" || candidate === "null") {
+    return undefined;
+  }
+  try {
+    const str = String(candidate).trim();
+    if (!str || isNaN(Number(str))) return undefined;
+    return BigInt(str);
+  } catch {
+    return undefined;
+  }
+}
+
 export const getLearnerProgress = async (req: AuthRequest, res: Response) => {
   try {
     if (req.user?.role === "GUEST") {
@@ -18,7 +46,7 @@ export const getLearnerProgress = async (req: AuthRequest, res: Response) => {
       });
     }
     const courseId = BigInt(String(req.params.id));
-    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const userId = parseUserId(req);
 
     const data = await progressService.getLearnerCourseProgress(userId, courseId);
     res.json({ success: true, data });
@@ -32,7 +60,7 @@ export const getMyEnrollments = async (req: AuthRequest, res: Response) => {
     if (req.user?.role === "GUEST") {
       return res.json({ success: true, data: [] });
     }
-    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const userId = parseUserId(req);
     const data = await progressService.getMyEnrollments(userId);
     res.json({ success: true, data });
   } catch (error: any) {
@@ -46,7 +74,7 @@ export const recordHeartbeat = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ success: false, message: "Guest accounts cannot track lesson completion or progress." });
     }
     const courseId = BigInt(String(req.params.id));
-    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const userId = parseUserId(req);
     const { contentId, deltaActiveSeconds, deltaWatchedSeconds, lastPosition, isPlaying, isTabActive } = req.body;
 
     if (!contentId) {
@@ -77,7 +105,7 @@ export const markSectionComplete = async (req: AuthRequest, res: Response) => {
     }
     const courseId = BigInt(String(req.params.id));
     const sectionId = BigInt(String(req.params.sectionId));
-    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const userId = parseUserId(req);
 
     const data = await progressService.markSectionComplete(userId, courseId, sectionId);
 
@@ -93,7 +121,7 @@ export const updateLessonProgress = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ success: false, message: "Guest accounts cannot track lesson completion or progress." });
     }
     const courseId = BigInt(String(req.params.id));
-    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const userId = parseUserId(req);
     const { contentId, isCompleted, additionalSeconds } = req.body;
 
     if (!contentId) {
@@ -120,7 +148,7 @@ export const recordQuizSubmission = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ success: false, message: "Guest accounts cannot attempt quizzes." });
     }
     const courseId = BigInt(String(req.params.id));
-    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const userId = parseUserId(req);
     const { contentId, score, maxScore, answersJson } = req.body;
 
     const data = await progressService.recordQuizSubmission(
@@ -153,7 +181,7 @@ export const recordAssignmentSubmission = async (req: AuthRequest, res: Response
       return res.status(403).json({ success: false, message: "Guest accounts cannot submit assignments." });
     }
     const courseId = BigInt(String(req.params.id));
-    const userId = req.user?.employeeId || req.user?.userId || req.user?.id ? BigInt(req.user.employeeId || req.user.userId || req.user.id) : BigInt(1);
+    const userId = parseUserId(req);
     const { contentId, submissionText, fileUrl } = req.body;
 
     const data = await progressService.recordAssignmentSubmission(
@@ -172,7 +200,7 @@ export const recordAssignmentSubmission = async (req: AuthRequest, res: Response
 
 export const getTeacherSubmissions = async (req: AuthRequest, res: Response) => {
   try {
-    const teacherId = req.user?.employeeId ? BigInt(req.user.employeeId) : undefined;
+    const teacherId = parseTeacherId(req);
     const data = await progressService.getTeacherSubmissions(teacherId, req.user?.role);
     res.json({ success: true, data });
   } catch (error: any) {

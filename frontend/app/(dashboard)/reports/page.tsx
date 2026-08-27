@@ -44,6 +44,15 @@ import {
   ReportFilterParams,
 } from "@/services/api/reporting.service";
 
+function formatDisplayDate(dateVal: any): string {
+  if (!dateVal) return "N/A";
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return String(dateVal);
+  const day = String(d.getDate()).padStart(2, "0");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${day}/${months[d.getMonth()]}/${d.getFullYear()}`;
+}
+
 import { ReportKpiCard } from "@/components/reports/ReportKpiCard";
 import { ReportFilterBar } from "@/components/reports/ReportFilterBar";
 import { ReportTable, renderStatusBadge } from "@/components/reports/ReportTable";
@@ -402,7 +411,7 @@ export default function ReportsPage() {
                 { header: "Completed Lessons", cell: (r: any) => <Badge variant="outline" className="text-[10px] font-bold">{r.completedLessonsCount}</Badge> },
                 { header: "Status", cell: (r: any) => renderStatusBadge(r.status) },
                 { header: "Time Spent", cell: (r: any) => <span className="font-semibold text-purple-600 dark:text-purple-400">{r.timeSpentFormatted}</span> },
-                { header: "Last Activity", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{r.lastActivity ? new Date(r.lastActivity).toLocaleString() : "N/A"}</span> },
+                { header: "Last Activity", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{formatDisplayDate(r.lastActivity)}</span> },
               ]}
               data={reportData?.table || []}
               loading={loading}
@@ -448,7 +457,7 @@ export default function ReportsPage() {
                     </Badge>
                   ),
                 },
-                { header: "Completion Date", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ""}</span> },
+                { header: "Completion Date", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{formatDisplayDate(r.submittedAt)}</span> },
                 {
                   header: "Rule",
                   cell: () => (
@@ -533,7 +542,7 @@ export default function ReportsPage() {
                     );
                   },
                 },
-                { header: "Submitted Date", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ""}</span> },
+                { header: "Submitted Date", cell: (r: any) => <span className="text-[11px] text-muted-foreground">{formatDisplayDate(r.submittedAt)}</span> },
                 {
                   header: "Feedback Notes",
                   cell: (r: any) => {

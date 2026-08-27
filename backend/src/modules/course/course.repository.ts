@@ -239,10 +239,21 @@ class CourseRepository {
 
   async update(id: bigint, data: any) {
     const updateData: any = { ...data };
-    
+
+    // Strip nested relation objects and read-only timestamps if present in update payload
+    delete updateData.category;
+    delete updateData.department;
+    delete updateData.creator;
+    delete updateData.teachers;
+    delete updateData.sections;
+    delete updateData.enrollments;
+    delete updateData.certificateTemplate;
+    delete updateData.createdAt;
+    delete updateData.updatedAt;
+
     if (updateData.categoryId !== undefined) {
       if (updateData.categoryId) {
-        updateData.category = { connect: { id: updateData.categoryId } };
+        updateData.category = { connect: { id: BigInt(updateData.categoryId) } };
       }
       delete updateData.categoryId;
     }
@@ -251,14 +262,14 @@ class CourseRepository {
       if (updateData.departmentId === null) {
         updateData.department = { disconnect: true };
       } else {
-        updateData.department = { connect: { id: updateData.departmentId } };
+        updateData.department = { connect: { id: BigInt(updateData.departmentId) } };
       }
       delete updateData.departmentId;
     }
 
     if (updateData.creatorId !== undefined) {
       if (updateData.creatorId) {
-        updateData.creator = { connect: { id: updateData.creatorId } };
+        updateData.creator = { connect: { id: BigInt(updateData.creatorId) } };
       }
       delete updateData.creatorId;
     }

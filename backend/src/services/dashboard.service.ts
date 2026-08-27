@@ -8,8 +8,20 @@ interface UserContext {
 
 export const getDashboardStats = async (userContext: UserContext) => {
   const { role, employeeId, departmentId } = userContext;
-  const empId = BigInt(employeeId);
-  const deptId = BigInt(departmentId);
+
+  const toBigIntSafe = (val: any): bigint | null => {
+    if (!val) return null;
+    try {
+      const str = String(val).trim();
+      if (!str || isNaN(Number(str))) return null;
+      return BigInt(str);
+    } catch {
+      return null;
+    }
+  };
+
+  const empId = toBigIntSafe(employeeId);
+  const deptId = toBigIntSafe(departmentId);
 
   const superAdminOrAdminCreator = {
     creator: {
@@ -31,15 +43,14 @@ export const getDashboardStats = async (userContext: UserContext) => {
       break;
     case "ADMIN":
       courseWhere.OR = [
-        { departmentId: deptId },
+        ...(deptId !== null ? [{ departmentId: deptId }] : []),
         { departmentId: null },
       ];
       break;
     case "TEACHER":
       courseWhere.OR = [
-        { creatorId: empId },
-        { teachers: { some: { teacherId: empId } } },
-        { departmentId: deptId },
+        ...(empId !== null ? [{ creatorId: empId }, { teachers: { some: { teacherId: empId } } }] : []),
+        ...(deptId !== null ? [{ departmentId: deptId }] : []),
         { departmentId: null },
         { departmentId: BigInt(5) },
         superAdminOrAdminCreator,
@@ -48,7 +59,7 @@ export const getDashboardStats = async (userContext: UserContext) => {
     case "LEARNER":
       courseWhere.status = "PUBLISHED";
       courseWhere.OR = [
-        { departmentId: deptId },
+        ...(deptId !== null ? [{ departmentId: deptId }] : []),
         { departmentId: null },
         superAdminOrAdminCreator,
       ];
@@ -62,7 +73,7 @@ export const getDashboardStats = async (userContext: UserContext) => {
 
   // Build enrollment filter based on role
   let enrollmentWhere: any = { course: { isActive: true } };
-  if (role === "LEARNER") {
+  if (role === "LEARNER" && empId !== null) {
     enrollmentWhere.userId = empId;
   } else if (role === "TEACHER" || role === "ADMIN") {
     enrollmentWhere.courseId = {
@@ -90,7 +101,7 @@ export const getDashboardStats = async (userContext: UserContext) => {
     role === "SUPER_ADMIN"
       ? prisma.employee.count({ where: { employmentStatus: "ACTIVE" } })
       : role === "ADMIN"
-        ? prisma.employee.count({ where: { departmentId: deptId, employmentStatus: "ACTIVE" } })
+        ? prisma.employee.count({ where: { ...(deptId !== null ? { departmentId: deptId } : {}), employmentStatus: "ACTIVE" } })
         : prisma.employee.count({ where: { employmentStatus: "ACTIVE" } }),
     prisma.department.count({ where: { isActive: true } }),
     prisma.enrollment.count({ where: enrollmentWhere }),

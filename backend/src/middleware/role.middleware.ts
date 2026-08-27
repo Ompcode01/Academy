@@ -24,17 +24,26 @@ export const authorizeRoles =
       // Fallback: Query database user_roles
       const empIdRaw = req.user.employeeId || req.user.userId || req.user.id;
       if (empIdRaw) {
-        const employeeId = BigInt(empIdRaw);
-        const userRoles = await prisma.userRole.findMany({
-          where: { employeeId, isActive: true },
-          include: { role: true },
-        });
+        let employeeId: bigint | null = null;
+        try {
+          const str = String(empIdRaw).trim();
+          if (str && !isNaN(Number(str))) {
+            employeeId = BigInt(str);
+          }
+        } catch (_) {}
 
-        const roleCodes = userRoles.map((r) => r.role.roleCode);
-        const hasRole = allowedRoles.some((role) => roleCodes.includes(role));
+        if (employeeId !== null) {
+          const userRoles = await prisma.userRole.findMany({
+            where: { employeeId, isActive: true },
+            include: { role: true },
+          });
 
-        if (hasRole) {
-          return next();
+          const roleCodes = userRoles.map((r) => r.role.roleCode);
+          const hasRole = allowedRoles.some((role) => roleCodes.includes(role));
+
+          if (hasRole) {
+            return next();
+          }
         }
       }
 

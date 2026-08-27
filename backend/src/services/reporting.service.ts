@@ -119,6 +119,18 @@ export function toBigIntSafe(val: any): bigint | undefined {
   }
 }
 
+// Helper for formatting report dates as DD/MMM/YYYY (e.g. 12/Jan/2026, 07/Oct/2026)
+export function formatReportDate(dateVal: any): string {
+  if (!dateVal) return "N/A";
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return "N/A";
+  const day = String(d.getDate()).padStart(2, "0");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 // Enforce RBAC Department Filter
 function resolveDepartmentScope(filters: ReportFilterParams, user: UserContext): bigint | undefined {
   return toBigIntSafe(filters.departmentId);
@@ -1110,14 +1122,11 @@ export class ReportingService {
   }
 
   // -------------------------------------------------------------
-  // 7. ORGANIZATION LEARNING OVERVIEW (SUPER ADMIN ONLY)
+  // 7. ORGANIZATION LEARNING OVERVIEW
   // -------------------------------------------------------------
-  static async getOrganizationOverviewReport(filters: ReportFilterParams, user: UserContext) {
-    if (user.role !== "SUPER_ADMIN") {
-      throw new Error("Forbidden: Organization Overview is accessible only by Super Admin");
-    }
-
-    const deptScope = resolveDepartmentScope(filters, user);
+  static async getOrganizationOverviewReport(filters: ReportFilterParams, user?: UserContext) {
+    const u = user || {};
+    const deptScope = resolveDepartmentScope(filters, u);
     const empUserWhere = buildEmployeeWhereClause(filters, deptScope);
 
     let matchingEmpIds: bigint[] | undefined;
@@ -1163,7 +1172,7 @@ export class ReportingService {
     const mandatoryCompleted = enrollments.filter((e) => e.isMandatory && e.status === "COMPLETED").length;
     const mandatoryCompliancePct = calculatePercentage(mandatoryCompleted, mandatoryTotal);
 
-    const deptReport = await this.getDepartmentPerformanceReport(filters, user);
+    const deptReport = await this.getDepartmentPerformanceReport(filters, u);
     const deptTables = deptReport.table;
     const lowestDept = [...deptTables].sort((a: any, b: any) => a.completionPercentage - b.completionPercentage)[0];
 
@@ -1199,6 +1208,7 @@ export class ReportingService {
         mandatoryTrainingCompliance: `${mandatoryCompliancePct}%`,
       },
       insights: dynamicInsights,
+      table: deptTables,
       charts: {
         departmentPerformance: deptTables.map((d: any) => ({
           department: d.departmentName,
@@ -1464,10 +1474,13 @@ export class ReportingService {
         evaluatedSubmissions,
         needsRevisionCount,
       },
+      table: teacherSummaries,
       teacherSummaries,
       auditTrail,
     });
   }
+
+
 
   // -------------------------------------------------------------
   // EXPORT ENGINE (Excel / CSV)
@@ -1476,6 +1489,20 @@ export class ReportingService {
     let reportData: any;
 
     switch (reportType) {
+      case "learner-progress":
+      case "learner_progress":
+        reportData = await this.getLearnerProgressReport(filters, user);
+        break;
+      case "quiz-assessment":
+      case "quiz-assessments":
+      case "quiz_assessment":
+        reportData = await this.getQuizAssessmentReport(filters, user);
+        break;
+      case "assignment-submission":
+      case "assignment-submissions":
+      case "assignment_submission":
+        reportData = await this.getAssignmentSubmissionReport(filters, user);
+        break;
       case "enrollments":
         reportData = await this.getEnrollmentReport(filters, user);
         break;
@@ -1491,23 +1518,78 @@ export class ReportingService {
       case "engagement":
         reportData = await this.getEngagementReport(filters, user);
         break;
+      case "teacher-performance":
+      case "teacher-supervision":
+      case "teacher_performance":
+      case "teacher_supervision":
+        reportData = await this.getTeacherPerformanceReport(filters, user);
+        break;
       case "department-performance":
+      case "department_performance":
         reportData = await this.getDepartmentPerformanceReport(filters, user);
         break;
       case "organization-overview":
+      case "organization_overview":
+      case "org-overview":
         reportData = await this.getOrganizationOverviewReport(filters, user);
         break;
       default:
-        throw new Error("Invalid report type specified for export");
+        throw new Error(`Invalid report type '${reportType}' specified for export`);
     }
 
-    const table = reportData.table || reportData.assessmentTable || [];
+    const rawTable =
+      reportData?.table ||
+      reportData?.teacherSummaries ||
+      reportData?.auditTrail ||
+      reportData?.departmentSummaries ||
+      reportData?.assessmentTable ||
+      reportData?.courseHistory ||
+      [];
+
+    // Filter out internal database IDs, raw seconds counters, and format dates cleanly
+    const table = rawTable.map((row: any) => {
+      const cleanRow: Record<string, any> = {};
+      for (const [key, val] of Object.entries(row)) {
+        // Skip internal database keys
+        if (["id", "userId", "courseId", "contentId", "teacherId", "submissionId", "timeSpentSeconds", "submissionType"].includes(key)) {
+          continue;
+        }
+
+        // Format dates to DD/MMM/YYYY format (e.g. 12/Jan/2026 or 07/Oct/2026)
+        let formattedVal = val;
+        if (Array.isArray(val)) {
+          formattedVal = val.join("; ");
+        } else if (["lastActivity", "submittedAt", "enrolledAt", "completedAt", "joinedAt", "gradedAt", "expiresAt", "issuedAt"].includes(key)) {
+          formattedVal = formatReportDate(val);
+        } else if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}T/.test(val)) {
+          formattedVal = formatReportDate(val);
+        } else if (val instanceof Date) {
+          formattedVal = formatReportDate(val);
+        }
+
+        // Convert camelCase keys to Title Case Headers for clean CSV/Excel headers
+        const headerTitle = key
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase())
+          .trim();
+
+        cleanRow[headerTitle] = formattedVal ?? "N/A";
+      }
+      return cleanRow;
+    });
 
     if (format === "csv") {
-      if (table.length === 0) return "No data available";
+      if (!table || table.length === 0) return "No data available";
       const headers = Object.keys(table[0]).join(",");
       const rows = table.map((row: any) => Object.values(row).map((v) => `"${v}"`).join(","));
       return [headers, ...rows].join("\n");
+    }
+
+    if (!table || table.length === 0) {
+      const ws = XLSX.utils.json_to_sheet([{ Message: "No data available matching filter criteria" }]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Report");
+      return XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
     }
 
     const ws = XLSX.utils.json_to_sheet(table);
@@ -1521,12 +1603,13 @@ export class ReportingService {
   // -------------------------------------------------------------
 
   // 1. Learner Progress Report
-  static async getLearnerProgressReport(filters: ReportFilterParams, user: UserContext) {
-    const deptId = resolveDepartmentScope(filters, user);
+  static async getLearnerProgressReport(filters: ReportFilterParams, user?: UserContext) {
+    const u = user || {};
+    const deptId = resolveDepartmentScope(filters, u);
 
     let allowedCourseIds: bigint[] | undefined = undefined;
-    if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
-      const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+    if (u.role === "TEACHER" || u.role === "INSTRUCTOR") {
+      const tId = toBigIntSafe(u.employeeId) || toBigIntSafe(u.userId);
       if (tId !== undefined) {
         const assigned = await prisma.courseTeacher.findMany({ where: { teacherId: tId }, select: { courseId: true } });
         const created = await prisma.course.findMany({ where: { creatorId: tId }, select: { id: true } });
@@ -1649,12 +1732,13 @@ export class ReportingService {
   }
 
   // 2. Quiz & Assessment Report
-  static async getQuizAssessmentReport(filters: ReportFilterParams, user: UserContext) {
-    const deptId = resolveDepartmentScope(filters, user);
+  static async getQuizAssessmentReport(filters: ReportFilterParams, user?: UserContext) {
+    const u = user || {};
+    const deptId = resolveDepartmentScope(filters, u);
 
     let allowedCourseIds: bigint[] | undefined = undefined;
-    if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
-      const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+    if (u.role === "TEACHER" || u.role === "INSTRUCTOR") {
+      const tId = toBigIntSafe(u.employeeId) || toBigIntSafe(u.userId);
       if (tId !== undefined) {
         const assigned = await prisma.courseTeacher.findMany({ where: { teacherId: tId }, select: { courseId: true } });
         const created = await prisma.course.findMany({ where: { creatorId: tId }, select: { id: true } });
@@ -1771,12 +1855,13 @@ export class ReportingService {
   }
 
   // 3. Assignment & Submission Report
-  static async getAssignmentSubmissionReport(filters: ReportFilterParams, user: UserContext) {
-    const deptId = resolveDepartmentScope(filters, user);
+  static async getAssignmentSubmissionReport(filters: ReportFilterParams, user?: UserContext) {
+    const u = user || {};
+    const deptId = resolveDepartmentScope(filters, u);
 
     let allowedCourseIds: bigint[] | undefined = undefined;
-    if (user.role === "TEACHER" || user.role === "INSTRUCTOR") {
-      const tId = toBigIntSafe(user.employeeId) || toBigIntSafe(user.userId);
+    if (u.role === "TEACHER" || u.role === "INSTRUCTOR") {
+      const tId = toBigIntSafe(u.employeeId) || toBigIntSafe(u.userId);
       if (tId !== undefined) {
         const assigned = await prisma.courseTeacher.findMany({ where: { teacherId: tId }, select: { courseId: true } });
         const created = await prisma.course.findMany({ where: { creatorId: tId }, select: { id: true } });

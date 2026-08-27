@@ -11,21 +11,36 @@ import path from "path";
 import AdmZip from "adm-zip";
 const { convert: convertPptxToPdf } = require("pptx-to-pdf");
 
+const toBigIntSafe = (val: any): bigint | undefined => {
+  if (val === null || val === undefined || val === "" || val === "ALL" || val === "global" || val === "undefined" || val === "null") {
+    return undefined;
+  }
+  try {
+    const str = String(val).trim();
+    if (str === "" || str === "ALL" || str === "global" || str === "undefined" || str === "null" || isNaN(Number(str))) {
+      return undefined;
+    }
+    return BigInt(str);
+  } catch {
+    return undefined;
+  }
+};
+
 // GET /api/courses
 export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { search, categoryId, isPublished, status, departmentId, page, limit } = req.query;
 
   const userContext = {
     role: req.user?.role || "GUEST",
-    employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
-    departmentId: req.user?.departmentId ? BigInt(req.user.departmentId) : undefined,
+    employeeId: toBigIntSafe(req.user?.employeeId),
+    departmentId: toBigIntSafe(req.user?.departmentId),
   };
 
   const filters = {
     search: search as string | undefined,
-    categoryId: categoryId ? Number(categoryId) : undefined,
+    categoryId: categoryId && categoryId !== "ALL" ? Number(categoryId) : undefined,
     status: status as string | undefined,
-    departmentId: departmentId ? BigInt(departmentId as string) : undefined,
+    departmentId: toBigIntSafe(departmentId),
     page: page ? Number(page) : 1,
     limit: limit ? Number(limit) : 10,
   };
@@ -38,11 +53,14 @@ export const getCourses = asyncHandler(async (req: AuthRequest, res: Response) =
 export const getCourseById = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     try {
-      const id = BigInt(req.params.id as string);
+      const id = toBigIntSafe(req.params.id);
+      if (id === undefined) {
+        return errorResponse(res, "Invalid course ID", "BAD_REQUEST", 400);
+      }
       const userContext = {
         role: req.user?.role || "GUEST",
-        employeeId: req.user?.employeeId ? BigInt(req.user.employeeId) : undefined,
-        departmentId: req.user?.departmentId ? BigInt(req.user.departmentId) : undefined,
+        employeeId: toBigIntSafe(req.user?.employeeId),
+        departmentId: toBigIntSafe(req.user?.departmentId),
       };
       const course = await courseService.getCourseById(id, userContext);
       return successResponse(res, serializeBigInt(course), "Course fetched successfully");
