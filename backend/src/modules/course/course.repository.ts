@@ -62,7 +62,16 @@ class CourseRepository {
     const { search, categoryId, status, departmentId, page = 1, limit = 10 } = filters;
     const skip = (page - 1) * limit;
 
-    const where: any = { isActive: true, ...scopeWhere };
+    const where: any = { ...scopeWhere };
+
+    if (status === "ARCHIVED" || status === "INACTIVE") {
+      where.status = "ARCHIVED";
+    } else if (status === "PUBLISHED" || status === "DRAFT") {
+      where.status = status;
+      where.isActive = true;
+    } else if (status === "ALL" || status === "ANY" || !status) {
+      // "All Courses" view: include PUBLISHED, DRAFT, and ARCHIVED courses
+    }
 
     if (search) {
       const q = search.trim();
@@ -87,7 +96,7 @@ class CourseRepository {
     if (categoryId) {
       where.categoryId = BigInt(categoryId);
     }
-    if (status) {
+    if (status && status !== "ALL" && status !== "ANY") {
       where.status = status;
     }
     if (departmentId) {

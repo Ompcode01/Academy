@@ -68,7 +68,7 @@ export default function CoursesPage() {
           page: currentPage,
           limit: pageSize,
         }),
-        getCourses({ limit: 1000 }),
+        getCourses({ limit: 1000, status: "ALL" }),
         getMyEnrollments(),
       ]);
 
