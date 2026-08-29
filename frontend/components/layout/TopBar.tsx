@@ -75,7 +75,7 @@ export default function TopBar() {
               <div className="h-4 w-px bg-white/20" />
               <SakshamLogo height={24} />
               <div className="h-4 w-px bg-white/20" />
-              <CapDevLogo height={20} />
+              <CapDevLogo height={28} />
             </div>
           )}
         </div>
@@ -91,7 +91,7 @@ export default function TopBar() {
         <div className="flex items-center gap-3 sm:gap-5">
           {/* CapDev Logo Image (Shown on right only when search is collapsed) */}
           {!isSearchExpanded && (
-            <CapDevLogo height={22} />
+            <CapDevLogo height={30} />
           )}
 
           {/* Expandable TopBar Search */}
