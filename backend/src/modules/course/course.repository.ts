@@ -272,7 +272,8 @@ class CourseRepository {
         updateData.department = { connect: { id: BigInt(updateData.departmentId) } };
         delete updateData.departmentId;
       } else if (updateData.departmentId === null) {
-        updateData.departmentId = null;
+        updateData.department = { disconnect: true };
+        delete updateData.departmentId;
       } else {
         delete updateData.departmentId;
       }

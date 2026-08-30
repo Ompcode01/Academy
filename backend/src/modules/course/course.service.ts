@@ -3,6 +3,7 @@ import prisma from "../../config/prisma";
 import * as XLSX from "xlsx";
 import notificationService from "../notification/notification.service";
 import guestGrantService from "../../services/guestGrant.service";
+import AppError from "../../utils/AppError";
 import { calculateContentDuration, formatRoundedDuration } from "../../utils/durationCalculator";
 
 interface CourseFilters {
@@ -130,7 +131,7 @@ class CourseService {
   async getCourseById(id: bigint, userContext?: UserContext) {
     const course = await courseRepository.findById(id);
     if (!course) {
-      throw new Error("Course not found");
+      throw new AppError("Course not found", 404);
     }
 
     // Determine creator role & info
@@ -653,7 +654,7 @@ class CourseService {
   async deleteCourse(id: bigint) {
     const existing = await prisma.course.findUnique({ where: { id } });
     if (!existing) {
-      throw new Error("Course not found or already deleted");
+      throw new AppError("Course not found or already deleted", 404);
     }
 
     // Soft-delete / Archive course instead of destructive permanent deletion.

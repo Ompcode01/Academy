@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import asyncHandler from "../../utils/asyncHandler";
 import { successResponse, errorResponse } from "../../utils/response";
+import AppError from "../../utils/AppError";
 import courseService from "./course.service";
 import { serializeBigInt } from "../../utils/prismaSerializer";
 import prisma from "../../config/prisma";
@@ -266,7 +267,15 @@ export const updateCourse = asyncHandler(
 export const deleteCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const id = BigInt(req.params.id as string);
-    const existingCourse = await courseService.getCourseById(id);
+    const existingCourse = await prisma.course.findUnique({
+      where: { id },
+      select: { id: true, title: true, isActive: true },
+    });
+
+    if (!existingCourse) {
+      throw new AppError("Course not found or already deleted", 404);
+    }
+
     await courseService.deleteCourse(id);
 
     // Audit Log
@@ -275,7 +284,7 @@ export const deleteCourse = asyncHandler(
       data: {
         actorName,
         action: "Course Deleted",
-        detail: `Deleted course '${existingCourse?.title || id}'`,
+        detail: `Deleted course '${existingCourse.title || id}'`,
         type: "course",
         ipAddress: req.ip || "Internal",
       },
