@@ -260,23 +260,25 @@ class CourseRepository {
     delete updateData.createdAt;
     delete updateData.updatedAt;
 
-    if (updateData.categoryId !== undefined) {
+    if ("categoryId" in updateData) {
       if (updateData.categoryId) {
         updateData.category = { connect: { id: BigInt(updateData.categoryId) } };
       }
       delete updateData.categoryId;
     }
-    
-    if (updateData.departmentId !== undefined) {
-      if (updateData.departmentId === null) {
-        updateData.department = { disconnect: true };
-      } else {
+
+    if ("departmentId" in updateData) {
+      if (updateData.departmentId) {
         updateData.department = { connect: { id: BigInt(updateData.departmentId) } };
+        delete updateData.departmentId;
+      } else if (updateData.departmentId === null) {
+        updateData.departmentId = null;
+      } else {
+        delete updateData.departmentId;
       }
-      delete updateData.departmentId;
     }
 
-    if (updateData.creatorId !== undefined) {
+    if ("creatorId" in updateData) {
       if (updateData.creatorId) {
         updateData.creator = { connect: { id: BigInt(updateData.creatorId) } };
       }

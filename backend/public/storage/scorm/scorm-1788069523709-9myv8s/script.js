@@ -1,0 +1,19 @@
+const slides=[{"title": "Generative AI", "subtitle": "From Ideas to Intelligent Creation", "bullets": ["What it is", "How it works", "Applications", "Future impact"]}, {"title": "What is Generative AI?", "subtitle": "AI that creates new content from learned patterns.", "bullets": ["Text, images, audio, video and code", "Powered by foundation models", "Works through natural-language prompts"]}, {"title": "How Generative AI Works", "subtitle": "Prompt → Model → Generated Output", "bullets": ["Models learn patterns from large datasets", "Tokens and representations capture context", "The model predicts and generates output", "Human feedback can improve usefulness"]}, {"title": "Generative AI vs Traditional AI", "subtitle": "A shift from prediction to creation", "bullets": ["Traditional AI classifies, predicts or detects", "Generative AI creates, transforms and summarizes", "Example: spam detection vs email generation"]}, {"title": "Large Language Models", "subtitle": "The engine behind modern AI assistants", "bullets": ["Text is processed as tokens", "Transformers use attention to understand context", "Models generate responses based on learned patterns", "Used for chat, coding and document analysis"]}, {"title": "Prompt Engineering", "subtitle": "Better instructions → Better results", "bullets": ["State the goal clearly", "Add relevant context", "Specify constraints and audience", "Request a structured output", "Iterate and refine"]}, {"title": "Real-World Applications", "subtitle": "Generative AI as a co-pilot across industries", "bullets": ["Software: code generation and debugging", "Education: tutoring and content creation", "Business: reports, research and automation", "Healthcare: documentation and decision support", "Creative work: images, video and design"]}, {"title": "Agentic AI", "subtitle": "From generating answers to taking actions", "bullets": ["Perceive → Reason → Plan → Act", "Uses tools, APIs and external systems", "Can execute multi-step workflows", "Human oversight remains important"]}, {"title": "Challenges & Responsible AI", "subtitle": "Capability must be matched with responsibility", "bullets": ["Hallucinations and inaccurate outputs", "Bias and fairness", "Privacy and data security", "Copyright and intellectual property", "Verify AI output for high-impact decisions"]}, {"title": "The Future of Generative AI", "subtitle": "AI will increasingly work alongside people", "bullets": ["More capable multimodal models", "Smarter AI agents and automation", "Personalized learning and productivity", "Human + AI collaboration", "A key skill: direct, evaluate and verify AI"]}];
+let current=0;
+let api=null;
+try{api=window.parent.API||window.API}catch(e){}
+function scormSet(el,val){try{if(api)api.LMSSetValue(el,val)}catch(e){}}
+function render(){
+ const s=slides[current];
+ document.getElementById("counter").textContent=(current+1)+" / "+slides.length;
+ document.getElementById("content").innerHTML=`<section><div class="num">SLIDE ${String(current+1).padStart(2,"0")}</div><div class="title">${s.title}</div><div class="subtitle">${s.subtitle}</div><div class="bullets">${s.bullets.map(x=>`<div class="bullet">${x}</div>`).join("")}</div></section>`;
+ document.getElementById("bar").style.width=((current+1)/slides.length*100)+"%";
+ document.getElementById("prev").disabled=current===0;
+ document.getElementById("next").textContent=current===slides.length-1?"Finish":"Next →";
+ scormSet("cmi.core.lesson_status", current===slides.length-1 ? "completed" : "incomplete");
+ scormSet("cmi.core.lesson_location", String(current+1));
+}
+document.getElementById("prev").onclick=()=>{if(current>0){current--;render()}};
+document.getElementById("next").onclick=()=>{if(current<slides.length-1){current++;render()}else{scormSet("cmi.core.lesson_status","completed");try{api&&api.LMSCommit("")}catch(e){}}};
+window.addEventListener("beforeunload",()=>{try{api&&api.LMSCommit("")}catch(e){}});
+render();
