@@ -77,8 +77,8 @@ function CreateCourseContent() {
       enrolledUsersList: [],
     },
     feedback: {
-      enableFeedback: true,
-      requireFeedbackForCertificate: true,
+      enableFeedback: false,
+      requireFeedbackForCertificate: false,
       feedbackTitle: "End-of-Course Feedback & Evaluation Survey",
       description: "Please share your review regarding course structure, content clarity, and instructor support.",
       questions: [
@@ -203,8 +203,8 @@ function CreateCourseContent() {
                 enrolledUsersList: [],
               },
               feedback: {
-                enableFeedback: true,
-                requireFeedbackForCertificate: true,
+                enableFeedback: extractedFbQuestions.length > 0,
+                requireFeedbackForCertificate: false,
                 feedbackTitle: extractedFbTitle,
                 description: extractedFbDesc,
                 questions: extractedFbQuestions.length > 0 ? extractedFbQuestions : prev.feedback.questions,
@@ -236,8 +236,8 @@ function CreateCourseContent() {
           enrolledUsersList: [],
         },
         feedback: {
-          enableFeedback: true,
-          requireFeedbackForCertificate: true,
+          enableFeedback: false,
+          requireFeedbackForCertificate: false,
           feedbackTitle: "End-of-Course Feedback & Evaluation Survey",
           description: "Please share your review regarding course structure, content clarity, and instructor support.",
           questions: [

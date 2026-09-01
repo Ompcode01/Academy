@@ -8,7 +8,8 @@ async function main() {
     include: {
       sections: {
         where: { isActive: true },
-        include: { contents: { where: { isActive: true } } },
+        orderBy: { sectionOrder: "asc" },
+        include: { contents: { where: { isActive: true }, orderBy: { contentOrder: "asc" } } },
       },
     },
     orderBy: { id: "desc" },

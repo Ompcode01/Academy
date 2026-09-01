@@ -318,10 +318,25 @@ class CourseService {
       });
     }
 
+    // Partition sections so Feedback sections are created last (highest sectionOrder)
+    const normalSecs: any[] = [];
+    const feedbackSecs: any[] = [];
+    for (const sec of sections) {
+      const isFb =
+        sec.title?.trim().toLowerCase().includes("course feedback") ||
+        sec.title?.trim().toLowerCase().includes("end-of-course feedback") ||
+        (Array.isArray(sec.contents) &&
+          sec.contents.length > 0 &&
+          sec.contents.some((c: any) => c.contentType?.toUpperCase() === "FEEDBACK"));
+      if (isFb) feedbackSecs.push(sec);
+      else normalSecs.push(sec);
+    }
+    const orderedSections = [...normalSecs, ...feedbackSecs];
+
     let courseTotalExactSecs = 0;
 
-    for (let sIdx = 0; sIdx < sections.length; sIdx++) {
-      const secData = sections[sIdx];
+    for (let sIdx = 0; sIdx < orderedSections.length; sIdx++) {
+      const secData = orderedSections[sIdx];
       const sectionTitle = secData.title || `Module ${sIdx + 1}`;
       const targetSecMins = secData.targetDurationMinutes || secData.targetDuration || (secData.durationHours ? secData.durationHours * 60 : null);
 

@@ -97,9 +97,9 @@ export default function FeedbackStepForm({
   const currentUserId = user?.id ? String(user.id) : ((user as any)?.email || "guest");
   const storageKey = `academy_feedback_templates_${currentUserId}`;
 
-  const [enableFeedback, setEnableFeedback] = useState<boolean>(data?.enableFeedback ?? true);
+  const [enableFeedback, setEnableFeedback] = useState<boolean>(data?.enableFeedback ?? false);
   const [requireFeedbackForCertificate, setRequireFeedbackForCertificate] = useState<boolean>(
-    data?.requireFeedbackForCertificate ?? true
+    data?.requireFeedbackForCertificate ?? false
   );
   const [feedbackTitle, setFeedbackTitle] = useState<string>(
     data?.feedbackTitle || "End-of-Course Feedback & Evaluation Survey"

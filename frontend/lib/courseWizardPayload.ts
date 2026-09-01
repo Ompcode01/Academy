@@ -95,24 +95,7 @@ function applyFeedbackToSections(sections: any[], fbData: CourseWizardState["fee
     }
   }
 
-  if (!foundFb) {
-    processedSections.push({
-      title: "Course Feedback & Evaluation",
-      description: "End-of-course survey evaluation.",
-      contents: [
-        {
-          title: fbData.feedbackTitle || "End-of-Course Feedback Survey",
-          contentType: "FEEDBACK",
-          description:
-            fbData.description ||
-            "Please share your review regarding course structure, content clarity, and instructor support.",
-          quizConfigJson: feedbackConfigJson,
-          isMandatory: Boolean(fbData.requireFeedbackForCertificate),
-        },
-      ],
-    });
-  }
-
+  // Note: Feedback auto-creation is disabled. Admin/author manually creates feedback items in the curriculum editor when needed.
   return processedSections;
 }
 
@@ -131,6 +114,43 @@ export function buildCoursePayload(
       : (enrollment?.enrolledUsersList || []).map((u: any) => String(u.userId));
 
   const processedSections = applyFeedbackToSections(sections, wizardData.feedback);
+
+  // Ensure Feedback section is ALWAYS positioned at the very end (LAST section)
+  const normalSections: any[] = [];
+  const feedbackSections: any[] = [];
+
+  for (const sec of (processedSections || [])) {
+    const isFeedback =
+      sec.title?.trim().toLowerCase().includes("course feedback") ||
+      sec.title?.trim().toLowerCase().includes("end-of-course feedback") ||
+      (Array.isArray(sec.contents) &&
+        sec.contents.length > 0 &&
+        sec.contents.some((c: any) => c.contentType?.toUpperCase() === "FEEDBACK"));
+
+    if (isFeedback) {
+      feedbackSections.push(sec);
+    } else {
+      normalSections.push(sec);
+    }
+  }
+
+  const sortedSections = [...normalSections, ...feedbackSections].map((sec, sIdx) => {
+    let contents = sec.contents || [];
+    if (Array.isArray(contents) && contents.length > 1) {
+      const normalCnt = contents.filter((c: any) => c.contentType?.toUpperCase() !== "FEEDBACK");
+      const fbCnt = contents.filter((c: any) => c.contentType?.toUpperCase() === "FEEDBACK");
+      contents = [...normalCnt, ...fbCnt].map((cnt: any, cIdx: number) => ({
+        ...cnt,
+        contentOrder: cIdx + 1,
+      }));
+    }
+
+    return {
+      ...sec,
+      sectionOrder: sIdx + 1,
+      contents,
+    };
+  });
 
   return {
     // A draft is saved exactly as far as the author got, so its fields stay
@@ -156,7 +176,7 @@ export function buildCoursePayload(
     enrollmentType: selectedType,
     enrolledUserIds: enrolledUserIdsPayload,
     teacherIds: enrollment?.teacherIds || ["4"],
-    sections: processedSections,
+    sections: sortedSections,
   };
 }
 
