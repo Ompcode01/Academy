@@ -82,6 +82,9 @@ export class EventService {
     departmentId?: bigint | null;
     creatorId?: bigint | null;
     creatorName?: string;
+    enrollmentType?: string;
+    targetUserIds?: string;
+    certificateTemplateId?: string;
   }) {
     const created = await prisma.event.create({
       data: {
@@ -95,6 +98,9 @@ export class EventService {
         departmentId: data.departmentId || null,
         creatorId: data.creatorId || null,
         creatorName: data.creatorName || "System Admin",
+        enrollmentType: data.enrollmentType || "ALL",
+        targetUserIds: data.targetUserIds || null,
+        certificateTemplateId: data.certificateTemplateId || null,
       } as any,
     });
 
@@ -126,6 +132,27 @@ export class EventService {
     }
 
     return serialize(created);
+  }
+
+  async markAttendance(id: bigint, attendanceRecords: any[], actorName?: string) {
+    const jsonStr = JSON.stringify(attendanceRecords);
+    const updated = await prisma.event.update({
+      where: { id },
+      data: {
+        attendanceData: jsonStr,
+      } as any,
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        actorName: actorName || "System Admin",
+        action: "Session Attendance Marked",
+        detail: `Marked attendance for session '${updated.title}' (${attendanceRecords.length} records)`,
+        type: "course",
+      },
+    });
+
+    return serialize(updated);
   }
 
   async updateEvent(
@@ -209,6 +236,18 @@ export class EventService {
     }
 
     return serialize(deleted);
+  }
+
+  async getEventById(id: bigint) {
+    const event = await prisma.event.findUnique({
+      where: { id },
+      include: {
+        department: {
+          select: { id: true, departmentName: true, departmentCode: true },
+        },
+      },
+    });
+    return event ? serialize(event) : null;
   }
 }
 

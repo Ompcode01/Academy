@@ -30,7 +30,7 @@ import {
   verifyUser,
   verifyBulkFile,
 } from "@/services/api/course.service";
-import { getEmployees, Employee } from "@/services/api/org.service";
+import { getEmployees, Employee, getDepartments, Department } from "@/services/api/org.service";
 
 export interface EnrollmentRuleData {
   selfEnrollment: boolean;
@@ -48,6 +48,7 @@ interface EnrollmentFormProps {
   onBack?: () => void;
   onCancel?: () => void;
   courseId?: string | number | null;
+  hideTeacherSection?: boolean;
 }
 
 interface BulkResult {
@@ -65,6 +66,7 @@ export default function EnrollmentForm({
   onBack,
   onCancel,
   courseId,
+  hideTeacherSection = false,
 }: EnrollmentFormProps) {
   const { user } = useAuthStore();
   const isTeacher = user?.role === "TEACHER";
@@ -80,23 +82,30 @@ export default function EnrollmentForm({
   const [singleLoading, setSingleLoading] = useState(false);
   const [singleMessage, setSingleMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    if (isAdmin || isSuperAdmin) {
-      const fetchEmployees = async () => {
-        try {
-          const res = await getEmployees();
-          if (res?.data) {
-            setEmployees(res.data);
-          }
-        } catch (e) {
-          console.error("Failed to load employees for autocomplete", e);
+    const fetchOrgData = async () => {
+      try {
+        const [empRes, deptRes] = await Promise.allSettled([
+          getEmployees(),
+          getDepartments(),
+        ]);
+
+        if (empRes.status === "fulfilled" && empRes.value?.data) {
+          setEmployees(empRes.value.data);
         }
-      };
-      fetchEmployees();
-    }
-  }, [isAdmin, isSuperAdmin]);
+        if (deptRes.status === "fulfilled" && deptRes.value?.data) {
+          setDepartments(deptRes.value.data);
+        }
+      } catch (e) {
+        console.error("Failed to load organization data for enrollment form", e);
+      }
+    };
+
+    fetchOrgData();
+  }, []);
 
   const filteredEmployees = employees.filter(emp => {
     const q = singleUser.toLowerCase();
@@ -168,8 +177,9 @@ export default function EnrollmentForm({
   };
 
   // 1. Single User Enrolment Handler (Works in BOTH New Creation & Edit Mode)
-  const handleSingleUserEnroll = async () => {
-    if (!singleUser.trim()) return;
+  const handleSingleUserEnroll = async (targetIdentifier?: string) => {
+    const query = (typeof targetIdentifier === "string" ? targetIdentifier : singleUser).trim();
+    if (!query) return;
 
     try {
       setSingleLoading(true);
@@ -177,11 +187,11 @@ export default function EnrollmentForm({
 
       if (courseId) {
         // Direct enrollment for existing course
-        const res = await adminEnrollUser(Number(courseId), singleUser.trim());
+        const res = await adminEnrollUser(Number(courseId), query);
         if (res?.success) {
           setSingleMessage({
             type: "success",
-            text: res.message || `User '${singleUser}' successfully enrolled into course!`,
+            text: res.message || `User '${query}' successfully enrolled into course!`,
           });
           const newUser = res.data?.user;
           if (newUser) {
@@ -192,12 +202,12 @@ export default function EnrollmentForm({
         } else {
           setSingleMessage({
             type: "error",
-            text: res?.message || `User '${singleUser}' could not be enrolled.`,
+            text: res?.message || `User '${query}' could not be enrolled.`,
           });
         }
       } else {
         // Verify user in DB for new course draft
-        const res = await verifyUser(singleUser.trim());
+        const res = await verifyUser(query);
         if (res?.success && res.data) {
           const verifiedUser = res.data;
           const exists = queuedUsers.some((u) => u.userId === verifiedUser.userId);
@@ -218,7 +228,7 @@ export default function EnrollmentForm({
         } else {
           setSingleMessage({
             type: "error",
-            text: res?.message || `User '${singleUser}' not found in system database.`,
+            text: res?.message || `User '${query}' not found in system database.`,
           });
         }
       }
@@ -498,8 +508,10 @@ export default function EnrollmentForm({
                         <div
                           key={emp.id}
                           onClick={() => {
-                            setSingleUser(emp.employeeCode || emp.officialEmail);
+                            const val = emp.officialEmail || emp.employeeCode || emp.firstName;
+                            setSingleUser(val);
                             setShowDropdown(false);
+                            handleSingleUserEnroll(val);
                           }}
                           className="px-3 py-2 hover:bg-muted cursor-pointer text-xs flex justify-between items-center transition-colors"
                         >
@@ -512,11 +524,35 @@ export default function EnrollmentForm({
                 </div>
                 <Button
                   disabled={singleLoading || !singleUser.trim()}
-                  onClick={handleSingleUserEnroll}
+                  onClick={() => handleSingleUserEnroll()}
                   className="bg-blue-600 hover:bg-blue-700 text-white h-10 px-6 gap-2 text-xs font-bold shrink-0"
                 >
                   {singleLoading ? "Verifying DB..." : "Verify & Enroll"}
                 </Button>
+              </div>
+
+              {/* Quick Add Pills for Option 2 */}
+              <div className="pt-2 flex items-center flex-wrap gap-2">
+                <span className="text-[11px] text-muted-foreground font-semibold">Quick Add Employees:</span>
+                {[
+                  { name: "Priyanka Davhare", query: "priyanka" },
+                  { name: "Sneha Patil", query: "sneha" },
+                  { name: "Omprakash Pandey", query: "omprakash" },
+                  { name: "Rahul Sharma", query: "rahul" },
+                  { name: "Amit Verma", query: "amit" },
+                ].map((item) => (
+                  <button
+                    key={item.query}
+                    type="button"
+                    onClick={() => {
+                      setSingleUser(item.query);
+                      handleSingleUserEnroll(item.query);
+                    }}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-600 hover:text-white transition-all shadow-xs"
+                  >
+                    + {item.name}
+                  </button>
+                ))}
               </div>
 
               {singleMessage && (
@@ -706,160 +742,162 @@ export default function EnrollmentForm({
         )}
 
         {/* Teacher Assignment Section (Dynamic Username Input) */}
-        <div className="space-y-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-5">
-          <div className="flex items-center justify-between border-b border-indigo-500/20 pb-2">
-            <div className="flex items-center gap-2">
-              <UserCheck className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-sm font-bold text-foreground">
-                Assign Teachers for Review &amp; Assignment Grading
-              </h3>
+        {!hideTeacherSection && (
+          <div className="space-y-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-5">
+            <div className="flex items-center justify-between border-b border-indigo-500/20 pb-2">
+              <div className="flex items-center gap-2">
+                <UserCheck className="h-5 w-5 text-indigo-600" />
+                <h3 className="text-sm font-bold text-foreground">
+                  Assign Teachers for Review &amp; Assignment Grading
+                </h3>
+              </div>
+              <span className="text-[11px] font-bold bg-indigo-500/10 text-indigo-600 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
+                Dynamic Teacher Assignment
+              </span>
             </div>
-            <span className="text-[11px] font-bold bg-indigo-500/10 text-indigo-600 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
-              Dynamic Teacher Assignment
-            </span>
-          </div>
 
-          <p className="text-xs text-muted-foreground">
-            Enter any instructor's username, official email, or employee code to add them as an assigned teacher for this course. Assigned teachers can grade student assignments, review submissions, and manage course progress.
-          </p>
+            <p className="text-xs text-muted-foreground">
+              Enter any instructor's username, official email, or employee code to add them as an assigned teacher for this course. Assigned teachers can grade student assignments, review submissions, and manage course progress.
+            </p>
 
-          {/* Username Search & Add Input Box */}
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <UserCheck className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
-              <Input
-                placeholder="Enter teacher username, email, or employee code (e.g. sneha, EMP004, priyanka)..."
-                value={teacherInput}
-                onFocus={() => setShowTeacherDropdown(true)}
-                onBlur={() => setTimeout(() => setShowTeacherDropdown(false), 200)}
-                onChange={(e) => {
-                  setTeacherInput(e.target.value);
-                  setShowTeacherDropdown(true);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddTeacher();
-                  }
-                }}
-                className="pl-9 h-10 text-xs bg-background"
-              />
-              {showTeacherDropdown && teacherInput.trim() && filteredTeachers.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-lg shadow-xl z-50">
-                  {filteredTeachers.map((emp) => (
-                    <div
-                      key={emp.id}
-                      onClick={() => {
-                        setTeacherInput(emp.employeeCode || emp.officialEmail);
-                        setShowTeacherDropdown(false);
-                      }}
-                      className="px-3 py-2 hover:bg-muted cursor-pointer text-xs flex justify-between items-center transition-colors"
-                    >
-                      <span className="font-semibold text-foreground">
-                        {emp.firstName} {emp.lastName}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded font-mono">
-                        {emp.employeeCode || emp.officialEmail}
-                      </span>
-                    </div>
-                  ))}
+            {/* Username Search & Add Input Box */}
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <UserCheck className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
+                <Input
+                  placeholder="Enter teacher username, email, or employee code (e.g. sneha, EMP004, priyanka)..."
+                  value={teacherInput}
+                  onFocus={() => setShowTeacherDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowTeacherDropdown(false), 200)}
+                  onChange={(e) => {
+                    setTeacherInput(e.target.value);
+                    setShowTeacherDropdown(true);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddTeacher();
+                    }
+                  }}
+                  className="pl-9 h-10 text-xs bg-background"
+                />
+                {showTeacherDropdown && teacherInput.trim() && filteredTeachers.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-lg shadow-xl z-50">
+                    {filteredTeachers.map((emp) => (
+                      <div
+                        key={emp.id}
+                        onClick={() => {
+                          setTeacherInput(emp.employeeCode || emp.officialEmail);
+                          setShowTeacherDropdown(false);
+                        }}
+                        className="px-3 py-2 hover:bg-muted cursor-pointer text-xs flex justify-between items-center transition-colors"
+                      >
+                        <span className="font-semibold text-foreground">
+                          {emp.firstName} {emp.lastName}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded font-mono">
+                          {emp.employeeCode || emp.officialEmail}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <Button
+                type="button"
+                onClick={handleAddTeacher}
+                disabled={teacherLoading || !teacherInput.trim()}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs h-10 px-4"
+              >
+                {teacherLoading ? "Verifying..." : "+ Add Teacher"}
+              </Button>
+            </div>
+
+            {teacherMessage && (
+              <div
+                className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${teacherMessage.type === "success"
+                  ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                  : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
+                  }`}
+              >
+                {teacherMessage.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                {teacherMessage.text}
+              </div>
+            )}
+
+            {/* Assigned Teachers List */}
+            <div className="space-y-2 pt-1">
+              <Label className="text-xs font-bold text-foreground">
+                Assigned Teachers ({(data.teacherIds || ["4"]).length})
+              </Label>
+
+              {(data.teacherIds || ["4"]).length === 0 ? (
+                <p className="text-xs text-muted-foreground italic">No teachers assigned yet. Enter a username above to assign teachers.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {(data.teacherIds || ["4"]).map((idStr) => {
+                    const knownTeachers: Record<string, { name: string; code: string }> = {
+                      "4": { name: "Sneha Patil", code: "EMP004" },
+                      "2": { name: "Omprakash Pandey", code: "EMP002" },
+                      "1": { name: "Priyanka Davhare", code: "EMP001" },
+                    };
+                    const info = knownTeachers[idStr] || { name: `Teacher #${idStr}`, code: `ID:${idStr}` };
+
+                    return (
+                      <div
+                        key={idStr}
+                        className="flex items-center gap-2 bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-full text-xs shadow-sm"
+                      >
+                        <span>{info.name} ({info.code})</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const current = data.teacherIds || ["4"];
+                            onChange({ teacherIds: current.filter((id) => id !== idStr) });
+                          }}
+                          className="h-4 w-4 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-[10px] text-white"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
-            <Button
-              type="button"
-              onClick={handleAddTeacher}
-              disabled={teacherLoading || !teacherInput.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs h-10 px-4"
-            >
-              {teacherLoading ? "Verifying..." : "+ Add Teacher"}
-            </Button>
-          </div>
 
-          {teacherMessage && (
-            <div
-              className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${teacherMessage.type === "success"
-                ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
-                : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
-                }`}
-            >
-              {teacherMessage.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-              {teacherMessage.text}
+            {/* Quick Suggestion Pills */}
+            <div className="pt-2 border-t border-indigo-500/20 flex items-center gap-2">
+              <span className="text-[11px] text-muted-foreground font-semibold">Quick Add Instructors:</span>
+              {[
+                { id: "4", name: "Sneha Patil (EMP004)" },
+                { id: "2", name: "Omprakash Pandey (EMP002)" },
+                { id: "1", name: "Priyanka Davhare (EMP001)" },
+              ].map((item) => {
+                const isAdded = (data.teacherIds || ["4"]).includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      const current = data.teacherIds || ["4"];
+                      const next = isAdded
+                        ? current.filter((id) => id !== item.id)
+                        : [...current, item.id];
+                      onChange({ teacherIds: next });
+                    }}
+                    className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all ${isAdded
+                      ? "bg-indigo-600 text-white border-indigo-600"
+                      : "bg-background text-foreground border-border hover:border-indigo-400"
+                      }`}
+                  >
+                    {isAdded ? `✓ ${item.name}` : `+ ${item.name}`}
+                  </button>
+                );
+              })}
             </div>
-          )}
-
-          {/* Assigned Teachers List */}
-          <div className="space-y-2 pt-1">
-            <Label className="text-xs font-bold text-foreground">
-              Assigned Teachers ({(data.teacherIds || ["4"]).length})
-            </Label>
-
-            {(data.teacherIds || ["4"]).length === 0 ? (
-              <p className="text-xs text-muted-foreground italic">No teachers assigned yet. Enter a username above to assign teachers.</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {(data.teacherIds || ["4"]).map((idStr) => {
-                  const knownTeachers: Record<string, { name: string; code: string }> = {
-                    "4": { name: "Sneha Patil", code: "EMP004" },
-                    "2": { name: "Omprakash Pandey", code: "EMP002" },
-                    "1": { name: "Priyanka Davhare", code: "EMP001" },
-                  };
-                  const info = knownTeachers[idStr] || { name: `Teacher #${idStr}`, code: `ID:${idStr}` };
-
-                  return (
-                    <div
-                      key={idStr}
-                      className="flex items-center gap-2 bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-full text-xs shadow-sm"
-                    >
-                      <span>{info.name} ({info.code})</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const current = data.teacherIds || ["4"];
-                          onChange({ teacherIds: current.filter((id) => id !== idStr) });
-                        }}
-                        className="h-4 w-4 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-[10px] text-white"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
-
-          {/* Quick Suggestion Pills */}
-          <div className="pt-2 border-t border-indigo-500/20 flex items-center gap-2">
-            <span className="text-[11px] text-muted-foreground font-semibold">Quick Add Instructors:</span>
-            {[
-              { id: "4", name: "Sneha Patil (EMP004)" },
-              { id: "2", name: "Omprakash Pandey (EMP002)" },
-              { id: "1", name: "Priyanka Davhare (EMP001)" },
-            ].map((item) => {
-              const isAdded = (data.teacherIds || ["4"]).includes(item.id);
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => {
-                    const current = data.teacherIds || ["4"];
-                    const next = isAdded
-                      ? current.filter((id) => id !== item.id)
-                      : [...current, item.id];
-                    onChange({ teacherIds: next });
-                  }}
-                  className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all ${isAdded
-                    ? "bg-indigo-600 text-white border-indigo-600"
-                    : "bg-background text-foreground border-border hover:border-indigo-400"
-                    }`}
-                >
-                  {isAdded ? `✓ ${item.name}` : `+ ${item.name}`}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        )}
 
         {/* Target Business Unit Scoping Banner */}
         <div className="space-y-4 rounded-xl border border-border bg-card p-5">
@@ -883,14 +921,26 @@ export default function EnrollmentForm({
               className="w-full h-10 px-3 rounded-lg bg-background border border-input text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isSuperAdmin && <option value="ALL">Global (All Organizational Business Units)</option>}
-              <option value="ENG">Engineering (ENG)</option>
-              <option value="HR">Human Resources (HR)</option>
-              <option value="MGT">Management (MGT)</option>
+              <option value="TSC">Tech Services- Core (TSC)</option>
+              <option value="TSD">Tech Services - DPU (TSD)</option>
+              <option value="CS">Content Services (CS)</option>
+              <option value="BE">Business Enablers (BE)</option>
+              {departments.map((dept) => {
+                const code = dept.departmentCode || "";
+                if (["TSC", "TSD", "CS", "BE"].includes(code)) return null;
+                return (
+                  <option key={dept.id} value={dept.id.toString()}>
+                    {dept.departmentName} {code ? `(${code})` : ""}
+                  </option>
+                );
+              })}
             </select>
             <p className="text-[11px] text-muted-foreground">
-              {isAdmin
-                ? "As an Admin, this course is automatically scoped to your assigned department."
-                : "As Super Admin, selecting Global opens course visibility to all departments."}
+              {activeType === "SELF"
+                ? (isAdmin
+                  ? "As an Admin, self-enrollment visibility is automatically scoped to your assigned department."
+                  : "As Super Admin, selecting Global opens self-enrollment visibility to all departments.")
+                : "ℹ️ Note: For Option 2 (Admin Direct) & Option 3 (Bulk CSV), hand-picked employees are directly enrolled regardless of Business Unit scope."}
             </p>
           </div>
         </div>

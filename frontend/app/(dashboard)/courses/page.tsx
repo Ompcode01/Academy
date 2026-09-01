@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CourseFilters, { CourseSortOption } from "@/components/courses/CourseFilters";
 import CourseTable from "@/components/courses/CourseTable";
@@ -192,14 +192,23 @@ export default function CoursesPage() {
             Manage, classify, and organize all learning courses in the academy database.
           </p>
         </div>
-        <RoleGate allowed={["ADMIN", "SUPER_ADMIN"]}>
-          <Button
-            onClick={() => router.push("/courses/create")}
-            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 self-start sm:self-center"
-          >
-            <Plus className="h-4 w-4" />
-            Create Course
-          </Button>
+        <RoleGate allowed={["ADMIN", "SUPER_ADMIN", "TEACHER"]}>
+          <div className="flex items-center gap-3 shrink-0 self-start sm:self-center">
+            <Button
+              onClick={() => router.push("/sessions")}
+              className="gap-2 bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white font-bold hover:opacity-90 shadow-md"
+            >
+              <Video className="h-4 w-4" />
+              Add session
+            </Button>
+            <Button
+              onClick={() => router.push("/courses/create")}
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4" />
+              Create Course
+            </Button>
+          </div>
         </RoleGate>
       </div>
 

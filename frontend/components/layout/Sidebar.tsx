@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
 import { getCourses, type Course } from "@/services/api/course.service";
-import { X, ChevronDown, ChevronRight, BookOpen, User, GraduationCap, Home, FileText, Award, Eye, EyeOff, MessageSquare } from "lucide-react";
+import { X, ChevronDown, ChevronRight, BookOpen, User, GraduationCap, Home, FileText, Award, Eye, EyeOff, MessageSquare, Video } from "lucide-react";
+import RoleGate from "@/components/auth/RoleGate";
 import { useEventsStore } from "@/store/events.store";
 
 const fullNameMap: Record<string, string> = {
@@ -136,6 +137,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Home className="h-3.5 w-3.5" />
                 <span>Dashboard</span>
               </Link>
+
+              {/* Live Sessions Link (ADMIN and SUPER_ADMIN only) */}
+              <RoleGate allowed={["ADMIN", "SUPER_ADMIN"]}>
+                <Link
+                  href="/sessions"
+                  className={`flex items-center gap-2 rounded px-2 py-1 transition-all ${
+                    pathname.startsWith("/sessions")
+                      ? "bg-[#C82333]/10 font-bold text-[#C82333]"
+                      : "text-[#212529] hover:bg-slate-200"
+                  }`}
+                >
+                  <Video className="h-3.5 w-3.5 text-red-600" />
+                  <span className="font-semibold">Live Sessions</span>
+                </Link>
+              </RoleGate>
 
               {/* Messages Link */}
               <Link

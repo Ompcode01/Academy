@@ -19,9 +19,23 @@ export const getEvents = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getEventById = async (req: AuthRequest, res: Response) => {
+  try {
+    const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const id = BigInt(rawId);
+    const event = await eventService.getEventById(id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    res.json({ success: true, data: event });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const createEvent = async (req: AuthRequest, res: Response) => {
   try {
-    const { title, description, eventDate, eventTime, url, eventType, courseId, departmentId } = req.body;
+    const { title, description, eventDate, eventTime, url, eventType, courseId, departmentId, enrollmentType, targetUserIds, certificateTemplateId } = req.body;
     if (!title || !eventDate) {
       return res.status(400).json({ success: false, message: "Title and Event Date are required." });
     }
@@ -84,9 +98,28 @@ export const createEvent = async (req: AuthRequest, res: Response) => {
       departmentId: targetDeptId,
       creatorId,
       creatorName,
+      enrollmentType,
+      targetUserIds: Array.isArray(targetUserIds) ? JSON.stringify(targetUserIds) : targetUserIds,
+      certificateTemplateId,
     });
 
     res.json({ success: true, message: "Event created successfully", data: event });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const markAttendance = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = BigInt(String(req.params.id));
+    const { attendanceRecords } = req.body;
+    if (!Array.isArray(attendanceRecords)) {
+      return res.status(400).json({ success: false, message: "attendanceRecords array is required." });
+    }
+
+    const actorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
+    const updated = await eventService.markAttendance(id, attendanceRecords, actorName);
+    res.json({ success: true, message: "Session attendance marked successfully", data: updated });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

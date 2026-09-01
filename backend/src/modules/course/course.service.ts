@@ -726,7 +726,7 @@ class CourseService {
       throw new Error("Username or email is required");
     }
 
-    const account = await prisma.userAccount.findFirst({
+    let account = await prisma.userAccount.findFirst({
       where: {
         OR: [
           { username: { equals: trimmed } },
@@ -738,6 +738,23 @@ class CourseService {
         employee: true,
       },
     });
+
+    if (!account) {
+      account = await prisma.userAccount.findFirst({
+        where: {
+          OR: [
+            { username: { contains: trimmed } },
+            { employee: { officialEmail: { contains: trimmed } } },
+            { employee: { employeeCode: { contains: trimmed } } },
+            { employee: { firstName: { contains: trimmed } } },
+            { employee: { lastName: { contains: trimmed } } },
+          ],
+        },
+        include: {
+          employee: true,
+        },
+      });
+    }
 
     if (!account) {
       throw new Error(`User '${trimmed}' not found in system database.`);
