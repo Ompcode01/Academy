@@ -1,9 +1,13 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
   "exportedAt": "2026-08-30T18:16:06.638Z",
 =======
   "exportedAt": "2026-09-01T06:03:50.050Z",
 >>>>>>> 5c3275c (duplicate course content, feedback at last)
+=======
+  "exportedAt": "2026-09-01T12:43:45.857Z",
+>>>>>>> a040b5d (logo,ai assistant)
   "departments": [
     {
       "id": "2",
@@ -371,7 +375,7 @@
       "managerId": null,
       "joiningDate": "2026-08-08T12:00:22.600Z",
       "profileImage": null,
-      "employmentStatus": "ACTIVE",
+      "employmentStatus": "DELETED",
       "createdAt": "2026-08-08T12:00:22.602Z",
       "updatedAt": "2026-08-19T10:22:32.571Z"
     },
@@ -447,20 +451,28 @@
       "username": "priyanka",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "lastLogin": "2026-08-30T17:57:31.428Z",
 =======
       "lastLogin": "2026-09-01T04:50:03.500Z",
 >>>>>>> 5c3275c (duplicate course content, feedback at last)
+=======
+      "lastLogin": "2026-09-01T12:22:47.903Z",
+>>>>>>> a040b5d (logo,ai assistant)
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.459Z",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "updatedAt": "2026-08-30T17:57:31.433Z"
 =======
       "updatedAt": "2026-09-01T04:50:03.502Z"
 >>>>>>> 5c3275c (duplicate course content, feedback at last)
+=======
+      "updatedAt": "2026-09-01T12:22:47.905Z"
+>>>>>>> a040b5d (logo,ai assistant)
     },
     {
       "id": "2",
@@ -519,13 +531,13 @@
       "employeeId": "6",
       "username": "employee6",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-08-26T16:55:30.316Z",
+      "lastLogin": "2026-09-01T10:51:23.899Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:40.675Z",
-      "updatedAt": "2026-08-26T16:55:30.317Z"
+      "updatedAt": "2026-09-01T10:51:23.900Z"
     },
     {
       "id": "7",
@@ -718,9 +730,9 @@
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
-      "isActive": true,
+      "isActive": false,
       "createdAt": "2026-08-08T12:00:22.622Z",
-      "updatedAt": "2026-08-30T05:36:02.718Z"
+      "updatedAt": "2026-09-01T06:51:56.082Z"
     },
     {
       "id": "22",
@@ -1691,6 +1703,7 @@
       "categoryId": "1",
       "departmentId": null,
       "creatorId": "1",
+<<<<<<< HEAD
       "title": "AI Engineer",
       "shortName": "AI Engineer",
       "courseCode": "AX45",
@@ -1733,6 +1746,26 @@
       "isActive": true,
       "createdAt": "2026-08-30T18:00:37.722Z",
       "updatedAt": "2026-08-30T18:04:10.175Z"
+=======
+      "title": "gfdfgvbn",
+      "shortName": "gfdfgvbn",
+      "courseCode": "GX27",
+      "shortDescription": "fg fg fdf erfg",
+      "description": "",
+      "thumbnail": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+      "duration": 0,
+      "targetDurationMinutes": null,
+      "exactDurationSeconds": 0,
+      "level": "Beginner",
+      "language": "English",
+      "status": "DRAFT",
+      "draftStep": 7,
+      "enrollmentType": "BULK",
+      "isMandatory": false,
+      "isActive": true,
+      "createdAt": "2026-09-01T06:46:29.142Z",
+      "updatedAt": "2026-09-01T06:48:49.110Z"
+>>>>>>> a040b5d (logo,ai assistant)
     }
   ],
   "courseTeachers": [
@@ -1762,7 +1795,16 @@
       "courseId": "19",
       "teacherId": "4",
       "assignedAt": "2026-09-01T05:02:13.741Z"
+<<<<<<< HEAD
 >>>>>>> 5c3275c (duplicate course content, feedback at last)
+=======
+    },
+    {
+      "id": "22",
+      "courseId": "26",
+      "teacherId": "4",
+      "assignedAt": "2026-09-01T06:46:29.224Z"
+>>>>>>> a040b5d (logo,ai assistant)
     }
   ],
   "courseSections": [
@@ -4068,7 +4110,62 @@
       "isActive": true,
       "createdAt": "2026-09-01T05:02:13.552Z",
       "updatedAt": "2026-09-01T05:47:15.227Z"
+<<<<<<< HEAD
 >>>>>>> 5c3275c (duplicate course content, feedback at last)
+=======
+    },
+    {
+      "id": "166",
+      "courseId": "26",
+      "title": "Section 1: df",
+      "description": null,
+      "sectionOrder": 1,
+      "targetDurationMinutes": null,
+      "exactDurationSeconds": 0,
+      "isPublished": false,
+      "isActive": false,
+      "createdAt": "2026-09-01T06:47:59.259Z",
+      "updatedAt": "2026-09-01T06:48:49.041Z"
+    },
+    {
+      "id": "167",
+      "courseId": "26",
+      "title": "Section 1: df",
+      "description": null,
+      "sectionOrder": 1,
+      "targetDurationMinutes": null,
+      "exactDurationSeconds": 0,
+      "isPublished": false,
+      "isActive": false,
+      "createdAt": "2026-09-01T06:48:28.569Z",
+      "updatedAt": "2026-09-01T06:48:49.041Z"
+    },
+    {
+      "id": "168",
+      "courseId": "26",
+      "title": "Section 1: df",
+      "description": null,
+      "sectionOrder": 1,
+      "targetDurationMinutes": null,
+      "exactDurationSeconds": 0,
+      "isPublished": false,
+      "isActive": false,
+      "createdAt": "2026-09-01T06:48:36.913Z",
+      "updatedAt": "2026-09-01T06:48:49.041Z"
+    },
+    {
+      "id": "169",
+      "courseId": "26",
+      "title": "Section 1: df",
+      "description": null,
+      "sectionOrder": 1,
+      "targetDurationMinutes": null,
+      "exactDurationSeconds": 0,
+      "isPublished": false,
+      "isActive": true,
+      "createdAt": "2026-09-01T06:48:49.061Z",
+      "updatedAt": "2026-09-01T06:48:49.082Z"
+>>>>>>> a040b5d (logo,ai assistant)
     }
   ],
   "learningContents": [
@@ -12141,10 +12238,10 @@
       "startDate": null,
       "completedAt": null,
       "dueDate": null,
-      "lastActivityAt": "2026-09-01T05:02:37.061Z",
+      "lastActivityAt": "2026-09-01T12:04:56.721Z",
       "status": "IN_PROGRESS",
-      "progress": "0",
-      "timeSpentSeconds": 10,
+      "progress": "30",
+      "timeSpentSeconds": 760,
       "sessionsCount": 1,
       "isMandatory": false,
       "createdAt": "2026-09-01T05:02:26.717Z"
@@ -12157,13 +12254,45 @@
       "startDate": null,
       "completedAt": null,
       "dueDate": null,
-      "lastActivityAt": "2026-09-01T06:03:13.973Z",
+      "lastActivityAt": "2026-09-01T09:23:52.060Z",
       "status": "IN_PROGRESS",
       "progress": "25",
-      "timeSpentSeconds": 105,
+      "timeSpentSeconds": 575,
       "sessionsCount": 1,
       "isMandatory": false,
       "createdAt": "2026-09-01T05:02:43.990Z"
+    },
+    {
+      "id": "34",
+      "userId": "1",
+      "courseId": "20",
+      "enrolledAt": "2026-09-01T10:00:06.263Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": "2026-09-01T12:21:55.103Z",
+      "status": "IN_PROGRESS",
+      "progress": "38",
+      "timeSpentSeconds": 525,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-09-01T10:00:06.263Z"
+    },
+    {
+      "id": "35",
+      "userId": "6",
+      "courseId": "23",
+      "enrolledAt": "2026-09-01T10:51:30.801Z",
+      "startDate": null,
+      "completedAt": null,
+      "dueDate": null,
+      "lastActivityAt": "2026-09-01T11:03:56.100Z",
+      "status": "IN_PROGRESS",
+      "progress": "20",
+      "timeSpentSeconds": 470,
+      "sessionsCount": 1,
+      "isMandatory": false,
+      "createdAt": "2026-09-01T10:51:30.801Z"
     }
   ],
   "userLessonProgresses": [
@@ -12192,19 +12321,172 @@
       "lastActivityAt": "2026-09-01T05:32:53.829Z"
     },
     {
-      "id": "167",
+      "id": "172",
       "userId": "1",
       "courseId": "19",
       "contentId": "381",
       "isCompleted": true,
-      "completedAt": "2026-09-01T05:49:14.972Z",
-      "watchedSeconds": 360,
+      "completedAt": "2026-09-01T09:24:00.690Z",
+      "watchedSeconds": 20,
+      "activeLearningSeconds": 10,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T09:24:00.692Z"
+    },
+    {
+      "id": "179",
+      "userId": "1",
+      "courseId": "23",
+      "contentId": "218",
+      "isCompleted": true,
+      "completedAt": "2026-09-01T10:48:39.378Z",
+      "watchedSeconds": 700,
+      "activeLearningSeconds": 390,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T12:01:08.507Z"
+    },
+    {
+      "id": "180",
+      "userId": "1",
+      "courseId": "23",
+      "contentId": "219",
+      "isCompleted": true,
+      "completedAt": "2026-09-01T10:30:10.682Z",
+      "watchedSeconds": 480,
+      "activeLearningSeconds": 150,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T12:04:56.652Z"
+    },
+    {
+      "id": "181",
+      "userId": "1",
+      "courseId": "23",
+      "contentId": "222",
+      "isCompleted": true,
+      "completedAt": "2026-09-01T10:32:35.044Z",
+      "watchedSeconds": 290,
+      "activeLearningSeconds": 100,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T11:49:04.078Z"
+    },
+    {
+      "id": "182",
+      "userId": "1",
+      "courseId": "23",
+      "contentId": "224",
+      "isCompleted": false,
+      "completedAt": null,
+      "watchedSeconds": 230,
+      "activeLearningSeconds": 110,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T10:38:21.740Z"
+    },
+    {
+      "id": "183",
+      "userId": "6",
+      "courseId": "23",
+      "contentId": "218",
+      "isCompleted": false,
+      "completedAt": null,
+      "watchedSeconds": 10,
+      "activeLearningSeconds": 10,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T10:51:41.082Z"
+    },
+    {
+      "id": "184",
+      "userId": "6",
+      "courseId": "23",
+      "contentId": "224",
+      "isCompleted": false,
+      "completedAt": null,
+      "watchedSeconds": 140,
       "activeLearningSeconds": 70,
       "lastPosition": 0,
-      "lastActivityAt": "2026-09-01T06:03:13.903Z"
+      "lastActivityAt": "2026-09-01T10:54:33.595Z"
+    },
+    {
+      "id": "185",
+      "userId": "6",
+      "courseId": "23",
+      "contentId": "220",
+      "isCompleted": true,
+      "completedAt": "2026-09-01T10:54:51.628Z",
+      "watchedSeconds": 430,
+      "activeLearningSeconds": 360,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T11:02:52.528Z"
+    },
+    {
+      "id": "186",
+      "userId": "6",
+      "courseId": "23",
+      "contentId": "225",
+      "isCompleted": true,
+      "completedAt": "2026-09-01T11:35:11.477Z",
+      "watchedSeconds": 60,
+      "activeLearningSeconds": 30,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T11:35:11.479Z"
+    },
+    {
+      "id": "187",
+      "userId": "1",
+      "courseId": "20",
+      "contentId": "292",
+      "isCompleted": true,
+      "completedAt": "2026-09-01T12:12:38.733Z",
+      "watchedSeconds": 110,
+      "activeLearningSeconds": 110,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T12:14:18.875Z"
+    },
+    {
+      "id": "189",
+      "userId": "1",
+      "courseId": "20",
+      "contentId": "297",
+      "isCompleted": true,
+      "completedAt": "2026-09-01T12:15:32.001Z",
+      "watchedSeconds": 130,
+      "activeLearningSeconds": 60,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T12:17:32.133Z"
+    },
+    {
+      "id": "190",
+      "userId": "1",
+      "courseId": "20",
+      "contentId": "291",
+      "isCompleted": true,
+      "completedAt": "2026-09-01T12:18:41.510Z",
+      "watchedSeconds": 240,
+      "activeLearningSeconds": 120,
+      "lastPosition": 0,
+      "lastActivityAt": "2026-09-01T12:21:55.030Z"
     }
   ],
-  "assessmentSubmissions": [],
+  "assessmentSubmissions": [
+    {
+      "id": "17",
+      "userId": "6",
+      "courseId": "23",
+      "contentId": "225",
+      "submissionType": "ASSIGNMENT",
+      "answersJson": null,
+      "submissionText": "",
+      "fileUrl": "[\"TalentSense_AI.zip\",\"An_Affordance_Perspective_on_Generative_AI_in_Enterprise_Architecture.pdf\"]",
+      "status": "GRADED",
+      "score": 78,
+      "maxScore": 100,
+      "percentage": 78,
+      "grade": "A",
+      "feedback": "Its good.",
+      "attemptNumber": 1,
+      "gradedBy": "Priyanka Davhare [SUPER_ADMIN]",
+      "gradedAt": "2026-09-01T11:35:11.373Z",
+      "submittedAt": "2026-09-01T11:03:24.034Z"
+    }
+  ],
   "issuedCertificates": [],
   "guestAccessGrants": [
     {
@@ -12654,7 +12936,298 @@
       "detail": "Updated course 'Deep Learning Masterclass: From Fundamentals to Production'",
       "type": "course",
       "ipAddress": "::1"
+<<<<<<< HEAD
 >>>>>>> 5c3275c (duplicate course content, feedback at last)
+=======
+    },
+    {
+      "id": "298",
+      "timestamp": "2026-09-01T06:08:04.376Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "299",
+      "timestamp": "2026-09-01T06:23:41.749Z",
+      "actorId": null,
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Skill Request APPROVED",
+      "detail": "Priyanka Davhare (SUPER_ADMIN) approved skill request #9 (CHAMP July 2026)",
+      "type": "role",
+      "ipAddress": null
+    },
+    {
+      "id": "300",
+      "timestamp": "2026-09-01T06:32:37.842Z",
+      "actorId": null,
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Skill Request REJECTD",
+      "detail": "Priyanka Davhare (SUPER_ADMIN) rejectd skill request #8 (Testing) with comment: \"Insufficient Details\"",
+      "type": "role",
+      "ipAddress": null
+    },
+    {
+      "id": "301",
+      "timestamp": "2026-09-01T06:46:29.331Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Draft Saved",
+      "detail": "Saved draft 'gfdfgvbn' at step 2",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "302",
+      "timestamp": "2026-09-01T06:47:59.494Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Draft Saved",
+      "detail": "Saved draft 'gfdfgvbn' at step 5",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "303",
+      "timestamp": "2026-09-01T06:48:28.732Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Draft Saved",
+      "detail": "Saved draft 'gfdfgvbn' at step 6",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "304",
+      "timestamp": "2026-09-01T06:48:37.079Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Draft Saved",
+      "detail": "Saved draft 'gfdfgvbn' at step 7",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "305",
+      "timestamp": "2026-09-01T06:48:49.205Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Course Draft Saved",
+      "detail": "Saved draft 'gfdfgvbn' at step 7",
+      "type": "course",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "306",
+      "timestamp": "2026-09-01T06:51:56.115Z",
+      "actorId": null,
+      "actorName": "priyanka (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "User Soft Deleted",
+      "detail": "Soft-deleted user 'Aarav Verma' (EMP101)",
+      "type": "user",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "307",
+      "timestamp": "2026-09-01T06:56:31.948Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "308",
+      "timestamp": "2026-09-01T07:41:38.353Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "309",
+      "timestamp": "2026-09-01T09:22:14.182Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "310",
+      "timestamp": "2026-09-01T09:24:41.209Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "311",
+      "timestamp": "2026-09-01T10:03:12.619Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "312",
+      "timestamp": "2026-09-01T10:03:14.753Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "313",
+      "timestamp": "2026-09-01T10:05:15.921Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "314",
+      "timestamp": "2026-09-01T10:48:15.806Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "315",
+      "timestamp": "2026-09-01T10:51:24.011Z",
+      "actorId": "6",
+      "actorName": "Employee6 User (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "316",
+      "timestamp": "2026-09-01T11:06:51.342Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "317",
+      "timestamp": "2026-09-01T11:35:12.069Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare [SUPER_ADMIN]",
+      "username": "EMP001",
+      "departmentName": "Tech Services- Core",
+      "action": "GRADE_ASSIGNMENT",
+      "detail": "Evaluated Assignment Submission #17. Awarded Score: 78, Grade: A. Feedback: \"Its good.\"",
+      "type": "EVALUATION",
+      "ipAddress": "::1"
+    },
+    {
+      "id": "318",
+      "timestamp": "2026-09-01T12:10:35.779Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "319",
+      "timestamp": "2026-09-01T12:10:39.664Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "320",
+      "timestamp": "2026-09-01T12:12:16.622Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "321",
+      "timestamp": "2026-09-01T12:22:48.161Z",
+      "actorId": "1",
+      "actorName": "Priyanka Davhare (SUPER_ADMIN)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+>>>>>>> a040b5d (logo,ai assistant)
     }
   ],
   "notifications": [
@@ -15215,7 +15788,196 @@
       },
       "roleTarget": "ADMIN",
       "createdAt": "2026-09-01T05:02:13.904Z"
+<<<<<<< HEAD
 >>>>>>> 5c3275c (duplicate course content, feedback at last)
+=======
+    },
+    {
+      "id": "1298",
+      "userId": "1",
+      "actorId": null,
+      "type": "SKILL_APPROVED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Skill Approved ✓",
+      "message": "Your skill \"CHAMP July 2026\" has been approved by an administrator.",
+      "link": "/skill-cloud",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-09-01T06:23:41.785Z"
+    },
+    {
+      "id": "1299",
+      "userId": "1",
+      "actorId": null,
+      "type": "SKILL_REJECTED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Skill Rejected",
+      "message": "Your skill \"Testing\" was rejected. Reason: Insufficient Details",
+      "link": "/skill-cloud",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-09-01T06:32:37.865Z"
+    },
+    {
+      "id": "1300",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'gfdfgvbn'. You can now view and edit its curriculum.",
+      "link": "/courses/26/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 26
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-09-01T06:46:29.278Z"
+    },
+    {
+      "id": "1301",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'gfdfgvbn'. You can now view and edit its curriculum.",
+      "link": "/courses/26/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 26
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-09-01T06:47:59.430Z"
+    },
+    {
+      "id": "1302",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'gfdfgvbn'. You can now view and edit its curriculum.",
+      "link": "/courses/26/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 26
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-09-01T06:48:28.672Z"
+    },
+    {
+      "id": "1303",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'gfdfgvbn'. You can now view and edit its curriculum.",
+      "link": "/courses/26/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 26
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-09-01T06:48:37.032Z"
+    },
+    {
+      "id": "1304",
+      "userId": "4",
+      "actorId": null,
+      "type": "TEACHER_ASSIGNED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Assigned as Course Instructor",
+      "message": "You have been assigned as the instructor for course 'gfdfgvbn'. You can now view and edit its curriculum.",
+      "link": "/courses/26/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "courseId": 26
+      },
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-09-01T06:48:49.163Z"
+    },
+    {
+      "id": "1305",
+      "userId": "1",
+      "actorId": "6",
+      "type": "SUBMISSION_RECEIVED",
+      "category": "EVALUATION",
+      "priority": "NORMAL",
+      "title": "New ASSIGNMENT Submission",
+      "message": "Learner Employee6 User submitted \"MiniProject\" in course 'Overview Of Docker and Kubernet'. Pending evaluation.",
+      "link": "/reports",
+      "entityType": "ASSIGNMENT",
+      "entityId": "23",
+      "isRead": false,
+      "metadata": null,
+      "roleTarget": "TEACHER",
+      "createdAt": "2026-09-01T11:03:24.139Z"
+    },
+    {
+      "id": "1306",
+      "userId": "6",
+      "actorId": null,
+      "type": "SUBMISSION_GRADED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Submission Evaluated",
+      "message": "Your submission for \"MiniProject\" in course 'Overview Of Docker and Kubernet' was evaluated by Teacher Priyanka Davhare [SUPER_ADMIN]. Status: GRADED. Grade: A. Feedback: Its good.",
+      "link": "/courses/23/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "status": "GRADED",
+        "courseId": 23
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-09-01T11:35:11.831Z"
+    },
+    {
+      "id": "1307",
+      "userId": "6",
+      "actorId": null,
+      "type": "SUBMISSION_GRADED",
+      "category": "GENERAL",
+      "priority": "NORMAL",
+      "title": "Submission Evaluated",
+      "message": "Your submission for \"MiniProject\" in course 'Overview Of Docker and Kubernet' was evaluated by Super Admin Priyanka Davhare. Status: GRADED. Grade: A. Feedback: Its good.",
+      "link": "/courses/23/preview",
+      "entityType": null,
+      "entityId": null,
+      "isRead": false,
+      "metadata": {
+        "status": "GRADED",
+        "courseId": 23
+      },
+      "roleTarget": "LEARNER",
+      "createdAt": "2026-09-01T11:35:11.882Z"
+>>>>>>> a040b5d (logo,ai assistant)
     }
   ]
 }

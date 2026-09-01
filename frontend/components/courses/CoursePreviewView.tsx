@@ -38,6 +38,7 @@ import {
   Search,
 } from "lucide-react";
 import { getCourseById, selfEnrollCourse, getCourseLearnersProgress, type Course, getStorageUrl } from "@/services/api/course.service";
+import CourseAiChatbot from "@/components/courses/learner/CourseAiChatbot";
 import {
   getLearnerCourseProgress,
   updateLessonProgress,
@@ -2153,6 +2154,11 @@ export default function CoursePreviewView() {
         learner={selectedLearnerSummary}
         courseTitle={course?.title}
       />
+
+      {/* Course AI Learning Assistant Floating Chatbot */}
+      {course?.id && (
+        <CourseAiChatbot courseId={course.id} courseTitle={course.title} />
+      )}
     </div>
   );
 }

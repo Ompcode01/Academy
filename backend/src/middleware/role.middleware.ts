@@ -15,9 +15,15 @@ export const authorizeRoles =
         return;
       }
 
+      const allowedUpper = allowedRoles.map((r) => r.toUpperCase());
+
       // Fast-path: Check role directly from JWT payload
-      const tokenRole = req.user.role;
-      if (tokenRole && allowedRoles.includes(tokenRole)) {
+      const tokenRole = req.user.role ? req.user.role.toUpperCase() : "";
+      if (
+        tokenRole &&
+        (allowedUpper.includes(tokenRole) ||
+          (tokenRole === "INSTRUCTOR" && allowedUpper.includes("TEACHER")))
+      ) {
         return next();
       }
 
@@ -38,8 +44,12 @@ export const authorizeRoles =
             include: { role: true },
           });
 
-          const roleCodes = userRoles.map((r) => r.role.roleCode);
-          const hasRole = allowedRoles.some((role) => roleCodes.includes(role));
+          const roleCodesUpper = userRoles.map((r) => r.role.roleCode.toUpperCase());
+          const hasRole = allowedUpper.some(
+            (allowed) =>
+              roleCodesUpper.includes(allowed) ||
+              (allowed === "TEACHER" && roleCodesUpper.includes("INSTRUCTOR"))
+          );
 
           if (hasRole) {
             return next();

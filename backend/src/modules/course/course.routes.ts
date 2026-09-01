@@ -61,9 +61,14 @@ router.post(
   uploadDocumentFile
 );
 
+import { handleCourseChat } from "./ai.controller";
+
 // Pre-enrollment Verification Routes (usable during wizard creation)
 router.post("/verify-user", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), verifyUser);
 router.post("/verify-bulk-file", authenticate, authorizeRoles("TEACHER", "ADMIN", "SUPER_ADMIN"), upload.single("file"), verifyBulkFile);
+
+// AI Course Assistant Chatbot Route
+router.post("/:id/chat", authenticate, handleCourseChat);
 
 // Progress & Learner Execution
 router.get("/my-enrollments", authenticate, getMyEnrollments);

@@ -5,15 +5,22 @@ import SakshamLogo from "@/components/common/SakshamLogo";
 import CapDevLogo from "@/components/common/CapDevLogo";
 import LiveBackground from "@/components/common/LiveBackground";
 
+import HarbingerGroupLogo from "@/components/common/HarbingerGroupLogo";
+
 export default function LoginPage() {
   return (
     <main className="flex min-h-screen flex-col justify-between bg-gradient-to-br from-[#050B18] via-[#0B1E3D] to-[#002855] text-white relative overflow-hidden">
       {/* Dynamic Live Background with interactive particle constellation and glowing ambient mesh */}
       <LiveBackground />
 
-      {/* Top Left Saksham Logo */}
+      {/* Top Left: Harbinger Group Logo */}
       <div className="absolute top-4 left-6 lg:top-6 lg:left-8 flex items-center z-20">
-        <SakshamLogo height={44} className="hover:scale-105 transition-transform" />
+        <HarbingerGroupLogo height={34} className="hover:scale-105 transition-transform" />
+      </div>
+
+      {/* Top Center: Saksham Logo */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 lg:top-6 flex items-center z-20">
+        <SakshamLogo height={40} className="hover:scale-105 transition-transform" />
       </div>
 
       <div className="flex flex-1 w-full flex-col lg:flex-row relative z-10">
@@ -42,8 +49,8 @@ export default function LoginPage() {
           </div>
 
           {/* Mobile Header */}
-          <div className="absolute top-6 left-8 flex items-center lg:hidden">
-            <SakshamLogo height={36} />
+          <div className="absolute top-6 left-6 flex items-center lg:hidden">
+            <HarbingerGroupLogo height={28} />
           </div>
 
           <div className="w-full max-w-md space-y-6 flex flex-col items-center justify-center">

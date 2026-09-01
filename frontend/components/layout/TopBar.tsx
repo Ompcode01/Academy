@@ -88,7 +88,7 @@ export default function TopBar() {
         )}
 
         {/* Right Section & Controls */}
-        <div className="flex items-center gap-3 sm:gap-5">
+        <div className="flex items-center gap-6 sm:gap-7 md:gap-8">
           {/* CapDev Logo Image (Shown on right only when search is collapsed) */}
           {!isSearchExpanded && (
             <CapDevLogo height={30} />
@@ -98,15 +98,15 @@ export default function TopBar() {
           <TopBarSearch onExpandChange={setIsSearchExpanded} />
 
         {/* Notification Bell */}
-        <div className="relative" ref={bellRef}>
+        <div className="relative mr-1" ref={bellRef}>
           <button
             onClick={togglePanel}
-            className="relative text-slate-300 hover:text-white transition-colors cursor-pointer"
+            className="relative p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center"
             title="Notifications"
           >
-            <Bell className="h-4 w-4" />
+            <Bell className="h-4.5 w-4.5" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#C82333] px-1 text-[9px] font-bold text-white leading-none animate-pulse">
+              <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#C82333] px-1 text-[9px] font-bold text-white leading-none shadow-sm border border-[#0B132B]">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
@@ -118,16 +118,13 @@ export default function TopBar() {
         <div className="relative">
           <div
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity py-1"
+            className="flex items-center gap-1.5 cursor-pointer hover:opacity-90 transition-opacity p-1 rounded-lg hover:bg-white/10"
           >
-            <Avatar className="h-7 w-7 border border-white/20">
+            <Avatar className="h-7 w-7 border border-white/20 shadow-sm">
               <AvatarFallback className="bg-[#C82333] text-xs font-semibold text-white">
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <span className="hidden md:block text-xs font-medium tracking-wide">
-              {fullName}
-            </span>
             <ChevronDown className="h-3 w-3 text-slate-300" />
           </div>
 

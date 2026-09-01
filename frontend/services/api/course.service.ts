@@ -252,9 +252,21 @@ export const getLearnerCourseProgress = async (courseId: number) => {
 
 export const updateLessonProgress = async (
   courseId: number,
-  data: { contentId: number; isCompleted: boolean; additionalSeconds?: number }
+  contentIdOrData: number | { contentId: number; isCompleted: boolean; additionalSeconds?: number },
+  isCompleted?: boolean,
+  additionalSeconds: number = 0
 ) => {
-  const response = await api.post(`/courses/${courseId}/progress`, data);
+  let payload: { contentId: number; isCompleted: boolean; additionalSeconds?: number };
+  if (typeof contentIdOrData === "object" && contentIdOrData !== null) {
+    payload = contentIdOrData;
+  } else {
+    payload = {
+      contentId: Number(contentIdOrData),
+      isCompleted: Boolean(isCompleted),
+      additionalSeconds: Number(additionalSeconds || 0),
+    };
+  }
+  const response = await api.post(`/courses/${courseId}/progress`, payload);
   return response.data;
 };
 

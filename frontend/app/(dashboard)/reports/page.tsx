@@ -147,7 +147,11 @@ export default function ReportsPage() {
       setReportData(data);
     } catch (err: any) {
       console.error("Report fetch error:", err);
-      setError(err?.response?.data?.message || err.message || "Failed to load report metrics.");
+      if (err?.response?.status === 403) {
+        setError("Access Denied: You do not have permission to view enterprise reporting analytics. Required role: Admin, Super Admin, or Teacher.");
+      } else {
+        setError(err?.response?.data?.message || err.message || "Failed to load report metrics.");
+      }
     } finally {
       setLoading(false);
     }

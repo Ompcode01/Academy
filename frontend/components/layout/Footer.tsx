@@ -12,11 +12,10 @@ export default function Footer({ variant = "light", className = "" }: FooterProp
 
   return (
     <footer
-      className={`w-full py-4 px-4 sm:px-6 transition-colors duration-200 ${
-        isDark
-          ? "bg-[#090D16] border-t border-slate-800/80 text-slate-400"
-          : "bg-white border-t border-[#E0E6ED] text-[#6C757D]"
-      } ${className}`}
+      className={`w-full py-4 px-4 sm:px-6 transition-colors duration-200 ${isDark
+        ? "bg-[#090D16] border-t border-slate-800/80 text-slate-400"
+        : "bg-white border-t border-[#E0E6ED] text-[#6C757D]"
+        } ${className}`}
     >
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-2 md:gap-3 text-center text-xs font-medium leading-relaxed">
         {/* Copyright */}
@@ -29,21 +28,15 @@ export default function Footer({ variant = "light", className = "" }: FooterProp
 
         {/* Footer Items Group */}
         <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 text-[11px] sm:text-xs">
-          {/* dLMS */}
-          <span className="font-extrabold tracking-wide text-[#C82333]">
-            dLMS
-          </span>
 
-          <span className="text-slate-300 dark:text-slate-700">|</span>
 
           {/* Privacy Policy */}
           <a
             href="https://www.harbingergroup.com/privacy-policy/"
             target="_blank"
             rel="noopener noreferrer"
-            className={`transition-colors duration-150 underline-offset-4 hover:underline ${
-              isDark ? "hover:text-white" : "hover:text-[#C82333]"
-            }`}
+            className={`transition-colors duration-150 underline-offset-4 hover:underline ${isDark ? "hover:text-white" : "hover:text-[#C82333]"
+              }`}
           >
             Privacy Policy
           </a>
@@ -55,9 +48,8 @@ export default function Footer({ variant = "light", className = "" }: FooterProp
             href="https://www.harbingergroup.com/privacy-policy/"
             target="_blank"
             rel="noopener noreferrer"
-            className={`transition-colors duration-150 underline-offset-4 hover:underline ${
-              isDark ? "hover:text-white" : "hover:text-[#C82333]"
-            }`}
+            className={`transition-colors duration-150 underline-offset-4 hover:underline ${isDark ? "hover:text-white" : "hover:text-[#C82333]"
+              }`}
           >
             Terms of Use
           </a>
@@ -67,9 +59,8 @@ export default function Footer({ variant = "light", className = "" }: FooterProp
           {/* Contact Support */}
           <a
             href="mailto:support@harbingergroup.com"
-            className={`transition-colors duration-150 underline-offset-4 hover:underline ${
-              isDark ? "hover:text-white" : "hover:text-[#C82333]"
-            }`}
+            className={`transition-colors duration-150 underline-offset-4 hover:underline ${isDark ? "hover:text-white" : "hover:text-[#C82333]"
+              }`}
           >
             Contact Support
           </a>
