@@ -25,14 +25,12 @@ router.post(
 router.get(
   "/",
   authenticate,
-  authorizeRoles("SUPER_ADMIN", "ADMIN"),
   getEmployees
 );
 
 router.get(
   "/:id",
   authenticate,
-  authorizeRoles("SUPER_ADMIN", "ADMIN"),
   getEmployeeById
 );
 

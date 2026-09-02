@@ -22,14 +22,12 @@ router.post(
 router.get(
   "/",
   authenticate,
-  authorizeRoles("SUPER_ADMIN", "ADMIN"),
   getRoles
 );
 
 router.get(
   "/:id",
   authenticate,
-  authorizeRoles("SUPER_ADMIN", "ADMIN"),
   getRoleById
 );
 

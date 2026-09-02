@@ -457,21 +457,25 @@ model IssuedCertificate {
 }
 
 model Event {
-  id           BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
-  title        String      @db.VarChar(200)
-  description  String?     @db.Text
-  eventDate    DateTime
-  eventTime    String?     @db.VarChar(20)
-  url          String?     @db.VarChar(500)
-  eventType    String      @default("site") @db.VarChar(50)
-  courseId     BigInt?     @db.UnsignedBigInt
-  departmentId BigInt?
-  creatorId    BigInt?
-  creatorName  String?     @db.VarChar(100)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  reminderSent Boolean     @default(false)
-  department   Department? @relation(fields: [departmentId], references: [id])
+  id                    BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
+  title                 String      @db.VarChar(200)
+  description           String?     @db.Text
+  eventDate             DateTime
+  eventTime             String?     @db.VarChar(20)
+  url                   String?     @db.VarChar(500)
+  eventType             String      @default("site") @db.VarChar(50)
+  courseId              BigInt?     @db.UnsignedBigInt
+  departmentId          BigInt?
+  creatorId             BigInt?
+  creatorName           String?     @db.VarChar(100)
+  reminderSent          Boolean     @default(false)
+  enrollmentType        String?     @default("ALL") @db.VarChar(50)
+  targetUserIds         String?     @db.Text
+  certificateTemplateId String?     @db.VarChar(50)
+  attendanceData        String?     @db.Text
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  department            Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
 
   @@index([eventDate])
   @@index([eventType])
