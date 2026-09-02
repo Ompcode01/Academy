@@ -38,8 +38,8 @@ async function seedAuditLogs() {
       timestamp: new Date(Date.now() - 30 * 60 * 1000),
     },
     {
-      actorName: "Employee Six",
-      username: "employee6",
+      actorName: "Siddharth Savant",
+      username: "siddharth",
       departmentName: "Engineering",
       action: "USER_AUTO_PROVISION",
       type: "user",
