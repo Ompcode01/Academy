@@ -8,14 +8,14 @@ datasource db {
 }
 
 model Department {
-  id             BigInt     @id @default(autoincrement())
-  departmentCode String     @unique @db.VarChar(20)
-  departmentName String     @unique @db.VarChar(100)
-  isActive       Boolean    @default(true)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  employees         Employee[]
+  id                BigInt             @id @default(autoincrement())
+  departmentCode    String             @unique @db.VarChar(20)
+  departmentName    String             @unique @db.VarChar(100)
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   courses           Course[]
+  employees         Employee[]
   events            Event[]
   guestAccessGrants GuestAccessGrant[]
 
@@ -23,31 +23,31 @@ model Department {
 }
 
 model Employee {
-  id               BigInt           @id @default(autoincrement())
-  employeeCode     String           @unique @db.VarChar(20)
-  firstName        String           @db.VarChar(100)
-  lastName         String           @db.VarChar(100)
-  officialEmail    String           @unique @db.VarChar(255)
-  phoneNumber      String?          @db.VarChar(20)
-  designation      String           @db.VarChar(100)
-  departmentId     BigInt
-  managerId        BigInt?
-  joiningDate      DateTime
-  profileImage     String?          @db.VarChar(500)
-  employmentStatus EmploymentStatus @default(ACTIVE)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  department       Department       @relation(fields: [departmentId], references: [id])
-  manager          Employee?        @relation("ManagerEmployees", fields: [managerId], references: [id])
-  subordinates     Employee[]       @relation("ManagerEmployees")
-  userAccount      UserAccount?
-  rolesAssigned    UserRole[]       @relation("AssignedByEmployee")
-  assignedRoles    UserRole[]
-  createdCourses   Course[]
+  id                 BigInt             @id @default(autoincrement())
+  employeeCode       String             @unique @db.VarChar(20)
+  firstName          String             @db.VarChar(100)
+  lastName           String             @db.VarChar(100)
+  officialEmail      String             @unique @db.VarChar(255)
+  phoneNumber        String?            @db.VarChar(20)
+  designation        String             @db.VarChar(100)
+  departmentId       BigInt
+  managerId          BigInt?
+  joiningDate        DateTime
+  profileImage       String?            @db.VarChar(500)
+  employmentStatus   EmploymentStatus   @default(ACTIVE)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
   assignedCourses    CourseTeacher[]
+  createdCourses     Course[]
+  department         Department         @relation(fields: [departmentId], references: [id])
+  manager            Employee?          @relation("ManagerEmployees", fields: [managerId], references: [id])
+  subordinates       Employee[]         @relation("ManagerEmployees")
   enrollments        Enrollment[]
-  guestGrants        GuestAccessGrant[] @relation("GuestUserGrants")
   grantedGuestGrants GuestAccessGrant[] @relation("GrantedByEmployee")
+  guestGrants        GuestAccessGrant[] @relation("GuestUserGrants")
+  userAccount        UserAccount?
+  rolesAssigned      UserRole[]         @relation("AssignedByEmployee")
+  assignedRoles      UserRole[]
 
   @@index([departmentId])
   @@index([managerId])
@@ -145,45 +145,39 @@ model Category {
   @@map("categories")
 }
 
-enum CourseStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
 model Course {
-  id               BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
-  categoryId       BigInt          @db.UnsignedBigInt
-  departmentId     BigInt?
-  creatorId        BigInt
-  title            String          @db.VarChar(200)
-  shortName        String?         @db.VarChar(100)
-  courseCode       String?         @db.VarChar(50)
-  shortDescription String?         @db.VarChar(500)
-  description      String?         @db.Text
-  thumbnail        String?         @db.VarChar(255)
-  duration             Int?
-  targetDurationMinutes Int?
-  exactDurationSeconds  Int             @default(0)
-  level            String?         @db.VarChar(50)
-  language         String?         @db.VarChar(50)
-  status           CourseStatus    @default(DRAFT)
+  id                    BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  categoryId            BigInt               @db.UnsignedBigInt
+  departmentId          BigInt?
+  creatorId             BigInt
+  title                 String               @db.VarChar(200)
+  shortDescription      String?              @db.VarChar(500)
+  description           String?              @db.Text
+  thumbnail             String?              @db.VarChar(255)
+  duration              Int?
+  level                 String?              @db.VarChar(50)
+  language              String?              @db.VarChar(50)
+  status                CourseStatus         @default(DRAFT)
+  isActive              Boolean              @default(true)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  enrollmentType        String               @default("SELF") @db.VarChar(50)
+  isMandatory           Boolean              @default(false)
   /// Wizard step the creator last left off on. Only meaningful while the course
   /// is still a DRAFT - it lets an abandoned or cancelled creation resume from
   /// exactly where it stopped instead of starting over.
-  draftStep        Int?
-  enrollmentType   String          @default("SELF") @db.VarChar(50)
-  isMandatory      Boolean         @default(false)
-  isActive         Boolean         @default(true)
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  sections            CourseSection[]
-  teachers            CourseTeacher[]
-  enrollments         Enrollment[]
-  certificateTemplate CertificateTemplate?
-  category            Category        @relation(fields: [categoryId], references: [id])
-  department          Department?     @relation(fields: [departmentId], references: [id])
-  creator             Employee        @relation(fields: [creatorId], references: [id])
+  draftStep             Int?
+  courseCode            String?              @db.VarChar(50)
+  shortName             String?              @db.VarChar(100)
+  exactDurationSeconds  Int                  @default(0)
+  targetDurationMinutes Int?
+  certificateTemplate   CertificateTemplate?
+  sections              CourseSection[]
+  teachers              CourseTeacher[]
+  category              Category             @relation(fields: [categoryId], references: [id])
+  creator               Employee             @relation(fields: [creatorId], references: [id])
+  department            Department?          @relation(fields: [departmentId], references: [id])
+  enrollments           Enrollment[]
 
   @@index([categoryId], map: "courses_categoryId_fkey")
   @@index([departmentId])
@@ -192,13 +186,12 @@ model Course {
 }
 
 model CourseTeacher {
-  id        BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  courseId  BigInt   @db.UnsignedBigInt
-  teacherId BigInt
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  courseId   BigInt   @db.UnsignedBigInt
+  teacherId  BigInt
   assignedAt DateTime @default(now())
-
-  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  teacher Employee @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  teacher    Employee @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
   @@unique([courseId, teacherId])
   @@index([courseId])
@@ -212,12 +205,12 @@ model CourseSection {
   title                 String            @db.VarChar(200)
   description           String?           @db.VarChar(500)
   sectionOrder          Int
-  targetDurationMinutes Int?
-  exactDurationSeconds  Int               @default(0)
   isPublished           Boolean           @default(false)
   isActive              Boolean           @default(true)
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
+  exactDurationSeconds  Int               @default(0)
+  targetDurationMinutes Int?
   course                Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
   contents              LearningContent[]
 
@@ -233,17 +226,17 @@ model LearningContent {
   contentUrl           String?       @db.VarChar(500)
   description          String?       @db.Text
   duration             Int?
-  exactDurationSeconds Int           @default(0)
-  durationSource       String        @default("CALCULATED") @db.VarChar(50)
-  durationMetadata     String?       @db.Text
   contentOrder         Int
   isMandatory          Boolean       @default(false)
   isPublished          Boolean       @default(false)
   isActive             Boolean       @default(true)
-  quizConfigJson       String?       @db.Text
-  assignmentConfigJson String?       @db.Text
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
+  assignmentConfigJson String?       @db.Text
+  quizConfigJson       String?       @db.Text
+  durationMetadata     String?       @db.Text
+  durationSource       String        @default("CALCULATED") @db.VarChar(50)
+  exactDurationSeconds Int           @default(0)
   section              CourseSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@index([sectionId])
@@ -252,21 +245,21 @@ model LearningContent {
 
 model Enrollment {
   id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  userId           BigInt    
+  userId           BigInt
   courseId         BigInt    @db.UnsignedBigInt
   enrolledAt       DateTime  @default(now())
-  startDate        DateTime?
   completedAt      DateTime?
-  dueDate          DateTime?
-  lastActivityAt   DateTime?
   status           String    @default("IN_PROGRESS") @db.VarChar(30)
   progress         Decimal   @default(0.00) @db.Decimal(5, 2)
-  timeSpentSeconds Int       @default(0)
-  sessionsCount    Int       @default(1)
-  isMandatory      Boolean   @default(false)
   createdAt        DateTime  @default(now())
-  user             Employee  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dueDate          DateTime?
+  isMandatory      Boolean   @default(false)
+  lastActivityAt   DateTime?
+  sessionsCount    Int       @default(1)
+  startDate        DateTime?
+  timeSpentSeconds Int       @default(0)
   course           Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user             Employee  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
   @@index([userId])
@@ -282,10 +275,10 @@ model UserLessonProgress {
   contentId             BigInt    @db.UnsignedBigInt
   isCompleted           Boolean   @default(false)
   completedAt           DateTime?
-  watchedSeconds        Int       @default(0)
   activeLearningSeconds Int       @default(0)
-  lastPosition          Float     @default(0)
   lastActivityAt        DateTime  @default(now()) @updatedAt
+  lastPosition          Float     @default(0)
+  watchedSeconds        Int       @default(0)
 
   @@unique([userId, contentId])
   @@index([userId, courseId])
@@ -293,41 +286,28 @@ model UserLessonProgress {
 }
 
 model AssessmentSubmission {
-  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  userId          BigInt
-  courseId        BigInt    @db.UnsignedBigInt
-  contentId       BigInt?   @db.UnsignedBigInt
-  submissionType  String    @default("QUIZ") @db.VarChar(50)
-  answersJson     String?   @db.Text
-  submissionText  String?   @db.Text
-  fileUrl         String?   @db.VarChar(500)
-  status          String    @default("SUBMITTED") @db.VarChar(30)
-  score           Float     @default(0)
-  maxScore        Float     @default(100)
-  percentage      Float     @default(0)
-  grade           String?   @db.VarChar(20)
-  feedback        String?   @db.Text
-  attemptNumber   Int       @default(1)
-  gradedBy        String?   @db.VarChar(100)
-  gradedAt        DateTime?
-  submittedAt     DateTime  @default(now())
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  userId         BigInt
+  courseId       BigInt    @db.UnsignedBigInt
+  contentId      BigInt?   @db.UnsignedBigInt
+  submissionType String    @default("QUIZ") @db.VarChar(50)
+  answersJson    String?   @db.Text
+  submissionText String?   @db.Text
+  fileUrl        String?   @db.VarChar(500)
+  status         String    @default("SUBMITTED") @db.VarChar(30)
+  score          Float     @default(0)
+  maxScore       Float     @default(100)
+  percentage     Float     @default(0)
+  grade          String?   @db.VarChar(20)
+  feedback       String?   @db.Text
+  attemptNumber  Int       @default(1)
+  gradedBy       String?   @db.VarChar(100)
+  gradedAt       DateTime?
+  submittedAt    DateTime  @default(now())
 
   @@index([userId, courseId])
   @@index([contentId])
   @@map("assessment_submissions")
-}
-
-enum EmploymentStatus {
-  ACTIVE
-  INACTIVE
-  RESIGNED
-  DELETED
-}
-
-enum ApprovalStatus {
-  PENDING
-  APPROVED
-  REJECTED
 }
 
 model Skill {
@@ -411,20 +391,20 @@ model SkillApprovalLog {
 
 model Notification {
   id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  userId     BigInt   // recipient employee ID
-  actorId    BigInt?  // actor who triggered event
+  userId     BigInt
   type       String   @db.VarChar(50)
-  category   String   @default("GENERAL") @db.VarChar(50)
-  priority   String   @default("NORMAL") @db.VarChar(20)
   title      String   @db.VarChar(200)
   message    String   @db.Text
   link       String?  @db.VarChar(500)
-  entityType String?  @db.VarChar(50)
-  entityId   BigInt?  @db.UnsignedBigInt
   isRead     Boolean  @default(false)
   metadata   Json?
-  roleTarget String?  @db.VarChar(20) // LEARNER, TEACHER, ADMIN, SUPER_ADMIN
+  roleTarget String?  @db.VarChar(20)
   createdAt  DateTime @default(now())
+  actorId    BigInt?
+  category   String   @default("GENERAL") @db.VarChar(50)
+  entityId   BigInt?  @db.UnsignedBigInt
+  entityType String?  @db.VarChar(50)
+  priority   String   @default("NORMAL") @db.VarChar(20)
 
   @@index([userId])
   @@index([userId, isRead])
@@ -454,22 +434,22 @@ model CertificateTemplate {
   validityDays      Int      @default(365)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  course            Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  course Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
   @@map("certificate_templates")
 }
 
 model IssuedCertificate {
-  id               BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  certificateCode  String   @unique @db.VarChar(50)
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  certificateCode  String    @unique @db.VarChar(50)
   userId           BigInt
-  courseId         BigInt   @db.UnsignedBigInt
-  issuedAt         DateTime @default(now())
+  courseId         BigInt    @db.UnsignedBigInt
+  issuedAt         DateTime  @default(now())
   expiresAt        DateTime?
-  status           String   @default("ACTIVE") @db.VarChar(30)
-  recipientName    String   @db.VarChar(100)
-  courseTitle      String   @db.VarChar(200)
-  templateSnapshot String?  @db.Text
+  status           String    @default("ACTIVE") @db.VarChar(30)
+  recipientName    String    @db.VarChar(100)
+  courseTitle      String    @db.VarChar(200)
+  templateSnapshot String?   @db.Text
 
   @@index([userId])
   @@index([courseId])
@@ -477,25 +457,21 @@ model IssuedCertificate {
 }
 
 model Event {
-  id                    BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
-  title                 String      @db.VarChar(200)
-  description           String?     @db.Text
-  eventDate             DateTime
-  eventTime             String?     @db.VarChar(20)
-  url                   String?     @db.VarChar(500)
-  eventType             String      @default("site") @db.VarChar(50) // site, category, course, group, user, other
-  courseId              BigInt?     @db.UnsignedBigInt
-  departmentId          BigInt?
-  creatorId             BigInt?
-  creatorName           String?     @db.VarChar(100)
-  reminderSent          Boolean     @default(false)
-  enrollmentType        String?     @default("ALL") @db.VarChar(50)
-  targetUserIds         String?     @db.Text
-  certificateTemplateId String?     @db.VarChar(50)
-  attendanceData        String?     @db.Text
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-  department            Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  id           BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
+  title        String      @db.VarChar(200)
+  description  String?     @db.Text
+  eventDate    DateTime
+  eventTime    String?     @db.VarChar(20)
+  url          String?     @db.VarChar(500)
+  eventType    String      @default("site") @db.VarChar(50)
+  courseId     BigInt?     @db.UnsignedBigInt
+  departmentId BigInt?
+  creatorId    BigInt?
+  creatorName  String?     @db.VarChar(100)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  reminderSent Boolean     @default(false)
+  department   Department? @relation(fields: [departmentId], references: [id])
 
   @@index([eventDate])
   @@index([eventType])
@@ -512,7 +488,7 @@ model AuditLog {
   departmentName String?  @db.VarChar(100)
   action         String   @db.VarChar(100)
   detail         String   @db.Text
-  type           String   @default("system") @db.VarChar(50) // role, login, course, security, user, settings, system
+  type           String   @default("system") @db.VarChar(50)
   ipAddress      String?  @db.VarChar(50)
 
   @@index([type])
@@ -520,11 +496,6 @@ model AuditLog {
   @@index([username])
   @@index([departmentName])
   @@map("audit_logs")
-}
-
-enum GuestAccessScope {
-  GLOBAL
-  DEPARTMENT
 }
 
 model GuestAccessGrant {
@@ -536,13 +507,37 @@ model GuestAccessGrant {
   isActive     Boolean          @default(true)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
-
-  user       Employee?   @relation("GuestUserGrants", fields: [userId], references: [id], onDelete: Cascade)
-  department Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  grantedBy  Employee    @relation("GrantedByEmployee", fields: [grantedById], references: [id])
+  department   Department?      @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  grantedBy    Employee         @relation("GrantedByEmployee", fields: [grantedById], references: [id])
+  user         Employee?        @relation("GuestUserGrants", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([departmentId])
   @@index([scope])
+  @@index([grantedById], map: "guest_access_grants_grantedById_fkey")
   @@map("guest_access_grants")
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  INACTIVE
+  RESIGNED
+  DELETED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum GuestAccessScope {
+  GLOBAL
+  DEPARTMENT
 }
