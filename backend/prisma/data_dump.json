@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-02T04:01:24.981Z",
+  "exportedAt": "2026-09-02T13:10:55.243Z",
   "departments": [
     {
       "id": "2",
@@ -11892,7 +11892,7 @@
       "completedAt": null,
       "status": "IN_PROGRESS",
       "progress": "0",
-      "createdAt": "2026-09-01T13:02:26.485Z",
+      "createdAt": "2026-09-02T05:52:07.569Z",
       "dueDate": null,
       "isMandatory": false,
       "lastActivityAt": null,
@@ -11908,7 +11908,7 @@
       "completedAt": null,
       "status": "IN_PROGRESS",
       "progress": "0",
-      "createdAt": "2026-09-01T13:02:26.516Z",
+      "createdAt": "2026-09-02T05:52:07.599Z",
       "dueDate": null,
       "isMandatory": false,
       "lastActivityAt": null,
@@ -11924,7 +11924,7 @@
       "completedAt": null,
       "status": "IN_PROGRESS",
       "progress": "67",
-      "createdAt": "2026-09-01T13:02:26.542Z",
+      "createdAt": "2026-09-02T05:52:07.630Z",
       "dueDate": null,
       "isMandatory": false,
       "lastActivityAt": null,
@@ -11942,7 +11942,7 @@
       "isCompleted": true,
       "completedAt": "2026-08-30T18:05:00.436Z",
       "activeLearningSeconds": 0,
-      "lastActivityAt": "2026-09-01T13:02:26.564Z",
+      "lastActivityAt": "2026-09-02T05:52:07.658Z",
       "lastPosition": 0,
       "watchedSeconds": 0
     },
@@ -11954,7 +11954,7 @@
       "isCompleted": true,
       "completedAt": "2026-08-30T18:05:29.017Z",
       "activeLearningSeconds": 0,
-      "lastActivityAt": "2026-09-01T13:02:26.594Z",
+      "lastActivityAt": "2026-09-02T05:52:07.690Z",
       "lastPosition": 0,
       "watchedSeconds": 0
     }
