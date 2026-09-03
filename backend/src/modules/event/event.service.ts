@@ -4,25 +4,13 @@ import guestGrantService from "../../services/guestGrant.service";
 
 export class EventService {
   async getAllEvents(userContext?: { role?: string; employeeId?: bigint | null; departmentId?: bigint | null }) {
-    // Auto-delete expired past events (eventDate before start of current day)
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-
-    try {
-      await prisma.event.deleteMany({
-        where: {
-          eventDate: {
-            lt: startOfToday,
-          },
-        },
-      });
-    } catch (err) {
-      console.error("[EventService] Error purging expired past events:", err);
-    }
+    // Use a 24-hour buffer for active events (yesterday 00:00:00) so timezone shifts never hide today's events
+    const startOfYesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    startOfYesterday.setUTCHours(0, 0, 0, 0);
 
     let whereClause: any = {
       eventDate: {
-        gte: startOfToday,
+        gte: startOfYesterday,
       },
     };
 

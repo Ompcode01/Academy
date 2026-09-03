@@ -33,6 +33,22 @@ export const getEventById = async (req: AuthRequest, res: Response) => {
   }
 };
 
+const parseCalendarDateNoonUTC = (dateInput: any): Date => {
+  if (!dateInput) return new Date();
+  const s = typeof dateInput === "string" ? dateInput : new Date(dateInput).toISOString();
+  const datePart = s.split("T")[0];
+  const parts = datePart.split("-");
+  if (parts.length === 3) {
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+      return new Date(Date.UTC(y, m, d, 12, 0, 0));
+    }
+  }
+  return new Date(dateInput);
+};
+
 export const createEvent = async (req: AuthRequest, res: Response) => {
   try {
     const { title, description, eventDate, eventTime, url, eventType, courseId, departmentId, enrollmentType, targetUserIds, certificateTemplateId } = req.body;
@@ -40,13 +56,14 @@ export const createEvent = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ success: false, message: "Title and Event Date are required." });
     }
 
+    const parsedEventDate = parseCalendarDateNoonUTC(eventDate);
+
     // Past date & time validation (timezone-safe for server vs client offsets)
-    const targetDate = new Date(eventDate);
     const now = new Date();
     const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     yesterday.setHours(0, 0, 0, 0);
 
-    if (targetDate < yesterday) {
+    if (parsedEventDate < yesterday) {
       return res.status(400).json({ success: false, message: "Event date cannot be in the past." });
     }
 
@@ -64,7 +81,7 @@ export const createEvent = async (req: AuthRequest, res: Response) => {
     const event = await eventService.createEvent({
       title,
       description,
-      eventDate: new Date(eventDate),
+      eventDate: parsedEventDate,
       eventTime,
       url,
       eventType: eventType || "site",
@@ -104,13 +121,14 @@ export const updateEvent = async (req: AuthRequest, res: Response) => {
     const id = BigInt(String(req.params.id));
     const { title, description, eventDate, eventTime, url, eventType, certificateTemplateId } = req.body;
 
+    let parsedEventDate: Date | undefined = undefined;
     if (eventDate) {
-      const targetDate = new Date(eventDate);
+      parsedEventDate = parseCalendarDateNoonUTC(eventDate);
       const now = new Date();
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       yesterday.setHours(0, 0, 0, 0);
 
-      if (targetDate < yesterday) {
+      if (parsedEventDate < yesterday) {
         return res.status(400).json({ success: false, message: "Event date cannot be in the past." });
       }
     }
@@ -122,7 +140,7 @@ export const updateEvent = async (req: AuthRequest, res: Response) => {
       {
         title,
         description,
-        eventDate: eventDate ? new Date(eventDate) : undefined,
+        eventDate: parsedEventDate,
         eventTime,
         url,
         eventType,
