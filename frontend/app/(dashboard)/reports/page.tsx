@@ -561,9 +561,7 @@ export default function ReportsPage() {
                     const prevGradedRole = r.gradedByRole || (r.gradedBy?.includes("[SUPER_ADMIN]") || r.gradedBy?.toLowerCase().includes("priyanka") ? "SUPER_ADMIN" : r.gradedBy?.includes("[ADMIN]") ? "ADMIN" : r.gradedBy ? "TEACHER" : null);
                     
                     const currentUserRole = user?.role;
-                    const isLockedForCurrentUser = 
-                      (prevGradedRole === "SUPER_ADMIN" && currentUserRole !== ROLES.SUPER_ADMIN) ||
-                      (prevGradedRole === "ADMIN" && currentUserRole !== ROLES.SUPER_ADMIN && currentUserRole !== ROLES.ADMIN);
+                    const isLockedForCurrentUser = false;
 
                     if (isLockedForCurrentUser && !isFb) {
                       return (

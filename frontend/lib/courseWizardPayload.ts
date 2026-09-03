@@ -95,7 +95,26 @@ function applyFeedbackToSections(sections: any[], fbData: CourseWizardState["fee
     }
   }
 
-  // Note: Feedback auto-creation is disabled. Admin/author manually creates feedback items in the curriculum editor when needed.
+  if (!foundFb && fbData.enableFeedback === true) {
+    const feedbackItem = {
+      id: Date.now(),
+      title: fbData.feedbackTitle || "End-of-Course Feedback & Evaluation Survey",
+      contentType: "FEEDBACK",
+      description: fbData.description || "Please share your review regarding course structure, content clarity, and instructor support.",
+      quizConfigJson: feedbackConfigJson,
+      isMandatory: true,
+      status: "Published",
+    };
+
+    processedSections.push({
+      id: Date.now() + 1,
+      title: "Course Feedback & Evaluation",
+      description: "End-of-Course Feedback & Evaluation Survey",
+      sectionOrder: processedSections.length + 1,
+      contents: [feedbackItem],
+    });
+  }
+
   return processedSections;
 }
 

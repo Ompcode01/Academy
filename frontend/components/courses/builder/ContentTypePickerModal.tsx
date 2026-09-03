@@ -26,10 +26,13 @@ export type ContentTypeKey =
   | "EXTERNAL_LINK"
   | "FEEDBACK";
 
+import toast from "react-hot-toast";
+
 interface ContentTypePickerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectType: (type: ContentTypeKey) => void;
+  hasExistingFeedback?: boolean;
 }
 
 const contentTypes: {
@@ -126,6 +129,7 @@ export default function ContentTypePickerModal({
   open,
   onOpenChange,
   onSelectType,
+  hasExistingFeedback = false,
 }: ContentTypePickerModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -139,14 +143,20 @@ export default function ContentTypePickerModal({
         <div className="grid grid-cols-3 gap-3 py-4">
           {contentTypes.map((item) => {
             const Icon = item.icon;
+            const isFbDisabled = item.key === "FEEDBACK" && hasExistingFeedback;
+
             return (
               <button
                 key={item.key}
                 onClick={() => {
+                  if (isFbDisabled) {
+                    toast.error("Feedback Survey already exists for this course. Only one Feedback Survey is allowed per course.");
+                    return;
+                  }
                   onSelectType(item.key);
                   onOpenChange(false);
                 }}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border ${item.borderColor} ${item.bgColor} hover:scale-105 transition-all cursor-pointer group`}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border ${item.borderColor} ${item.bgColor} hover:scale-105 transition-all cursor-pointer group relative ${isFbDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <div className={`p-2.5 rounded-lg ${item.bgColor} mb-2`}>
                   <Icon className={`h-6 w-6 ${item.color}`} />
@@ -154,6 +164,11 @@ export default function ContentTypePickerModal({
                 <span className="text-xs font-semibold text-foreground text-center">
                   {item.label}
                 </span>
+                {isFbDisabled && (
+                  <span className="text-[9px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded mt-1 border border-amber-500/20">
+                    Added
+                  </span>
+                )}
               </button>
             );
           })}

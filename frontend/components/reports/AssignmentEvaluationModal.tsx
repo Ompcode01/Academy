@@ -58,9 +58,7 @@ export default function AssignmentEvaluationModal({
 
   const currentUserRole = user?.role || ROLES.GUEST;
 
-  const isLockedBySuperAdmin = gradedByRole === "SUPER_ADMIN" && currentUserRole !== ROLES.SUPER_ADMIN;
-  const isLockedByAdmin = gradedByRole === "ADMIN" && currentUserRole !== ROLES.SUPER_ADMIN && currentUserRole !== ROLES.ADMIN;
-  const isGradeLockedForUser = Boolean(isLockedBySuperAdmin || isLockedByAdmin);
+  const isGradeLockedForUser = false;
 
   const isFeedback =
     submission.submissionType === "FEEDBACK" ||
@@ -342,17 +340,6 @@ export default function AssignmentEvaluationModal({
                     <Award className="h-5 w-5 text-amber-500" />
                     <h3 className="text-sm font-extrabold text-foreground">Faculty Evaluation Form</h3>
                   </div>
-
-                  {isGradeLockedForUser && (
-                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
-                      <span>
-                        {isLockedBySuperAdmin
-                          ? "Graded by Super Admin. Higher authority evaluations are locked for Admin and Teacher accounts."
-                          : "Graded by Business Unit Admin. This evaluation is locked for Teacher accounts."}
-                      </span>
-                    </div>
-                  )}
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">

@@ -23,6 +23,8 @@ import {
 import { SessionItem, saveSessionAttendance } from "@/services/api/session.service";
 import toast from "react-hot-toast";
 
+import { getEmployees } from "@/services/api/org.service";
+
 export interface StudentRecord {
   userId: number | string;
   name: string;
@@ -32,14 +34,31 @@ export interface StudentRecord {
 }
 
 const DEFAULT_EMPLOYEES: StudentRecord[] = [
-  { userId: 1, name: "Priyanka Davhare", code: "EMP001", email: "priyanka.davhare@harbingergroup.com", status: "PRESENT" },
-  { userId: 2, name: "Deepali Uttekar", code: "EMP002", email: "Deepali.Uttekar@harbingergroup.com", status: "PRESENT" },
-  { userId: 3, name: "Shailesh Chikate", code: "EMP003", email: "shailesh@harbingergroup.com", status: "PRESENT" },
-  { userId: 4, name: "Ayush Gupta", code: "EMP004", email: "Ayush.Gupta@harbingergroup.com", status: "PRESENT" },
-  { userId: 5, name: "Sahil Dhiman", code: "EMP005", email: "Sahil.Dhiman@harbingergroup.com", status: "PRESENT" },
-  { userId: 6, name: "Sneha Patil", code: "EMP006", email: "sneha.patil@harbingergroup.com", status: "PRESENT" },
-  { userId: 7, name: "Omprakash Pandey", code: "EMP007", email: "omprakash.pandey@harbingergroup.com", status: "PRESENT" },
-  { userId: 8, name: "Rahul Sharma", code: "EMP008", email: "rahul.sharma@harbingergroup.com", status: "ABSENT" },
+  { userId: 1, name: "Priyanka Davhare", code: "EMP001", email: "priyanka.davhare@company.com", status: "ABSENT" },
+  { userId: 2, name: "Omprakash Pandey", code: "EMP002", email: "omprakash.pandey@company.com", status: "ABSENT" },
+  { userId: 3, name: "Rahul Sharma", code: "EMP003", email: "rahul.sharma@company.com", status: "ABSENT" },
+  { userId: 4, name: "Sneha Patil", code: "EMP004", email: "sneha.patil@company.com", status: "ABSENT" },
+  { userId: 5, name: "Guest Visitor", code: "EMP005", email: "guest.visitor@company.com", status: "ABSENT" },
+  { userId: 6, name: "Siddharth Savant", code: "EMP006", email: "siddharth.savant@company.com", status: "ABSENT" },
+  { userId: 7, name: "Parth Honkalse", code: "EMP007", email: "parth.honkalse@company.com", status: "ABSENT" },
+  { userId: 8, name: "Anuja Thorat", code: "EMP008", email: "anuja.thorat@company.com", status: "ABSENT" },
+  { userId: 9, name: "Diya Yadav", code: "EMP009", email: "diya.yadav@company.com", status: "ABSENT" },
+  { userId: 10, name: "Tushar Dayma", code: "EMP010", email: "tushar.dayma@company.com", status: "ABSENT" },
+  { userId: 11, name: "Mohit Gahlot", code: "EMP011", email: "mohit.gahlot@company.com", status: "ABSENT" },
+  { userId: 12, name: "Neelkanth Aher", code: "EMP012", email: "neelkanth.aher@company.com", status: "ABSENT" },
+  { userId: 13, name: "Siddharth Kshirsagar", code: "EMP013", email: "siddharth.kshirsagar@company.com", status: "ABSENT" },
+  { userId: 14, name: "Karan Krishna", code: "EMP014", email: "karan.krishna@company.com", status: "ABSENT" },
+  { userId: 15, name: "Deepali Deshmukh", code: "EMP015", email: "deepali.deshmukh@company.com", status: "ABSENT" },
+  { userId: 16, name: "Rohan Joshi", code: "EMP016", email: "rohan.joshi@company.com", status: "ABSENT" },
+  { userId: 17, name: "Pooja Sharma", code: "EMP017", email: "pooja.sharma@company.com", status: "ABSENT" },
+  { userId: 18, name: "Aditya Shinde", code: "EMP018", email: "aditya.shinde@company.com", status: "ABSENT" },
+  { userId: 19, name: "Neha Gupta", code: "EMP019", email: "neha.gupta@company.com", status: "ABSENT" },
+  { userId: 20, name: "Amit Verma", code: "EMP020", email: "amit.verma@company.com", status: "ABSENT" },
+  { userId: 21, name: "Aarav Verma", code: "EMP021", email: "aarav.verma@company.com", status: "ABSENT" },
+  { userId: 22, name: "Diya Kulkarni", code: "EMP022", email: "diya.kulkarni@company.com", status: "ABSENT" },
+  { userId: 23, name: "Rohan Mehta", code: "EMP023", email: "rohan.mehta@company.com", status: "ABSENT" },
+  { userId: 24, name: "Ananya Singh", code: "EMP024", email: "ananya.singh@company.com", status: "ABSENT" },
+  { userId: 25, name: "Vikram Nair", code: "EMP025", email: "vikram.nair@company.com", status: "ABSENT" },
 ];
 
 interface TakeAttendanceModalProps {
@@ -56,18 +75,71 @@ export default function TakeAttendanceModal({ session, isOpen, onClose, onSucces
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (session?.attendanceData) {
-      try {
-        const parsed = JSON.parse(session.attendanceData);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setStudents(parsed);
+    async function loadSessionAttendance() {
+      if (!session) return;
+      if (session.attendanceData) {
+        try {
+          const parsed = JSON.parse(session.attendanceData);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setStudents(parsed);
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to parse attendance data:", err);
         }
-      } catch (err) {
-        console.error("Failed to parse attendance data:", err);
       }
-    } else {
+
+      try {
+        const res = await getEmployees();
+        const rawEmps = Array.isArray(res) ? res : res?.data || [];
+        if (Array.isArray(rawEmps) && rawEmps.length > 0) {
+          let list: StudentRecord[] = rawEmps.map((emp: any, idx: number) => ({
+            userId: emp.id || idx + 1,
+            name: `${emp.firstName || ""} ${emp.lastName || ""}`.trim() || `User #${emp.id}`,
+            code: emp.employeeCode || `EMP${String(idx + 1).padStart(3, "0")}`,
+            email: emp.officialEmail || `user${emp.id}@company.com`,
+            deptId: emp.departmentId ? String(emp.departmentId) : undefined,
+            status: "ABSENT",
+          }));
+
+          // Filter by Admin Enrollment (Selected Users)
+          if (session.targetUserIds) {
+            let uIds: string[] = [];
+            try {
+              const parsed = JSON.parse(session.targetUserIds);
+              if (Array.isArray(parsed) && parsed.length > 0) uIds = parsed.map(String);
+            } catch (e) {
+              if (typeof session.targetUserIds === "string") {
+                uIds = session.targetUserIds.split(",").map((s) => s.trim());
+              }
+            }
+            if (uIds.length > 0) {
+              list = list.filter((emp) =>
+                uIds.includes(String(emp.userId)) ||
+                uIds.includes(emp.code) ||
+                uIds.some((u) => emp.email.toLowerCase().includes(u.toLowerCase()))
+              );
+            }
+          } 
+          // Filter by Department Scope
+          else if (session.departmentId || session.enrollmentType === "DEPARTMENT") {
+            const targetDeptId = session.departmentId ? String(session.departmentId) : null;
+            if (targetDeptId) {
+              list = list.filter((emp: any) => String(emp.deptId) === targetDeptId);
+            }
+          }
+
+          setStudents(list);
+          return;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch live employees for attendance, using defaults", e);
+      }
+
       setStudents(DEFAULT_EMPLOYEES);
     }
+
+    loadSessionAttendance();
   }, [session]);
 
   if (!session) return null;
@@ -86,7 +158,7 @@ export default function TakeAttendanceModal({ session, isOpen, onClose, onSucces
     setStudents((prev) => prev.map((s) => ({ ...s, status })));
   };
 
-  // CSV Attendance Report Upload Handler (MS Teams / Zoom format support)
+  // CSV Attendance Report Upload Handler (MS Teams / Zoom / Excel format support)
   const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -96,32 +168,25 @@ export default function TakeAttendanceModal({ session, isOpen, onClose, onSucces
       const text = event.target?.result as string;
       if (!text) return;
 
-      // Extract all emails using regex
-      const emailMatches = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
-      const emailSet = new Set(emailMatches.map((em) => em.toLowerCase()));
-
-      if (emailSet.size === 0) {
-        toast.error("No valid email addresses found in uploaded CSV file.");
-        return;
-      }
+      const lowerText = text.toLowerCase();
 
       let matchedCount = 0;
       setStudents((prev) =>
         prev.map((student) => {
           const studentEmail = (student.email || "").toLowerCase();
-          const studentNameClean = student.name.toLowerCase().replace(/\s+/g, "");
+          const studentName = student.name.toLowerCase();
+          const firstName = studentName.split(" ")[0];
+          const studentCode = (student.code || "").toLowerCase();
 
           let isPresent = false;
-          if (studentEmail && emailSet.has(studentEmail)) {
+          if (studentEmail && lowerText.includes(studentEmail)) {
             isPresent = true;
-          } else {
-            // Check if any extracted email contains student name snippet
-            for (const em of Array.from(emailSet)) {
-              if (em.includes(studentNameClean) || studentNameClean.includes(em.split("@")[0].replace(".", ""))) {
-                isPresent = true;
-                break;
-              }
-            }
+          } else if (studentCode && lowerText.includes(studentCode)) {
+            isPresent = true;
+          } else if (studentName && lowerText.includes(studentName)) {
+            isPresent = true;
+          } else if (firstName && firstName.length > 2 && lowerText.includes(firstName)) {
+            isPresent = true;
           }
 
           if (isPresent) matchedCount++;

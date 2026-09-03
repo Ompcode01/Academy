@@ -53,6 +53,19 @@ export default function Dashboard() {
         let activeCourses: Course[] = [];
         if (courseRes?.success && Array.isArray(courseRes.data.courses)) {
           activeCourses = courseRes.data.courses.filter((c: Course) => c.status === "PUBLISHED");
+          activeCourses.sort((a, b) => {
+            const tsA = Math.max(
+              (a as any).updatedAt ? new Date((a as any).updatedAt).getTime() : 0,
+              a.createdAt ? new Date(a.createdAt).getTime() : 0,
+              Number(a.id || 0)
+            );
+            const tsB = Math.max(
+              (b as any).updatedAt ? new Date((b as any).updatedAt).getTime() : 0,
+              b.createdAt ? new Date(b.createdAt).getTime() : 0,
+              Number(b.id || 0)
+            );
+            return tsB - tsA;
+          });
           setCourses(activeCourses);
         }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Plus,
@@ -177,6 +178,21 @@ export default function CurriculumBuilderView({
     }
   };
 
+  const checkDuplicateTitle = (title: string, contentType: string, currentItemId?: number) => {
+    const sec = sections.find((s) => s.id === activeSectionId);
+    if (!sec) return false;
+    const isDup = sec.contents.some(
+      (c) => c.id !== currentItemId &&
+        c.contentType === contentType &&
+        c.title.trim().toLowerCase() === title.trim().toLowerCase()
+    );
+    if (isDup) {
+      toast.error(`A ${contentType} lesson titled "${title}" already exists in this section.`);
+      return true;
+    }
+    return false;
+  };
+
   const handleSaveGeneralContent = (data: {
     title: string;
     contentType: string;
@@ -186,6 +202,9 @@ export default function CurriculumBuilderView({
     duration?: number;
   }) => {
     if (!activeSectionId) return;
+    if (checkDuplicateTitle(data.title, data.contentType, editingItem?.item.id)) {
+      return;
+    }
     if (editingItem) {
       updateSections((prev) =>
         prev.map((s) =>
@@ -233,6 +252,9 @@ export default function CurriculumBuilderView({
 
   const handleSaveQuiz = (quizData: any) => {
     if (!activeSectionId) return;
+    if (checkDuplicateTitle(quizData.title, "QUIZ", editingItem?.item.id)) {
+      return;
+    }
     const quizConfigJson = JSON.stringify(quizData);
     if (editingItem) {
       updateSections((prev) =>
@@ -280,6 +302,9 @@ export default function CurriculumBuilderView({
 
   const handleSaveAssignment = (assignmentData: any) => {
     if (!activeSectionId) return;
+    if (checkDuplicateTitle(assignmentData.title, "ASSIGNMENT", editingItem?.item.id)) {
+      return;
+    }
     const assignmentConfigJson = JSON.stringify(assignmentData);
     if (editingItem) {
       updateSections((prev) =>
@@ -329,6 +354,14 @@ export default function CurriculumBuilderView({
 
   const handleSaveFeedback = (feedbackData: any) => {
     if (!activeSectionId) return;
+    const hasFbAlready = sections.some((s) => (s.contents || []).some((c) => c.contentType === "FEEDBACK" && c.id !== editingItem?.item.id));
+    if (hasFbAlready) {
+      toast.error("Feedback Survey has already been added to this course. Only one Feedback Survey is allowed per course.");
+      return;
+    }
+    if (checkDuplicateTitle(feedbackData.title, "FEEDBACK", editingItem?.item.id)) {
+      return;
+    }
     const feedbackConfigJson = JSON.stringify(feedbackData);
     if (editingItem) {
       updateSections((prev) =>
@@ -732,6 +765,7 @@ export default function CurriculumBuilderView({
         open={pickerOpen}
         onOpenChange={setPickerOpen}
         onSelectType={handleSelectContentType}
+        hasExistingFeedback={sections.some((s) => (s.contents || []).some((c) => c.contentType === "FEEDBACK"))}
       />
 
       <AddContentModal

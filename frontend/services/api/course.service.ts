@@ -130,8 +130,8 @@ export const updateCourse = async (id: number, data: Partial<Course>) => {
   return response.data;
 };
 
-export const deleteCourse = async (id: number) => {
-  const response = await api.delete(`/courses/${id}`);
+export const deleteCourse = async (id: number, permanent?: boolean) => {
+  const response = await api.delete(`/courses/${id}${permanent ? "?permanent=true" : ""}`);
   return response.data;
 };
 

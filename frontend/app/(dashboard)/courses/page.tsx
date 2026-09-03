@@ -170,14 +170,22 @@ export default function CoursesPage() {
       return (b.title || "").localeCompare(a.title || "");
     }
     if (sortValue === "newest") {
-      const tsA = a.createdAt ? new Date(a.createdAt).getTime() : Number(a.id);
-      const tsB = b.createdAt ? new Date(b.createdAt).getTime() : Number(b.id);
-      return tsB - tsA;
+      const getTs = (c: Course) =>
+        Math.max(
+          (c as any).updatedAt ? new Date((c as any).updatedAt).getTime() : 0,
+          c.createdAt ? new Date(c.createdAt).getTime() : 0,
+          Number(c.id || 0)
+        );
+      return getTs(b) - getTs(a);
     }
     if (sortValue === "oldest") {
-      const tsA = a.createdAt ? new Date(a.createdAt).getTime() : Number(a.id);
-      const tsB = b.createdAt ? new Date(b.createdAt).getTime() : Number(b.id);
-      return tsA - tsB;
+      const getTs = (c: Course) =>
+        Math.max(
+          (c as any).updatedAt ? new Date((c as any).updatedAt).getTime() : 0,
+          c.createdAt ? new Date(c.createdAt).getTime() : 0,
+          Number(c.id || 0)
+        );
+      return getTs(a) - getTs(b);
     }
     return 0;
   });
@@ -189,7 +197,9 @@ export default function CoursesPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Academy Curriculum Catalog</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage, classify, and organize all learning courses in the academy database.
+            {user?.role === ROLES.LEARNER
+              ? "Explore and discover available learning programs and courses across your organization."
+              : "Manage, classify, and organize all learning courses in the academy database."}
           </p>
         </div>
         <RoleGate allowed={["ADMIN", "SUPER_ADMIN", "TEACHER"]}>
@@ -212,67 +222,69 @@ export default function CoursesPage() {
         </RoleGate>
       </div>
 
-      {/* Active, Draft, Inactive, and All Courses Status Tabs with Scores */}
-      <div className="flex flex-wrap items-center gap-2.5 pb-1">
-        <button
-          onClick={() => handleStatusChange("PUBLISHED")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-            status === "PUBLISHED"
-              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 shadow-xs"
-              : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
-          }`}
-        >
-          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
-          Active Courses
-          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold ml-1">
-            {statusCounts.published}
-          </span>
-        </button>
+      {/* Active, Draft, Inactive, and All Courses Status Tabs with Scores (Strictly for Admin/Teacher/SuperAdmin) */}
+      <RoleGate allowed={["ADMIN", "SUPER_ADMIN", "TEACHER"]}>
+        <div className="flex flex-wrap items-center gap-2.5 pb-1">
+          <button
+            onClick={() => handleStatusChange("PUBLISHED")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              status === "PUBLISHED"
+                ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 shadow-xs"
+                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+            }`}
+          >
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+            Active Courses
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold ml-1">
+              {statusCounts.published}
+            </span>
+          </button>
 
-        <button
-          onClick={() => handleStatusChange("DRAFT")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-            status === "DRAFT"
-              ? "bg-slate-500/15 text-slate-800 dark:text-slate-200 border border-slate-500/40 shadow-xs"
-              : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
-          }`}
-        >
-          <span className="h-2.5 w-2.5 rounded-full bg-slate-400 inline-block" />
-          Draft Courses
-          <span className="px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-700 dark:text-slate-300 text-[10px] font-extrabold ml-1">
-            {statusCounts.draft}
-          </span>
-        </button>
+          <button
+            onClick={() => handleStatusChange("DRAFT")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              status === "DRAFT"
+                ? "bg-slate-500/15 text-slate-800 dark:text-slate-200 border border-slate-500/40 shadow-xs"
+                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+            }`}
+          >
+            <span className="h-2.5 w-2.5 rounded-full bg-slate-400 inline-block" />
+            Draft Courses
+            <span className="px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-700 dark:text-slate-300 text-[10px] font-extrabold ml-1">
+              {statusCounts.draft}
+            </span>
+          </button>
 
-        <button
-          onClick={() => handleStatusChange("ARCHIVED")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-            status === "ARCHIVED"
-              ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 shadow-xs"
-              : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
-          }`}
-        >
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-500 inline-block" />
-          Inactive Courses (Archived)
-          <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold ml-1">
-            {statusCounts.archived}
-          </span>
-        </button>
+          <button
+            onClick={() => handleStatusChange("ARCHIVED")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              status === "ARCHIVED"
+                ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 shadow-xs"
+                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+            }`}
+          >
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-500 inline-block" />
+            Inactive Courses (Archived)
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-extrabold ml-1">
+              {statusCounts.archived}
+            </span>
+          </button>
 
-        <button
-          onClick={() => handleStatusChange(null)}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-            !status
-              ? "bg-primary/15 text-primary border border-primary/40 shadow-xs"
-              : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
-          }`}
-        >
-          All Courses
-          <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-extrabold ml-1">
-            {statusCounts.all}
-          </span>
-        </button>
-      </div>
+          <button
+            onClick={() => handleStatusChange(null)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              !status
+                ? "bg-primary/15 text-primary border border-primary/40 shadow-xs"
+                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
+            }`}
+          >
+            All Courses
+            <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-extrabold ml-1">
+              {statusCounts.all}
+            </span>
+          </button>
+        </div>
+      </RoleGate>
 
       {/* Filters */}
       <div className="bg-card p-4 rounded-xl border border-border">
@@ -328,7 +340,7 @@ export default function CoursesPage() {
       {/* Harbinger Branded Course Deletion Confirmation Modal */}
       {(() => {
         const targetCourse = courses.find((c) => Number(c.id) === deleteConfirmId);
-        const isArchived = targetCourse?.status === "ARCHIVED";
+        const isArchived = targetCourse?.status === "ARCHIVED" || targetCourse?.isActive === false;
         return (
           <HarbingerConfirmModal
             open={deleteConfirmId !== null}
@@ -353,7 +365,7 @@ export default function CoursesPage() {
                 const idToDelete = deleteConfirmId;
                 setDeleteConfirmId(null);
                 try {
-                  const res = await deleteCourse(idToDelete);
+                  const res = await deleteCourse(idToDelete, isArchived);
                   if (res?.success) {
                     setSuccessModal({
                       open: true,

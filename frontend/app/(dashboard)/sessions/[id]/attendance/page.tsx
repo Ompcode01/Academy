@@ -29,6 +29,8 @@ import {
 } from "@/services/api/session.service";
 import toast from "react-hot-toast";
 
+import { getEmployees } from "@/services/api/org.service";
+
 export interface StudentRecord {
   userId: number | string;
   name: string;
@@ -38,31 +40,31 @@ export interface StudentRecord {
 }
 
 const ALL_25_EMPLOYEES: StudentRecord[] = [
-  { userId: 1, name: "Priyanka Davhare", code: "EMP001", email: "priyanka.davhare@harbingergroup.com", status: "PRESENT" },
-  { userId: 2, name: "Deepali Uttekar", code: "EMP002", email: "Deepali.Uttekar@harbingergroup.com", status: "PRESENT" },
-  { userId: 3, name: "Shailesh Chikate", code: "EMP003", email: "shailesh@harbingergroup.com", status: "PRESENT" },
-  { userId: 4, name: "Ayush Gupta", code: "EMP004", email: "Ayush.Gupta@harbingergroup.com", status: "PRESENT" },
-  { userId: 5, name: "Sahil Dhiman", code: "EMP005", email: "Sahil.Dhiman@harbingergroup.com", status: "PRESENT" },
-  { userId: 6, name: "Sneha Patil", code: "EMP006", email: "sneha.patil@harbingergroup.com", status: "PRESENT" },
-  { userId: 7, name: "Omprakash Pandey", code: "EMP007", email: "omprakash.pandey@harbingergroup.com", status: "PRESENT" },
-  { userId: 8, name: "Rahul Sharma", code: "EMP008", email: "rahul.sharma@harbingergroup.com", status: "ABSENT" },
-  { userId: 9, name: "Umesh Panditkar", code: "EMP009", email: "umesh.panditkar@harbingergroup.com", status: "PRESENT" },
-  { userId: 10, name: "Neha Srivastava", code: "EMP010", email: "Neha.Srivastava@harbingergroup.com", status: "PRESENT" },
-  { userId: 11, name: "Amit Verma", code: "EMP011", email: "amit.verma@harbingergroup.com", status: "PRESENT" },
-  { userId: 12, name: "Pooja Deshmukh", code: "EMP012", email: "pooja.deshmukh@harbingergroup.com", status: "PRESENT" },
-  { userId: 13, name: "Rohan Kulkarni", code: "EMP013", email: "rohan.kulkarni@harbingergroup.com", status: "PRESENT" },
-  { userId: 14, name: "Ananya Joshi", code: "EMP014", email: "ananya.joshi@harbingergroup.com", status: "PRESENT" },
-  { userId: 15, name: "Vikram Rathore", code: "EMP015", email: "vikram.rathore@harbingergroup.com", status: "PRESENT" },
-  { userId: 16, name: "Divya Nair", code: "EMP016", email: "divya.nair@harbingergroup.com", status: "PRESENT" },
-  { userId: 17, name: "Kunal Mehra", code: "EMP017", email: "kunal.mehra@harbingergroup.com", status: "PRESENT" },
-  { userId: 18, name: "Tanvi Saxena", code: "EMP018", email: "tanvi.saxena@harbingergroup.com", status: "PRESENT" },
-  { userId: 19, name: "Siddharth Rao", code: "EMP019", email: "siddharth.rao@harbingergroup.com", status: "PRESENT" },
-  { userId: 20, name: "Meera Agarwal", code: "EMP020", email: "meera.agarwal@harbingergroup.com", status: "PRESENT" },
-  { userId: 21, name: "Varun Malhotra", code: "EMP021", email: "varun.malhotra@harbingergroup.com", status: "PRESENT" },
-  { userId: 22, name: "Ishita Banerjee", code: "EMP022", email: "ishita.banerjee@harbingergroup.com", status: "PRESENT" },
-  { userId: 23, name: "Gaurav Bhatt", code: "EMP023", email: "gaurav.bhatt@harbingergroup.com", status: "PRESENT" },
-  { userId: 24, name: "Ritu Singhania", code: "EMP024", email: "ritu.singhania@harbingergroup.com", status: "PRESENT" },
-  { userId: 25, name: "Nikhil Kapoor", code: "EMP025", email: "nikhil.kapoor@harbingergroup.com", status: "PRESENT" },
+  { userId: 1, name: "Priyanka Davhare", code: "EMP001", email: "priyanka.davhare@company.com", status: "ABSENT" },
+  { userId: 2, name: "Omprakash Pandey", code: "EMP002", email: "omprakash.pandey@company.com", status: "ABSENT" },
+  { userId: 3, name: "Rahul Sharma", code: "EMP003", email: "rahul.sharma@company.com", status: "ABSENT" },
+  { userId: 4, name: "Sneha Patil", code: "EMP004", email: "sneha.patil@company.com", status: "ABSENT" },
+  { userId: 5, name: "Guest Visitor", code: "EMP005", email: "guest.visitor@company.com", status: "ABSENT" },
+  { userId: 6, name: "Siddharth Savant", code: "EMP006", email: "siddharth.savant@company.com", status: "ABSENT" },
+  { userId: 7, name: "Parth Honkalse", code: "EMP007", email: "parth.honkalse@company.com", status: "ABSENT" },
+  { userId: 8, name: "Anuja Thorat", code: "EMP008", email: "anuja.thorat@company.com", status: "ABSENT" },
+  { userId: 9, name: "Diya Yadav", code: "EMP009", email: "diya.yadav@company.com", status: "ABSENT" },
+  { userId: 10, name: "Tushar Dayma", code: "EMP010", email: "tushar.dayma@company.com", status: "ABSENT" },
+  { userId: 11, name: "Mohit Gahlot", code: "EMP011", email: "mohit.gahlot@company.com", status: "ABSENT" },
+  { userId: 12, name: "Neelkanth Aher", code: "EMP012", email: "neelkanth.aher@company.com", status: "ABSENT" },
+  { userId: 13, name: "Siddharth Kshirsagar", code: "EMP013", email: "siddharth.kshirsagar@company.com", status: "ABSENT" },
+  { userId: 14, name: "Karan Krishna", code: "EMP014", email: "karan.krishna@company.com", status: "ABSENT" },
+  { userId: 15, name: "Deepali Deshmukh", code: "EMP015", email: "deepali.deshmukh@company.com", status: "ABSENT" },
+  { userId: 16, name: "Rohan Joshi", code: "EMP016", email: "rohan.joshi@company.com", status: "ABSENT" },
+  { userId: 17, name: "Pooja Sharma", code: "EMP017", email: "pooja.sharma@company.com", status: "ABSENT" },
+  { userId: 18, name: "Aditya Shinde", code: "EMP018", email: "aditya.shinde@company.com", status: "ABSENT" },
+  { userId: 19, name: "Neha Gupta", code: "EMP019", email: "neha.gupta@company.com", status: "ABSENT" },
+  { userId: 20, name: "Amit Verma", code: "EMP020", email: "amit.verma@company.com", status: "ABSENT" },
+  { userId: 21, name: "Aarav Verma", code: "EMP021", email: "aarav.verma@company.com", status: "ABSENT" },
+  { userId: 22, name: "Diya Kulkarni", code: "EMP022", email: "diya.kulkarni@company.com", status: "ABSENT" },
+  { userId: 23, name: "Rohan Mehta", code: "EMP023", email: "rohan.mehta@company.com", status: "ABSENT" },
+  { userId: 24, name: "Ananya Singh", code: "EMP024", email: "ananya.singh@company.com", status: "ABSENT" },
+  { userId: 25, name: "Vikram Nair", code: "EMP025", email: "vikram.nair@company.com", status: "ABSENT" },
 ];
 
 export default function SessionAttendancePage() {
@@ -82,13 +84,31 @@ export default function SessionAttendancePage() {
       if (!sessionId) return;
       setLoading(true);
       try {
+        let liveEmpList: StudentRecord[] = ALL_25_EMPLOYEES;
+        try {
+          const res = await getEmployees();
+          const rawEmps = Array.isArray(res) ? res : res?.data || [];
+          if (Array.isArray(rawEmps) && rawEmps.length > 0) {
+            liveEmpList = rawEmps.map((emp: any, idx: number) => ({
+              userId: emp.id || idx + 1,
+              name: `${emp.firstName || ""} ${emp.lastName || ""}`.trim() || `User #${emp.id}`,
+              code: emp.employeeCode || `EMP${String(idx + 1).padStart(3, "0")}`,
+              email: emp.officialEmail || `user${emp.id}@company.com`,
+              deptId: emp.departmentId ? String(emp.departmentId) : undefined,
+              status: "ABSENT",
+            }));
+          }
+        } catch (e) {
+          console.warn("Failed to fetch live employees, using default snapshot", e);
+        }
+
         const fetched = await getSessionById(sessionId);
         if (fetched) {
           setSession(fetched);
 
-          let baseList: StudentRecord[] = ALL_25_EMPLOYEES;
+          let baseList: StudentRecord[] = liveEmpList;
 
-          // If Type 2 Option (Admin Enrollment with targetUserIds), show ONLY enrolled learners!
+          // 1. Filter by Target User IDs (Admin Selected Enrollment)
           if (fetched.targetUserIds) {
             let uIds: string[] = [];
             try {
@@ -101,11 +121,18 @@ export default function SessionAttendancePage() {
             }
 
             if (uIds.length > 0) {
-              baseList = ALL_25_EMPLOYEES.filter((emp) =>
+              baseList = liveEmpList.filter((emp) =>
                 uIds.includes(String(emp.userId)) ||
                 uIds.includes(emp.code) ||
                 uIds.some((u) => emp.email.toLowerCase().includes(u.toLowerCase()))
               );
+            }
+          } 
+          // 2. Filter by Department if Department-scoped Session
+          else if (fetched.departmentId || fetched.enrollmentType === "DEPARTMENT") {
+            const targetDeptId = fetched.departmentId ? String(fetched.departmentId) : null;
+            if (targetDeptId) {
+              baseList = liveEmpList.filter((emp: any) => String(emp.deptId) === targetDeptId);
             }
           }
 
@@ -150,7 +177,7 @@ export default function SessionAttendancePage() {
     setStudents((prev) => prev.map((s) => ({ ...s, status })));
   };
 
-  // CSV Attendance Report Upload Handler (MS Teams / Zoom format support)
+  // CSV Attendance Report Upload Handler (MS Teams / Zoom / Excel format support)
   const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -160,30 +187,25 @@ export default function SessionAttendancePage() {
       const text = event.target?.result as string;
       if (!text) return;
 
-      const emailMatches = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
-      const emailSet = new Set(emailMatches.map((em) => em.toLowerCase()));
-
-      if (emailSet.size === 0) {
-        toast.error("No valid email addresses found in uploaded CSV file.");
-        return;
-      }
+      const lowerText = text.toLowerCase();
 
       let matchedCount = 0;
       setStudents((prev) =>
         prev.map((student) => {
           const studentEmail = (student.email || "").toLowerCase();
-          const studentNameClean = student.name.toLowerCase().replace(/\s+/g, "");
+          const studentName = student.name.toLowerCase();
+          const firstName = studentName.split(" ")[0];
+          const studentCode = (student.code || "").toLowerCase();
 
           let isPresent = false;
-          if (studentEmail && emailSet.has(studentEmail)) {
+          if (studentEmail && lowerText.includes(studentEmail)) {
             isPresent = true;
-          } else {
-            for (const em of Array.from(emailSet)) {
-              if (em.includes(studentNameClean) || studentNameClean.includes(em.split("@")[0].replace(".", ""))) {
-                isPresent = true;
-                break;
-              }
-            }
+          } else if (studentCode && lowerText.includes(studentCode)) {
+            isPresent = true;
+          } else if (studentName && lowerText.includes(studentName)) {
+            isPresent = true;
+          } else if (firstName && firstName.length > 2 && lowerText.includes(firstName)) {
+            isPresent = true;
           }
 
           if (isPresent) matchedCount++;

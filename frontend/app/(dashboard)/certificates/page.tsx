@@ -29,69 +29,6 @@ import { formatCourseTitle } from "@/lib/utils";
 
 import DataFilterToolbar, { SortOption, applyDataFilters } from "@/components/common/DataFilterToolbar";
 
-const SAMPLE_LIVE_SESSION_CERTS: IssuedCertificateData[] = [
-  {
-    id: 9001,
-    userId: 1,
-    courseId: 101,
-    recipientName: "Priyanka Davhare",
-    courseTitle: "ProCoder Aug 2026 - AI-Powered Performance Testing Live Session",
-    certificateCode: "CERT-SESS-892101",
-    issuedAt: "2026-08-14T15:30:00.000Z",
-    departmentName: "Engineering & Technology",
-    templateSnapshot: JSON.stringify({
-      headerTitle: "CERTIFICATE OF ATTENDANCE",
-      headerSubtitle: "LIVE SESSION COMPLETION AWARD",
-      primaryColor: "#dc2626",
-    }),
-  },
-  {
-    id: 9002,
-    userId: 2,
-    courseId: 102,
-    recipientName: "Omprakash Pandey",
-    courseTitle: "ProCoder Live Mentorship Session - Sept 2026",
-    certificateCode: "CERT-SESS-892102",
-    issuedAt: "2026-09-01T15:00:00.000Z",
-    departmentName: "Tech Services- Core",
-    templateSnapshot: JSON.stringify({
-      headerTitle: "CERTIFICATE OF ATTENDANCE",
-      headerSubtitle: "LIVE SESSION COMPLETION AWARD",
-      primaryColor: "#dc2626",
-    }),
-  },
-  {
-    id: 9003,
-    userId: 3,
-    courseId: 103,
-    recipientName: "Shailesh Chikate",
-    courseTitle: "ProCoder Live Mentorship Workshop - Sept 2026",
-    certificateCode: "CERT-SESS-892103",
-    issuedAt: "2026-09-01T14:00:00.000Z",
-    departmentName: "Product Management",
-    templateSnapshot: JSON.stringify({
-      headerTitle: "CERTIFICATE OF ATTENDANCE",
-      headerSubtitle: "LIVE SESSION COMPLETION AWARD",
-      primaryColor: "#dc2626",
-    }),
-  },
-  {
-    id: 9004,
-    userId: 4,
-    courseId: 104,
-    recipientName: "Deepali Uttekar",
-    courseTitle: "CapDev Engineering Mentorship Live Session",
-    certificateCode: "CERT-SESS-892104",
-    issuedAt: "2026-08-20T16:00:00.000Z",
-    departmentName: "Quality Assurance & DevOps",
-    templateSnapshot: JSON.stringify({
-      headerTitle: "CERTIFICATE OF ATTENDANCE",
-      headerSubtitle: "LIVE SESSION COMPLETION AWARD",
-      primaryColor: "#dc2626",
-    }),
-  },
-];
-
 export default function CertificatesPage() {
   const { user } = useAuthStore();
   const userRole = user?.role || ROLES.GUEST;
@@ -116,13 +53,11 @@ export default function CertificatesPage() {
     setLoading(true);
     try {
       const data = await getAllCertificates();
-      const fetchedList = data || [];
-      const hasSessionCert = fetchedList.some((c) => (c.certificateCode || "").startsWith("CERT-SESS"));
-      const combined = hasSessionCert ? fetchedList : [...fetchedList, ...SAMPLE_LIVE_SESSION_CERTS];
-      setCertificates(combined);
+      const fetchedList = Array.isArray(data) ? data : [];
+      setCertificates(fetchedList);
     } catch (err) {
       console.error("Failed to load certificates:", err);
-      setCertificates(SAMPLE_LIVE_SESSION_CERTS);
+      setCertificates([]);
     } finally {
       setLoading(false);
     }
@@ -152,39 +87,34 @@ export default function CertificatesPage() {
 
   const isStaff = userRole === "ADMIN" || userRole === "SUPER_ADMIN";
 
+  useEffect(() => {
+    if (!isStaff && staffScope !== "MY_OWN") {
+      setStaffScope("MY_OWN");
+    }
+  }, [isStaff, staffScope]);
+
   const isUserMatch = (c: IssuedCertificateData) => {
     const recipient = (c.recipientName || "").toLowerCase().trim();
     const firstName = ((user as any)?.firstName || "").toLowerCase().trim();
     const lastName = ((user as any)?.lastName || "").toLowerCase().trim();
-    const userName = ((user as any)?.name || `${firstName} ${lastName}`).toLowerCase().trim();
+    const fullName = `${firstName} ${lastName}`.trim() || ((user as any)?.name || "").toLowerCase().trim();
     const userEmail = ((user as any)?.officialEmail || (user as any)?.email || "").toLowerCase().trim();
     const username = (user?.username || "").toLowerCase().trim();
-    const empId = user?.employeeId ? String(user.employeeId) : null;
+    const empId = user?.employeeId ? String(user.employeeId) : (user?.id ? String(user.id) : null);
 
-    // Check employeeId match (e.g. EMP007 -> employeeId 7 -> Omprakash Pandey)
-    if (empId && String(c.userId) === empId) return true;
+    // 1. Direct employeeId / userId match
+    if (empId && String(c.userId) === String(empId)) return true;
 
-    // Direct name or email match
-    if (userName && (recipient === userName || recipient.includes(userName))) return true;
+    // 2. Direct name match
+    if (fullName && recipient.includes(fullName)) return true;
     if (firstName && lastName && recipient.includes(firstName) && recipient.includes(lastName)) return true;
-    if (userEmail && userEmail.split("@")[0] && recipient.includes(userEmail.split("@")[0])) return true;
-    if (username && (recipient.includes(username) || username.includes("omprakash") || username.includes("op"))) {
-      if (recipient.includes("omprakash") || recipient.includes("pandey")) return true;
-    }
+    if (firstName && firstName.length > 2 && recipient.includes(firstName)) return true;
 
-    // Direct ID match with recipient verification
-    if (user?.id && String(c.userId) === String(user.id)) {
-      if (username.includes("omprakash") || username.includes("op") || userName.includes("omprakash")) {
-        return recipient.includes("omprakash") || recipient.includes("pandey");
-      }
-      if (username.includes("priyanka") || userName.includes("priyanka")) {
-        return recipient.includes("priyanka");
-      }
-      if (username.includes("deepali") || userName.includes("deepali")) {
-        return recipient.includes("deepali");
-      }
-      return true;
-    }
+    // 3. Direct email match
+    if (userEmail && userEmail.split("@")[0] && recipient.includes(userEmail.split("@")[0])) return true;
+
+    // 4. Username match
+    if (username && recipient.includes(username)) return true;
 
     return false;
   };

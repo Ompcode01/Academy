@@ -136,15 +136,33 @@ export default function CreateSessionPage() {
               }
             }
             const knownEmployees: Record<string, { id: number; name: string; email: string; employeeCode: string }> = {
-              "1": { id: 1, name: "Priyanka Davhare", email: "priyanka.davhare@harbingergroup.com", employeeCode: "EMP001" },
-              "2": { id: 2, name: "Deepali Uttekar", email: "Deepali.Uttekar@harbingergroup.com", employeeCode: "EMP002" },
-              "3": { id: 3, name: "Shailesh Chikate", email: "shailesh@harbingergroup.com", employeeCode: "EMP003" },
-              "4": { id: 4, name: "Ayush Gupta", email: "Ayush.Gupta@harbingergroup.com", employeeCode: "EMP004" },
-              "5": { id: 5, name: "Sahil Dhiman", email: "Sahil.Dhiman@harbingergroup.com", employeeCode: "EMP005" },
-              "6": { id: 6, name: "Sneha Patil", email: "sneha.patil@harbingergroup.com", employeeCode: "EMP006" },
-              "7": { id: 7, name: "Omprakash Pandey", email: "omprakash.pandey@harbingergroup.com", employeeCode: "EMP007" },
+              "1": { id: 1, name: "Priyanka Davhare", email: "priyanka.davhare@company.com", employeeCode: "EMP001" },
+              "2": { id: 2, name: "Omprakash Pandey", email: "omprakash.pandey@company.com", employeeCode: "EMP002" },
+              "3": { id: 3, name: "Rahul Sharma", email: "rahul.sharma@company.com", employeeCode: "EMP003" },
+              "4": { id: 4, name: "Sneha Patil", email: "sneha.patil@company.com", employeeCode: "EMP004" },
+              "5": { id: 5, name: "Guest Visitor", email: "guest.visitor@company.com", employeeCode: "EMP005" },
+              "6": { id: 6, name: "Siddharth Savant", email: "siddharth.savant@company.com", employeeCode: "EMP006" },
+              "7": { id: 7, name: "Parth Honkalse", email: "parth.honkalse@company.com", employeeCode: "EMP007" },
+              "8": { id: 8, name: "Anuja Thorat", email: "anuja.thorat@company.com", employeeCode: "EMP008" },
+              "9": { id: 9, name: "Diya Yadav", email: "diya.yadav@company.com", employeeCode: "EMP009" },
+              "10": { id: 10, name: "Tushar Dayma", email: "tushar.dayma@company.com", employeeCode: "EMP010" },
+              "11": { id: 11, name: "Mohit Gahlot", email: "mohit.gahlot@company.com", employeeCode: "EMP011" },
+              "12": { id: 12, name: "Neelkanth Aher", email: "neelkanth.aher@company.com", employeeCode: "EMP012" },
+              "13": { id: 13, name: "Siddharth Kshirsagar", email: "siddharth.kshirsagar@company.com", employeeCode: "EMP013" },
+              "14": { id: 14, name: "Karan Krishna", email: "karan.krishna@company.com", employeeCode: "EMP014" },
+              "15": { id: 15, name: "Deepali Deshmukh", email: "deepali.deshmukh@company.com", employeeCode: "EMP015" },
+              "16": { id: 16, name: "Rohan Joshi", email: "rohan.joshi@company.com", employeeCode: "EMP016" },
+              "17": { id: 17, name: "Pooja Sharma", email: "pooja.sharma@company.com", employeeCode: "EMP017" },
+              "18": { id: 18, name: "Aditya Shinde", email: "aditya.shinde@company.com", employeeCode: "EMP018" },
+              "19": { id: 19, name: "Neha Gupta", email: "neha.gupta@company.com", employeeCode: "EMP019" },
+              "20": { id: 20, name: "Amit Verma", email: "amit.verma@company.com", employeeCode: "EMP020" },
+              "21": { id: 21, name: "Aarav Verma", email: "aarav.verma@company.com", employeeCode: "EMP021" },
+              "22": { id: 22, name: "Diya Kulkarni", email: "diya.kulkarni@company.com", employeeCode: "EMP022" },
+              "23": { id: 23, name: "Rohan Mehta", email: "rohan.mehta@company.com", employeeCode: "EMP023" },
+              "24": { id: 24, name: "Ananya Singh", email: "ananya.singh@company.com", employeeCode: "EMP024" },
+              "25": { id: 25, name: "Vikram Nair", email: "vikram.nair@company.com", employeeCode: "EMP025" },
             };
-            const prefilledList = uIds.map((idStr) => knownEmployees[idStr] || { id: idStr, name: `Employee #${idStr}`, email: `employee${idStr}@harbingergroup.com`, employeeCode: `EMP00${idStr}` });
+            const prefilledList = uIds.map((idStr) => knownEmployees[idStr] || { id: idStr, name: `Employee #${idStr}`, email: `employee${idStr}@company.com`, employeeCode: `EMP00${idStr}` });
 
             setEnrollmentData((prev) => ({
               ...prev,

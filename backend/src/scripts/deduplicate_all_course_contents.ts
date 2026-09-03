@@ -70,31 +70,19 @@ async function main() {
     }
 
     // Step 2: Check for duplicate sections with exact same titles or empty duplicate sections
-    const seenSectionTitles = new Map<string, typeof course.sections[0]>();
+    const seenSectionTitles = new Set<string>();
     const sectionIdsToDeactivate: bigint[] = [];
-    const contentsInDupSectionsToDeactivate: bigint[] = [];
 
-    // Reverse iterate so we keep the newest published section and deactivate older duplicates
-    const reversedSections = [...course.sections].reverse();
-
-    for (const sec of reversedSections) {
+    for (const sec of course.sections) {
+      const remainingActiveContents = sec.contents.filter((c) => !contentIdsToDeactivate.includes(c.id));
       const normSecTitle = sec.title.trim().toLowerCase();
-      if (seenSectionTitles.has(normSecTitle)) {
-        console.log(`  -> Deactivating older duplicate section "${sec.title}" (ID: ${sec.id})`);
-        sectionIdsToDeactivate.push(sec.id);
-        for (const c of sec.contents) {
-          contentsInDupSectionsToDeactivate.push(c.id);
-        }
-      } else {
-        seenSectionTitles.set(normSecTitle, sec);
-      }
-    }
 
-    if (contentsInDupSectionsToDeactivate.length > 0) {
-      await prisma.learningContent.updateMany({
-        where: { id: { in: contentsInDupSectionsToDeactivate } },
-        data: { isActive: false },
-      });
+      if (seenSectionTitles.has(normSecTitle) && remainingActiveContents.length === 0) {
+        console.log(`  -> Deactivating empty duplicate section "${sec.title}" (ID: ${sec.id})`);
+        sectionIdsToDeactivate.push(sec.id);
+      } else {
+        seenSectionTitles.add(normSecTitle);
+      }
     }
 
     if (sectionIdsToDeactivate.length > 0) {
@@ -103,7 +91,7 @@ async function main() {
         data: { isActive: false },
       });
       totalDeactivatedSections += sectionIdsToDeactivate.length;
-      console.log(`  ✓ Deactivated ${sectionIdsToDeactivate.length} duplicate sections.`);
+      console.log(`  ✓ Deactivated ${sectionIdsToDeactivate.length} duplicate empty sections.`);
     }
   }
 
