@@ -4,35 +4,7 @@ import guestGrantService from "../../services/guestGrant.service";
 
 export class EventService {
   async getAllEvents(userContext?: { role?: string; employeeId?: bigint | null; departmentId?: bigint | null }) {
-    let whereClause: any = {};
-
-    if (userContext?.role === "GUEST") {
-      const empId = userContext.employeeId ? BigInt(userContext.employeeId) : undefined;
-      const { isGlobal, departmentIds } = await guestGrantService.getGuestPermittedDepartmentIds(empId);
-
-      if (!isGlobal) {
-        if (departmentIds.length > 0) {
-          whereClause.OR = [
-            { departmentId: null },
-            { departmentId: { in: departmentIds } },
-          ];
-        } else {
-          whereClause.departmentId = null;
-        }
-      }
-    } else if (userContext && userContext.role !== "SUPER_ADMIN" && userContext.role !== "ADMIN") {
-      const deptId = userContext.departmentId;
-      const empId = userContext.employeeId;
-
-      whereClause.OR = [
-        { departmentId: null },
-        ...(deptId ? [{ departmentId: deptId }] : []),
-        ...(empId ? [{ creatorId: empId }] : []),
-      ];
-    }
-
     const events = await prisma.event.findMany({
-      where: whereClause,
       include: {
         department: {
           select: { id: true, departmentName: true, departmentCode: true },
