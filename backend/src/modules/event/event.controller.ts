@@ -70,12 +70,9 @@ export const createEvent = async (req: AuthRequest, res: Response) => {
     const creatorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
     const creatorId = req.user?.employeeId ? BigInt(req.user.employeeId) : null;
 
-    // Admin inherits their department automatically unless explicit
     let targetDeptId: bigint | null = null;
     if (departmentId && departmentId !== "all" && departmentId !== "global") {
       targetDeptId = BigInt(departmentId);
-    } else if (req.user?.role === "ADMIN" && req.user.departmentId) {
-      targetDeptId = BigInt(req.user.departmentId);
     }
 
     const event = await eventService.createEvent({

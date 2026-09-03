@@ -175,9 +175,10 @@ export default function CreateSessionPage() {
           }
 
           if (existing.certificateTemplateId) {
+            const isNone = existing.certificateTemplateId === "none";
             setCertificateData((prev) => ({
               ...prev,
-              enableCertificate: true,
+              enableCertificate: !isNone,
               templateId: existing.certificateTemplateId || "classic",
             }));
           }
@@ -225,6 +226,8 @@ export default function CreateSessionPage() {
         (u: any) => String(u.id || u.userId)
       );
 
+      const certIdToSave = certificateData.enableCertificate !== false && certificateData.templateId !== "none" ? (certificateData.templateId || "classic") : "none";
+
       if (editId) {
         await updateSession(editId, {
           title: title.trim(),
@@ -233,6 +236,7 @@ export default function CreateSessionPage() {
           eventTime: eventTimeStr,
           url: meetingUrl.trim() || undefined,
           eventType: enrollmentData.departmentAccess === "ALL" ? "site" : "course",
+          certificateTemplateId: certIdToSave,
         });
         toast.success("Live Session updated successfully!");
       } else {
@@ -246,7 +250,7 @@ export default function CreateSessionPage() {
           createCalendarEvent,
           enrollmentType: enrollmentData.departmentAccess,
           targetUserIds,
-          certificateTemplateId: certificateData.templateId || "classic",
+          certificateTemplateId: certIdToSave,
         });
         toast.success("Live Session & Certificate configuration created successfully!");
       }

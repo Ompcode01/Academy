@@ -63,11 +63,16 @@ function applyFeedbackToSections(sections: any[], fbData: CourseWizardState["fee
 
   let foundFb = false;
   for (const sec of processedSections) {
+    const secTitleLower = (sec.title || "").trim().toLowerCase();
+    const isFbSec = secTitleLower.includes("feedback") || secTitleLower.includes("evaluation");
+    if (isFbSec) foundFb = true;
+
     if (sec.contents && Array.isArray(sec.contents)) {
       for (const cnt of sec.contents) {
-        if (cnt.contentType?.toUpperCase() === "FEEDBACK") {
-          cnt.title = fbData.feedbackTitle || cnt.title;
-          cnt.description = fbData.description || cnt.description;
+        if (cnt.contentType?.toUpperCase() === "FEEDBACK" || isFbSec) {
+          cnt.contentType = "FEEDBACK";
+          cnt.title = fbData.feedbackTitle || cnt.title || "End-of-Course Feedback & Evaluation Survey";
+          cnt.description = fbData.description || cnt.description || "";
 
           let effectiveQuestions: any[] = fbData.questions || [];
           if (cnt.quizConfigJson) {
@@ -134,30 +139,49 @@ export function buildCoursePayload(
 
   const processedSections = applyFeedbackToSections(sections, wizardData.feedback);
 
-  // Ensure Feedback section is ALWAYS positioned at the very end (LAST section)
+  // Deduplicate normal sections and keep ONLY 1 feedback section at the end
   const normalSections: any[] = [];
-  const feedbackSections: any[] = [];
+  const seenNormalTitles = new Set<string>();
+  let singleFbSec: any = null;
 
   for (const sec of (processedSections || [])) {
+    const secTitleLower = (sec.title || "").trim().toLowerCase();
     const isFeedback =
-      sec.title?.trim().toLowerCase().includes("course feedback") ||
-      sec.title?.trim().toLowerCase().includes("end-of-course feedback") ||
+      secTitleLower.includes("course feedback") ||
+      secTitleLower.includes("end-of-course feedback") ||
+      secTitleLower.includes("feedback & evaluation") ||
       (Array.isArray(sec.contents) &&
         sec.contents.length > 0 &&
-        sec.contents.some((c: any) => c.contentType?.toUpperCase() === "FEEDBACK"));
+        sec.contents.some((c: any) => (c.contentType || "").toUpperCase() === "FEEDBACK"));
 
     if (isFeedback) {
-      feedbackSections.push(sec);
+      singleFbSec = sec;
     } else {
-      normalSections.push(sec);
+      const key = sec.id ? `id_${sec.id}` : secTitleLower;
+      if (!seenNormalTitles.has(key)) {
+        seenNormalTitles.add(key);
+        normalSections.push(sec);
+      }
     }
   }
 
-  const sortedSections = [...normalSections, ...feedbackSections].map((sec, sIdx) => {
+  const sortedSections = [...normalSections, ...(singleFbSec ? [singleFbSec] : [])].map((sec, sIdx) => {
     let contents = sec.contents || [];
-    if (Array.isArray(contents) && contents.length > 1) {
-      const normalCnt = contents.filter((c: any) => c.contentType?.toUpperCase() !== "FEEDBACK");
-      const fbCnt = contents.filter((c: any) => c.contentType?.toUpperCase() === "FEEDBACK");
+    if (Array.isArray(contents) && contents.length > 0) {
+      const seenContentKeys = new Set<string>();
+      const dedupedContents: any[] = [];
+
+      for (const cnt of contents) {
+        const cType = (cnt.contentType || "LESSON").toUpperCase().trim();
+        const cKey = cnt.id ? `cnt_id_${cnt.id}` : `${cType}_${(cnt.title || "").trim().toLowerCase()}`;
+        if (!seenContentKeys.has(cKey)) {
+          seenContentKeys.add(cKey);
+          dedupedContents.push(cnt);
+        }
+      }
+
+      const normalCnt = dedupedContents.filter((c: any) => (c.contentType || "").toUpperCase() !== "FEEDBACK");
+      const fbCnt = dedupedContents.filter((c: any) => (c.contentType || "").toUpperCase() === "FEEDBACK");
       contents = [...normalCnt, ...fbCnt].map((cnt: any, cIdx: number) => ({
         ...cnt,
         contentOrder: cIdx + 1,

@@ -127,7 +127,11 @@ function CustomTimePicker({ value, onChange }: CustomTimePickerProps) {
 
 export default function EventCalendar({ compact = false }: EventCalendarProps) {
   const { user } = useAuthStore();
-  const { events, addEvent, editEvent, removeEvent } = useEventsStore();
+  const { events, fetchEvents, addEvent, editEvent, removeEvent } = useEventsStore();
+
+  React.useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const isAdmin = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
 

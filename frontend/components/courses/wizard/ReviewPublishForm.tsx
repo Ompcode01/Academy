@@ -101,10 +101,11 @@ export default function ReviewPublishForm({
         const targetCourseId = Number(courseId) || Number(res.data?.id);
         if (targetCourseId && certificate) {
           try {
-            const selectedTemplateId = (certificate as any).templateId || "classic";
+            const isEnabled = certificate.enableCertificate !== false && (certificate as any).templateId !== "none";
+            const selectedTemplateId = !isEnabled ? "none" : ((certificate as any).templateId || "classic");
             await saveCertificateTemplate(targetCourseId, {
               templateId: selectedTemplateId,
-              templateName: selectedTemplateId === "modern" ? "Modern Wave & Ribbon" : "Classic Ornamental Border",
+              templateName: selectedTemplateId === "none" ? "none" : (selectedTemplateId === "modern" ? "Modern Wave & Ribbon" : "Classic Ornamental Border"),
               headerTitle: certificate.certificateTitle || "CERTIFICATE",
               headerSubtitle: (certificate as any).headerSubtitle || "OF ACHIEVEMENT",
               certifyText: (certificate as any).certifyText || "This is to certify that",
@@ -115,7 +116,7 @@ export default function ReviewPublishForm({
               logoUrl: (certificate as any).logoUrl || null,
               customDate: (certificate as any).customDate || null,
               primaryColor: (certificate as any).primaryColor || "#d97706",
-              enableCertificate: certificate.enableCertificate,
+              enableCertificate: isEnabled,
               passingThreshold: certificate.passingThreshold || 70,
             });
           } catch (certErr) {

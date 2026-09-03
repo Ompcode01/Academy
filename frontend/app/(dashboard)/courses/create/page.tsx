@@ -179,6 +179,32 @@ function CreateCourseContent() {
             if (c.status === "DRAFT" && c.draftStep) {
               setCurrentStep(Math.min(Math.max(Number(c.draftStep), 1), wizardSteps.length));
             }
+            const cleanedSections: any[] = [];
+            const seenSectionKeys = new Set<string>();
+            let singleFeedbackSec: any = null;
+
+            for (const sec of (c.sections || [])) {
+              const titleLower = (sec.title || "").trim().toLowerCase();
+              const isFb =
+                titleLower.includes("course feedback") ||
+                titleLower.includes("end-of-course feedback") ||
+                titleLower.includes("feedback & evaluation") ||
+                (Array.isArray(sec.contents) &&
+                  sec.contents.some((cnt: any) => (cnt.contentType || "").toUpperCase().includes("FEEDBACK")));
+
+              if (isFb) {
+                singleFeedbackSec = sec;
+              } else {
+                const key = sec.id ? `id_${sec.id}` : titleLower;
+                if (!seenSectionKeys.has(key)) {
+                  seenSectionKeys.add(key);
+                  cleanedSections.push(sec);
+                }
+              }
+            }
+            if (singleFeedbackSec) {
+              cleanedSections.push(singleFeedbackSec);
+            }
 
             setWizardState((prev) => ({
               ...prev,
@@ -194,7 +220,7 @@ function CreateCourseContent() {
                 description: c.description || "",
                 categoryId: c.categoryId ? String(c.categoryId) : "1",
               },
-              sections: c.sections || [],
+              sections: cleanedSections,
               enrollment: {
                 selfEnrollment: !c.enrollmentType || c.enrollmentType === "SELF",
                 adminEnrollment: c.enrollmentType === "ADMIN" || c.enrollmentType === "BULK",
@@ -208,6 +234,14 @@ function CreateCourseContent() {
                 feedbackTitle: extractedFbTitle,
                 description: extractedFbDesc,
                 questions: extractedFbQuestions.length > 0 ? extractedFbQuestions : prev.feedback.questions,
+              },
+              certificate: {
+                enableCertificate: c.certificateTemplate?.enableCertificate !== false && c.certificateTemplate?.templateName !== "none" && (c.certificateTemplate as any)?.templateId !== "none",
+                templateId: (c.certificateTemplate?.enableCertificate === false || c.certificateTemplate?.templateName === "none" || (c.certificateTemplate as any)?.templateId === "none")
+                  ? "none"
+                  : ((c.certificateTemplate?.templateName === "modern" || c.certificateTemplate?.borderStyle === "MODERN" || (c.certificateTemplate as any)?.templateId === "modern") ? "modern" : "classic"),
+                certificateTitle: c.certificateTemplate?.headerTitle || "Certificate of Completion",
+                passingThreshold: c.certificateTemplate?.passingThreshold || 70,
               },
             }));
           }

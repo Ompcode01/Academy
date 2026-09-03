@@ -41,9 +41,9 @@ export default function CertificateForm({
   onCancel,
 }: CertificateFormProps) {
   // Determine active option
-  const isNoneActive = !data.enableCertificate || data.templateId === "none";
-  const isModernActive = data.enableCertificate && data.templateId === "modern";
-  const isClassicActive = data.enableCertificate && !isModernActive && !isNoneActive;
+  const isNoneActive = data.templateId === "none" || data.enableCertificate === false;
+  const isModernActive = !isNoneActive && (data.templateId === "modern" || data.templateId === "Modern Wave & Ribbon" || data.templateId === "2");
+  const isClassicActive = !isNoneActive && !isModernActive;
 
   const getSelectedLabel = () => {
     if (isNoneActive) return "Option 3: No Certificate Required";
@@ -190,7 +190,7 @@ export default function CertificateForm({
       </div>
 
       {/* Live Preview / No Certificate Info Box */}
-      {data.enableCertificate && !isNoneActive ? (
+      {!isNoneActive ? (
         <div className="space-y-3 pt-2">
           <div className="flex items-center justify-between text-xs font-bold text-muted-foreground px-1">
             <span>LIVE CERTIFICATE PREVIEW</span>
@@ -209,7 +209,7 @@ export default function CertificateForm({
               courseTitle={courseTitle || "Elevate... Go Beyond"}
               customDate={data.customDate}
               certificateCode="HARB-2026-X892A"
-              templateId={data.templateId || "classic"}
+              templateId={isModernActive ? "modern" : "classic"}
             />
           </div>
         </div>

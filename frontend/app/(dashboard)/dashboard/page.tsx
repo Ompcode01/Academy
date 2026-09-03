@@ -439,7 +439,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4 text-[#C82333]" />
                 <h3 className="text-sm font-bold tracking-wide text-[#212529]">
-                  In-Progress Enrolled Courses
+                  In Progress Courses
                 </h3>
               </div>
               <span className="text-[10px] font-bold text-[#6C757D]">
