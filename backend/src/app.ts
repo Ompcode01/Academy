@@ -89,7 +89,9 @@ app.use("/storage", (req, res, next) => {
     if (!fs.existsSync(dir)) return null;
     try {
       const entries = fs.readdirSync(dir, { withFileTypes: true });
-      const normTarget = targetName.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const cleanTargetName = targetName.replace(/[\s_]*\(\d+\)|_\d+/g, "").trim();
+      const targetExt = path.extname(cleanTargetName).toLowerCase();
+      const targetBase = path.basename(cleanTargetName, targetExt).toLowerCase().replace(/[^a-z0-9]/g, "");
 
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
@@ -97,14 +99,21 @@ app.use("/storage", (req, res, next) => {
           const found = searchRecursive(fullPath, targetName);
           if (found) return found;
         } else if (entry.isFile()) {
-          const normEntry = entry.name.toLowerCase().replace(/[^a-z0-9]/g, "");
-          if (
-            entry.name === targetName ||
-            normEntry === normTarget ||
-            normEntry.includes(normTarget) ||
-            (normTarget.length > 3 && normTarget.includes(normEntry))
-          ) {
-            return fullPath;
+          const entryExt = path.extname(entry.name).toLowerCase();
+          const entryBase = path.basename(entry.name, entryExt).toLowerCase().replace(/[^a-z0-9]/g, "");
+
+          const extMatches = !targetExt || targetExt === entryExt;
+
+          if (extMatches) {
+            if (
+              entry.name === targetName ||
+              entry.name === cleanTargetName ||
+              entryBase === targetBase ||
+              (targetBase.length > 2 && entryBase.includes(targetBase)) ||
+              (entryBase.length > 2 && targetBase.includes(entryBase))
+            ) {
+              return fullPath;
+            }
           }
         }
       }

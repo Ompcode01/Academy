@@ -267,30 +267,39 @@ export const updateCourse = asyncHandler(
 export const deleteCourse = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const id = BigInt(req.params.id as string);
+    const forcePermanent = req.query.permanent === "true";
+
     const existingCourse = await prisma.course.findUnique({
       where: { id },
-      select: { id: true, title: true, isActive: true },
+      select: { id: true, title: true, isActive: true, status: true },
     });
 
     if (!existingCourse) {
       throw new AppError("Course not found or already deleted", 404);
     }
 
-    await courseService.deleteCourse(id);
+    const result = await courseService.deleteCourse(id, forcePermanent);
 
     // Audit Log
     const actorName = req.user ? `${req.user.username} (${req.user.role || 'USER'})` : "System User";
+    const actionText = result.permanentlyDeleted ? "Course Permanently Deleted" : "Course Archived";
     await prisma.auditLog.create({
       data: {
         actorName,
-        action: "Course Deleted",
-        detail: `Deleted course '${existingCourse.title || id}'`,
+        action: actionText,
+        detail: `${actionText} '${existingCourse.title || id}'`,
         type: "course",
         ipAddress: req.ip || "Internal",
       },
-    });
+    }).catch(() => {});
 
-    return successResponse(res, null, "Course deleted successfully");
+    return successResponse(
+      res,
+      result,
+      result.permanentlyDeleted
+        ? "Course permanently deleted from database"
+        : "Course archived successfully"
+    );
   }
 );
 

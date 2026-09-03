@@ -194,6 +194,22 @@ class CourseService {
       };
     }
 
+    // Ensure Feedback sections are ALWAYS sorted at the very end of the curriculum sections list
+    if (course.sections && course.sections.length > 1) {
+      const normalSections: any[] = [];
+      const feedbackSections: any[] = [];
+      for (const sec of course.sections) {
+        const isFb =
+          sec.title?.trim().toLowerCase().includes("course feedback") ||
+          sec.title?.trim().toLowerCase().includes("end-of-course feedback") ||
+          (Array.isArray(sec.contents) &&
+            sec.contents.some((c: any) => c.contentType?.toUpperCase() === "FEEDBACK"));
+        if (isFb) feedbackSections.push(sec);
+        else normalSections.push(sec);
+      }
+      (course as any).sections = [...normalSections, ...feedbackSections];
+    }
+
     return {
       ...course,
       creatorInfo,
@@ -334,6 +350,8 @@ class CourseService {
     const orderedSections = [...normalSecs, ...feedbackSecs];
 
     let courseTotalExactSecs = 0;
+    let hasFeedbackInCourse = false;
+    const seenContentKeysInCourse = new Set<string>();
 
     for (let sIdx = 0; sIdx < orderedSections.length; sIdx++) {
       const secData = orderedSections[sIdx];
@@ -345,7 +363,7 @@ class CourseService {
           courseId,
           title: sectionTitle,
           description: secData.description || null,
-          sectionOrder: secData.sectionOrder || sIdx + 1,
+          sectionOrder: sIdx + 1,
           targetDurationMinutes: targetSecMins ? Number(targetSecMins) : null,
           isPublished: !isDraft,
         },
@@ -371,7 +389,25 @@ class CourseService {
 
       for (let cIdx = 0; cIdx < nonUdemyContents.length; cIdx++) {
         const cntData = nonUdemyContents[cIdx];
+        const cntTypeUpper = (cntData.contentType || "LESSON").toUpperCase().trim();
+        const isFbItem = cntTypeUpper === "FEEDBACK" || cntTypeUpper === "FEEDBACK_SURVEY" || cntTypeUpper === "SURVEY";
+
+        if (isFbItem) {
+          if (hasFeedbackInCourse) {
+            // Skip adding duplicate feedback survey to this course
+            continue;
+          }
+          hasFeedbackInCourse = true;
+        }
+
         const cntTitleKey = (cntData.title || "").trim().toLowerCase();
+        const contentKey = `${cntTypeUpper}:${cntTitleKey}`;
+        if (seenContentKeysInCourse.has(contentKey)) {
+          // Skip duplicate content item in this course
+          continue;
+        }
+        seenContentKeysInCourse.add(contentKey);
+
         const existingCnt = existingContentMap.get(cntTitleKey);
 
         // 1. Resolve quizConfigJson
@@ -580,6 +616,7 @@ class CourseService {
     }
 
     const { enrolledUserIds, teacherIds, sections, ...courseData } = data;
+    (courseData as any).updatedAt = new Date();
     const course = await courseRepository.update(id, courseData);
 
     // A draft is a mirror of the builder's current state, so an empty array is a
@@ -666,14 +703,31 @@ class CourseService {
     return this.getCourseById(id);
   }
 
-  async deleteCourse(id: bigint) {
+  async deleteCourse(id: bigint, forcePermanent: boolean = false) {
     const existing = await prisma.course.findUnique({ where: { id } });
     if (!existing) {
       throw new AppError("Course not found or already deleted", 404);
     }
 
-    // Soft-delete / Archive course instead of destructive permanent deletion.
-    // Preserves all student enrollments, certificates, assessment submissions, and progress history.
+    const isAlreadyArchived = existing.status === "ARCHIVED" || !existing.isActive;
+
+    // If course is already archived/inactive or forcePermanent flag is set, permanently delete from DB
+    if (forcePermanent || isAlreadyArchived) {
+      await prisma.$transaction([
+        prisma.userLessonProgress.deleteMany({ where: { courseId: id } }),
+        prisma.assessmentSubmission.deleteMany({ where: { courseId: id } }),
+        prisma.issuedCertificate.deleteMany({ where: { courseId: id } }),
+        prisma.event.updateMany({ where: { courseId: id }, data: { courseId: null } }),
+        prisma.courseTeacher.deleteMany({ where: { courseId: id } }),
+        prisma.certificateTemplate.deleteMany({ where: { courseId: id } }),
+        prisma.enrollment.deleteMany({ where: { courseId: id } }),
+        prisma.course.delete({ where: { id } }),
+      ]);
+
+      return { id: id.toString(), deleted: true, permanentlyDeleted: true };
+    }
+
+    // Soft-delete / Archive active or draft course on first delete action
     await prisma.$transaction([
       prisma.courseSection.updateMany({ where: { courseId: id }, data: { isActive: false } }),
       prisma.course.update({ where: { id }, data: { status: "ARCHIVED", isActive: false } }),
@@ -1139,6 +1193,44 @@ class CourseService {
     isMandatory?: boolean;
     isPublished?: boolean;
   }) {
+    const section = await prisma.courseSection.findUnique({
+      where: { id: data.sectionId },
+      select: { courseId: true },
+    });
+    if (!section) {
+      throw new AppError("Section not found", 404);
+    }
+
+    const cTypeUpper = (data.contentType || "LESSON").toUpperCase().trim();
+    const isFeedback = cTypeUpper === "FEEDBACK" || cTypeUpper === "FEEDBACK_SURVEY" || cTypeUpper === "SURVEY";
+
+    if (isFeedback) {
+      const existingFb = await prisma.learningContent.findFirst({
+        where: {
+          section: { courseId: section.courseId, isActive: true },
+          contentType: { in: ["FEEDBACK", "FEEDBACK_SURVEY", "SURVEY"] },
+          isActive: true,
+        },
+      });
+      if (existingFb) {
+        throw new AppError("Feedback Survey already exists for this course. Only one Feedback Survey is allowed per course.", 400);
+      }
+    }
+
+    const normTitle = data.title.trim().toLowerCase();
+    const existingContents = await prisma.learningContent.findMany({
+      where: {
+        sectionId: data.sectionId,
+        contentType: data.contentType,
+        isActive: true,
+      },
+      select: { title: true },
+    });
+    const duplicateCnt = existingContents.some((c) => c.title.trim().toLowerCase() === normTitle);
+    if (duplicateCnt) {
+      throw new AppError(`A ${data.contentType} item titled "${data.title}" already exists in this section.`, 400);
+    }
+
     return courseRepository.createContent(data);
   }
 

@@ -882,10 +882,7 @@ export class ProgressService {
     });
     if (!sub) throw new Error("Assessment submission not found");
 
-    // Permission Enforcement: If previously graded by SUPER_ADMIN, non-SUPER_ADMIN cannot modify
-    if (sub.gradedBy?.includes("[SUPER_ADMIN]") && userRole !== "SUPER_ADMIN") {
-      throw new Error("Permission Denied: Only Super Admin can modify grades assigned by Super Admin.");
-    }
+    // Evaluators (Teachers, Admins, Super Admins) can update grades and feedback freely.
 
     const maxScore = sub.maxScore || 100;
     const percentage = Math.round((score / maxScore) * 100);

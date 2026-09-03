@@ -147,7 +147,7 @@ class CourseRepository {
             },
           },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
         skip,
         take: limit,
       }),

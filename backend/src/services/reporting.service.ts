@@ -2000,14 +2000,7 @@ export class ReportingService {
     const sub = await prisma.assessmentSubmission.findUnique({ where: { id: subId } });
     if (!sub) throw new Error("Submission not found");
 
-    // Enforce Evaluation Hierarchy Security:
-    const prevGradedBy = sub.gradedBy || "";
-    if (prevGradedBy.includes("[SUPER_ADMIN]") && user.role !== "SUPER_ADMIN") {
-      throw new Error("This evaluation was finalized by a Super Admin and is locked. Higher authority evaluations cannot be modified.");
-    }
-    if (prevGradedBy.includes("[ADMIN]") && user.role !== "SUPER_ADMIN" && user.role !== "ADMIN") {
-      throw new Error("This evaluation was finalized by a Business Unit Admin and is locked for Teachers.");
-    }
+    // All authorized evaluators (Teachers, Admins, Super Admins) can update grades and feedback freely.
 
     const roleTag = user.role === "SUPER_ADMIN" ? "[SUPER_ADMIN]" : user.role === "ADMIN" ? "[ADMIN]" : "[TEACHER]";
     const evaluatorId = toBigIntSafe(user.userId) || toBigIntSafe(user.employeeId);
