@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-03T13:47:29.029Z",
+  "exportedAt": "2026-09-03T14:32:10.953Z",
   "departments": [
     {
       "id": "2",
@@ -676,13 +676,13 @@
       "employeeId": "19",
       "username": "neha",
       "passwordHash": "$2b$10$jFiKY7YvQMjdhhCH.QlLIOqDlldZgx.E7RHWDAk/o9UOeH0.vjBae",
-      "lastLogin": "2026-09-03T13:31:37.493Z",
+      "lastLogin": "2026-09-03T13:56:51.963Z",
       "failedLoginAttempts": 0,
       "accountLocked": false,
       "passwordChangedAt": null,
       "isActive": true,
       "createdAt": "2026-07-31T09:32:41.249Z",
-      "updatedAt": "2026-09-03T13:31:37.504Z"
+      "updatedAt": "2026-09-03T13:56:51.966Z"
     },
     {
       "id": "20",
@@ -7790,7 +7790,7 @@
       "isCompleted": true,
       "completedAt": "2026-09-03T10:39:58.633Z",
       "activeLearningSeconds": 10,
-      "lastActivityAt": "2026-09-03T13:47:08.193Z",
+      "lastActivityAt": "2026-09-03T14:27:13.137Z",
       "lastPosition": 0,
       "watchedSeconds": 10
     },
@@ -7802,7 +7802,7 @@
       "isCompleted": true,
       "completedAt": "2026-09-03T10:40:28.168Z",
       "activeLearningSeconds": 60,
-      "lastActivityAt": "2026-09-03T13:47:08.239Z",
+      "lastActivityAt": "2026-09-03T14:27:13.187Z",
       "lastPosition": 0,
       "watchedSeconds": 60
     },
@@ -7826,7 +7826,7 @@
       "isCompleted": true,
       "completedAt": "2026-09-03T10:40:52.526Z",
       "activeLearningSeconds": 10,
-      "lastActivityAt": "2026-09-03T13:47:08.270Z",
+      "lastActivityAt": "2026-09-03T14:27:13.217Z",
       "lastPosition": 0,
       "watchedSeconds": 10
     },
@@ -8562,6 +8562,18 @@
     {
       "id": "42",
       "timestamp": "2026-09-03T13:31:38.230Z",
+      "actorId": "19",
+      "actorName": "Neha Gupta (LEARNER)",
+      "username": null,
+      "departmentName": null,
+      "action": "Login Success",
+      "detail": "Successfully authenticated to LMS Portal",
+      "type": "login",
+      "ipAddress": "192.168.1.38"
+    },
+    {
+      "id": "43",
+      "timestamp": "2026-09-03T13:56:52.286Z",
       "actorId": "19",
       "actorName": "Neha Gupta (LEARNER)",
       "username": null,
