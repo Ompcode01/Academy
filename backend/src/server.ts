@@ -1,6 +1,7 @@
 import app from "./app";
 import env from "./config/env";
 import { startEventReminderScheduler } from "./services/eventScheduler.service";
+import { autoCleanupDatabaseDuplicates } from "./services/dbCleanup.service";
 
 app.listen(env.PORT, () => {
     console.log(`
@@ -13,4 +14,5 @@ app.listen(env.PORT, () => {
 `);
 
     startEventReminderScheduler();
+    void autoCleanupDatabaseDuplicates();
 });

@@ -49,11 +49,13 @@ class CertificateService {
 
     const serialized = serializeBigInt(template);
     const templateId =
-      template.templateName === "modern" ||
-      template.templateName === "Modern Wave & Ribbon" ||
-      template.borderStyle === "MODERN"
-        ? "modern"
-        : "classic";
+      template.enableCertificate === false || template.templateName === "none"
+        ? "none"
+        : (template.templateName === "modern" ||
+           template.templateName === "Modern Wave & Ribbon" ||
+           template.borderStyle === "MODERN"
+            ? "modern"
+            : "classic");
 
     return {
       ...serialized,
@@ -66,9 +68,10 @@ class CertificateService {
       where: { courseId },
     });
 
-    const templateId = data.templateId || (data.templateName === "modern" ? "modern" : "classic");
-    const templateName = templateId === "modern" ? "modern" : "classic";
-    const borderStyle = templateId === "modern" ? "MODERN" : "CLASSIC";
+    const isEnabled = data.enableCertificate !== false && data.templateId !== "none";
+    const templateId = !isEnabled || data.templateId === "none" ? "none" : (data.templateId || (data.templateName === "modern" ? "modern" : "classic"));
+    const templateName = templateId === "none" ? "none" : (templateId === "modern" ? "modern" : "classic");
+    const borderStyle = templateId === "none" ? "NONE" : (templateId === "modern" ? "MODERN" : "CLASSIC");
 
     if (existing) {
       const updated = await prisma.certificateTemplate.update({

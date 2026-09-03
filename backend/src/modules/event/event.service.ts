@@ -164,6 +164,7 @@ export class EventService {
       eventTime?: string;
       url?: string;
       eventType?: string;
+      certificateTemplateId?: string;
     },
     actorName?: string
   ) {
@@ -176,6 +177,7 @@ export class EventService {
         ...(data.eventTime !== undefined ? { eventTime: data.eventTime || null } : {}),
         ...(data.url !== undefined ? { url: data.url || null } : {}),
         ...(data.eventType ? { eventType: data.eventType } : {}),
+        ...(data.certificateTemplateId !== undefined ? { certificateTemplateId: data.certificateTemplateId } : {}),
       } as any,
     });
 

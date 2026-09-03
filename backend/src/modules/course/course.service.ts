@@ -335,19 +335,23 @@ class CourseService {
     }
 
     // Partition sections so Feedback sections are created last (highest sectionOrder)
+    // AND deduplicate feedback sections so only 1 feedback section is created per course
     const normalSecs: any[] = [];
-    const feedbackSecs: any[] = [];
+    let singleFbSec: any = null;
+
     for (const sec of sections) {
+      const secTitleLower = (sec.title || "").trim().toLowerCase();
       const isFb =
-        sec.title?.trim().toLowerCase().includes("course feedback") ||
-        sec.title?.trim().toLowerCase().includes("end-of-course feedback") ||
+        secTitleLower.includes("course feedback") ||
+        secTitleLower.includes("end-of-course feedback") ||
+        secTitleLower.includes("feedback & evaluation") ||
         (Array.isArray(sec.contents) &&
           sec.contents.length > 0 &&
-          sec.contents.some((c: any) => c.contentType?.toUpperCase() === "FEEDBACK"));
-      if (isFb) feedbackSecs.push(sec);
+          sec.contents.some((c: any) => (c.contentType || "").toUpperCase().includes("FEEDBACK")));
+      if (isFb) singleFbSec = sec;
       else normalSecs.push(sec);
     }
-    const orderedSections = [...normalSecs, ...feedbackSecs];
+    const orderedSections = [...normalSecs, ...(singleFbSec ? [singleFbSec] : [])];
 
     let courseTotalExactSecs = 0;
     let hasFeedbackInCourse = false;
@@ -624,7 +628,11 @@ class CourseService {
     // the stored sections. For a published save an empty array is treated as
     // "nothing to change", preserving the existing curriculum.
     if (Array.isArray(sections) && (sections.length > 0 || isDraft)) {
-      // Soft-delete existing sections for clean update
+      // Soft-delete existing learning contents AND course sections for clean update
+      await prisma.learningContent.updateMany({
+        where: { section: { courseId: id } },
+        data: { isActive: false },
+      });
       await prisma.courseSection.updateMany({
         where: { courseId: id },
         data: { isActive: false },

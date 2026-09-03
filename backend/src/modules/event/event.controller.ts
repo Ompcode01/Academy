@@ -128,7 +128,7 @@ export const markAttendance = async (req: AuthRequest, res: Response) => {
 export const updateEvent = async (req: AuthRequest, res: Response) => {
   try {
     const id = BigInt(String(req.params.id));
-    const { title, description, eventDate, eventTime, url, eventType } = req.body;
+    const { title, description, eventDate, eventTime, url, eventType, certificateTemplateId } = req.body;
 
     if (eventDate) {
       const inputDateStr = new Date(eventDate).toISOString().split("T")[0];
@@ -178,6 +178,7 @@ export const updateEvent = async (req: AuthRequest, res: Response) => {
         eventTime,
         url,
         eventType,
+        certificateTemplateId,
       },
       actorName
     );
