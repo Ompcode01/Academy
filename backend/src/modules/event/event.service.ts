@@ -4,46 +4,30 @@ import guestGrantService from "../../services/guestGrant.service";
 
 export class EventService {
   async getAllEvents(userContext?: { role?: string; employeeId?: bigint | null; departmentId?: bigint | null }) {
-    // Use a 24-hour buffer for active events (yesterday 00:00:00) so timezone shifts never hide today's events
-    const startOfYesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    startOfYesterday.setUTCHours(0, 0, 0, 0);
-
-    let whereClause: any = {
-      eventDate: {
-        gte: startOfYesterday,
-      },
-    };
+    let whereClause: any = {};
 
     if (userContext?.role === "GUEST") {
       const empId = userContext.employeeId ? BigInt(userContext.employeeId) : undefined;
       const { isGlobal, departmentIds } = await guestGrantService.getGuestPermittedDepartmentIds(empId);
 
-      if (isGlobal) {
-        // keep eventDate filter
-      } else if (departmentIds.length > 0) {
-        whereClause.AND = [
-          {
-            OR: [
-              { departmentId: null },
-              { departmentId: { in: departmentIds } },
-            ],
-          },
-        ];
-      } else {
-        whereClause.departmentId = null;
-      }
-    } else if (!userContext || userContext.role !== "SUPER_ADMIN") {
-      const deptId = userContext?.departmentId;
-      const empId = userContext?.employeeId;
-
-      whereClause.AND = [
-        {
-          OR: [
+      if (!isGlobal) {
+        if (departmentIds.length > 0) {
+          whereClause.OR = [
             { departmentId: null },
-            ...(deptId ? [{ departmentId: deptId }] : []),
-            ...(empId ? [{ creatorId: empId }] : []),
-          ],
-        },
+            { departmentId: { in: departmentIds } },
+          ];
+        } else {
+          whereClause.departmentId = null;
+        }
+      }
+    } else if (userContext && userContext.role !== "SUPER_ADMIN" && userContext.role !== "ADMIN") {
+      const deptId = userContext.departmentId;
+      const empId = userContext.employeeId;
+
+      whereClause.OR = [
+        { departmentId: null },
+        ...(deptId ? [{ departmentId: deptId }] : []),
+        ...(empId ? [{ creatorId: empId }] : []),
       ];
     }
 
