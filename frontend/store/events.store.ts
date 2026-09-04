@@ -38,17 +38,36 @@ export const useEventsStore = create<EventsState>((set, get) => ({
     try {
       const data = await getEvents();
       if (data && Array.isArray(data)) {
-        const parsedEvents: EventItem[] = data.map((ev) => ({
-          id: ev.id,
-          title: ev.title,
-          date: ev.eventDate ? ev.eventDate.split("T")[0] : new Date().toISOString().split("T")[0],
-          time: ev.eventTime || undefined,
-          url: ev.url || undefined,
-          type: (ev.eventType as any) || "site",
-          description: ev.description || "",
-          courseName: ev.courseId ? `Course #${ev.courseId}` : undefined,
-          departmentId: ev.departmentId ? Number(ev.departmentId) : null,
-        }));
+        const parsedEvents: EventItem[] = data.map((ev) => {
+          let dateStr = new Date().toISOString().split("T")[0];
+          if (ev.eventDate) {
+            const raw = String(ev.eventDate).trim();
+            const datePart = raw.split("T")[0].split(" ")[0];
+            if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+              dateStr = datePart;
+            } else {
+              const d = new Date(ev.eventDate);
+              if (!isNaN(d.getTime())) {
+                const y = d.getFullYear();
+                const m = (d.getMonth() + 1).toString().padStart(2, "0");
+                const day = d.getDate().toString().padStart(2, "0");
+                dateStr = `${y}-${m}-${day}`;
+              }
+            }
+          }
+
+          return {
+            id: ev.id,
+            title: ev.title,
+            date: dateStr,
+            time: ev.eventTime || undefined,
+            url: ev.url || undefined,
+            type: (ev.eventType as any) || "site",
+            description: ev.description || "",
+            courseName: ev.courseId ? `Course #${ev.courseId}` : undefined,
+            departmentId: ev.departmentId ? Number(ev.departmentId) : null,
+          };
+        });
         set({ events: parsedEvents });
       }
     } catch (err) {

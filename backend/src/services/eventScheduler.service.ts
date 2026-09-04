@@ -39,16 +39,6 @@ function parseEventStartDateTime(eventDate: Date, eventTime?: string | null): Da
 export async function checkAndDispatchEventReminders() {
   try {
     const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-    // Auto-delete past events prior to today
-    await (prisma.event as any).deleteMany({
-      where: {
-        eventDate: {
-          lt: startOfToday,
-        },
-      },
-    }).catch(() => {});
 
     // Look at events starting around now (from 15 minutes ago up to 2 minutes in future)
     const windowStart = new Date(now.getTime() - 15 * 60 * 1000);
